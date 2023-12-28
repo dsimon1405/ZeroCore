@@ -41,6 +41,11 @@ bool ZC_Sounds::LoadWAV(const std::string& name, const char* path)
     return true;
 }
 
+bool ZC_Sounds::LoadWAV(const std::string& name, const std::string& path)
+{
+    return LoadWAV(name, path.c_str());
+}
+
 ZC_upSound ZC_Sounds::GetSound(const std::string& name)
 {
     std::shared_lock<std::shared_mutex> soundsSLock(soundsSMutex);

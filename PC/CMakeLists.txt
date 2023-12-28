@@ -13,7 +13,7 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
     PARENT_SCOPE)
 
 set(ZC_INCLUDE_DIRS ${ZC_INCLUDE_DIRS}
-    PRIVATE $<$<BOOL:${ZC_SDL_VIDEO}>:${PROJECT_SOURCE_DIR}/external/SDL3/include>
+    PRIVATE $<$<BOOL:${ZC_SDL_VIDEO}>:$<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/SDL3/include,${PROJECT_SOURCE_DIR}/external/SDL3/include>>
     PARENT_SCOPE)
 
 set(ZC_LINK_LIBS ${ZC_LINK_LIBS}

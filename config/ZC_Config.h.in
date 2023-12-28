@@ -3,7 +3,7 @@
 #define ${ZC_PLATFORM_TYPE}
 #define ${ZC_VIDEO_TYPE}
 #define ${ZC_AUDIO_TYPE}
-
-#ifdef ZC_PC
-#define ZC_ASSETS_PATH "${ZC_ASSETS_PATH}"
-#endif
+// #ifdef ZC_PC
+// #define ZC_ASSETS_PATH "${ZC_ASSETS_PATH}"
+// #endif
+#define ZC_BIN_DIR_ASSETS "${ZC_BIN_DIR_ASSETS}"

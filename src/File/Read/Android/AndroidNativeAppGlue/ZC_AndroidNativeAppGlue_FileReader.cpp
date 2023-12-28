@@ -3,7 +3,7 @@
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
 ZC_AndroidNativeAppGlue_FileReader::ZC_AndroidNativeAppGlue_FileReader(const char* _path)
-    : ZC_FileReader(std::string(_path)),
+    : ZC_FileReader(_path),
     file(AAssetManager_open(pAndroidApp->activity->assetManager, _path, AASSET_MODE_BUFFER))
 {
     OpenCheck();

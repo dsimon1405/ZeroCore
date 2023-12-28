@@ -95,7 +95,7 @@ public:
     virtual long RemainingLength() = 0;
 
 protected:
-    std::string path;
+    const char* path;
 
-    ZC_FileReader(std::string&& _path) noexcept;
+    ZC_FileReader(const char* _path) noexcept;
 };

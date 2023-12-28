@@ -6,9 +6,7 @@ project(zeroCore)
 option(ZC_PC "ON - build for PC version" ON)
 option(ZC_ANDROID "ON - build for Android version" OFF)
 
-#	set the relative path from the launch file to your resources (this is necessary for the same behavior of PC/Android file systems)
-#	exapmle: your resources directory in build folder (.../build/allResurcesDirName) make next => set(ZC_ASSETS_PATH allResurcesDirName)
-set(ZC_ASSETS_PATH ${ZC_ASSETS_PATH})
+# set ZC_PARANT_BIN_DIR for copy assets
 
 option(ZC_AUDIO "ON - audio support" ON)
 
@@ -40,9 +38,16 @@ set(ZC_ANDROID_NATIVE_APP_GLUE OFF)
 set(ZC_OBOE OFF)
 set(ZC_SDL_AUDIO OFF)
 
+#	git submodules
+set(GIT_EXTERNAL_LIBS)
+
 if(ZC_PC)
 	#	video
 	set(ZC_SDL_VIDEO ON)
+	if(NOT ZC_MY_DEBUG)
+		list(APPEND GIT_EXTERNAL_LIBS "SDL" "https://github.com/libsdl-org/SDL.git" "a3b5eb0")
+	endif()
+	
 	#	audio
 	if(ZC_AUDIO)
 		set(ZC_SDL_AUDIO ON)
@@ -53,31 +58,30 @@ elseif(ZC_ANDROID)
 	#	audio
 	if(ZC_AUDIO)
 		set(ZC_OBOE ON)
+		list(APPEND GIT_EXTERNAL_LIBS "oboe" "https://github.com/google/oboe.git" "cb4e5d2")
 	endif()
 endif()
 
-#========================= lib type
+#	lib type
 if(ZC_STATIC)
 	set(ZC_LIB_TYPE STATIC)
 else()
 	set(ZC_LIB_TYPE SHARED)
 endif()
 
-#	fatatl error equal function
-function(ZC_F_FATAL_EQUAL data1 data2 errorMessage)
-	if(NOT ${data1} EQUAL ${data2})
-		message(FATAL_ERROR ${errorMessage})
-	endif()
-endfunction()
-
 #========================= external libs
+if(GIT_EXTERNAL_LIBS)
+	set(GIT_EXTERNAL_PATH ${PROJECT_SOURCE_DIR}/external)
+	add_subdirectory(cmakeGitExternal)
+endif()
+
 if(ZC_PC)
 	#	sdl3
 	if(ZC_SDL_VIDEO AND NOT ZC_MY_DEBUG)
 		set(SDL_TEST_LIBRARY OFF)
 		set(SDL_STATIC ON)
 		set(SDL_SHARED OFF)
-		add_subdirectory(${PROJECT_SOURCE_DIR}/external/SDL3)
+		add_subdirectory(${PROJECT_SOURCE_DIR}/external/SDL)
 	endif()
 endif()
 
@@ -96,7 +100,7 @@ endif()
 
 #========================= ZERO CORE =========================
 
-#========================= make config file
+#========================= make files
 add_subdirectory(config)
 
 #========================= sources
@@ -177,6 +181,12 @@ target_compile_options(${PROJECT_NAME}
 	PRIVATE	$<IF:$<BOOL:${WIN32}>,-W3,-Wall>
 			$<$<CONFIG:Release>:-O3>
 	)
+
+#========================= copy assets
+add_custom_target(ZC_COPY_ASSETS ALL
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${ZC_PARANT_BIN_DIR}/assets
+	COMMENT "Copy assets ${PROJECT_SOURCE_DIR}/assets => ${ZC_PARANT_BIN_DIR}/assets")
+add_dependencies(${PROJECT_NAME} ZC_COPY_ASSETS)
 
 message(STATUS "======================== ZERO CORE CONFIG ========================")
 message(STATUS "ZC_PC: ${ZC_PC}")

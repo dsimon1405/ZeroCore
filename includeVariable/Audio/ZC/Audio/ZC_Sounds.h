@@ -24,6 +24,7 @@ public:
     On success true, otherwise false (ZC_ErrorLogger::ErrorMessage() - for more information).
     */
     static bool LoadWAV(const std::string& name, const char* path);
+    static bool LoadWAV(const std::string& name, const std::string& path);
 
     /*
     Helps tp get loaded sound.

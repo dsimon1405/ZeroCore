@@ -3,10 +3,8 @@
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #include <ZC_Config.h>
 
-#include <filesystem>
-
 ZC_PC_FileReader::ZC_PC_FileReader(const char* _path)
-    : ZC_FileReader(std::filesystem::current_path().append(ZC_ASSETS_PATH).append(_path).string()),
+    : ZC_FileReader(_path),
     file(path, std::ios::binary),
     size(CalculateSize())
 {}

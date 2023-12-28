@@ -34,7 +34,7 @@ public:
     If shader exists pointer to ZC_Shader, otherwise nullptr.
     */
 	static ZC_Shader* Get(const std::string& name);
-	
+    
 private:
 #ifdef ZC_PC
 	static inline std::map<std::string, ZC_Shader> shaders;

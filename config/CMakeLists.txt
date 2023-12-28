@@ -23,10 +23,13 @@ else()
     set(ZC_AUDIO_TYPE ZC_AUDIO_NONE)
 endif()
 
+# #========================= assets
+# if(ZC_PC)
+#     set(ZC_ASSETS_PATH ${ZC_ASSETS_PATH})
+# endif()
+
 #========================= assets
-if(ZC_PC)
-    set(ZC_ASSETS_PATH ${ZC_ASSETS_PATH})
-endif()
+set(ZC_BIN_DIR_ASSETS ${PROJECT_BINARY_DIR}/assets/)
 
 # #========================= make config file
 configure_file(ZC_Config.h.in ${PROJECT_BINARY_DIR}/config/ZC_Config.h)

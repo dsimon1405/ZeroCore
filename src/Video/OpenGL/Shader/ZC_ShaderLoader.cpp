@@ -4,9 +4,13 @@
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #include <Video/OpenGL/ZC_OpenGL.h>
 
+ZC_ShaderCode ZC_ShaderLoader::LoadShaderCode(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath)
+{
+    return LoadShaderCode(vertexPath.c_str(), fragmentPath.c_str(), geometryPath.empty() ? nullptr : geometryPath.c_str());
+}
+
 ZC_ShaderCode ZC_ShaderLoader::LoadShaderCode(const char* vertexPath, const char* fragmentPath, const char* geometryPath)
 {
-
     ZC_DynamicArray<char> vertexCode = ReadShaderFile(vertexPath, ShaderType::Vertex);
     if (!vertexCode.pHead) return {};
 
@@ -21,6 +25,16 @@ ZC_ShaderCode ZC_ShaderLoader::LoadShaderCode(const char* vertexPath, const char
     }
 
     return ZC_ShaderCode(std::move(vertexCode), std::move(fragmentCode), std::move(geometryCode));
+}
+
+ZC_ShaderCode ZC_ShaderLoader::LoadShaderCode(ZC_ShaderPath vertexPath, ZC_ShaderPath fragmentPath, ZC_ShaderPath geometryPath)
+{
+    return LoadShaderCode(GetPath(vertexPath), GetPath(fragmentPath), GetPath(geometryPath));
+}
+
+ZC_ShaderCode ZC_ShaderLoader::LoadShaderCode(ZC_ShaderPath vertexPath, ZC_ShaderPath fragmentPath)
+{
+    return LoadShaderCode(GetPath(vertexPath), GetPath(fragmentPath));
 }
 
 ZC_DynamicArray<char> ZC_ShaderLoader::ReadShaderFile(const char* path, ShaderType shaderType)
@@ -99,4 +113,11 @@ void ZC_ShaderLoader::FillShaderStart(char* shaderData, const std::string& shade
     {
         shaderData[i] = shaderStart[i];
     }
+}
+
+const char* ZC_ShaderLoader::GetPath(ZC_ShaderPath code)
+{
+    auto iter = shCodePaths.find(code);
+    if (iter == shCodePaths.end()) return nullptr;
+    return iter->second.c_str();
 }
