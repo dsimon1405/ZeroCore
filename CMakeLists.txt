@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(zeroCore)
+project(ZeroCore)
 
 #========================= options
 #	only one could be ON
