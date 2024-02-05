@@ -207,7 +207,7 @@ ZC_SoundData ZC_Sounds::ReadWAV(const char* path)
             break;
     }
 
-    ZC_DynamicArray<char> data(header.subchunk2Size);
+    ZC_DA<char> data(header.subchunk2Size);
     if (file->Read(data.pHead, header.subchunk2Size) != static_cast<long>(header.subchunk2Size))
     {
         file->Close();

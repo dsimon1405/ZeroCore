@@ -21,8 +21,7 @@ namespace ZC_Vec
     template<ZC_cVecTypes TValue>
     ZC_Vec3<TValue> Normalize(const ZC_Vec3<TValue>& vec)
     {
-        TValue lengthInversion = static_cast<TValue>(1.0 / sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]));
-        return vec * lengthInversion;
+        return vec * (1.0 / sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]));
     }
 
     /*
@@ -57,7 +56,7 @@ namespace ZC_Vec
     }
 
     /*
-    Scalar product of two vectors (cosine of the angle between them).
+    Scalar product of two vectors (if both normalized - cosine of the angle between them).
     If 1 then the vectors are aligned (cos0 = 1).
     If 0 then the vectors are orthogonal (cos90 = 0).
     If -1 then they are opposite (cos180 = -1).
@@ -73,6 +72,38 @@ namespace ZC_Vec
     template<ZC_cVecTypes TValue>
     constexpr TValue Dot(const ZC_Vec3<TValue>& vec1, const ZC_Vec3<TValue>& vec2) noexcept
     {
-        return (vec1[0] * vec2[0]) + (vec1[1] * vec2[1]) +(vec1[2] * vec2[2]);
+        return (vec1[0] * vec2[0]) + (vec1[1] * vec2[1]) + (vec1[2] * vec2[2]);
+    }
+
+    /*
+    Vector length.
+
+    Params:
+    vec1 - vector.
+
+    Return:
+    Vector length.
+    */
+    template<ZC_cVecTypes TValue>
+    constexpr TValue Length(const ZC_Vec3<TValue>& vec1) noexcept
+    {
+        return static_cast<TValue>(sqrt(vec1[0] * vec1[0] + vec1[1] * vec1[1] + vec1[2] * vec1[2]));
+    }
+
+    /*
+    Moves a vector in a specified direction (may not be normalized) by a specified length.
+
+    Params:
+    v - vector to move.
+    direction - where to move.
+    length - on what length to move.
+
+    Return:
+    Vector with new position.
+    */
+    template<ZC_cVecTypes TValue>
+    ZC_Vec3<TValue> MoveByLength(const ZC_Vec3<TValue>& v, const ZC_Vec3<TValue>& direction, TValue length) noexcept
+    {
+        return v + (direction * static_cast<TValue>(length / sqrt(direction[0] * direction[0] + direction[1] * direction[1] + direction[2] * direction[2])));
     }
 }

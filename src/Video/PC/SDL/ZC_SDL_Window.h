@@ -23,6 +23,9 @@ public:
     void ShowCursor() override;
     void LimitCursor() override;
     void UnlimitCursor() override;
+#ifdef ZC_IMGUI
+    bool InitImGui() override;
+#endif
 
     static void ConnectResize(ZC_Function<void(float,float)>&& func) noexcept;
 
@@ -30,6 +33,9 @@ private:
     SDL_Window* window = nullptr;
     SDL_GLContext glContext = nullptr;
 	ZC_SDL_FPS fps;
+#ifdef ZC_IMGUI
+    bool imgui = false;
+#endif
     
     static inline ZC_Function<void(float,float)> fResize;
 

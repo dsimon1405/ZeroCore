@@ -13,9 +13,8 @@ in method
 
     Translate (to the starting position)
     Rotate
-    Translate (sentralize object)
-
     Scale
+    Translate (sentralize object)
 }
 */
 template<ZC_cVecTypes TValue = float>
@@ -70,6 +69,11 @@ struct ZC_Mat4
 
     /*
     Returns a pointer to the first element of the matrix.
+    */
+    TValue* Begin() noexcept;
+
+    /*
+    Returns a const pointer to the first element of the matrix.
     */
     const TValue* Begin() const noexcept;
 
@@ -191,6 +195,12 @@ ZC_Mat4<TValue>& ZC_Mat4<TValue>::Translate(const ZC_Vec3<TValue>& trans) noexce
 {
     columns[3] = (columns[0] * trans[0]) + (columns[1] * trans[1]) + (columns[2] * trans[2]) + columns[3];
     return *this;
+}
+
+template<ZC_cVecTypes TValue>
+TValue* ZC_Mat4<TValue>::Begin() noexcept
+{
+    return &columns[0][0];
 }
 
 template<ZC_cVecTypes TValue>

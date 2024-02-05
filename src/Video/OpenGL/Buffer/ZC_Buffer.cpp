@@ -3,44 +3,48 @@
 #include <Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
-ZC_Buffer::~ZC_Buffer()
-{
-    glDeleteBuffers(1, &id);
-}
-
 ZC_Buffer::ZC_Buffer(GLenum _type)
     : type(_type)
 {
     glGenBuffers(1, &id);
 }
 
-bool ZC_Buffer::BuffData(long bytesSize, void* pData, GLenum _usage)
+ZC_Buffer::~ZC_Buffer()
 {
-    ZC_ErrorLogger::Clear();
+    glDeleteBuffers(1, &id);
+}
+
+void ZC_Buffer::BindBuffer()
+{
     glBindBuffer(type, id);
-    glBufferData(type, bytesSize, const_cast<const void*>(pData), _usage);
+}
+
+void ZC_Buffer::UnbindBuffer()
+{
     glBindBuffer(type, 0);
-    if (ZC_ErrorLogger::WasError()) return false;
+}
+
+void ZC_Buffer::BufferData(long bytesSize, const void* pData, GLenum _usage)
+{
+    glBindBuffer(type, id);
+    glBufferData(type, bytesSize, pData, _usage);
+    glBindBuffer(type, 0);
 #ifdef ZC_ANDROID
     usage = _usage;
     ClearDatas();
     char* pDataChar = reinterpret_cast<char*>(pData);
     datas.emplace_back(bytesSize, pDataChar, pDataChar);
 #endif
-    return true;
 }
 
-bool ZC_Buffer::BuffSubData(long offset, long bytesSize, void* pData)
+void ZC_Buffer::BufferSubData(long offset, long bytesSize, const void* pData)
 {
-    ZC_ErrorLogger::Clear();
     glBindBuffer(type, id);
-    glBufferSubData(type, offset, bytesSize, const_cast<const void*>(pData));
+    glBufferSubData(type, offset, bytesSize, pData);
     glBindBuffer(type, 0);
-    if (ZC_ErrorLogger::WasError()) return false;
 #ifdef ZC_ANDROID
     AddData(offset, bytesSize, reinterpret_cast<char *>(pData));
 #endif
-    return true;
 }
 #ifdef ZC_PC
 ZC_Buffer::ZC_Buffer(ZC_Buffer&& buf) noexcept

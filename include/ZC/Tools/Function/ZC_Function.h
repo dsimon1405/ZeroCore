@@ -70,30 +70,34 @@ public:
     operator bool () noexcept;
 
 private:
-    ZC_uptr<ZC_IFunctionHolder<TReturn(TParams...)>> pFuncHolder = nullptr;
+    ZC_uptr<ZC_IFunctionHolder<TReturn(TParams...)>> pFuncHolder;
 };
 
 template<typename TReturn, typename... TParams>
 ZC_Function<TReturn(TParams...)>::ZC_Function(TReturn(* pFunc)(TParams...)) noexcept
-    : pFuncHolder(ZC_uptrMakeFromChild<ZC_IFunctionHolder<TReturn(TParams...)>, ZC_FunctionHolder<TReturn(TParams...)>>(pFunc))
+    : pFuncHolder(pFunc ? ZC_uptrMakeFromChild<ZC_IFunctionHolder<TReturn(TParams...)>,
+        ZC_FunctionHolder<TReturn(TParams...)>>(pFunc) : nullptr)
 {}
 
 template<typename TReturn, typename... TParams>
 template<typename TClass>
 ZC_Function<TReturn(TParams...)>::ZC_Function(TReturn(TClass::*pFunc)(TParams...), TClass* pClass) noexcept
-    : pFuncHolder(ZC_uptrMakeFromChild<ZC_IFunctionHolder<TReturn(TParams...)>, ZC_FunctionHolder<TReturn(TParams...), TClass>>(pFunc, pClass))
+    : pFuncHolder(pFunc && pClass ? ZC_uptrMakeFromChild<ZC_IFunctionHolder<TReturn(TParams...)>,
+        ZC_FunctionHolder<TReturn(TParams...), TClass>>(pFunc, pClass) : nullptr)
 {}
 
 template<typename TReturn, typename... TParams>
 template<typename TClass>
 ZC_Function<TReturn(TParams...)>::ZC_Function(TReturn(TClass::*pFunc)(TParams...) const, TClass* pClass) noexcept
-    : pFuncHolder(ZC_uptrMakeFromChild<ZC_IFunctionHolder<TReturn(TParams...)>, ZC_FunctionHolder<TReturn(TParams...), TClass>>(pFunc, pClass))
+    : pFuncHolder(pFunc && pClass ? ZC_uptrMakeFromChild<ZC_IFunctionHolder<TReturn(TParams...)>,
+        ZC_FunctionHolder<TReturn(TParams...), TClass>>(pFunc, pClass) : nullptr)
 {}
 
 template<typename TReturn, typename... TParams>
 template<typename TClass>
 ZC_Function<TReturn(TParams...)>::ZC_Function(TReturn(TClass::*pFunc)(TParams...) const, const TClass* pClass) noexcept
-    : pFuncHolder(ZC_uptrMakeFromChild<ZC_IFunctionHolder<TReturn(TParams...)>, ZC_FunctionHolder<TReturn(TParams...), TClass>>(pFunc, pClass))
+    : pFuncHolder(pFunc && pClass ? ZC_uptrMakeFromChild<ZC_IFunctionHolder<TReturn(TParams...)>,
+        ZC_FunctionHolder<TReturn(TParams...), TClass>>(pFunc, pClass) : nullptr)
 {}
 
 template<typename TReturn, typename... TParams>

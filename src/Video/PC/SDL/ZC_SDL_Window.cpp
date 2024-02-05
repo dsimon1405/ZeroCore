@@ -3,6 +3,11 @@
 #include <Video/OpenGL/ZC_OpenGL.h>
 #include <Video/OpenGL/PC/SDL/ZC_SDL_LoadOpenGLFunctions.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
+#ifdef ZC_IMGUI
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
+#include <imgui_impl_opengl3.h>
+#endif
 
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_events.h>
@@ -39,6 +44,18 @@ ZC_SDL_Window::ZC_SDL_Window(bool border, int _width, int _height, const char* n
 		ZC_ErrorLogger::Err("SDL_GL_CreateContext() fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
 		return;
 	}
+    
+	if (SDL_GL_MakeCurrent(window, glContext) != 0)
+	{
+		ZC_ErrorLogger::Err("SDL_GL_MakeCurrent() fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		return;
+	}
+
+	if (SDL_GL_SetSwapInterval(0) != 0)	//	unlimit fps
+	{
+		ZC_ErrorLogger::Err("SDL_GL_SetSwapInterval(0) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		return;
+	}
 
     if (!ZC_SDL_LoadOpenGLFunctions()) return;
 
@@ -48,26 +65,33 @@ ZC_SDL_Window::ZC_SDL_Window(bool border, int _width, int _height, const char* n
 
 ZC_SDL_Window::~ZC_SDL_Window()
 {
+#ifdef ZC_IMGUI
+	if (imgui)
+    {
+		ImGui_ImplOpenGL3_Shutdown();
+    	ImGui_ImplSDL3_Shutdown();
+    	ImGui::DestroyContext();
+	}
+#endif
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(window);
+    SDL_Quit();
 }
 
-#include <ZC/Tools/Console/ZC_cout.h>
 bool ZC_SDL_Window::HandleEvents()
 {
 	fps.Actualize();
     static SDL_Event event;
-    while (SDL_PollEvent(&event) != 0)
+	while (SDL_PollEvent(&event) != 0)
     {
+#ifdef ZC_IMGUI
+		if (imgui) ImGui_ImplSDL3_ProcessEvent(&event);
+#endif
 		switch (event.type)
 		{
 		case SDL_EVENT_QUIT: return false;
 		case SDL_EVENT_WINDOW_RESIZED: Resize(); break;
-		case SDL_EVENT_KEY_DOWN: 
-		{
-        ZC_cout("r");
-			ssButton(ZC_Button(static_cast<ZC_ButtonID>(event.key.keysym.scancode), ZC_Button::Down), fps.SecondsTimestamp(event.button.timestamp)); break;
-		}
+		case SDL_EVENT_KEY_DOWN: ssButton(ZC_Button(static_cast<ZC_ButtonID>(event.key.keysym.scancode), ZC_Button::Down), fps.SecondsTimestamp(event.button.timestamp)); break;
 		case SDL_EVENT_KEY_UP: ssButton(ZC_Button(static_cast<ZC_ButtonID>(event.key.keysym.scancode), ZC_Button::Up), fps.SecondsTimestamp(event.button.timestamp)); break;
 		case SDL_EVENT_MOUSE_BUTTON_DOWN: ssButton(ZC_Button(static_cast<ZC_ButtonID>(event.button.button + 512), ZC_Button::Down), fps.SecondsTimestamp(event.button.timestamp)); break;
 		case SDL_EVENT_MOUSE_BUTTON_UP: ssButton(ZC_Button(static_cast<ZC_ButtonID>(event.button.button + 512), ZC_Button::Up), fps.SecondsTimestamp(event.button.timestamp)); break;
@@ -76,11 +100,26 @@ bool ZC_SDL_Window::HandleEvents()
 		}
     }
 	sEventsEnd();
+#ifdef ZC_IMGUI
+	if (imgui)
+	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplSDL3_NewFrame();
+		ImGui::NewFrame();
+	}
+#endif
     return true;
 }
 
 void ZC_SDL_Window::SwapBuffer()
 {
+#ifdef ZC_IMGUI
+	if (imgui)
+	{
+        ImGui::Render();	//	может вызвать перед glClear()
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());	//	только перед swapBuffer
+	}
+#endif
     SDL_GL_SwapWindow(window);
 }
 
@@ -114,6 +153,35 @@ void ZC_SDL_Window::UnlimitCursor()
 	SDL_SetWindowMouseGrab(window, SDL_FALSE);
 }
 
+#ifdef ZC_IMGUI
+bool ZC_SDL_Window::InitImGui()
+{
+    if (!IMGUI_CHECKVERSION())
+	{
+		ZC_ErrorLogger::Err("IMGUI_CHECKVERSION() fail!", __FILE__, __LINE__);
+		return false;
+	}
+    if (!ImGui::CreateContext())
+	{
+		ZC_ErrorLogger::Err("CreateContext() fail!", __FILE__, __LINE__);
+		return false;
+	}
+    ImGui::StyleColorsDark();
+    if (!ImGui_ImplSDL3_InitForOpenGL(window, glContext))
+	{
+		ZC_ErrorLogger::Err("ImGui_ImplSDL3_InitForOpenGL() fail!", __FILE__, __LINE__);
+		return false;
+	}
+    if (!ImGui_ImplOpenGL3_Init(("#version " + std::to_string(ZC_OPEN_GL_MAJOR_VERSION) + std::to_string(ZC_OPEN_GL_MINOR_VERSION) + "0").c_str()))
+	{
+		ZC_ErrorLogger::Err("ImGui_ImplOpenGL3_Init() fail!", __FILE__, __LINE__);
+		return false;
+	}
+	imgui = true;
+	return true;
+}
+#endif
+
 void ZC_SDL_Window::ConnectResize(ZC_Function<void(float,float)>&& func) noexcept
 {
 	fResize = std::move(func);	
@@ -121,41 +189,41 @@ void ZC_SDL_Window::ConnectResize(ZC_Function<void(float,float)>&& func) noexcep
 
 bool ZC_SDL_Window::SetOpenGLAttributes()
 {
-	 if (SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE) != 0)
-	 {
-	 	ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
-	 	return false;
-	 }
-	 if (SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, ZC_OPEN_GL_MAJOR_VERSION) != 0)
-	 {
-	 	ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, ZC_OPEN_GL_MAJOR_VERSION) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
-	 	return false;
-	 }
-	 if (SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, ZC_OPEN_GL_MINOR_VERSION) != 0)
-	 {
-	 	ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, ZC_OPEN_GL_MINOR_VERSION) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
-	 	return false;
-	 }
-	 if (SDL_GL_SetAttribute(SDL_GL_RED_SIZE, ZC_OPEN_GL_COLLOR_BUFFER_SIZE) != 0)
-	 {
-	 	ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
-	 	return false;
-	 }
-	 if (SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, ZC_OPEN_GL_COLLOR_BUFFER_SIZE) != 0)
-	 {
-	 	ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
-	 	return false;
-	 }
-	 if (SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, ZC_OPEN_GL_COLLOR_BUFFER_SIZE) != 0)
-	 {
-	 	ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
-	 	return false;
-	 }
-	 if (SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, ZC_OPEN_GL_DEPTH_BUFFER_SIZE) != 0)
-	 {
-	 	ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
-	 	return false;
-	 }
+	if (SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE) != 0)
+	{
+		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		return false;
+	}
+	if (SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, ZC_OPEN_GL_MAJOR_VERSION) != 0)
+	{
+		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, ZC_OPEN_GL_MAJOR_VERSION) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		return false;
+	}
+	if (SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, ZC_OPEN_GL_MINOR_VERSION) != 0)
+	{
+		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, ZC_OPEN_GL_MINOR_VERSION) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		return false;
+	}
+	if (SDL_GL_SetAttribute(SDL_GL_RED_SIZE, ZC_OPEN_GL_COLLOR_BUFFER_SIZE) != 0)
+	{
+		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		return false;
+	}
+	if (SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, ZC_OPEN_GL_COLLOR_BUFFER_SIZE) != 0)
+	{
+		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		return false;
+	}
+	if (SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, ZC_OPEN_GL_COLLOR_BUFFER_SIZE) != 0)
+	{
+		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		return false;
+	}
+	if (SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, ZC_OPEN_GL_DEPTH_BUFFER_SIZE) != 0)
+	{
+		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		return false;
+	}
 
 	return true;
 }

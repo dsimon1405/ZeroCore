@@ -19,7 +19,6 @@ public:
     ZC_Camera(const ZC_Camera& cm) noexcept;
     ZC_Camera& operator = (const ZC_Camera& cm) noexcept;
 
-    void Update();
     ZC_Vec3<float> GetCamPos() const noexcept;
     ZC_Vec3<float> GetLookOn() const noexcept;
     ZC_Vec3<float> GetUp() const noexcept;
@@ -31,5 +30,6 @@ private:
     ZC_PerspView perspView;
     ZC_Ortho ortho;
     
+    void Update();
     void ResizeCallBack(float width, float height);
 };

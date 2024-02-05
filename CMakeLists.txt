@@ -9,7 +9,7 @@ option(ZC_ANDROID "ON - build for Android version" OFF)
 # set ZC_PARANT_BIN_DIR for copy assets
 
 option(ZC_AUDIO "ON - audio support" ON)
-
+option(ZC_IMGUI "ON - build with imgui lib files (only for ZC_PC)" OFF)
 option(ZC_STATIC "ON - build static library, else build shared" ON)
 
 message(STATUS "========================= ZERO CORE START ========================")
@@ -47,7 +47,6 @@ if(ZC_PC)
 	if(NOT ZC_MY_DEBUG)
 		list(APPEND GIT_EXTERNAL_LIBS "SDL" "https://github.com/libsdl-org/SDL.git" "a3b5eb0")
 	endif()
-	
 	#	audio
 	if(ZC_AUDIO)
 		set(ZC_SDL_AUDIO ON)
@@ -55,6 +54,7 @@ if(ZC_PC)
 elseif(ZC_ANDROID)
 	#	video
 	set(ZC_ANDROID_NATIVE_APP_GLUE ON)
+	set(ZC_IMGUI OFF)
 	#	audio
 	if(ZC_AUDIO)
 		set(ZC_OBOE ON)
@@ -130,21 +130,27 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Video/ZC_Window.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_OpenGL.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_Shader.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_Shaders.cpp
-	${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShaderCode.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShaderLoader.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShLoader.cpp
+	${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShProg.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShProgs.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_Buffer.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/VBO/ZC_VBO.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/VBO/ZC_VBOs.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/UBO/ZC_UBO.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/UBO/ZC_UBOs.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_Buffers.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_UBO.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_UBOs.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Uniform/ZC_Uniform.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Uniform/ZC_Uniforms.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/VAO/ZC_VAO.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/VAO/ZC_VAOs.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/VAO/ZC_VAOConfig.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/VAO/ZC_VAOConfigs.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Texture/ZC_Texture.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Texture/ZC_Textures.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_Renderer.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RendererSet.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_Draw.cpp
     ${PROJECT_SOURCE_DIR}/src/Tools/Signal/ZC_SignalConnection.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/Exception/ZC_Exception.cpp
     ${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_Clock.cpp
-	${PROJECT_SOURCE_DIR}/src/Tools/Container/ZC_ArrayConverter.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_MakeErrorString.cpp
 	${PROJECT_SOURCE_DIR}/src/File/Read/ZC_FileReader.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_ErrorLogger.cpp
@@ -163,10 +169,9 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES})
 #========================= include dirs
 set(ZC_INCLUDE_DIRS ${ZC_INCLUDE_DIRS}
 	PUBLIC ${PROJECT_SOURCE_DIR}/include
-	PRIVATE ${PROJECT_SOURCE_DIR}/src
+	PUBLIC ${PROJECT_SOURCE_DIR}/src
 	PUBLIC ${PROJECT_BINARY_DIR}/config
 	PUBLIC $<$<BOOL:${ZC_AUDIO}>:${PROJECT_SOURCE_DIR}/includeVariable/Audio>
-	PUBLIC ${PROJECT_SOURCE_DIR}/external/glm/glm	#	delete me
 	)
 
 target_include_directories(${PROJECT_NAME} ${ZC_INCLUDE_DIRS})

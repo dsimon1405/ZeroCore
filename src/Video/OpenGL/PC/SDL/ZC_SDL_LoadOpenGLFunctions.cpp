@@ -60,6 +60,10 @@ bool ZC_SDL_LoadOpenGLFunctions()
     if (!pglGetUniformLocation) { ZC_ErrorLogger::Err("glGetUniformLocation SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)SDL_GL_GetProcAddress("glUniformMatrix4fv");
     if (!pglUniformMatrix4fv) { ZC_ErrorLogger::Err("glUniformMatrix4fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform1i = (PFNGLUNIFORM1IPROC)SDL_GL_GetProcAddress("glUniform1i");
+    if (!pglUniform1i) { ZC_ErrorLogger::Err("glUniform1i SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform3fv = (PFNGLUNIFORM3FVPROC)SDL_GL_GetProcAddress("glUniform3fv");
+    if (!pglUniform3fv) { ZC_ErrorLogger::Err("glUniform3fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     //  buffer
     pglGenBuffers = (PFNGLGENBUFFERSPROC)SDL_GL_GetProcAddress("glGenBuffers");
     if (!pglGenBuffers) { ZC_ErrorLogger::Err("glGenBuffers SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
@@ -91,6 +95,8 @@ bool ZC_SDL_LoadOpenGLFunctions()
     if (!pglVertexAttribPointer) { ZC_ErrorLogger::Err("glVertexAttribPointer SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglDrawArrays = (PFNGLDRAWARRAYSPROC)SDL_GL_GetProcAddress("glDrawArrays");
     if (!pglDrawArrays) { ZC_ErrorLogger::Err("glDrawArrays SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglDrawElements = (PFNGLDRAWELEMENTSPROC)SDL_GL_GetProcAddress("glDrawElements");
+    if (!pglDrawElements) { ZC_ErrorLogger::Err("glDrawElements SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglVertexAttribFormat = (PFNGLVERTEXATTRIBFORMATPROC)SDL_GL_GetProcAddress("glVertexAttribFormat");
     if (!pglVertexAttribFormat) { ZC_ErrorLogger::Err("glVertexAttribFormat SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglVertexAttribBinding = (PFNGLVERTEXATTRIBBINDINGPROC)SDL_GL_GetProcAddress("glVertexAttribBinding");
@@ -106,7 +112,34 @@ bool ZC_SDL_LoadOpenGLFunctions()
     // if (!pglVertexArrayAttribBinding) { ZC_ErrorLogger::Err("glVertexArrayAttribBinding SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     // pglVertexArrayVertexBuffer = (PFNGLVERTEXARRAYVERTEXBUFFERPROC)SDL_GL_GetProcAddress("glVertexArrayVertexBuffer");
     // if (!pglVertexArrayVertexBuffer) { ZC_ErrorLogger::Err("glVertexArrayVertexBuffer SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
-
+    //  texture
+    pglGenTextures = (PFNGLGENTEXTURESPROC)SDL_GL_GetProcAddress("glGenTextures");
+    if (!pglGenTextures) { ZC_ErrorLogger::Err("glGenTextures SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglDeleteTextures = (PFNGLDELETETEXTURESPROC)SDL_GL_GetProcAddress("glDeleteTextures");
+    if (!pglDeleteTextures) { ZC_ErrorLogger::Err("glDeleteTextures SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglBindTexture = (PFNGLBINDTEXTUREPROC)SDL_GL_GetProcAddress("glBindTexture");
+    if (!pglBindTexture) { ZC_ErrorLogger::Err("glBindTexture SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglTexParameteri = (PFNGLTEXPARAMETERIPROC)SDL_GL_GetProcAddress("glTexParameteri");
+    if (!pglTexParameteri) { ZC_ErrorLogger::Err("glTexParameteri SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglTexImage2D = (PFNGLTEXIMAGE2DPROC)SDL_GL_GetProcAddress("glTexImage2D");
+    if (!pglTexImage2D) { ZC_ErrorLogger::Err("glTexImage2D SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglGenerateMipmap = (PFNGLGENERATEMIPMAPPROC)SDL_GL_GetProcAddress("glGenerateMipmap");
+    if (!pglGenerateMipmap) { ZC_ErrorLogger::Err("glGenerateMipmap SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglActiveTexture = (PFNGLACTIVETEXTUREPROC)SDL_GL_GetProcAddress("glActiveTexture");
+    if (!pglActiveTexture) { ZC_ErrorLogger::Err("glActiveTexture SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    //  stencil
+    pglStencilMask = (PFNGLSTENCILMASKPROC)SDL_GL_GetProcAddress("glStencilMask");
+    if (!pglStencilMask) { ZC_ErrorLogger::Err("glStencilMask SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglStencilFunc = (PFNGLSTENCILFUNCPROC)SDL_GL_GetProcAddress("glStencilFunc");
+    if (!pglStencilFunc) { ZC_ErrorLogger::Err("glStencilFunc SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglStencilOp = (PFNGLSTENCILOPPROC)SDL_GL_GetProcAddress("glStencilOp");
+    if (!pglStencilOp) { ZC_ErrorLogger::Err("glStencilOp SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglDisable = (PFNGLDISABLEPROC)SDL_GL_GetProcAddress("glDisable");
+    if (!pglDisable) { ZC_ErrorLogger::Err("glDisable SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    //  depth
+    pglDepthFunc = (PFNGLDEPTHFUNCPROC)SDL_GL_GetProcAddress("glDepthFunc");
+    if (!pglDepthFunc) { ZC_ErrorLogger::Err("glDisable SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    
     // auto q = glGetString(GL_VERSION);
     // std::string a(reinterpret_cast<const char *>(glGetString(GL_VERSION)));
     // std::string b(reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
@@ -127,6 +160,7 @@ PFNGLGETINTEGERVPROC pglGetIntegerv = nullptr;
 
 //  enble
 PFNGLENABLEPROC pglEnable = nullptr;
+PFNGLDISABLEPROC pglDisable = nullptr;
 
 //  debug
 PFNGLDEBUGMESSAGECALLBACKPROC pglDebugMessageCallback = nullptr;
@@ -148,6 +182,8 @@ PFNGLDELETEPROGRAMPROC pglDeleteProgram = nullptr;
 PFNGLUSEPROGRAMPROC pglUseProgram = nullptr;
 PFNGLGETUNIFORMLOCATIONPROC pglGetUniformLocation = nullptr;
 PFNGLUNIFORMMATRIX4FVPROC pglUniformMatrix4fv = nullptr;
+PFNGLUNIFORM1IPROC pglUniform1i = nullptr;
+PFNGLUNIFORM3FVPROC pglUniform3fv = nullptr;
 
 //  buffer
 PFNGLGENBUFFERSPROC pglGenBuffers = nullptr;
@@ -168,6 +204,7 @@ PFNGLENABLEVERTEXATTRIBARRAYPROC pglEnableVertexAttribArray = nullptr;
 PFNGLDISABLEVERTEXATTRIBARRAYPROC pglDisableVertexAttribArray = nullptr;
 PFNGLVERTEXATTRIBPOINTERPROC pglVertexAttribPointer = nullptr;
 PFNGLDRAWARRAYSPROC pglDrawArrays = nullptr;
+PFNGLDRAWELEMENTSPROC pglDrawElements = nullptr;
 PFNGLVERTEXATTRIBFORMATPROC pglVertexAttribFormat = nullptr;
 PFNGLVERTEXATTRIBBINDINGPROC pglVertexAttribBinding = nullptr;
 
@@ -177,3 +214,21 @@ PFNGLVERTEXATTRIBBINDINGPROC pglVertexAttribBinding = nullptr;
 // PFNGLVERTEXARRAYATTRIBFORMATPROC pglVertexArrayAttribFormat = nullptr;
 // PFNGLVERTEXARRAYATTRIBBINDINGPROC pglVertexArrayAttribBinding = nullptr;
 // PFNGLVERTEXARRAYVERTEXBUFFERPROC pglVertexArrayVertexBuffer = nullptr;
+
+//  texture
+PFNGLGENTEXTURESPROC pglGenTextures = nullptr;
+PFNGLDELETETEXTURESPROC pglDeleteTextures = nullptr;
+PFNGLBINDTEXTUREPROC pglBindTexture = nullptr;
+PFNGLTEXPARAMETERIPROC pglTexParameteri = nullptr;
+PFNGLTEXIMAGE2DPROC pglTexImage2D = nullptr;
+PFNGLGENERATEMIPMAPPROC pglGenerateMipmap = nullptr;
+PFNGLACTIVETEXTUREPROC pglActiveTexture = nullptr;
+
+//  stencil
+PFNGLSTENCILMASKPROC pglStencilMask = nullptr;
+PFNGLSTENCILFUNCPROC pglStencilFunc = nullptr;
+PFNGLSTENCILOPPROC pglStencilOp = nullptr;
+
+//  depth
+PFNGLDEPTHFUNCPROC pglDepthFunc = nullptr; 
+#define glDepthFunc pglDepthFunc

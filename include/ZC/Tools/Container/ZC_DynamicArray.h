@@ -1,52 +1,59 @@
 #pragma once
 
+#include <ZC/Tools/Exception/ZC_Exception.h>
+
+#include <cstdlib>
+
 //  Wrapper for dynamic array with open data.
 template<typename T>
-struct ZC_DynamicArray
+struct ZC_DA
 {
     T* pHead = nullptr;
-    unsigned long size = 0;
+    size_t size = 0;
 
-    ZC_DynamicArray(T* _pArray = nullptr, unsigned long _size = 0) noexcept;
-    ZC_DynamicArray(unsigned long _size) noexcept;
+    ZC_DA(T* _pArray = nullptr, size_t _size = 0) noexcept;
+    ZC_DA(size_t _size) noexcept;
 
-    ZC_DynamicArray(const ZC_DynamicArray&) = delete;
-    ZC_DynamicArray& operator = (const ZC_DynamicArray&) = delete;
+    ZC_DA(const ZC_DA&) = delete;
+    ZC_DA& operator = (const ZC_DA&) = delete;
 
-    ZC_DynamicArray(ZC_DynamicArray&& charArray) noexcept;
-    ZC_DynamicArray& operator = (ZC_DynamicArray&& charArray);
+    ZC_DA(ZC_DA&& charArray) noexcept;
+    ZC_DA& operator = (ZC_DA&& charArray);
 
-    ~ZC_DynamicArray();
+    ~ZC_DA();
 
-    T& operator [] (unsigned long index);
-    const T& operator [] (unsigned long index) const;
+    T& operator [] (size_t index);
+    const T& operator [] (size_t index) const;
 
     unsigned long BytesSize() noexcept;
+    T* Begin() noexcept;
     const T* Begin() const noexcept;
+    T* End() noexcept;
+    const T* End() const noexcept;
 };
 
 template<typename T>
-ZC_DynamicArray<T>::ZC_DynamicArray(T* _pArray, unsigned long _size) noexcept
+ZC_DA<T>::ZC_DA(T* _pArray, size_t _size) noexcept
     : pHead(_pArray),
     size(_size)
 {}
 
 template<typename T>
-ZC_DynamicArray<T>::ZC_DynamicArray(unsigned long _size) noexcept
-        : pHead(new T[_size]),
-        size(_size)
+ZC_DA<T>::ZC_DA(size_t _size) noexcept
+    : pHead(static_cast<T*>(malloc(sizeof(T) * _size))),
+    size(_size)
 {}
 
 template<typename T>
-ZC_DynamicArray<T>::ZC_DynamicArray(ZC_DynamicArray&& charArray) noexcept
-        : pHead(charArray.pHead),
-        size(charArray.size)
+ZC_DA<T>::ZC_DA(ZC_DA&& charArray) noexcept
+    : pHead(charArray.pHead),
+    size(charArray.size)
 {
     charArray.pHead = nullptr;
 }
 
 template<typename T>
-ZC_DynamicArray<T>& ZC_DynamicArray<T>::operator = (ZC_DynamicArray&& charArray)
+ZC_DA<T>& ZC_DA<T>::operator = (ZC_DA&& charArray)
 {
     delete[] pHead;
     pHead = charArray.pHead;
@@ -58,32 +65,52 @@ ZC_DynamicArray<T>& ZC_DynamicArray<T>::operator = (ZC_DynamicArray&& charArray)
 }
 
 template<typename T>
-ZC_DynamicArray<T>::~ZC_DynamicArray()
+ZC_DA<T>::~ZC_DA()
 {
     delete[] pHead;
     pHead = nullptr;
 }
 
 template<typename T>
-T& ZC_DynamicArray<T>::operator [] (unsigned long index)
+T& ZC_DA<T>::operator [] (size_t index)
 {
+    if (index >= size) ZC_Exception("Index out of range!");
     return pHead[index];
 }
 
 template<typename T>
-const T& ZC_DynamicArray<T>::operator [] (unsigned long index) const
+const T& ZC_DA<T>::operator [] (size_t index) const
 {
+    if (index >= size) ZC_Exception("Index out of range!");
     return const_cast<T&>(pHead[index]);
 }
 
 template<typename T>
-unsigned long ZC_DynamicArray<T>::BytesSize() noexcept
+unsigned long ZC_DA<T>::BytesSize() noexcept
 {
     return size * sizeof(T);
 }
 
 template<typename T>
-const T* ZC_DynamicArray<T>::Begin() const noexcept
+T* ZC_DA<T>::Begin() noexcept
 {
     return pHead;
+}
+
+template<typename T>
+const T* ZC_DA<T>::Begin() const noexcept
+{
+    return pHead;
+}
+
+template<typename T>
+T* ZC_DA<T>::End() noexcept
+{
+    return pHead + size;
+}
+
+template<typename T>
+const T* ZC_DA<T>::End() const noexcept
+{
+    return pHead + size;
 }

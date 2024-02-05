@@ -9,6 +9,8 @@ ZC_Camera::ZC_Camera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho)
     : perspView(_perspView),
     ortho(_ortho)
 {
+    perspView.ubo = ZC_UBOs::Create(ZC_UBO::BindingPoint::ProjView, { &ZC_Camera::Update, this });
+    perspView.ubo->BufferData(sizeof(ZC_Mat4<float>), nullptr, GL_DYNAMIC_DRAW);
 #ifdef ZC_SDL_VIDEO
     ZC_SDL_Window::ConnectResize({ &ZC_Camera::ResizeCallBack, this });
 #endif
@@ -32,11 +34,6 @@ ZC_Camera& ZC_Camera::operator = (const ZC_Camera& cm) noexcept
     ZC_SDL_Window::ConnectResize({ &ZC_Camera::ResizeCallBack, this });
 #endif
     return *this;
-}
-
-void ZC_Camera::Update()
-{
-    perspView.UpdateUBO();
 }
 
 ZC_Vec3<float> ZC_Camera::GetCamPos() const noexcept
@@ -70,6 +67,11 @@ ZC_Camera& ZC_Camera::SetUp(const ZC_Vec3<float>& _up) noexcept
 {
     perspView.view.SetUp(_up);
     return *this;
+}
+
+void ZC_Camera::Update()
+{
+    perspView.UpdateUBO();
 }
 
 void ZC_Camera::ResizeCallBack(float width, float height)

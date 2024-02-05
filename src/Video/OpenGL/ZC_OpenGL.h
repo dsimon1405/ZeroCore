@@ -40,6 +40,9 @@ extern PFNGLGETINTEGERVPROC pglGetIntegerv;
 extern PFNGLENABLEPROC pglEnable;
 #define glEnable pglEnable
 
+extern PFNGLDISABLEPROC pglDisable;
+#define glDisable pglDisable
+
 //  debug
 
 extern PFNGLDEBUGMESSAGECALLBACKPROC pglDebugMessageCallback;
@@ -95,6 +98,12 @@ extern PFNGLGETUNIFORMLOCATIONPROC pglGetUniformLocation;
 extern PFNGLUNIFORMMATRIX4FVPROC pglUniformMatrix4fv;
 #define glUniformMatrix4fv pglUniformMatrix4fv
 
+extern PFNGLUNIFORM1IPROC pglUniform1i;
+#define glUniform1i pglUniform1i
+
+extern PFNGLUNIFORM3FVPROC pglUniform3fv;
+#define glUniform3fv pglUniform3fv
+
 //  buffer
 
 extern PFNGLGENBUFFERSPROC pglGenBuffers;
@@ -143,6 +152,9 @@ extern PFNGLVERTEXATTRIBPOINTERPROC pglVertexAttribPointer;
 extern PFNGLDRAWARRAYSPROC pglDrawArrays;
 #define glDrawArrays pglDrawArrays
 
+extern PFNGLDRAWELEMENTSPROC pglDrawElements;
+#define glDrawElements pglDrawElements
+
 extern PFNGLVERTEXATTRIBFORMATPROC pglVertexAttribFormat;
 #define glVertexAttribFormat pglVertexAttribFormat
 
@@ -164,10 +176,44 @@ extern PFNGLVERTEXATTRIBBINDINGPROC pglVertexAttribBinding;
 
 // extern PFNGLVERTEXARRAYVERTEXBUFFERPROC pglVertexArrayVertexBuffer;
 // #define glVertexArrayVertexBuffer pglVertexArrayVertexBuffer
+
+//  texture
+
+extern PFNGLGENTEXTURESPROC pglGenTextures;
+#define glGenTextures pglGenTextures
+
+extern PFNGLDELETETEXTURESPROC pglDeleteTextures;
+#define glDeleteTextures pglDeleteTextures
+
+extern PFNGLBINDTEXTUREPROC pglBindTexture;
+#define glBindTexture pglBindTexture
+
+extern PFNGLTEXPARAMETERIPROC pglTexParameteri;
+#define glTexParameteri pglTexParameteri
+
+extern PFNGLTEXIMAGE2DPROC pglTexImage2D;
+#define glTexImage2D pglTexImage2D
+
+extern PFNGLGENERATEMIPMAPPROC pglGenerateMipmap;
+#define glGenerateMipmap pglGenerateMipmap
+
+extern PFNGLACTIVETEXTUREPROC pglActiveTexture;
+#define glActiveTexture pglActiveTexture
+
+//  stencil
+
+extern PFNGLSTENCILMASKPROC pglStencilMask; 
+#define glStencilMask pglStencilMask
+
+extern PFNGLSTENCILFUNCPROC pglStencilFunc; 
+#define glStencilFunc pglStencilFunc
+
+extern PFNGLSTENCILOPPROC pglStencilOp; 
+#define glStencilOp pglStencilOp
+
+//  depth
+
+extern PFNGLDEPTHFUNCPROC pglDepthFunc; 
+#define glDepthFunc pglDepthFunc
+
 #endif
-
-// extern PFNGL PROC ;
-// #define 
-
-
-

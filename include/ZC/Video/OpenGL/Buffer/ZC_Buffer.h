@@ -2,47 +2,15 @@
 
 #include <ZC_Config.h>
 #include <ZC/Video/OpenGL/GL/glcorearb.h>
-#include <ZC/Tools/Container/ZC_DynamicArray.h>
-#include <ZC/Tools/Container/ZC_StackArray.h>
+#include <ZC/Tools/Math/Limits.h>
 #ifdef ZC_ANDROID
 #include <list>
 #endif
 
-#include <concepts>
-
-template <typename T>
-concept ZC_cOpenGLType = std::same_as<T, GLbyte>
-					  || std::same_as<T, GLubyte>
-					  || std::same_as<T, GLshort>
-					  || std::same_as<T, GLushort>
-					  || std::same_as<T, GLhalf>
-					  || std::same_as<T, GLint>
-					  || std::same_as<T, GLuint>
-					  || std::same_as<T, GLfloat>;
-
-
-template <typename TCont>
-concept ZC_cOpenGLContainer = std::same_as<TCont, ZC_DynamicArray<GLbyte>>
-						   || std::same_as<TCont, ZC_DynamicArray<GLubyte>>
-						   || std::same_as<TCont, ZC_DynamicArray<GLshort>>
-						   || std::same_as<TCont, ZC_DynamicArray<GLushort>>
-						   || std::same_as<TCont, ZC_DynamicArray<GLhalf>>
-						   || std::same_as<TCont, ZC_DynamicArray<GLint>>
-						   || std::same_as<TCont, ZC_DynamicArray<GLuint>>
-						   || std::same_as<TCont, ZC_DynamicArray<GLfloat>>
-						   || std::same_as<TCont, ZC_StackArray<GLbyte>>
-						   || std::same_as<TCont, ZC_StackArray<GLubyte>>
-						   || std::same_as<TCont, ZC_StackArray<GLshort>>
-						   || std::same_as<TCont, ZC_StackArray<GLushort>>
-						   || std::same_as<TCont, ZC_StackArray<GLhalf>>
-						   || std::same_as<TCont, ZC_StackArray<GLint>>
-						   || std::same_as<TCont, ZC_StackArray<GLuint>>
-						   || std::same_as<TCont, ZC_StackArray<GLfloat>>;
-
 //	Wrapper OpenGL buffer.
-class ZC_Buffer
+struct ZC_Buffer
 {
-public:
+	ZC_Buffer(GLenum _type);
 
 	ZC_Buffer(const ZC_Buffer&) = delete;
 	ZC_Buffer& operator = (const ZC_Buffer&) = delete;
@@ -50,42 +18,73 @@ public:
 	ZC_Buffer(ZC_Buffer&& vbo) noexcept;
 	ZC_Buffer& operator = (ZC_Buffer&& vbo);
 
-	virtual ~ZC_Buffer();
+	~ZC_Buffer();
+
+	void BindBuffer();
+	void UnbindBuffer();
 
 	/*
 	Saves data to a buffer, or reserve place.
 
 	Params:
+	bytesSize - data bytes size.
 	data - data to save (if nullptr, reserve place).
 	_usage - style of using stored data (GL_STREAM_DRAW, GL_STREAM_READ, GL_STREAM_COPY, GL_STATIC_DRAW, GL_STATIC_READ, GL_STATIC_COPY, GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY).
 	
 	Return:
 	On success true, otherwise false (in second case ZC_ErrorLogger::ErrorMessage() - for more information).
 	*/
-	template<ZC_cOpenGLContainer TOpenGLCont>
-	bool BufferData(TOpenGLCont&& data, GLenum _usage);
+	void BufferData(long bytesSize, const void* pData, GLenum _usage);
 
 	/*
 	Save new data in buffer.
 
 	Params:
 	offset - offset in bytes before editing starts.
-	data - data to save.
+	bytesSize - data bytes size.
+	pData - data to save.
 	
 	Return:
 	On success true, otherwise false (in second case ZC_ErrorLogger::ErrorMessage() - for more information).
 	*/
-	template<ZC_cOpenGLContainer TOpenGLCont>
-	bool BufferSubData(long offset, TOpenGLCont&& data);
+	void BufferSubData(long offset, long bytesSize, const void* pData);
 
-protected:
+    static void GetIndexData(size_t maxIndex, size_t& storingTypeSize, GLenum& rElementsType)
+    {
+        if (maxIndex <= ZC_UCHAR_MAX)
+        {
+            storingTypeSize = sizeof(unsigned char);
+            rElementsType = GL_UNSIGNED_BYTE;
+        }
+        else if (maxIndex <= ZC_USHRT_MAX)
+        {
+            storingTypeSize = sizeof(unsigned short);
+            rElementsType = GL_UNSIGNED_SHORT;
+        }
+        else
+        {
+            storingTypeSize = sizeof(unsigned int);
+            rElementsType = GL_UNSIGNED_INT;
+        }
+    }
+
+	static constexpr int Pack_INT_2_10_10_10_REV(float x, float y, float z)
+	{
+		//  pack float in signed byte array[10]:
+		//  array[0] - sign (0 is pluss, 1 is minus);
+		//  array[1 - 9] - number;
+		//  512(min), 511(max) signed byte[9] values.
+		auto packIn10Bytes = [](float val) -> int
+		{
+			return  val < 0 ?
+			512 | static_cast<int>(ZC_ROUND(512.f + val * 512.f))
+			: static_cast<int>(ZC_ROUND(val * 511.f));
+		};
+		return ((packIn10Bytes(z) << 20) | (packIn10Bytes(y) << 10)) | packIn10Bytes(x);
+	};
+
 	GLuint id;
 	GLenum type;
-
-	ZC_Buffer(GLenum _type);
-
-	bool BuffData(long bytesSize, void* pData, GLenum _usage);
-	bool BuffSubData(long offset, long bytesSize, void* pData);
 
 #ifdef ZC_ANDROID
 	struct Data
@@ -121,23 +120,3 @@ protected:
     void Reload(GLuint _id);
 #endif
 };
-
-template<ZC_cOpenGLContainer TOpenGLCont>
-bool ZC_Buffer::BufferData(TOpenGLCont&& data, GLenum _usage)
-{
-	if (!BuffData(static_cast<long>(data.BytesSize()), static_cast<void*>(data.pHead), _usage)) return false;
-#ifdef ZC_ANDROID
-	data.pHead = nullptr;
-#endif
-	return true;
-}
-
-template<ZC_cOpenGLContainer TOpenGLCont>
-bool ZC_Buffer::BufferSubData(long offset, TOpenGLCont&& data)
-{
-	if (!BuffSubData(offset, static_cast<long>(data.BytesSize()), static_cast<void*>(data.pHead))) return false;
-#ifdef ZC_ANDROID
-	data.pHead = nullptr;
-#endif
-	return true;
-}

@@ -16,7 +16,7 @@ namespace ZC_Mat
 
     Params:
     fovy - viewing angle in degrees.
-    aspect - window width to height ratio.
+    aspect - window width/height.
     near - length to the top of the frustum.
     far - length to base of frustum.
 

@@ -1,6 +1,6 @@
 #include <ZC/Audio/ZC_SoundData.h>
 
-ZC_SoundData::ZC_SoundData(ZC_DynamicArray<char>&& _data, const ZC_AudioSet& _audioSet) noexcept
+ZC_SoundData::ZC_SoundData(ZC_DA<char>&& _data, const ZC_AudioSet& _audioSet) noexcept
   : data(std::move(_data)),
   audioSet(_audioSet)
 {}

@@ -1,13 +1,18 @@
 #pragma once
 
 #include <ZC/Video/OpenGL/GL/glcorearb.h>
-#include <ZC/Video/OpenGL/VBO/ZC_VBO.h>
+#include <ZC/Video/OpenGL/Buffer/ZC_Buffer.h>
+#include "ZC_VAOConfig.h"
 
 //	Wrapper OpenGL vertex array object.
-class ZC_VAO
+struct ZC_VAO
 {
-    friend class ZC_VAOs;
-public:
+	GLuint id = 0;
+#ifdef ZC_ANDROID
+	//	ZC_VAOConfig* config, ZC_Buffer* vbo, ZC_Buffer* ebo
+#endif
+	ZC_VAO();
+
 	ZC_VAO(const ZC_VAO&) = delete;
 	ZC_VAO& operator = (const ZC_VAO&) = delete;
 
@@ -16,31 +21,15 @@ public:
 
 	~ZC_VAO();
 
-	/*
-	Unbind vertex array object.
-	*/
-	static void UnbindVertexArray();
-
-	/*
-	Bind vertex array object.
-	*/
-	void BindVertexArray() const;
-
-	/*
-	Drawings graphic objects.
-
-	Params:
-	vbo - buffer containing data.
-	bufferOffset - starting offset in bytes in vbo.
-	mode - OpenGL drawing mode (depends on the location of the data in vbo) : GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, GL_LINE_STRIP_ADJACENCY, GL_LINES_ADJACENCY, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES, GL_TRIANGLE_STRIP_ADJACENCY, GL_TRIANGLES_ADJACENCY GL_PATCHES.
-	count - count of drawing elements (depends on mode).
-	*/
-	void DrawArrays(const ZC_VBO* vbo, long bufferOffset, GLenum mode, int count) const;
-
-private:
-	GLuint id = 0;
-	GLuint configID;
-	GLint stride = 0;
-
-	ZC_VAO(const GLuint& _configID);
+    /*
+    Configuring VAO.
+	
+	ZC_VAOConfig* config - pointer to vao for configuration.
+	ZC_Buffer* vbo - pointer to vbo for binding.
+	ZC_Buffer* ebo - pointer to ebo for bindig.
+    startOffset - start offset in buffer in bytes.
+    verticesCount — number of vertices. The value should be 0 if the data in vbo is stored in VNCVNC style. If the data stored in vbo is in VVNNCC, the value cannot be 0.
+    */
+	void Config(ZC_VAOConfig* config, ZC_Buffer& vbo, ZC_Buffer& ebo, GLuint startOffset, GLuint verticesCount);
+	void BindVertexArray();
 };

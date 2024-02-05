@@ -14,7 +14,7 @@ class ZC_SoundData
 public:
     
     ZC_SoundData() = default;
-    ZC_SoundData(ZC_DynamicArray<char>&& _data, const ZC_AudioSet& _audioSet) noexcept;
+    ZC_SoundData(ZC_DA<char>&& _data, const ZC_AudioSet& _audioSet) noexcept;
 
     ZC_SoundData(const ZC_SoundData&) = delete;
     ZC_SoundData& operator = (const ZC_SoundData&) = delete;
@@ -33,7 +33,7 @@ public:
     ZC_AudioSet GetAudioSet() const noexcept;
 
 private:
-    ZC_DynamicArray<char> data;
+    ZC_DA<char> data;
     ZC_AudioSet audioSet;
 };
 

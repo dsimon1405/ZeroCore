@@ -2,8 +2,7 @@
 
 #include <ZC/Tools/Math/ZC_Vec.h>
 #include <ZC/Video/OpenGL/GL/glcorearb.h>
-
-#include <memory>
+#include <ZC_Config.h>
 
 /*
 Window management class
@@ -72,7 +71,7 @@ public:
     /*
     Clear the window buffer.
     */
-    void Clear(GLbitfield mask = GL_COLOR_BUFFER_BIT);
+    void Clear(GLbitfield mask);
 
     /*
     Hide mouses cursor (have effect only in ZC_PC build mode).
@@ -93,6 +92,10 @@ public:
     Mouses cursor can break out window (have effect only in ZC_PC build mode).
     */
     virtual void UnlimitCursor() {}
+
+#ifdef ZC_IMGUI
+    virtual bool InitImGui() { return false; }
+#endif
 
 protected:
     static inline int width = 0,
