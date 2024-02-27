@@ -2,7 +2,7 @@
 
 #include <ZC_Config.h>
 #include <ZC/Video/OpenGL/GL/glcorearb.h>
-#include <ZC/Tools/Math/Limits.h>
+#include <ZC/Tools/Math/ZC_Limits.h>
 #ifdef ZC_ANDROID
 #include <list>
 #endif
@@ -11,9 +11,6 @@
 struct ZC_Buffer
 {
 	ZC_Buffer(GLenum _type);
-
-	ZC_Buffer(const ZC_Buffer&) = delete;
-	ZC_Buffer& operator = (const ZC_Buffer&) = delete;
 
 	ZC_Buffer(ZC_Buffer&& vbo) noexcept;
 	ZC_Buffer& operator = (ZC_Buffer&& vbo);
@@ -49,21 +46,21 @@ struct ZC_Buffer
 	*/
 	void BufferSubData(long offset, long bytesSize, const void* pData);
 
-    static void GetIndexData(size_t maxIndex, size_t& storingTypeSize, GLenum& rElementsType)
+    static void GetElementsData(size_t maxElementsIndex, size_t& storingTypeSize, GLenum& rElementsType)
     {
-        if (maxIndex <= ZC_UCHAR_MAX)
+        if (maxElementsIndex <= ZC_UCHAR_MAX)
         {
-            storingTypeSize = sizeof(unsigned char);
+            storingTypeSize = sizeof(uchar);
             rElementsType = GL_UNSIGNED_BYTE;
         }
-        else if (maxIndex <= ZC_USHRT_MAX)
+        else if (maxElementsIndex <= ZC_USHRT_MAX)
         {
-            storingTypeSize = sizeof(unsigned short);
+            storingTypeSize = sizeof(ushort);
             rElementsType = GL_UNSIGNED_SHORT;
         }
         else
         {
-            storingTypeSize = sizeof(unsigned int);
+            storingTypeSize = sizeof(uint);
             rElementsType = GL_UNSIGNED_INT;
         }
     }
@@ -83,7 +80,7 @@ struct ZC_Buffer
 		return ((packIn10Bytes(z) << 20) | (packIn10Bytes(y) << 10)) | packIn10Bytes(x);
 	};
 
-	GLuint id;
+	GLuint id = 0;
 	GLenum type;
 
 #ifdef ZC_ANDROID

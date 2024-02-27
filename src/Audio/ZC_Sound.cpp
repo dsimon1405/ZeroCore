@@ -8,7 +8,7 @@ ZC_Sound::ZC_Sound(const ZC_SoundData* _soundData)
 
 ZC_Sound::~ZC_Sound() noexcept
 {
-    conGetpZC_StreamSound.Disconnect();
+    sconGetpZC_StreamSound.Disconnect();
 }
 
 void ZC_Sound::Play()
@@ -18,7 +18,7 @@ void ZC_Sound::Play()
         std::lock_guard<std::mutex> lock(soundStateMutex);
         if (soundState == ZC_StreamSound::SoundState::Pause || soundState == ZC_StreamSound::SoundState::Stop)
         {
-            conGetpZC_StreamSound = ZC_AudioStream::sGetpZC_StreamSound.Connect(ZC_Function<ZC_StreamSound*()>(&ZC_Sound::GetpZC_StreamSound, this));
+            sconGetpZC_StreamSound = ZC_AudioStream::sGetpZC_StreamSound.Connect(ZC_Function<ZC_StreamSound*()>(&ZC_Sound::GetpZC_StreamSound, this));
         }
         soundState = ZC_StreamSound::SoundState::Play;
     }
@@ -31,7 +31,7 @@ void ZC_Sound::PlayLoop()
         std::lock_guard<std::mutex> lock(soundStateMutex);
         if (soundState == ZC_StreamSound::SoundState::Pause || soundState == ZC_StreamSound::SoundState::Stop)
         {
-            conGetpZC_StreamSound = ZC_AudioStream::sGetpZC_StreamSound.Connect(ZC_Function<ZC_StreamSound*()>(&ZC_Sound::GetpZC_StreamSound, this));
+            sconGetpZC_StreamSound = ZC_AudioStream::sGetpZC_StreamSound.Connect(ZC_Function<ZC_StreamSound*()>(&ZC_Sound::GetpZC_StreamSound, this));
         }
         soundState = ZC_StreamSound::SoundState::PlayLoop;
     }
@@ -42,7 +42,7 @@ void ZC_Sound::Pause()
     std::lock_guard<std::mutex> lock(soundStateMutex);
     if (soundState == ZC_StreamSound::SoundState::Play || soundState == ZC_StreamSound::SoundState::PlayLoop)
     {
-        conGetpZC_StreamSound.Disconnect();
+        sconGetpZC_StreamSound.Disconnect();
         soundState = ZC_StreamSound::SoundState::Pause;
     }
 }
@@ -52,7 +52,7 @@ void ZC_Sound::Stop()
     std::lock_guard<std::mutex> lock(soundStateMutex);
     if (soundState != ZC_StreamSound::SoundState::Stop)
     {
-        conGetpZC_StreamSound.Disconnect();
+        sconGetpZC_StreamSound.Disconnect();
         soundDataIndex = 0;
         soundState = ZC_StreamSound::SoundState::Stop;
     }

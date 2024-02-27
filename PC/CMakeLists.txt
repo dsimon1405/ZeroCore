@@ -2,6 +2,7 @@
 set(ZC_SRC_FILES ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Tools/Console/PC/ZC_cout.cpp
 	${PROJECT_SOURCE_DIR}/src/File/Read/PC/ZC_PC_FileReader.cpp
+    ${PROJECT_SOURCE_DIR}/src/Events/ZC_Mouse.cpp
     $<$<BOOL:${ZC_IMGUI}>:
         ${PROJECT_SOURCE_DIR}/src/Video/imgui/imgui_demo.cpp
         ${PROJECT_SOURCE_DIR}/src/Video/imgui/imgui_draw.cpp
@@ -9,14 +10,14 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
         ${PROJECT_SOURCE_DIR}/src/Video/imgui/imgui_tables.cpp
         ${PROJECT_SOURCE_DIR}/src/Video/imgui/imgui_widgets.cpp
         ${PROJECT_SOURCE_DIR}/src/Video/imgui/imgui.cpp
+        ${PROJECT_SOURCE_DIR}/src/Video/imgui/ZC_ImGui.cpp
+        ${PROJECT_SOURCE_DIR}/src/Video/imgui/ZC_IGWindow.cpp
         $<$<BOOL:${ZC_SDL_VIDEO}>:
             ${PROJECT_SOURCE_DIR}/src/Video/imgui/imgui_impl_sdl3.cpp
             ${PROJECT_SOURCE_DIR}/src/Video/imgui/imgui_impl_sdlrenderer3.cpp>>
 	$<$<BOOL:${ZC_SDL_VIDEO}>:
 		${PROJECT_SOURCE_DIR}/src/Video/PC/SDL/ZC_SDL_Window.cpp
-		${PROJECT_SOURCE_DIR}/src/Video/OpenGL/PC/SDL/ZC_SDL_LoadOpenGLFunctions.cpp>
-        ${PROJECT_SOURCE_DIR}/src/Tools/Time/PC/SDL/ZC_SDL_FPS.cpp
-        ${PROJECT_SOURCE_DIR}/src/Events/ZC_Mouse.cpp
+		${PROJECT_SOURCE_DIR}/src/Video/PC/SDL/ZC_SDL_Window_LoadOpenGLFunctions.cpp>
     $<$<BOOL:${ZC_AUDIO}>:
         $<$<BOOL:${ZC_SDL_AUDIO}>:
 		    ${PROJECT_SOURCE_DIR}/src/Audio/PC/SDL/ZC_SDL_AudioStream.cpp>>

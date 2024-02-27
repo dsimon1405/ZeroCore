@@ -19,21 +19,7 @@ struct ZC_ShProg
 	/*
 	Activate shader program.
 	*/
-    void Use() const;
+    void UseProgram() const;
 
 	GLint GetUniformLocation(const char* name);
-
-	/*
-	Finds the uniform of Mat4X4 with type float in the shader and writes data to it.
-
-	Params:
-	name - uniforms name.
-	pData - pointer to the first element of matrix.
-
-	Return:
-	If uniform is found - true, otherwise - false.
-	*/
-	bool UniformMatrix4fv(const char* name, const float* pData);
-	bool Uniform1i(const char* name, int data);
-	bool Uniform3fv(const char* name, const float* pData);
 };

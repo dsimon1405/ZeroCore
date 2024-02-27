@@ -52,3 +52,8 @@ ZC_Texture::ZC_Texture(GLenum _type, int width, int height, unsigned char** data
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     for (int i = 0; i < 6; ++i) glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[i]);
 }
+
+GLuint ZC_Texture::GetId() const noexcept
+{
+    return id;
+}

@@ -1,7 +1,7 @@
 #include "ZC_SDL_AudioStream.h"
 
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
-#include <ZC/Tools/Container/ZC_DynamicArray.h>
+#include <ZC/Tools/Container/ZC_DA.h>
 
 #include <SDL3/SDL_init.h>
 

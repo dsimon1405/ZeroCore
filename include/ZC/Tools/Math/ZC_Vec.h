@@ -18,7 +18,7 @@ namespace ZC_Vec
     Return:
     Normalized vector;
     */
-    template<ZC_cVecTypes TValue>
+    template<typename TValue>
     ZC_Vec3<TValue> Normalize(const ZC_Vec3<TValue>& vec)
     {
         return vec * (1.0 / sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]));
@@ -34,7 +34,7 @@ namespace ZC_Vec
     Return:
     Orthogonal vector.
     */
-    template<ZC_cVecTypes TValue>
+    template<typename TValue>
     constexpr ZC_Vec3<TValue> Cross(const ZC_Vec3<TValue>& vec1, const ZC_Vec3<TValue>& vec2) noexcept
     {
         return { (vec1[1] * vec2[2]) - (vec1[2] * vec2[1]), (vec1[2] * vec2[0]) - (vec1[0] * vec2[2]), (vec1[0] * vec2[1]) - (vec1[1] * vec2[0]) };
@@ -49,7 +49,7 @@ namespace ZC_Vec
     Return:
     Angle in radians.
     */
-    template<ZC_cVecTypes TValue>
+    template<typename TValue>
     constexpr TValue Radians(TValue angle) noexcept
     {
         return angle * static_cast<TValue>(ZC_PI_RAD_COEF);
@@ -69,7 +69,7 @@ namespace ZC_Vec
     Return:
     Cosine of the angle between vec1 and vec2.
     */
-    template<ZC_cVecTypes TValue>
+    template<typename TValue>
     constexpr TValue Dot(const ZC_Vec3<TValue>& vec1, const ZC_Vec3<TValue>& vec2) noexcept
     {
         return (vec1[0] * vec2[0]) + (vec1[1] * vec2[1]) + (vec1[2] * vec2[2]);
@@ -84,7 +84,7 @@ namespace ZC_Vec
     Return:
     Vector length.
     */
-    template<ZC_cVecTypes TValue>
+    template<typename TValue>
     constexpr TValue Length(const ZC_Vec3<TValue>& vec1) noexcept
     {
         return static_cast<TValue>(sqrt(vec1[0] * vec1[0] + vec1[1] * vec1[1] + vec1[2] * vec1[2]));
@@ -101,7 +101,7 @@ namespace ZC_Vec
     Return:
     Vector with new position.
     */
-    template<ZC_cVecTypes TValue>
+    template<typename TValue>
     ZC_Vec3<TValue> MoveByLength(const ZC_Vec3<TValue>& v, const ZC_Vec3<TValue>& direction, TValue length) noexcept
     {
         return v + (direction * static_cast<TValue>(length / sqrt(direction[0] * direction[0] + direction[1] * direction[1] + direction[2] * direction[2])));

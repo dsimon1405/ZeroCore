@@ -4,6 +4,8 @@
 #include "ZC_StreamSound.h"
 #include "ZC_Sound.h"
 
+#include <vector>
+
 //  Audio stream class.
 class ZC_AudioStream
 {
@@ -58,7 +60,7 @@ protected:
 
 private:
     static inline typename ZC_AudioStream::State stateAudioStream = ZC_AudioStream::State::Null;
-    static inline ZC_Signal<ZC_StreamSound*()> sGetpZC_StreamSound;
+    static inline ZC_Signal<ZC_StreamSound*()> sGetpZC_StreamSound { false };
 
     template <ZC_cBitsPerSample T>
     static void FillData(void* pDataContainer, int bytesCount, std::vector<ZC_StreamSound*>& sounds);

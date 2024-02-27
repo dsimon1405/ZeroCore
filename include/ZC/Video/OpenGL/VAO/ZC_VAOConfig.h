@@ -1,14 +1,64 @@
 #pragma once
 
 #include <ZC/Video/OpenGL/GL/glcorearb.h>
-#include <ZC/Tools/Container/ZC_DynamicArray.h>
-
-#include <forward_list>
+#include <ZC/Tools/Math/ZC_Limits.h>
+#include <ZC/Tools/ZC_uptr.h>
+#include <ZC/Tools/Container/ZC_DA.h>
 
 //  Class for configuring ZC_VAO.
 class ZC_VAOConfig
 {
 public:
+    /*
+    Example => F_3_0:
+    F - type float
+    3 - count
+    0 - location in vertex shader
+    */
+    enum FormatShVLayout
+    {
+        None,
+        F_3_0,
+        F_3_0__F_3_1,
+        F_3_0__F_2_1,
+        F_3_0__F_2_3,
+        F_3_0__UB_3_1,  //  vec3 of normalized (255 -> 1.f) bytes
+        F_3_0__UB_3_1__I_2_10_10_10_REV_1_2     //  I_2_10_10_10_REV_1 one int32 in code and vec4 of floats in GLSL
+    };
+
+    /*
+    Pack in format uint
+    uchar[32] => [0 - 7]{ZC_VAOConfig.useCount - count of using formats}, [8 - 31]{in each bit true or false for using format or not}
+    */
+    struct UsingFormatsPacker
+    {
+        uint value = 0;
+
+        //  index - that should be true in Format.isUsing array
+        UsingFormatsPacker& Pack(uchar index)
+        {
+            value = (1 << (8 + index)) | (value & 0xFFFFFF00) | ((value & 0xFF) + 1);
+            return *this;
+        }
+    };
+
+    struct FormatShVLayoutAndUsingFormatsPacker
+    {
+        FormatShVLayout formatShVLayout;
+        UsingFormatsPacker usingFormatsPacker;
+
+        bool operator == (FormatShVLayout _formatShVLayout);
+    };
+    
+    ZC_VAOConfig() = default;
+    //  isUsingIndexes - Format.isUsing - true indexes in ZC_DA<Format> formats
+    ZC_VAOConfig(FormatShVLayoutAndUsingFormatsPacker fsvlAufp);
+
+    ZC_VAOConfig(ZC_VAOConfig&& vaoConfig) noexcept;
+    
+    void Config(GLuint startOffset, GLuint vertsCount);
+
+private:
     //  Struct contain glVertexAttribFormat parameter data.
     struct Format
     {
@@ -16,6 +66,7 @@ public:
         GLint size;
         GLenum type;
         GLboolean normalized;
+        bool isUsing = false;
 
         /*
         Create Format object.
@@ -27,15 +78,8 @@ public:
     };
 
     ZC_DA<Format> formats;
-    
-    ZC_VAOConfig(ZC_DA<Format> _formats);
+    uchar useCount;
 
-    ZC_VAOConfig(ZC_VAOConfig&& vaoConfig) noexcept;
-    ZC_VAOConfig& operator = (ZC_VAOConfig&& vaoConfig) noexcept;
-    
-    void Config(GLuint startOffset, GLuint vertsCount);
-
-private:
     struct StrideOffset
     {
         GLint stride = 0;
@@ -44,4 +88,5 @@ private:
 
     ZC_DA<StrideOffset> CalculateStrideAndOffset(GLuint startOffset, GLuint vertsCount);
     GLint TypeSize(GLenum type) const noexcept;
+    ZC_DA<Format> GetFormats(FormatShVLayout shPFormat);
 };

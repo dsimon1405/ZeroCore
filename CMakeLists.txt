@@ -126,13 +126,13 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
 		${PROJECT_SOURCE_DIR}/src/Audio/ZC_SoundData.cpp
 		${PROJECT_SOURCE_DIR}/src/Audio/ZC_Sounds.cpp
 		${PROJECT_SOURCE_DIR}/src/Audio/ZC_StreamSound.cpp>
-    ${PROJECT_SOURCE_DIR}/src/Video/ZC_Video.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/ZC_Window.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_OpenGL.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_Shader.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShLoader.cpp
 	${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShProg.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShProgs.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShVertex.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShFragment.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_Buffer.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_Buffers.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_UBO.cpp
@@ -142,21 +142,24 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/VAO/ZC_VAO.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/VAO/ZC_VAOs.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/VAO/ZC_VAOConfig.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/VAO/ZC_VAOConfigs.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Texture/ZC_Texture.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Texture/ZC_Textures.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Texture/ZC_TexSets.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_Renderer.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RendererSet.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_Draw.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RS.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RendererSet.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RendererSetAndDrawingSet.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RSNonTex.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RSTexs.cpp
     ${PROJECT_SOURCE_DIR}/src/Tools/Signal/ZC_SignalConnection.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/Exception/ZC_Exception.cpp
     ${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_Clock.cpp
+	${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_FPS.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_MakeErrorString.cpp
 	${PROJECT_SOURCE_DIR}/src/File/Read/ZC_FileReader.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_ErrorLogger.cpp
-	${PROJECT_SOURCE_DIR}/src/Events/Button/ZC_Button.cpp
-	${PROJECT_SOURCE_DIR}/src/Events/Button/ZC_ButtonOperator.cpp
-	${PROJECT_SOURCE_DIR}/src/Events/ZC_Event.cpp
+	${PROJECT_SOURCE_DIR}/src/Events/ZC_Button.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/ZC_Camera.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/Matrix/ZC_Ortho.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/Matrix/ZC_Perspective.cpp
@@ -189,7 +192,7 @@ target_compile_options(${PROJECT_NAME}
 
 #========================= copy assets
 add_custom_target(ZC_COPY_ASSETS ALL
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${ZC_PARANT_BIN_DIR}/assets
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${ZC_PARANT_BIN_DIR}
 	COMMENT "Copy assets ${PROJECT_SOURCE_DIR}/assets => ${ZC_PARANT_BIN_DIR}/assets")
 add_dependencies(${PROJECT_NAME} ZC_COPY_ASSETS)
 

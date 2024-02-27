@@ -1,19 +1,17 @@
 #include "ZC_SDL_Window.h"
 
 #include <Video/OpenGL/ZC_OpenGL.h>
-#include <Video/OpenGL/PC/SDL/ZC_SDL_LoadOpenGLFunctions.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #ifdef ZC_IMGUI
-#include <imgui.h>
-#include <imgui_impl_sdl3.h>
-#include <imgui_impl_opengl3.h>
+#include <Video/imgui/ZC_ImGui.h>
+#include <ZC_IGWindow.h>
 #endif
 
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_events.h>
-#include <SDL3/SDL_timer.h>
 
 ZC_SDL_Window::ZC_SDL_Window(bool border, int _width, int _height, const char* name)
+	: fps(ZC_FPS::Seconds)
 {
 	static bool sdlVideoInited = false;
 	if (!sdlVideoInited)
@@ -28,24 +26,24 @@ ZC_SDL_Window::ZC_SDL_Window(bool border, int _width, int _height, const char* n
 
 	if (!SetOpenGLAttributes()) return;
 
-	window = !border ? SDL_CreateWindow(name, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN)
+	pWindow = !border ? SDL_CreateWindow(name, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN)
 		: _width <= 0 || _height <= 0 ? SDL_CreateWindow(name, _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED)
 			: SDL_CreateWindow(name, _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		
-	if (!window)
+	if (!pWindow)
 	{
 		ZC_ErrorLogger::Err("SDL_CreateWindow() fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
 		return;
 	}
 
-    glContext = SDL_GL_CreateContext(window);
+    glContext = SDL_GL_CreateContext(pWindow);
 	if (!glContext)
 	{
 		ZC_ErrorLogger::Err("SDL_GL_CreateContext() fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
 		return;
 	}
     
-	if (SDL_GL_MakeCurrent(window, glContext) != 0)
+	if (SDL_GL_MakeCurrent(pWindow, glContext) != 0)
 	{
 		ZC_ErrorLogger::Err("SDL_GL_MakeCurrent() fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
 		return;
@@ -57,134 +55,104 @@ ZC_SDL_Window::ZC_SDL_Window(bool border, int _width, int _height, const char* n
 		return;
 	}
 
-    if (!ZC_SDL_LoadOpenGLFunctions()) return;
+    if (!LoadOpenGLFunctions()) return;
 
 	ZC_OpenGLAssigneErrorCallback();
-	SDL_GetWindowSize(window, &width, &height);
+
+#ifdef ZC_IMGUI
+	ZC_ImGui::Init(pWindow, glContext);
+#endif
 }
 
 ZC_SDL_Window::~ZC_SDL_Window()
 {
-#ifdef ZC_IMGUI
-	if (imgui)
-    {
-		ImGui_ImplOpenGL3_Shutdown();
-    	ImGui_ImplSDL3_Shutdown();
-    	ImGui::DestroyContext();
-	}
-#endif
     SDL_GL_DeleteContext(glContext);
-    SDL_DestroyWindow(window);
+    SDL_DestroyWindow(pWindow);
     SDL_Quit();
+#ifdef ZC_IMGUI
+	ZC_ImGui::Destroy();
+#endif
 }
 
 bool ZC_SDL_Window::HandleEvents()
 {
-	fps.Actualize();
+	float previousFrameTime = fps.StartNewFrame();
+
     static SDL_Event event;
 	while (SDL_PollEvent(&event) != 0)
     {
 #ifdef ZC_IMGUI
-		if (imgui) ImGui_ImplSDL3_ProcessEvent(&event);
+	ZC_ImGui::PollEvents(&event);
 #endif
 		switch (event.type)
 		{
 		case SDL_EVENT_QUIT: return false;
 		case SDL_EVENT_WINDOW_RESIZED: Resize(); break;
-		case SDL_EVENT_KEY_DOWN: ssButton(ZC_Button(static_cast<ZC_ButtonID>(event.key.keysym.scancode), ZC_Button::Down), fps.SecondsTimestamp(event.button.timestamp)); break;
-		case SDL_EVENT_KEY_UP: ssButton(ZC_Button(static_cast<ZC_ButtonID>(event.key.keysym.scancode), ZC_Button::Up), fps.SecondsTimestamp(event.button.timestamp)); break;
-		case SDL_EVENT_MOUSE_BUTTON_DOWN: ssButton(ZC_Button(static_cast<ZC_ButtonID>(event.button.button + 512), ZC_Button::Down), fps.SecondsTimestamp(event.button.timestamp)); break;
-		case SDL_EVENT_MOUSE_BUTTON_UP: ssButton(ZC_Button(static_cast<ZC_ButtonID>(event.button.button + 512), ZC_Button::Up), fps.SecondsTimestamp(event.button.timestamp)); break;
-		case SDL_EVENT_MOUSE_MOTION: Move(event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel, fps.SecondsTimestamp(event.motion.timestamp)); break;
-		case SDL_EVENT_MOUSE_WHEEL: sScroll(event.wheel.x, event.wheel.y, fps.SecondsTimestamp(event.wheel.timestamp)); break;
+		case SDL_EVENT_KEY_DOWN: AddActiveDownButton(static_cast<ZC_ButtonID>(event.key.keysym.scancode)); break;
+		case SDL_EVENT_KEY_UP: CallUpButton(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+#ifdef ZC_IMGUI		//	if mouse cursor is in one of the ImGui windows, don't poll mouse button down event (same for mouse wheel events)
+			if (!ZC_IGWindow::IsCursorInOneOfWindows()) AddActiveDownButton(static_cast<ZC_ButtonID>(event.button.button + 512));
+			break;
+#else
+			AddActiveDownButton(static_cast<ZC_ButtonID>(event.button.button + 512)); break;
+#endif
+		case SDL_EVENT_MOUSE_BUTTON_UP: CallUpButton(static_cast<ZC_ButtonID>(event.button.button + 512), previousFrameTime); break;
+		case SDL_EVENT_MOUSE_MOTION: Move(event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel, previousFrameTime); break;
+		case SDL_EVENT_MOUSE_WHEEL:
+#ifdef ZC_IMGUI
+			if (!ZC_IGWindow::IsCursorInOneOfWindows()) sScroll.CallLastConnected(event.wheel.x, event.wheel.y, previousFrameTime);
+			break;
+#else
+			sScroll(event.wheel.x, event.wheel.y, previousFrameTime); break;
+#endif
 		}
     }
-	sEventsEnd();
+	CallActiveButtons(previousFrameTime);
 #ifdef ZC_IMGUI
-	if (imgui)
-	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplSDL3_NewFrame();
-		ImGui::NewFrame();
-	}
+	ZC_IGWindow::PollEventEnds();	//	if some one else need PollEventEnds need create a signal for it  !!!
 #endif
     return true;
 }
 
 void ZC_SDL_Window::SwapBuffer()
 {
-#ifdef ZC_IMGUI
-	if (imgui)
-	{
-        ImGui::Render();	//	может вызвать перед glClear()
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());	//	только перед swapBuffer
-	}
-#endif
-    SDL_GL_SwapWindow(window);
+    SDL_GL_SwapWindow(pWindow);
 }
 
-void ZC_SDL_Window::SetFPS(long limit) noexcept
+void ZC_SDL_Window::VSetFPS(long limit) noexcept
 {
 	fps.SetLimit(limit);
 }
 
-float ZC_SDL_Window::GetPreviousFrameTime() const noexcept
+float ZC_SDL_Window::VGetPreviousFrameTime() const noexcept
 {
-	return fps.PreviousFrameSeconds();
+	return fps.PreviousFrameTime();
 }
 
-void ZC_SDL_Window::HideCursor()
+void ZC_SDL_Window::VGetSize(int& width, int& height) const noexcept
+{
+	SDL_GetWindowSize(pWindow, &width, &height);
+}
+
+void ZC_SDL_Window::VHideCursor()
 {
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
-void ZC_SDL_Window::ShowCursor()
+void ZC_SDL_Window::VShowCursor()
 {
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
-void ZC_SDL_Window::LimitCursor()
+void ZC_SDL_Window::VLimitCursor()
 {
-	SDL_SetWindowMouseGrab(window, SDL_TRUE);
+	SDL_SetWindowMouseGrab(pWindow, SDL_TRUE);
 }
 
-void ZC_SDL_Window::UnlimitCursor()
+void ZC_SDL_Window::VUnlimitCursor()
 {
-	SDL_SetWindowMouseGrab(window, SDL_FALSE);
-}
-
-#ifdef ZC_IMGUI
-bool ZC_SDL_Window::InitImGui()
-{
-    if (!IMGUI_CHECKVERSION())
-	{
-		ZC_ErrorLogger::Err("IMGUI_CHECKVERSION() fail!", __FILE__, __LINE__);
-		return false;
-	}
-    if (!ImGui::CreateContext())
-	{
-		ZC_ErrorLogger::Err("CreateContext() fail!", __FILE__, __LINE__);
-		return false;
-	}
-    ImGui::StyleColorsDark();
-    if (!ImGui_ImplSDL3_InitForOpenGL(window, glContext))
-	{
-		ZC_ErrorLogger::Err("ImGui_ImplSDL3_InitForOpenGL() fail!", __FILE__, __LINE__);
-		return false;
-	}
-    if (!ImGui_ImplOpenGL3_Init(("#version " + std::to_string(ZC_OPEN_GL_MAJOR_VERSION) + std::to_string(ZC_OPEN_GL_MINOR_VERSION) + "0").c_str()))
-	{
-		ZC_ErrorLogger::Err("ImGui_ImplOpenGL3_Init() fail!", __FILE__, __LINE__);
-		return false;
-	}
-	imgui = true;
-	return true;
-}
-#endif
-
-void ZC_SDL_Window::ConnectResize(ZC_Function<void(float,float)>&& func) noexcept
-{
-	fResize = std::move(func);	
+	SDL_SetWindowMouseGrab(pWindow, SDL_FALSE);
 }
 
 bool ZC_SDL_Window::SetOpenGLAttributes()
@@ -230,9 +198,10 @@ bool ZC_SDL_Window::SetOpenGLAttributes()
 
 void ZC_SDL_Window::Resize()
 {
-	SDL_GetWindowSize(window, &width,&height);
-	glViewport(0, 0, width, height);
-	fResize(static_cast<float>(width), static_cast<float>(height));
+	int width = 0, height = 0;
+	SDL_GetWindowSize(pWindow, &width,&height);
+	glViewport(0, 0, width, height);										//	в ZC_Renderer ????????????????????????
+	sigResize(static_cast<float>(width), static_cast<float>(height));
 }
 
 	// int red = 0;

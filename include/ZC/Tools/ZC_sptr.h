@@ -1,6 +1,7 @@
 #pragma once
 
 #include <compare>
+#include <utility>
 
 template<typename T>
 class ZC_sptr
@@ -36,7 +37,7 @@ private:
     T* pData = nullptr;
     unsigned long* pUseCount = nullptr;
 
-    void Delete() noexcept;
+    void Delete();
 };
 
 template<typename T, typename... TParams>
@@ -126,13 +127,13 @@ T& ZC_sptr<T>::operator * () noexcept
 template<typename T>
 const T& ZC_sptr<T>::operator * () const noexcept
 {
-    return const_cast<const T&>(pData);
+    return *pData;
 }
 
 template<typename T>
 ZC_sptr<T>::operator bool () const noexcept
 {
-    return pData;
+    return pData != nullptr;
 }
 
 template<typename T>
@@ -169,11 +170,11 @@ ZC_sptr<TParant> ZC_sptr<T>::DynamicCast() const noexcept
 template<typename T>
 unsigned long ZC_sptr<T>::UseCount() const noexcept
 {
-    return *pUseCount;
+    return pUseCount ? *pUseCount : 0;
 }
 
 template<typename T>
-void ZC_sptr<T>::Delete() noexcept
+void ZC_sptr<T>::Delete()
 {
     if (!pUseCount) return;
     if (--*pUseCount == 0)

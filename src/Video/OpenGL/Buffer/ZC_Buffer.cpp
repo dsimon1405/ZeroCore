@@ -6,7 +6,15 @@
 ZC_Buffer::ZC_Buffer(GLenum _type)
     : type(_type)
 {
-    glGenBuffers(1, &id);
+    static const ushort buffersSize = 2000;
+    static GLuint buffers[buffersSize];
+    static size_t buffersIndex = 0;
+    if (buffersIndex == 0 || buffersIndex == buffersSize)
+    {
+        glGenBuffers(buffersSize, buffers);
+        buffersIndex = 0;
+    }
+    id = buffers[buffersIndex++];
 }
 
 ZC_Buffer::~ZC_Buffer()

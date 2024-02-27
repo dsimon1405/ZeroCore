@@ -1,14 +1,17 @@
 #include "ZC/Video/OpenGL/Texture/ZC_Textures.h"
 
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
+#include <ZC/Tools/Math/ZC_Limits.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <Tools/stb_image.h>
 
+
 ZC_Texture ZC_Textures::LoadTexture2D(const char* filePath, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
 {
     int width, height, channels;
-    unsigned char* data = stbi_load(filePath, &width, &height, &channels, 0);
+    uchar* data = stbi_load(filePath, &width, &height, &channels, 0);
+    
     // if (!data) return nullptr;
 
     // auto size = width * height *channels;

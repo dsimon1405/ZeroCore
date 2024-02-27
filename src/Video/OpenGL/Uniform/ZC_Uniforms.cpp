@@ -46,5 +46,5 @@ ZC_Uniforms ZC_Uniforms::GetCopy()
     std::vector<ZC_uptr<ZC_Uniform>> copy;
     copy.reserve(uniforms.size());
     for (auto& uniform : uniforms) copy.emplace_back(uniform->GetCopy());
-    return { std::move(copy) };
+    return ZC_Uniforms(std::move(copy));
 }

@@ -2,6 +2,10 @@
 
 #include "Matrix/ZC_PerspView.h"
 #include "Matrix/ZC_Ortho.h"
+#include <ZC/Tools/ZC_uptr.h>
+
+class ZC_Camera;
+using ZC_upCamera = ZC_uptr<ZC_Camera>;
 
 /*
 Camera matrix control class. Must be created after ZC_Window!
@@ -14,10 +18,7 @@ layout (std140, binding = 1) uniform Ortho { mat4 ortho; };
 class ZC_Camera
 {
 public:
-    ZC_Camera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho);
-
-    ZC_Camera(const ZC_Camera& cm) noexcept;
-    ZC_Camera& operator = (const ZC_Camera& cm) noexcept;
+    static ZC_upCamera CreateCamera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho);
 
     ZC_Vec3<float> GetCamPos() const noexcept;
     ZC_Vec3<float> GetLookOn() const noexcept;
@@ -29,6 +30,8 @@ public:
 private:
     ZC_PerspView perspView;
     ZC_Ortho ortho;
+
+    ZC_Camera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho);
     
     void Update();
     void ResizeCallBack(float width, float height);

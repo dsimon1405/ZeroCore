@@ -23,7 +23,7 @@ namespace ZC_Mat
     Return:
     Perspective matrix.
     */
-    template<ZC_cVecTypes TValue>
+    template<typename TValue>
     ZC_Mat4<TValue> Perspective(TValue fovy, TValue aspect, TValue nearPlane, TValue farPlane)
     {
         ZC_Mat4<TValue> result;
@@ -55,7 +55,7 @@ namespace ZC_Mat
     Return:
     View matrix.
     */
-    template<ZC_cVecTypes TValue>
+    template<typename TValue>
     ZC_Mat4<TValue> LookAt(const ZC_Vec3<TValue>& position, const ZC_Vec3<TValue>& lookOn, const ZC_Vec3<TValue>& up)
     {
         ZC_Vec3<TValue> frontDir(ZC_Vec::Normalize(lookOn - position));
@@ -89,7 +89,7 @@ namespace ZC_Mat
         return result;
     }
 
-    template<ZC_cVecTypes T>
+    template<typename T>
     ZC_Mat4<T> Ortho(T left, T right, T bottom, T top) noexcept
     {
         return ZC_Mat4<T>({ static_cast<T>(2) / (right - left), 0, 0, 0 },

@@ -17,7 +17,7 @@ in method
     Translate (sentralize object)
 }
 */
-template<ZC_cVecTypes TValue = float>
+template<typename TValue = float>
 struct ZC_Mat4
 {
     constexpr ZC_Mat4() = default;
@@ -81,7 +81,7 @@ private:
     ZC_Vec4<TValue> columns[4];
 };
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 constexpr ZC_Mat4<TValue>::ZC_Mat4(TValue value) noexcept
     : columns
     {
@@ -92,37 +92,37 @@ constexpr ZC_Mat4<TValue>::ZC_Mat4(TValue value) noexcept
     }
 {}
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 constexpr ZC_Mat4<TValue>::ZC_Mat4(const ZC_Vec4<TValue>& v1, const ZC_Vec4<TValue>& v2, const ZC_Vec4<TValue>& v3, const ZC_Vec4<TValue>& v4) noexcept
     : columns{v1,v2,v3,v4}
 {}
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 ZC_Vec4<TValue>& ZC_Mat4<TValue>::operator [] (int index)
 {
     return columns[index];
 }
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 constexpr const ZC_Vec4<TValue>& ZC_Mat4<TValue>::operator [] (int index) const
 {
     return const_cast<const ZC_Vec4<TValue>&>(columns[index]);
 }
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 ZC_Mat4<TValue>& ZC_Mat4<TValue>::operator *= (TValue value) noexcept
 {
     for (short i = 0; i < 4; ++i) columns[i] *= value;
     return *this;
 }
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 constexpr ZC_Mat4<TValue> ZC_Mat4<TValue>::operator * (TValue value) const noexcept
 {
     return ZC_Mat4<TValue>(columns[0] * value, columns[1] * value, columns[2] * value, columns[3] * value);
 }
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 constexpr ZC_Vec4<TValue> ZC_Mat4<TValue>::operator * (const ZC_Vec4<TValue>& vec) const noexcept
 {
     auto getValue = [this, &vec](int i)
@@ -130,7 +130,7 @@ constexpr ZC_Vec4<TValue> ZC_Mat4<TValue>::operator * (const ZC_Vec4<TValue>& ve
     return { getValue(0), getValue(1), getValue(2), getValue(3) };
 }
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 ZC_Mat4<TValue>& ZC_Mat4<TValue>::operator *= (const ZC_Mat4<TValue>& mat) noexcept
 {
     auto temp = *this;
@@ -141,13 +141,13 @@ ZC_Mat4<TValue>& ZC_Mat4<TValue>::operator *= (const ZC_Mat4<TValue>& mat) noexc
     return *this;
 }
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 constexpr ZC_Mat4<TValue> ZC_Mat4<TValue>::operator * (const ZC_Mat4<TValue>& mat) const noexcept
 {
     return { *this * mat.columns[0], *this * mat.columns[1], *this * mat.columns[2], *this * mat.columns[3] };
 }
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 ZC_Mat4<TValue>& ZC_Mat4<TValue>::Scale(const ZC_Vec3<TValue>& scale) noexcept
 {
     columns[0] *= scale[0];
@@ -156,7 +156,7 @@ ZC_Mat4<TValue>& ZC_Mat4<TValue>::Scale(const ZC_Vec3<TValue>& scale) noexcept
     return *this;
 }
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 ZC_Mat4<TValue>& ZC_Mat4<TValue>::Rotate(TValue angle, const ZC_Vec3<TValue>& axes)
 {
     const TValue radAngle = ZC_Vec::Radians(angle);
@@ -190,20 +190,20 @@ ZC_Mat4<TValue>& ZC_Mat4<TValue>::Rotate(TValue angle, const ZC_Vec3<TValue>& ax
     return *this;
 }
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 ZC_Mat4<TValue>& ZC_Mat4<TValue>::Translate(const ZC_Vec3<TValue>& trans) noexcept
 {
     columns[3] = (columns[0] * trans[0]) + (columns[1] * trans[1]) + (columns[2] * trans[2]) + columns[3];
     return *this;
 }
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 TValue* ZC_Mat4<TValue>::Begin() noexcept
 {
     return &columns[0][0];
 }
 
-template<ZC_cVecTypes TValue>
+template<typename TValue>
 const TValue* ZC_Mat4<TValue>::Begin() const noexcept
 {
     return &columns[0][0];

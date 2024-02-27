@@ -1,39 +1,11 @@
 #include <ZC/Objects/Camera/ZC_Camera.h>
 
 #include <ZC_Config.h>
-#ifdef ZC_SDL_VIDEO
-#include <Video/PC/SDL/ZC_SDL_Window.h>
-#endif
+#include <ZC/Video/ZC_Window.h>
 
-ZC_Camera::ZC_Camera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho)
-    : perspView(_perspView),
-    ortho(_ortho)
+ZC_upCamera ZC_Camera::CreateCamera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho)
 {
-    perspView.ubo = ZC_UBOs::Create(ZC_UBO::BindingPoint::ProjView, { &ZC_Camera::Update, this });
-    perspView.ubo->BufferData(sizeof(ZC_Mat4<float>), nullptr, GL_DYNAMIC_DRAW);
-#ifdef ZC_SDL_VIDEO
-    ZC_SDL_Window::ConnectResize({ &ZC_Camera::ResizeCallBack, this });
-#endif
-    ResizeCallBack(static_cast<float>(ZC_Window::GetWidth()), static_cast<float>(ZC_Window::GetHeight()));
-}
-
-ZC_Camera::ZC_Camera(const ZC_Camera& cm) noexcept
-    : perspView(cm.perspView),
-    ortho(cm.ortho)
-{
-#ifdef ZC_SDL_VIDEO
-    ZC_SDL_Window::ConnectResize({ &ZC_Camera::ResizeCallBack, this });
-#endif
-}
-
-ZC_Camera& ZC_Camera::operator = (const ZC_Camera& cm) noexcept
-{   
-    perspView = cm.perspView;
-    ortho = cm.ortho;
-#ifdef ZC_SDL_VIDEO
-    ZC_SDL_Window::ConnectResize({ &ZC_Camera::ResizeCallBack, this });
-#endif
-    return *this;
+    return { new ZC_Camera(_perspView, _ortho) };
 }
 
 ZC_Vec3<float> ZC_Camera::GetCamPos() const noexcept
@@ -67,6 +39,20 @@ ZC_Camera& ZC_Camera::SetUp(const ZC_Vec3<float>& _up) noexcept
 {
     perspView.view.SetUp(_up);
     return *this;
+}
+
+ZC_Camera::ZC_Camera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho)
+    : perspView(_perspView),
+    ortho(_ortho)
+{
+    perspView.ubo = ZC_UBOs::Create(ZC_UBO::BindingPoint::ProjView, { &ZC_Camera::Update, this });
+    perspView.ubo->BufferData(sizeof(ZC_Mat4<float>), nullptr, GL_DYNAMIC_DRAW);
+    
+    ZC_Window::ConnectResize({ &ZC_Camera::ResizeCallBack, this });
+    
+    int width = 0, height = 0;
+    ZC_Window::GetSize(width, height);
+    ResizeCallBack(static_cast<float>(width), static_cast<float>(height));
 }
 
 void ZC_Camera::Update()

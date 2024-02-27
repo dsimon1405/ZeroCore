@@ -1,90 +1,77 @@
 #include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
 
 #include <Video/OpenGL/ZC_OpenGL.h>
-
-ZC_ShProgs::ZC_ShProgs(bool freeVaoConfigs)
-    : vaoConfigs(freeVaoConfigs)
-{}
-
-typename ZC_ShProgs::ShPInitSet* ZC_ShProgs::Get(Name name)
-{
-    auto shProgsI = std::find(shProgs.begin(), shProgs.end(), name);
-    return shProgsI != shProgs.end() ? &shProgsI->shPInitSet : nullptr;
-}
+#include <ZC/Video/OpenGL/Renderer/ZC_RS.h>
 
 void ZC_ShProgs::Load(Name* pShPName, size_t ShPNameCount)
 {
     for (size_t i = 0; i < ShPNameCount; ++i)
     {
-        ShNames shNames = shaderNames[pShPName[i]];
-        auto shData = shLoader.Get(shNames.vName, shNames.fName, shNames.gName);
-        ZC_ShProg shProg(shData.pV->id, shData.pF->id, shData.pG ? shData.pG->id : 0);
+        ShNames shNames = GetShNames(pShPName[i]);
+        auto vertexData = shVertex.GetSet(shNames.vName, shNames.vaoConFSVL);
+        auto fragmentData = shFragment.GetSet(shNames.fName);
 
-        shProg.Use();
+        ZC_ShProg shProg(vertexData.shader->id, fragmentData.shader->id, 0);
+
+        shProg.UseProgram();
         
         std::vector<ZC_uptr<ZC_Uniform>> uniforms;
-        uniforms.reserve(shData.pUniformsV->size + shData.pUniformsF->size);
-        for (size_t i = 0; i < shData.pUniformsV->size; ++i)
-            uniforms.emplace_back((*shData.pUniformsV)[i]->GetCopy())->GetUniformLocation(shProg);
-        for (size_t i = 0; i < shData.pUniformsF->size; ++i)
-            uniforms.emplace_back((*shData.pUniformsF)[i]->GetCopy())->GetUniformLocation(shProg);
+        uniforms.reserve(vertexData.uniforms.size + fragmentData.uniforms.size);
+        for (size_t i = 0; i < vertexData.uniforms.size; ++i)
+            uniforms.emplace_back(std::move(vertexData.uniforms[i]))->GetUniformLocation(shProg);
+        for (size_t i = 0; i < fragmentData.uniforms.size; ++i)
+            uniforms.emplace_back(std::move(fragmentData.uniforms[i]))->GetUniformLocation(shProg);
         
-        if (shData.pTexSets) shData.pTexSets->UniformI(shProg); //  activate samplers
+        fragmentData.texSets.Uniformli(shProg);     //  activate samplers
 
-        shProgs.emplace_front(ShPSet(pShPName[i], ShPInitSet(std::move(shProg), shData.pVaoCon, ZC_Uniforms{ std::move(uniforms) }, shData.pTexSets)));
+        auto& shPInitSet = shProgs.emplace_front(ShPInitSet(pShPName[i], std::move(shProg),
+            vertexData.vaoConSets, ZC_Uniforms{ std::move(uniforms) }, std::move(fragmentData.texSets)));
+        
+        if (pShPName[i] == Name::ZCR_Stencil) ZC_RS::SetStencilShaderProgData(shPInitSet);
+    }
+}
+
+typename ZC_ShProgs::ShPInitSet* ZC_ShProgs::Get(Name name)
+{
+    auto shProgsI = std::find(shProgs.begin(), shProgs.end(), name);
+    return shProgsI != shProgs.end() ? &(*shProgsI) : nullptr;
+}
+
+typename ZC_ShProgs::ShNames ZC_ShProgs::GetShNames(Name name) const noexcept
+{
+    switch (name)
+    {
+    case Name::ZCR_Color: return {VName::color, VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2, FName::color};
+    case Name::ZCR_Point: return {VName::point, VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2, FName::color};
+    case Name::ZCR_Line: return {VName::line, VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2, FName::color};
+    case Name::ZCR_Stencil: return {VName::stencil, VAOConFSVL::None, FName::color};
+    case Name::ZCR_Texture_Vertex_TexCoord: return {VName::texture, VAOConFSVL::F_3_0__F_2_3, FName::texture};
+    case Name::ZCR_Mesh: return {VName::mesh, VAOConFSVL::F_3_0, FName::color};
+    default: return {};
     }
 }
 
 
-//  ShPInitSet start
+//  ShPInitSet
 
-ZC_ShProgs::ShPInitSet::ShPInitSet(ZC_ShProg&& _shProg, ZC_VAOConfig* _pVaoCon,
-    ZC_Uniforms&& _uNameLocs, ZC_TexSets* _pTexSets)
-    : shProg(std::move(_shProg)),
-    pVaoCon(_pVaoCon),
+ZC_ShProgs::ShPInitSet::ShPInitSet(Name _name, ZC_ShProg&& _shProg, VAOConData _vaoData,
+    ZC_Uniforms&& _uNameLocs, ZC_TexSets&& _texSets)
+    : name(_name),
+    shProg(std::move(_shProg)),
+    vaoConData(_vaoData),
     uniforms(std::move(_uNameLocs)),
-    pTexSets(_pTexSets)
+    texSets(std::move(_texSets))
 {}
 
 ZC_ShProgs::ShPInitSet::ShPInitSet(ShPInitSet&& shPIS)
-    : shProg(std::move(shPIS.shProg)),
-    pVaoCon(shPIS.pVaoCon),
+    : name(shPIS.name),
+    shProg(std::move(shPIS.shProg)),
+    vaoConData(shPIS.vaoConData),
     uniforms(std::move(shPIS.uniforms)),
-    pTexSets(shPIS.pTexSets)
+    texSets(std::move(shPIS.texSets))
 {}
 
-
-//  UNameLoc start
-
-ZC_ShProgs::ShPInitSet::UNameLoc::UNameLoc(std::string&& _name, GLint _location)
-    : name(std::move(_name)),
-    location(_location)
-{}
-
-ZC_ShProgs::ShPInitSet::UNameLoc::UNameLoc(UNameLoc&& unl)
-    : name(std::move(unl.name)),
-    location(unl.location)
-{}
-
-bool ZC_ShProgs::ShPInitSet::UNameLoc::operator == (const char* _name) const
-{
-    return name == _name;
-}
-
-
-//  ShPSet start
-
-ZC_ShProgs::ShPSet::ShPSet(Name _name, ShPInitSet&& _shPInitSet)
-    : name(_name),
-    shPInitSet(std::move(_shPInitSet))
-{}
-
-ZC_ShProgs::ShPSet::ShPSet(ShPSet&& shPS)
-    : name(shPS.name),
-    shPInitSet(std::move(shPS.shPInitSet))
-{}
-
-bool ZC_ShProgs::ShPSet::operator == (Name _name) const noexcept
+bool ZC_ShProgs::ShPInitSet::operator == (Name _name) const noexcept
 {
     return name == _name;
 }

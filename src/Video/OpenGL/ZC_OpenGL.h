@@ -104,6 +104,9 @@ extern PFNGLUNIFORM1IPROC pglUniform1i;
 extern PFNGLUNIFORM3FVPROC pglUniform3fv;
 #define glUniform3fv pglUniform3fv
 
+extern PFNGLUNIFORM1UIPROC pglUniform1ui;
+#define glUniform1ui pglUniform1ui
+
 //  buffer
 
 extern PFNGLGENBUFFERSPROC pglGenBuffers;

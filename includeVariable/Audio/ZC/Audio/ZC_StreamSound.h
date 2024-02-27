@@ -33,7 +33,7 @@ protected:
     const ZC_SoundData* soundData;
     unsigned long soundDataIndex = 0;
     float volume = 1.f;
-    ZC_SConnection<ZC_StreamSound*()> conGetpZC_StreamSound;
+    ZC_SConnection sconGetpZC_StreamSound;
     std::mutex soundStateMutex;
 
     ZC_StreamSound(const ZC_SoundData* _soundData) noexcept;
@@ -57,7 +57,7 @@ bool ZC_StreamSound::Pop(T& value) noexcept
         if (soundState != SoundState::PlayLoop)
         {
             soundState = SoundState::Stop;
-            conGetpZC_StreamSound.Disconnect();
+            sconGetpZC_StreamSound.Disconnect();
             return false;
         }
     }

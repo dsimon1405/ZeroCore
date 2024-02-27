@@ -1,12 +1,25 @@
 #pragma once
 
-template<typename TCont, typename TVal>
-bool ZC_ForwardListErase(TCont& rCont, const TVal& val)
+#include <forward_list>
+
+/*
+Erases from forward list first found data. Type(TCont) storing in forward list must determine for searching type(TFind) operator:
+bool operator == (const TFind&) const {}
+
+Params:
+rCont - reference on forward list.
+find - value for searching.
+
+Return:
+true if value was erased, otherwise false.
+*/
+template<typename TCont, typename TFind>
+bool ZC_ForwardListErase(std::forward_list<TCont>& rCont, const TFind& find)
 {
     auto prev = rCont.before_begin();
     for (auto rContI = rCont.begin(); rContI != rCont.end(); ++rContI)
     {
-        if (*rContI == val)
+        if (*rContI == find)
         {
             rCont.erase_after(prev);
             return true;

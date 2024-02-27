@@ -1,6 +1,5 @@
 #pragma once
 
-#include <compare>
 #include <utility>
 
 template<typename T>
@@ -25,6 +24,7 @@ public:
     
     operator bool () const noexcept;
     auto operator <=> (const ZC_uptr<T>& uptr) const noexcept = default;
+    bool operator == (const T* _pData) const;
 
     T* Get() noexcept;
     const T* Get() const noexcept;
@@ -46,8 +46,8 @@ ZC_uptr<T> ZC_uptrMakeFromChild(TParams&&... params) noexcept
 }
 
 template<typename T>
-ZC_uptr<T>::ZC_uptr(T* _type) noexcept
-    : pData(_type)
+ZC_uptr<T>::ZC_uptr(T* _pData) noexcept
+    : pData(_pData)
 {}
 
 template<typename T>
@@ -103,6 +103,12 @@ template<typename T>
 ZC_uptr<T>::operator bool () const noexcept
 {
     return pData != nullptr;
+}
+
+template<typename T>
+bool ZC_uptr<T>::operator == (const T* _pData) const
+{
+    return pData == _pData;
 }
 
 template<typename T>

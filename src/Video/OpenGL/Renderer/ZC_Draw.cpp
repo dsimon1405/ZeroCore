@@ -13,3 +13,17 @@ void ZC_DrawElements::Draw()
 {
     glDrawElements(mode, count, type, reinterpret_cast<void*>(startByteOffset));
 }
+
+
+//  ZC_DrawArrays
+
+ZC_DrawArrays::ZC_DrawArrays(GLenum _mode, int _first, int _count)
+    : mode(_mode),
+    first(_first),
+    count(_count)
+{}
+
+void ZC_DrawArrays::Draw()
+{
+    glDrawArrays(mode, first, count);
+}

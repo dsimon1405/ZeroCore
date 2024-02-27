@@ -9,7 +9,6 @@ struct ZC_Uniforms
     std::vector<ZC_uptr<ZC_Uniform>> uniforms;
 
     ZC_Uniforms(std::vector<ZC_uptr<ZC_Uniform>>&& _uniforms);
-
     ZC_Uniforms(ZC_Uniforms&& u);
 
     bool operator == (ZC_Uniforms* pUniforms);

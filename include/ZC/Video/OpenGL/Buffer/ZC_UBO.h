@@ -9,6 +9,7 @@ struct ZC_UBO
 		ProjView = 0,
 		Ortho = 1,
 		CamPos = 2,
+		MeshData = 3,
 	};
 
 	ZC_Buffer buffer;

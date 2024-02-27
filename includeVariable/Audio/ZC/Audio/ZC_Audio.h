@@ -12,7 +12,7 @@ public:
     ZC_Audio() = delete;
 
     /*
-    Create ZC_AudioStream object. Be sure to call Close Audio Stream when the audio stream is no longer needed to correctly release resourcesю
+    Create ZC_AudioStream object. Be sure to call Close Audio Stream when the audio stream is no longer needed to correctly release resources
 
     Params:
     _audioSet - a set of audio parameters for an audio stream.
