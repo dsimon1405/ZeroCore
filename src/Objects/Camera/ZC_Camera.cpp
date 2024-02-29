@@ -2,10 +2,16 @@
 
 #include <ZC_Config.h>
 #include <ZC/Video/ZC_Window.h>
+#include <ZC/Events/ZC_Events.h>
 
 ZC_upCamera ZC_Camera::CreateCamera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho)
 {
     return { new ZC_Camera(_perspView, _ortho) };
+}
+
+ZC_Camera::~ZC_Camera()
+{
+    sconWindowResize.Disconnect();
 }
 
 ZC_Vec3<float> ZC_Camera::GetCamPos() const noexcept
@@ -48,7 +54,7 @@ ZC_Camera::ZC_Camera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho)
     perspView.ubo = ZC_UBOs::Create(ZC_UBO::BindingPoint::ProjView, { &ZC_Camera::Update, this });
     perspView.ubo->BufferData(sizeof(ZC_Mat4<float>), nullptr, GL_DYNAMIC_DRAW);
     
-    ZC_Window::ConnectResize({ &ZC_Camera::ResizeCallBack, this });
+    sconWindowResize = ZC_Events::ConnectWindowResize({ &ZC_Camera::ResizeCallBack, this });
     
     int width = 0, height = 0;
     ZC_Window::GetSize(width, height);

@@ -6,7 +6,7 @@
 // #include <android/input.h>
 #include <EGL/egl.h>
 
-class ZC_AndroidNativeAppGlue_Window : public ZC_Window, public ZC_android_app
+class ZC_AndroidNativeAppGlue_Window : public ZC_WindowHolder, public ZC_android_app
 {
 public:
     ZC_AndroidNativeAppGlue_Window();

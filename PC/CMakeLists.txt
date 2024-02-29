@@ -2,7 +2,6 @@
 set(ZC_SRC_FILES ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Tools/Console/PC/ZC_cout.cpp
 	${PROJECT_SOURCE_DIR}/src/File/Read/PC/ZC_PC_FileReader.cpp
-    ${PROJECT_SOURCE_DIR}/src/Events/ZC_Mouse.cpp
     $<$<BOOL:${ZC_IMGUI}>:
         ${PROJECT_SOURCE_DIR}/src/Video/imgui/imgui_demo.cpp
         ${PROJECT_SOURCE_DIR}/src/Video/imgui/imgui_draw.cpp
@@ -17,7 +16,8 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
             ${PROJECT_SOURCE_DIR}/src/Video/imgui/imgui_impl_sdlrenderer3.cpp>>
 	$<$<BOOL:${ZC_SDL_VIDEO}>:
 		${PROJECT_SOURCE_DIR}/src/Video/PC/SDL/ZC_SDL_Window.cpp
-		${PROJECT_SOURCE_DIR}/src/Video/PC/SDL/ZC_SDL_Window_LoadOpenGLFunctions.cpp>
+		${PROJECT_SOURCE_DIR}/src/Video/PC/SDL/ZC_SDL_Window_LoadOpenGLFunctions.cpp
+		${PROJECT_SOURCE_DIR}/src/Events/PC/SDL/ZC_SDL_EventsHolder.cpp>
     $<$<BOOL:${ZC_AUDIO}>:
         $<$<BOOL:${ZC_SDL_AUDIO}>:
 		    ${PROJECT_SOURCE_DIR}/src/Audio/PC/SDL/ZC_SDL_AudioStream.cpp>>

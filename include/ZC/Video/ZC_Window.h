@@ -1,15 +1,9 @@
 #pragma once
 
-#include <ZC/Tools/Math/ZC_Vec.h>
-#include <ZC/Video/OpenGL/GL/glcorearb.h>
-#include <ZC_Config.h>
-#include <ZC/Tools/Signal/ZC_Signal.h>
 
-class ZC_Window;
-using ZC_upWindow = ZC_uptr<ZC_Window>;
-
+typedef int ZC_WindowFlags;     //  ZC_Window::Flags
 /*
-Window management class
+Window management namespace.
 
 Window coords:
     top left corner: x = 0, y = 0;
@@ -17,15 +11,24 @@ Window coords:
     bottom left corner: x = 0, y = window heigth;
     bottom right corner: x = window with , y = window height.
 */
-class ZC_Window
+namespace ZC_Window
 {
-public:
+    enum Flags
+    {
+        ZC_Window_None                = 0,
+        ZC_Window_Border              = 1 << 1,   //  if don't set - fullscreen; if set and (width or height <= 0) use fullscreen with border(reduced size will be 800x600),
+                                                  //  otherwise bordered with width and height windowю
+        ZC_Window_Multisampling_1     = 1 << 2,   //  antialiasing with 1 sample on pixel (if Multisampling flags more than one, will take greatest).
+        ZC_Window_Multisampling_2     = 1 << 3,   //  antialiasing with 2 samples on pixel (if Multisampling flags more than one, will take greatest).
+        ZC_Window_Multisampling_3     = 1 << 4,   //  antialiasing with 3 samples on pixel (if Multisampling flags more than one, will take greatest).
+        ZC_Window_Multisampling_4     = 1 << 5    //  antialiasing with 4 samples on pixel (if Multisampling flags more than one, will take greatest).
+    };
 
     /*
     Create window. Parameters have effect only in ZC_PC build.
 
     Params:
-    border - on false - fullscrean window without border(ignore all next parameters), on true - window with border (if width <= 0 or height <= 0 fullscreen).
+    flags - see ZC_Window::Flags.
     width - window with border width.
     height - window with border height.
     name - window on border name.
@@ -33,16 +36,8 @@ public:
     Return:
     On success unique pointer of ZC_Window, otherwise nullptr (in second case ZC_ErrorLogger::ErrorMessage() - for more information).
     */
-    static ZC_upWindow MakeWindow(bool border = false, int width = 0, int height = 0, const char* name = "");
+    bool MakeWindow(ZC_WindowFlags flags = ZC_Window_None, int width = 0, int height = 0, const char* name = "");
 
-    ZC_Window(const ZC_Window&) = delete;
-    ZC_Window& operator = (const ZC_Window&) = delete;
-
-    ZC_Window(ZC_Window&& win) = delete;
-    ZC_Window& operator = (ZC_Window&& win) = delete;
-
-    virtual ~ZC_Window();
-    
     /*
     Set the window buffer clear color.
 
@@ -50,26 +45,12 @@ public:
     r - red color.
     g - green color.
     b - blue color.
+    a - alpha channel.
     */
-    void SetClearColor(float r, float g, float b);
+    void GlClearColor(float r, float g, float b, float a);
 
-    /*
-    Clear the window buffer.
-    */
-    void Clear(GLbitfield mask);
-    
-    /*
-    Handle input events.
-
-    Return:
-    If there was an event that required closing the window, false, otherwise true.
-    */
-    virtual bool HandleEvents() = 0;
-
-    /*
-    Changes the current buffer to a buffer with a prepared sketch
-    */
-    virtual void SwapBuffer() = 0;
+    //  Enables set points size in shader prograrm.
+    void GlEnablePointSize();
 
     /*
     Sets the number of frames per second. Default value = 60.
@@ -77,54 +58,26 @@ public:
     Params:
     limit - number of frames - must be >= 0 (0 - unlimit, everything is in the hands of your machine).
     */
-    static void SetFPS(long limit) noexcept;
+    void SetFPS(long limit) noexcept;
 
     //  Returns the creation time of the previous frame.
-    static float GetPreviousFrameTime();
+    float GetPreviousFrameTime() noexcept;
     
-    /*
-    Returns the width of the window.
-    */
-    static void GetSize(int& width, int& height);
+    //  Returns the width of the window.
+    void GetSize(int& width, int& height);
 
-    /*
-    Hide mouses cursor (have effect only in ZC_PC build mode).
-    */
-    static void HideCursor();
+    //  Hide mouses cursor (have effect only in ZC_PC build mode).
+    void HideCursor();
 
-    /*
-    Make visible mouses cursor (have effect only in ZC_PC build mode).
-    */
-    static void ShowCursor();
+    //  Make visible mouses cursor (have effect only in ZC_PC build mode).
+    void ShowCursor();
 
-    /*
-    Mouses cursor can't break out window (have effect only in ZC_PC build mode).
-    */
-    static void LimitCursor();
+    //  Mouses cursor can't break out window (have effect only in ZC_PC build mode).
+    void LimitCursor();
 
-    /*
-    Mouses cursor can break out window (have effect only in ZC_PC build mode).
-    */
-    static void UnlimitCursor();
+    //  Mouses cursor can break out window (have effect only in ZC_PC build mode).
+    void UnlimitCursor();
 
-    static ZC_SConnection ConnectResize(ZC_Function<void(float,float)>&& func);
-
-    static ZC_Window* GetCurrentWindow();
-
-protected:
-    ZC_Window();
-
-    ZC_Signal<void(float,float)> sigResize { false };
-
-private:
-    static inline ZC_Window* pWindow = nullptr;
-
-    virtual void VSetFPS(long limit) noexcept = 0;
-    virtual float VGetPreviousFrameTime() const noexcept = 0;
-    virtual void VGetSize(int& width, int& height) const noexcept = 0;
-    virtual void VHideCursor() {}
-    virtual void VShowCursor() {}
-    virtual void VLimitCursor() {}
-    virtual void VUnlimitCursor() {}
-    virtual void VResize() {}
+    //  Run cycle (handle events => OpenGL draw).
+    void RuntMainCycle();
 };

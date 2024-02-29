@@ -1,12 +1,13 @@
 #include "ZC_ImGui.h"
 
-#include <ZC_Config.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Events/ZC_Events.h>
+#include <ZC_IGWindow.h>
 
 #include "imgui_impl_opengl3.h"
 #ifdef ZC_SDL_VIDEO
-#include <Video/PC/SDL/ZC_SDL_Window.h>
+// #include <Video/PC/SDL/ZC_SDL_Window.h>
 #include "imgui_impl_sdl3.h"
 #endif
 
@@ -35,6 +36,9 @@ bool ZC_ImGui::Init(void* pWindow, void* pGlContext)
 		ZC_ErrorLogger::Err("ImGui_ImplOpenGL3_Init() fail!", __FILE__, __LINE__);
         return false;
 	}
+
+    ZC_Events::ConnectHandleEventsEnd({ &ZC_IGWindow::HandleEventsEnd });
+
     return true;
 }
 

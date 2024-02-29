@@ -34,12 +34,13 @@ ZC_Texture ZC_Textures::LoadTexture2D(const char* filePath, GLenum wrapS, GLenum
     // }
     // channels = 4;
 
-    GLenum format;
+    GLenum format = 0;
     switch (channels)
     {
     case 1: format = GL_RED; break;
     case 3: format = GL_RGB; break;
     case 4: format = GL_RGBA; break;
+    default: assert(false);
     }
 
     ZC_ErrorLogger::Clear();

@@ -1,17 +1,16 @@
 #include "ZC_SDL_Window.h"
 
+#include <ZC/Video/ZC_Window.h>
 #include <Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #ifdef ZC_IMGUI
 #include <Video/imgui/ZC_ImGui.h>
-#include <ZC_IGWindow.h>
 #endif
 
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_events.h>
 
-ZC_SDL_Window::ZC_SDL_Window(bool border, int _width, int _height, const char* name)
-	: fps(ZC_FPS::Seconds)
+ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, const char* name)
 {
 	static bool sdlVideoInited = false;
 	if (!sdlVideoInited)
@@ -24,10 +23,15 @@ ZC_SDL_Window::ZC_SDL_Window(bool border, int _width, int _height, const char* n
 		sdlVideoInited = true;
 	}
 
-	if (!SetOpenGLAttributes()) return;
+    using namespace ZC_Window;
+	if (!SetOpenGLAttributes(flags & ZC_Window_Multisampling_4 ? 4
+							: flags & ZC_Window_Multisampling_3 ? 3
+							: flags & ZC_Window_Multisampling_2 ? 2
+							: flags & ZC_Window_Multisampling_1 ? 1
+							: 0)) return;
 
-	pWindow = !border ? SDL_CreateWindow(name, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN)
-		: _width <= 0 || _height <= 0 ? SDL_CreateWindow(name, _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED)
+	pWindow = !(flags & ZC_Window_Border) ? SDL_CreateWindow(name, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN)
+		: _width <= 0 || _height <= 0 ? SDL_CreateWindow(name, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED)
 			: SDL_CreateWindow(name, _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		
 	if (!pWindow)
@@ -74,60 +78,9 @@ ZC_SDL_Window::~ZC_SDL_Window()
 #endif
 }
 
-bool ZC_SDL_Window::HandleEvents()
-{
-	float previousFrameTime = fps.StartNewFrame();
-
-    static SDL_Event event;
-	while (SDL_PollEvent(&event) != 0)
-    {
-#ifdef ZC_IMGUI
-	ZC_ImGui::PollEvents(&event);
-#endif
-		switch (event.type)
-		{
-		case SDL_EVENT_QUIT: return false;
-		case SDL_EVENT_WINDOW_RESIZED: Resize(); break;
-		case SDL_EVENT_KEY_DOWN: AddActiveDownButton(static_cast<ZC_ButtonID>(event.key.keysym.scancode)); break;
-		case SDL_EVENT_KEY_UP: CallUpButton(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
-		case SDL_EVENT_MOUSE_BUTTON_DOWN:
-#ifdef ZC_IMGUI		//	if mouse cursor is in one of the ImGui windows, don't poll mouse button down event (same for mouse wheel events)
-			if (!ZC_IGWindow::IsCursorInOneOfWindows()) AddActiveDownButton(static_cast<ZC_ButtonID>(event.button.button + 512));
-			break;
-#else
-			AddActiveDownButton(static_cast<ZC_ButtonID>(event.button.button + 512)); break;
-#endif
-		case SDL_EVENT_MOUSE_BUTTON_UP: CallUpButton(static_cast<ZC_ButtonID>(event.button.button + 512), previousFrameTime); break;
-		case SDL_EVENT_MOUSE_MOTION: Move(event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel, previousFrameTime); break;
-		case SDL_EVENT_MOUSE_WHEEL:
-#ifdef ZC_IMGUI
-			if (!ZC_IGWindow::IsCursorInOneOfWindows()) sScroll.CallLastConnected(event.wheel.x, event.wheel.y, previousFrameTime);
-			break;
-#else
-			sScroll(event.wheel.x, event.wheel.y, previousFrameTime); break;
-#endif
-		}
-    }
-	CallActiveButtons(previousFrameTime);
-#ifdef ZC_IMGUI
-	ZC_IGWindow::PollEventEnds();	//	if some one else need PollEventEnds need create a signal for it  !!!
-#endif
-    return true;
-}
-
 void ZC_SDL_Window::SwapBuffer()
 {
     SDL_GL_SwapWindow(pWindow);
-}
-
-void ZC_SDL_Window::VSetFPS(long limit) noexcept
-{
-	fps.SetLimit(limit);
-}
-
-float ZC_SDL_Window::VGetPreviousFrameTime() const noexcept
-{
-	return fps.PreviousFrameTime();
 }
 
 void ZC_SDL_Window::VGetSize(int& width, int& height) const noexcept
@@ -155,7 +108,7 @@ void ZC_SDL_Window::VUnlimitCursor()
 	SDL_SetWindowMouseGrab(pWindow, SDL_FALSE);
 }
 
-bool ZC_SDL_Window::SetOpenGLAttributes()
+bool ZC_SDL_Window::SetOpenGLAttributes(int samplesCount)
 {
 	if (SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE) != 0)
 	{
@@ -192,17 +145,30 @@ bool ZC_SDL_Window::SetOpenGLAttributes()
 		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
 		return false;
 	}
+	if (samplesCount != 0)
+	{
+		if (SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1) != 0)
+		{
+			ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+			return false;
+		}
+		if (SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, samplesCount) != 0)
+		{
+			ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+			return false;
+		}
+	}
 
 	return true;
 }
 
-void ZC_SDL_Window::Resize()
-{
-	int width = 0, height = 0;
-	SDL_GetWindowSize(pWindow, &width,&height);
-	glViewport(0, 0, width, height);										//	в ZC_Renderer ????????????????????????
-	sigResize(static_cast<float>(width), static_cast<float>(height));
-}
+// void ZC_SDL_Window::Resize()
+// {
+// 	int width = 0, height = 0;
+// 	SDL_GetWindowSize(pWindow, &width,&height);
+// 	glViewport(0, 0, width, height);										//	в ZC_Renderer ????????????????????????
+// 	sigResize(static_cast<float>(width), static_cast<float>(height));
+// }
 
 	// int red = 0;
     // int a999 = SDL_GL_GetAttribute(SDL_GL_RED_SIZE, &red);	//	8

@@ -1,7 +1,7 @@
 #include <ZC/Video/OpenGL/Renderer/ZC_RS.h>
 
 #include <ZC/Tools/Container/ZC_ContFunc.h>
-#include <ZC/Video/OpenGL/Renderer/ZC_Renderer.h>
+#include "ZC_Renderer.h"
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
 ZC_RS::ZC_RS(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw,
@@ -11,7 +11,15 @@ ZC_RS::ZC_RS(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_upt
     vao(std::move(_vao)),
     upDraw(std::move(_upDraw)),
     buffers(std::move(_buffers))
-{}
+{
+    static bool isFirstCall = true;
+    if (isFirstCall)
+    {
+        auto pShPog = ZC_ShProgs::Get(ZC_ShProgs::Name::ZCR_Stencil);
+        if (pShPog) LevelController::LevelStencil::pActiveUniformsStencil = &(pShPog->uniforms);
+        isFirstCall = false;
+    }
+}
 
 ZC_RS::ZC_RS(ZC_RS&& rs)
     : ZC_RendererSet(dynamic_cast<ZC_RendererSet&&>(rs)),
@@ -21,12 +29,6 @@ ZC_RS::ZC_RS(ZC_RS&& rs)
     upDraw(std::move(rs.upDraw)),
     buffers(std::move(rs.buffers))
 {}
-
-void ZC_RS::SetStencilShaderProgData(typename ZC_ShProgs::ShPInitSet& pShPInitSet) noexcept
-{
-    ZC_Renderer::SetStencilShP(&(pShPInitSet.shProg));
-    LevelController::LevelStencil::pActiveUniformsStencil = &(pShPInitSet.uniforms);
-}
 
 
 //  LevelDrawing
@@ -80,10 +82,11 @@ void ZC_RS::LevelController::LevelStencil::Draw(ZC_uptr<ZC_GLDraw>& upDraw, std:
     {
         for (auto pDrSet : drawingSets)
         {
-            auto model = *static_cast<ZC_Mat4<float>*>(pDrSet->uniforms.Get(ZC_Uniform::Name::unModel));
+            typedef typename ZC_Uniform::Name UName;
+            auto model = *static_cast<ZC_Mat4<float>*>(pDrSet->uniforms.Get(UName::unModel));
             model.Scale({ pDrSet->stencilScale, pDrSet->stencilScale, pDrSet->stencilScale});
-            pActiveUniformsStencil->Set(ZC_Uniform::Name::unModel, &model);
-            pActiveUniformsStencil->Set(ZC_Uniform::Name::unColor, &(pDrSet->stencilColor));
+            pActiveUniformsStencil->Set(UName::unModel, &model);
+            pActiveUniformsStencil->Set(UName::unColor, &(pDrSet->stencilColor));
             pActiveUniformsStencil->Activate();
             upDraw->Draw();
         }

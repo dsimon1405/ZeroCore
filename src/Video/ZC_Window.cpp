@@ -1,86 +1,59 @@
 #include <ZC/Video/ZC_Window.h>
 
+#include "ZC_WindowHolder.h"
 #include <Video/OpenGL/ZC_OpenGL.h>
-#include <Tools/ZC_uptrCreateWithErrorCheck.h>
 
-#if defined(ZC_SDL_VIDEO)
-#include "PC/SDL/ZC_SDL_Window.h"
-ZC_upWindow ZC_Window::MakeWindow(bool border, int width, int height, const char* name)
+bool ZC_Window::MakeWindow(ZC_WindowFlags flags, int width, int height, const char* name)
 {
-    return ZC_uptrCreateWithErrorCheck<ZC_Window, ZC_SDL_Window>(border, width, height, name);
-}
-#elif defined(ZC_ANDROID_NATIVE_APP_GLUE)
-#include "Android/AndroidNativeAppGlue/ZC_AndroidNativeAppGlue_Window.h"
-ZC_upWindow ZC_Window::MakeWindow(bool border, int width, int height, const char* name)
-{
-    return ZC_uptrCreateWithErrorCheck<ZC_Window, ZC_AndroidNativeAppGlue_Window>();
-}
-#endif
-
-ZC_Window::ZC_Window()
-{
-    pWindow = this;
+    return ZC_WindowHolder::MakeWindowHolder(flags, width, height, name);
 }
 
-ZC_Window::~ZC_Window()
+void ZC_Window::GlClearColor(float r, float g, float b, float a)
 {
-    pWindow = nullptr;
+    glClearColor(r, g, b, a);
+}
+
+void ZC_Window::GlEnablePointSize()
+{
+    glEnable(GL_PROGRAM_POINT_SIZE);
 }
 
 void ZC_Window::SetFPS(long limit) noexcept
 {
-    if (pWindow) pWindow->VSetFPS(limit);
+    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->SetFPS(limit);
 }
 
-float ZC_Window::GetPreviousFrameTime()
+float ZC_Window::GetPreviousFrameTime() noexcept
 {
-    return pWindow ? pWindow->VGetPreviousFrameTime() : 0.f;
+    return ZC_WindowHolder::pWindowHolder ? ZC_WindowHolder::pWindowHolder->GetPreviousFrameTime() : 0.f;
 }
 
 void ZC_Window::GetSize(int& width, int& height)
 {
-    if (pWindow) pWindow->VGetSize(width, height);
+    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->VGetSize(width, height);
 }
 
 void ZC_Window::HideCursor()
 {
-    if (pWindow) pWindow->VHideCursor();
+    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->VHideCursor();
 }
 
 void ZC_Window::ShowCursor()
 {
-    if (pWindow) pWindow->VShowCursor();
+    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->VShowCursor();
 }
 
 void ZC_Window::LimitCursor()
 {
-    if (pWindow) pWindow->VLimitCursor();
+    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->VLimitCursor();
 }
 
 void ZC_Window::UnlimitCursor()
 {
-    if (pWindow) pWindow->VUnlimitCursor();
+    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->VUnlimitCursor();
 }
 
-ZC_SConnection ZC_Window::ConnectResize(ZC_Function<void(float,float)>&& func)
+void ZC_Window::RuntMainCycle()
 {
-    return pWindow ? pWindow->sigResize.Connect(std::move(func)) : ZC_SConnection();
-}
-
-
-
-
-void ZC_Window::SetClearColor(float r, float g, float b)
-{
-    glClearColor(r, g, b, 1);
-}    
-
-void ZC_Window::Clear(GLbitfield mask)
-{
-    glClear(mask);
-}
-
-ZC_Window* ZC_Window::GetCurrentWindow()
-{
-    return pWindow;
+    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->RunMainCycle();
 }

@@ -3,6 +3,7 @@
 #include "Matrix/ZC_PerspView.h"
 #include "Matrix/ZC_Ortho.h"
 #include <ZC/Tools/ZC_uptr.h>
+#include <ZC/Tools/Signal/ZC_SConnection.h>
 
 class ZC_Camera;
 using ZC_upCamera = ZC_uptr<ZC_Camera>;
@@ -20,6 +21,8 @@ class ZC_Camera
 public:
     static ZC_upCamera CreateCamera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho);
 
+    ~ZC_Camera();
+
     ZC_Vec3<float> GetCamPos() const noexcept;
     ZC_Vec3<float> GetLookOn() const noexcept;
     ZC_Vec3<float> GetUp() const noexcept;
@@ -30,6 +33,7 @@ public:
 private:
     ZC_PerspView perspView;
     ZC_Ortho ortho;
+    ZC_SConnection sconWindowResize;
 
     ZC_Camera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho);
     

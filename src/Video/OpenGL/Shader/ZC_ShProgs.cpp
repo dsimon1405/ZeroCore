@@ -1,7 +1,6 @@
 #include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
 
 #include <Video/OpenGL/ZC_OpenGL.h>
-#include <ZC/Video/OpenGL/Renderer/ZC_RS.h>
 
 void ZC_ShProgs::Load(Name* pShPName, size_t ShPNameCount)
 {
@@ -24,10 +23,8 @@ void ZC_ShProgs::Load(Name* pShPName, size_t ShPNameCount)
         
         fragmentData.texSets.Uniformli(shProg);     //  activate samplers
 
-        auto& shPInitSet = shProgs.emplace_front(ShPInitSet(pShPName[i], std::move(shProg),
+        shProgs.emplace_front(ShPInitSet(pShPName[i], std::move(shProg),
             vertexData.vaoConSets, ZC_Uniforms{ std::move(uniforms) }, std::move(fragmentData.texSets)));
-        
-        if (pShPName[i] == Name::ZCR_Stencil) ZC_RS::SetStencilShaderProgData(shPInitSet);
     }
 }
 

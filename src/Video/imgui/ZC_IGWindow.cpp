@@ -2,7 +2,7 @@
 
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 #include "ZC_ImGui.h"
-#include <ZC/Video/ZC_Window.h>
+#include <ZC/Events/ZC_Events.h>
 
 #include <imgui.h>
 
@@ -26,7 +26,7 @@ bool ZC_IGWindow::IsCursorInOneOfWindows() noexcept
     return isCursorInOneOfWindows;
 }
 
-void ZC_IGWindow::PollEventEnds() noexcept
+void ZC_IGWindow::HandleEventsEnd() noexcept
 {
     isCursorInOneOfWindows = false;
 }
@@ -41,7 +41,7 @@ ZC_IGWindow::ZC_IGWindow(std::string&& unicName, bool _needDraw, float _width, f
     indentY(_indentY),
     wif(_wif),
     sconZC_WindowResized((wif & WindowIndentFlags::Center) || (wif & WindowIndentFlags::X_Right) || (wif & WindowIndentFlags::Y_Bottom) ?
-        ZC_Window::ConnectResize({ &ZC_IGWindow::ZC_WindowResized, this }) : ZC_SConnection()),
+        ZC_Events::ConnectWindowResize({ &ZC_IGWindow::ZC_WindowResized, this }) : ZC_SConnection()),
     mayClose(_mayClose),
     igwf(_igwf)
 {

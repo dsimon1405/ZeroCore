@@ -127,6 +127,7 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
 		${PROJECT_SOURCE_DIR}/src/Audio/ZC_Sounds.cpp
 		${PROJECT_SOURCE_DIR}/src/Audio/ZC_StreamSound.cpp>
     ${PROJECT_SOURCE_DIR}/src/Video/ZC_Window.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/ZC_WindowHolder.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_OpenGL.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_Shader.cpp
 	${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShProg.cpp
@@ -152,6 +153,7 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RendererSetAndDrawingSet.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RSNonTex.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RSTexs.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RBufferCleaner.cpp
     ${PROJECT_SOURCE_DIR}/src/Tools/Signal/ZC_SignalConnection.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/Exception/ZC_Exception.cpp
     ${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_Clock.cpp
@@ -160,6 +162,9 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/File/Read/ZC_FileReader.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_ErrorLogger.cpp
 	${PROJECT_SOURCE_DIR}/src/Events/ZC_Button.cpp
+    ${PROJECT_SOURCE_DIR}/src/Events/ZC_Mouse.cpp
+    ${PROJECT_SOURCE_DIR}/src/Events/ZC_Events.cpp
+    ${PROJECT_SOURCE_DIR}/src/Events/ZC_EventsHolder.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/ZC_Camera.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/Matrix/ZC_Ortho.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/Matrix/ZC_Perspective.cpp

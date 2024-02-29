@@ -17,7 +17,6 @@ struct ZC_RS : public ZC_RendererSet
         std::forward_list<ZC_Buffer>&& _buffers);
     ZC_RS(ZC_RS&&);
 
-    static void SetStencilShaderProgData(typename ZC_ShProgs::ShPInitSet& pShPInitSet) noexcept;
     ZC_ShProg* GetShProg() const noexcept override { return pShP; }
     
 protected:
@@ -31,7 +30,7 @@ protected:
         void Draw(Level lvl, ZC_uptr<ZC_GLDraw>& upDraw, std::vector<ZC_Texture>* pTextures);
         //  return true if was empty
         bool Add(DrawingSet* pDS);
-        //  return true if empty
+        //  return true if became empty
         bool Erase(DrawingSet* pDS);
     
         struct LevelDrawing

@@ -6,8 +6,11 @@
 
 #include <forward_list>
 
+namespace ZC_ImGui { bool Init(void* pWindow, void* pGlContext); }
+
 class ZC_IGWindow : protected ZC_RendererSet
 {
+    friend bool ZC_ImGui::Init(void* pWindow, void* pGlContext);
 public:
     ~ZC_IGWindow();
 
@@ -20,8 +23,6 @@ public:
     void NeedDraw(bool _needDraw);
 
     static bool IsCursorInOneOfWindows() noexcept;
-    //  set isCursorInOneOfWindows in false
-    static void PollEventEnds() noexcept;
 
 protected:
     enum WindowIndentFlags
@@ -58,5 +59,9 @@ private:
 
     const char* AddName(std::string&& unicName);
     void ZC_WindowResized(float width, float height);
+    //  Return: true if position was reseted, otherwise false.
     void SetPosition();
+
+    //  set isCursorInOneOfWindows in false
+    static void HandleEventsEnd() noexcept;
 };
