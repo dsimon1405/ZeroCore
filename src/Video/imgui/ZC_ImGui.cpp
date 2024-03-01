@@ -37,7 +37,7 @@ bool ZC_ImGui::Init(void* pWindow, void* pGlContext)
         return false;
 	}
 
-    ZC_Events::ConnectHandleEventsEnd({ &ZC_IGWindow::HandleEventsEnd });
+    ZC_Events::ConnectHandleEventsEnd({ &ZC_IGWindow::Make_isCursorInOneOfWindows_false });
 
     return true;
 }

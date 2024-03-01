@@ -4,10 +4,11 @@
 #include <Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/Video/OpenGL/Buffer/ZC_UBOs.h>
 #include <ZC/Tools/Container/ZC_ContFunc.h>
-#include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #ifdef ZC_IMGUI
 #include <Video/imgui/ZC_ImGui.h>
 #endif
+
+#include <cassert>
 
 ZC_Renderer::ZC_Renderer(ZC_Function<void()>&& _funcSwapBuffer)
     : funcSwapBuffer(std::move(_funcSwapBuffer))
@@ -22,7 +23,7 @@ ZC_Renderer::~ZC_Renderer()
 
 void ZC_Renderer::Add(RSLevel lvl, ZC_RendererSet* pRS)
 {
-    if (!pRenderer) return;     //  check need only in static functions
+    if (!pRenderer) return;
     auto rendSetsIter = pRenderer->rendererSets.find(lvl);
     if (rendSetsIter == pRenderer->rendererSets.end()) pRenderer->rendererSets.emplace(lvl, std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>> { { pRS->GetShProg(), { pRS } } });
     else
@@ -35,26 +36,21 @@ void ZC_Renderer::Add(RSLevel lvl, ZC_RendererSet* pRS)
     
 void ZC_Renderer::Erase(RSLevel lvl, ZC_RendererSet* pRS)
 {
-    if (!pRenderer) return;     //  check need only in static functions
+    if (!pRenderer) return;
     auto rendSetsIter = pRenderer->rendererSets.find(lvl);
-    if (rendSetsIter != pRenderer->rendererSets.end())
+    assert(rendSetsIter != pRenderer->rendererSets.end());   //  can't find
+
+    auto rendSetsShPIter = rendSetsIter->second.find(pRS->GetShProg());
+    assert(rendSetsShPIter != rendSetsIter->second.end());  //  can't find
+
+    bool erased = ZC_ForwardListErase(rendSetsShPIter->second, pRS);
+    assert(erased);  //  can't find
+
+    if (rendSetsShPIter->second.empty())
     {
-        auto rendSetsShPIter = rendSetsIter->second.find(pRS->GetShProg());
-        if (rendSetsShPIter != rendSetsIter->second.end())
-        {
-            if (ZC_ForwardListErase(rendSetsShPIter->second, pRS))
-            {
-                if (rendSetsShPIter->second.empty())
-                {
-                    rendSetsIter->second.erase(rendSetsShPIter);
-                    if (rendSetsIter->second.empty()) pRenderer->rendererSets.erase(rendSetsIter);
-                }
-            }
-            else ZC_ErrorLogger::Err("Can't find ZC_RendererSet* in forward list of rendSets for erasing!", __FILE__, __LINE__);
-        }
-        else ZC_ErrorLogger::Err("Can't find map of ZC_ShProg* in rendSets for erasing!", __FILE__, __LINE__);
+        rendSetsIter->second.erase(rendSetsShPIter);
+        if (rendSetsIter->second.empty()) pRenderer->rendererSets.erase(rendSetsIter);
     }
-    else ZC_ErrorLogger::Err("For erasing can't find in rendSets ZC_RendererSet::Level: " + std::to_string(lvl), __FILE__, __LINE__);
 }
 
 void ZC_Renderer::Configure(bool useDepthTest)
@@ -89,7 +85,7 @@ void ZC_Renderer::DrawDrawing(std::map<ZC_ShProg*, std::forward_list<ZC_Renderer
 {
     for (auto pairShPRS : mapShPRS)
     {
-        if(pairShPRS.first) pairShPRS.first->UseProgram();
+        pairShPRS.first->UseProgram();  //  don't check pairShPRS.first cause all calling here must have shder program!
         for (auto pRendSet : pairShPRS.second) pRendSet->Draw(RSLevel::Drawing);
     }
 }
@@ -107,7 +103,7 @@ void ZC_Renderer::DrawStencil(std::map<ZC_ShProg*, std::forward_list<ZC_Renderer
             pRendSet->Draw(RSLevel::Stencil);
     pRenderer->bufferCleaner.GlEnable(GL_DEPTH_TEST);
 
-    // glStencilFunc(GL_ALWAYS, 1, 255);   //  ??
+    // glStencilFunc(GL_ALWAYS, 1, 255);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     for (auto pairShPRS : mapShPRS)
     {
@@ -121,10 +117,6 @@ void ZC_Renderer::DrawStencil(std::map<ZC_ShProg*, std::forward_list<ZC_Renderer
 void ZC_Renderer::DrawImGui(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& mapShPRS)
 {
     ZC_ImGui::FrameStart();
-    for (auto pairShPRS : mapShPRS)
-    {
-        if(pairShPRS.first) pairShPRS.first->UseProgram();  //  delete ?
-        for (auto pRendSet : pairShPRS.second) pRendSet->Draw(RSLevel::Drawing);
-    }
+    for (auto pRendSet : mapShPRS.begin()->second) pRendSet->Draw(RSLevel::Drawing);
     ZC_ImGui::FrameEnd();
 }

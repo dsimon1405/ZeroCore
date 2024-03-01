@@ -47,7 +47,9 @@ private:
         indentX,
         indentY;
     WindowIndentFlags wif;
-    ZC_SConnection sconZC_WindowResized;
+    ZC_SConnection sconZC_WindowResized,
+         //  used for safely remove from ZC_Renderer in handle events end signal (caurse NeedDraw function may calls from ZC_Renderer::DrawAll() and change ZC_Renderer state!)
+        sconChangeDrawingState;
     bool mayClose;
     int igwf;
     bool needSetPosition = true;
@@ -59,9 +61,9 @@ private:
 
     const char* AddName(std::string&& unicName);
     void ZC_WindowResized(float width, float height);
-    //  Return: true if position was reseted, otherwise false.
     void SetPosition();
+    void ChangeDrawingState();
 
-    //  set isCursorInOneOfWindows in false
-    static void HandleEventsEnd() noexcept;
+    //  refresh for next frame in events handle events end signal
+    static void Make_isCursorInOneOfWindows_false() noexcept;
 };

@@ -16,9 +16,8 @@ ZC_IGWindow::~ZC_IGWindow()
 void ZC_IGWindow::NeedDraw(bool _needDraw)
 {
     if (_needDraw == isDrawing) return;
-    if (_needDraw) AddToRenderer(Level::ImGui);
-    else EraseFromRenderer(Level::ImGui);
-    isDrawing = _needDraw;
+    isDrawing = !isDrawing;
+    sconChangeDrawingState = ZC_Events::ConnectHandleEventsEnd({ &ZC_IGWindow::ChangeDrawingState, this });
 }
 
 bool ZC_IGWindow::IsCursorInOneOfWindows() noexcept
@@ -26,7 +25,7 @@ bool ZC_IGWindow::IsCursorInOneOfWindows() noexcept
     return isCursorInOneOfWindows;
 }
 
-void ZC_IGWindow::HandleEventsEnd() noexcept
+void ZC_IGWindow::Make_isCursorInOneOfWindows_false() noexcept
 {
     isCursorInOneOfWindows = false;
 }
@@ -108,4 +107,11 @@ void ZC_IGWindow::SetPosition()
     }
     ImGui::SetWindowPos({indentX, indentY});
     needSetPosition = false;
+}
+
+void ZC_IGWindow::ChangeDrawingState()
+{
+    if (isDrawing) AddToRenderer(Level::ImGui);
+    else EraseFromRenderer(Level::ImGui);
+    sconChangeDrawingState.Disconnect();
 }
