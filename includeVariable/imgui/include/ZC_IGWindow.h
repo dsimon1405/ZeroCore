@@ -7,6 +7,7 @@
 #include <forward_list>
 
 namespace ZC_ImGui { bool Init(void* pWindow, void* pGlContext); }
+typedef int ZC_IGWIndentFlags;  //  ZC_IGWindow::IndentFlag
 
 class ZC_IGWindow : protected ZC_RendererSet
 {
@@ -25,17 +26,42 @@ public:
     static bool IsCursorInOneOfWindows() noexcept;
 
 protected:
-    enum WindowIndentFlags
+    enum IndentFlag
     {
-        XLeft_YTop          = 0,
-        X_Right             = 1,
-        Y_Bottom            = 1 << 1,
-        Center              = 1 << 2,
-        XRight_YBottom      = X_Right | Y_Bottom
+        X_Left_Pixel              = 1,
+        X_Left_Percent            = 1 << 1,
+        X_Right_Pixel             = 1 << 2,
+        X_Right_Percent           = 1 << 3,
+        X_Center                  = 1 << 4,
+        Y_Top_Pixel               = 1 << 5,
+        Y_Top_Percent             = 1 << 6,
+        Y_Bottom_Pixel            = 1 << 7,
+        Y_Bottom_Percent          = 1 << 8,
+        Y_Center                  = 1 << 9,
     };
 
-    ZC_IGWindow(std::string&& unicName, bool _needDraw, float _width, float _height,
-        float _indentX, float _indentY, WindowIndentFlags _wif, bool _mayClose, int _igwf);
+    /*
+    Create ImGui window for heir.
+
+    Params:
+    unicName - unic name for window.
+    needDraw - window must be draw after creation.
+    _width - window width.
+    _height - window height.
+    _indentX - value of horizontal indent from border of global window. If used IndentFlag:
+        X_Left_Pixel, X_Right_Pixel -> value must be not negative, otherwise sets 0.f;
+        X_Left_Percent, X_Right_Percent -> value must be 0.0f - 1.f (where 1.f is 100%);
+        X_Center -> value no metter.
+    _indentX - value of vertival indent from border of global window. If used IndentFlag: 
+        Y_Top_Pixel, Y_Bottom_Pixel -> value must be not negative, otherwise sets 0.f
+        Y_Top_Percent, Y_Bottom_Percent -> value must be 0.0f - 1.f (where 1.f is 100%);
+        Y_Center -> value no metter.
+    _indentFlags - flags of indent horizontal(X) and vertical(Y) from border of global window to IGWindow. Must be set one flag for X and one flag for Y. Example: X_Left_Pixel | Y_Top_Pixel.
+    _mayClose - window must have cross to close the window.
+    _igfw - ImGuiWindowFlags.
+    */
+    ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, float _height,
+        float _indentX, float _indentY, ZC_IGWIndentFlags _indentFlags, bool _mayClose, int _igwf);
 
 private:
     static inline std::forward_list<std::string> unicNames;
@@ -46,7 +72,7 @@ private:
         height,
         indentX,
         indentY;
-    WindowIndentFlags wif;
+    IndentFlag indentFlags;
     ZC_SConnection sconZC_WindowResized,
          //  used for safely remove from ZC_Renderer in handle events end signal (caurse NeedDraw function may calls from ZC_Renderer::DrawAll() and change ZC_Renderer state!)
         sconChangeDrawingState;
@@ -60,7 +86,9 @@ private:
     virtual void DrawWindow() = 0;
 
     const char* AddName(std::string&& unicName);
+    ZC_SConnection SetIndentData(float _indentX, float _indentY, ZC_IGWIndentFlags _indents);
     void ZC_WindowResized(float width, float height);
+    //  set position of next window calls before ImGui::Begin();
     void SetPosition();
     void ChangeDrawingState();
 
