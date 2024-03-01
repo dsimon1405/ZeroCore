@@ -20,40 +20,40 @@ void ZC_Window::GlEnablePointSize()
 
 void ZC_Window::SetFPS(long limit) noexcept
 {
-    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->SetFPS(limit);
+    if (ZC_WindowHolder::upWindowHolder) ZC_WindowHolder::upWindowHolder->SetFPS(limit);
 }
 
 float ZC_Window::GetPreviousFrameTime() noexcept
 {
-    return ZC_WindowHolder::pWindowHolder ? ZC_WindowHolder::pWindowHolder->GetPreviousFrameTime() : 0.f;
+    return ZC_WindowHolder::upWindowHolder ? ZC_WindowHolder::upWindowHolder->GetPreviousFrameTime() : 0.f;
 }
 
 void ZC_Window::GetSize(int& width, int& height)
 {
-    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->VGetSize(width, height);
+    if (ZC_WindowHolder::upWindowHolder) ZC_WindowHolder::upWindowHolder->VGetSize(width, height);
 }
 
 void ZC_Window::HideCursor()
 {
-    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->VHideCursor();
+    if (ZC_WindowHolder::upWindowHolder) ZC_WindowHolder::upWindowHolder->VHideCursor();
 }
 
 void ZC_Window::ShowCursor()
 {
-    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->VShowCursor();
+    if (ZC_WindowHolder::upWindowHolder) ZC_WindowHolder::upWindowHolder->VShowCursor();
 }
 
 void ZC_Window::LimitCursor()
 {
-    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->VLimitCursor();
+    if (ZC_WindowHolder::upWindowHolder) ZC_WindowHolder::upWindowHolder->VLimitCursor();
 }
 
 void ZC_Window::UnlimitCursor()
 {
-    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->VUnlimitCursor();
+    if (ZC_WindowHolder::upWindowHolder) ZC_WindowHolder::upWindowHolder->VUnlimitCursor();
 }
 
 void ZC_Window::RuntMainCycle()
 {
-    if (ZC_WindowHolder::pWindowHolder) ZC_WindowHolder::pWindowHolder->RunMainCycle();
+    if (ZC_WindowHolder::upWindowHolder) ZC_WindowHolder::upWindowHolder->RunMainCycle();
 }

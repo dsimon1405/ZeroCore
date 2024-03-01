@@ -16,8 +16,7 @@ namespace ZC_Window
     enum Flags
     {
         ZC_Window_None                = 0,
-        ZC_Window_Border              = 1 << 1,   //  if don't set - fullscreen; if set and (width or height <= 0) use fullscreen with border(reduced size will be 800x600),
-                                                  //  otherwise bordered with width and height windowю
+        ZC_Window_Border              = 1 << 1,   //  if don't set - fullscreen; if set and (width or height <= 0) use fullscreen with border(reduced size will be 800x600), otherwise bordered with width and height windowю
         ZC_Window_Multisampling_1     = 1 << 2,   //  antialiasing with 1 sample on pixel (if Multisampling flags more than one, will take greatest).
         ZC_Window_Multisampling_2     = 1 << 3,   //  antialiasing with 2 samples on pixel (if Multisampling flags more than one, will take greatest).
         ZC_Window_Multisampling_3     = 1 << 4,   //  antialiasing with 3 samples on pixel (if Multisampling flags more than one, will take greatest).

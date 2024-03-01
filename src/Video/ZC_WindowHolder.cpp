@@ -1,18 +1,16 @@
 #include "ZC_WindowHolder.h"
 
-// #include <Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
-#include <Video/OpenGL/Renderer/ZC_Renderer.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
 #ifdef ZC_SDL_VIDEO
 #include "PC/SDL/ZC_SDL_Window.h"
 bool ZC_WindowHolder::MakeWindowHolder(int flags, int width, int height, const char* name)
 {
-    pWindowHolder = ZC_uptrMakeFromChild<ZC_WindowHolder, ZC_SDL_Window>(flags, width, height, name);
-    if (!pWindowHolder) return false;
-    LoadShProgs();
-    ZC_Renderer::Init(true);
+    upWindowHolder = ZC_uptrMakeFromChild<ZC_WindowHolder, ZC_SDL_Window>(flags, width, height, name);
+    if (!upWindowHolder) return false;
+    upWindowHolder->LoadShProgs();
+    upWindowHolder->renderer.Configure(true);  //  make user chois use 3D grapfics or not in ZC_Window::Flags ? (depth test) (need change stencil test =( )
     return true;
 }
 // #elif defined(ZC_ANDROID_NATIVE_APP_GLUE)
@@ -28,8 +26,7 @@ void ZC_WindowHolder::RunMainCycle()
     while (true)
     {
         if (!(upEventsHolder->PollEvents(fps.StartNewFrame()))) break;
-        ZC_Renderer::DrawAll();
-        pWindowHolder->SwapBuffer();                                          //  передать функцию в ZC_Renderer
+        renderer.DrawAll();
     }
 }
 
@@ -45,7 +42,8 @@ float ZC_WindowHolder::GetPreviousFrameTime() const noexcept
 
 ZC_WindowHolder::ZC_WindowHolder()
     : upEventsHolder(ZC_EventsHolder::MakeEventsHolder()),
-	fps(ZC_FPS::Seconds)
+	fps(ZC_FPS::Seconds),
+    renderer({ &ZC_WindowHolder::SwapBuffer, this })
 {}
 
 void ZC_WindowHolder::LoadShProgs()

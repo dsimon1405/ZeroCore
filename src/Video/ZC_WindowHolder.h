@@ -2,11 +2,12 @@
 
 #include <Events/ZC_EventsHolder.h>
 #include <Tools/Time/ZC_FPS.h>
+#include <Video/OpenGL/Renderer/ZC_Renderer.h>
 
 class ZC_WindowHolder
 {
 public:
-    static inline ZC_uptr<ZC_WindowHolder> pWindowHolder;
+    static inline ZC_uptr<ZC_WindowHolder> upWindowHolder;
 
     static bool MakeWindowHolder(int flags, int width, int height, const char* name);
 
@@ -28,8 +29,9 @@ protected:
 private:
     ZC_uptr<ZC_EventsHolder> upEventsHolder;
 	ZC_FPS fps;
+    ZC_Renderer renderer;
 
-    static void LoadShProgs();
+    void LoadShProgs();
 
     /*
     Changes the current buffer to a buffer with a prepared sketch

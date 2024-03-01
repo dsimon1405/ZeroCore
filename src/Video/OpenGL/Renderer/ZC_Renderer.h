@@ -2,25 +2,32 @@
 
 #include <ZC/Video/OpenGL/Renderer/ZC_RendererSet.h>
 #include "ZC_RBufferCleaner.h"
+#include <ZC/Tools/Function/ZC_Function.h>
 
 #include <map>
 #include <forward_list>
 
 struct ZC_Renderer
 {
-    ZC_Renderer() = delete;
-    static void Init(bool enableDepthTest);
-    static void DrawAll();
+    ZC_Renderer(ZC_Function<void()>&& _funcSwapBuffer);
+    ~ZC_Renderer();
+
     typedef typename ZC_RendererSet::Level RSLevel;
     static void Add(RSLevel lvl, ZC_RendererSet* pRS);
     static void Erase(RSLevel lvl, ZC_RendererSet* pRS);
 
-private:
-    static inline std::map<RSLevel, std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>> rendererSets;
-    static inline ZC_ShProg* pShPStencil;
-    static inline ZC_RBufferCleaner bufferCleaner;
+    void Configure(bool useDepthTest);
+    void DrawAll();
 
-    static void DrawDrawing(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& fl);
-    static void DrawStencil(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& fl);
-    static void DrawImGui(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& fl);
+private:
+    static inline ZC_Renderer* pRenderer;
+
+    std::map<RSLevel, std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>> rendererSets;
+    ZC_ShProg* pShPStencil;
+    ZC_RBufferCleaner bufferCleaner;
+    ZC_Function<void()> funcSwapBuffer;
+
+    void DrawDrawing(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& fl);
+    void DrawStencil(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& fl);
+    void DrawImGui(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& fl);
 };
