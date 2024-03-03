@@ -23,7 +23,7 @@ void ZC_Mouse::MouseMove(float _x, float _y, float xRel, float yRel, float time)
     sigMove.CallLastConnected(x, y, xRel, yRel, time);
 }
 
-void ZC_Mouse::MouseScroll(float x, float y, float time)
+void ZC_Mouse::MouseScroll(float rotationVertical, float rotationHorizontal, float time)
 {
-    sigScroll.CallLastConnected(x, y, time);
+    sigScroll.CallLastConnected(rotationVertical, rotationHorizontal, time);
 }

@@ -28,8 +28,8 @@ public:
 
     Params:
     func - function for binding (binding function params:
-                                                        first - scroll axis x.
-                                                        second - scroll axis y.
+                                                        first - scroll vertical.
+                                                        second - scroll horizontal.
                                                         third - previous frame time.
 
     Return:
@@ -39,7 +39,7 @@ public:
     void GetMousePosition(float& _x, float& _y) noexcept;
 
     void MouseMove(float _x, float _y, float _xRel, float _yRel, float time);
-    void MouseScroll(float,float,float);
+    void MouseScroll(float rotationVertical, float rotationHorizontal, float time);
 
 private:
     ZC_Signal<void(float,float,float,float,float)> sigMove { false };
