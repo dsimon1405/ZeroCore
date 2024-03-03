@@ -42,10 +42,7 @@ bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
         }
     }
     button.CallActiveButtons(previousFrameTime);
-    sigHandleEventsEnd();
-// #ifdef ZC_IMGUI
-//     ZC_IGWindow::PollEventEnds();	//	if some one else need PollEventEnds need create a signal for it  !!!
-// #endif
+    sigHandleEventsEnd(previousFrameTime);
     return true;
 }
 

@@ -18,8 +18,8 @@ public:
 protected:
     ZC_Button button;
     ZC_Mouse mouse;
+    ZC_Signal<void(float)> sigHandleEventsEnd { false };
     ZC_Signal<void(float,float)> sigWindowResize { false };
-    ZC_Signal<void()> sigHandleEventsEnd { false };
 
     ZC_EventsHolder();
 

@@ -35,11 +35,7 @@ public:
         uint value = 0;
 
         //  index - that should be true in Format.isUsing array
-        UsingFormatsPacker& Pack(uchar index)
-        {
-            value = (1 << (8 + index)) | (value & 0xFFFFFF00) | ((value & 0xFF) + 1);
-            return *this;
-        }
+        UsingFormatsPacker& Pack(uchar index);
     };
 
     struct FormatShVLayoutAndUsingFormatsPacker

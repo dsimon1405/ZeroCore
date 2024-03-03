@@ -112,6 +112,15 @@ ZC_DA<typename ZC_VAOConfig::Format> ZC_VAOConfig::GetFormats(FormatShVLayout sp
 // }
 
 
+//  UsingFormatsPacker
+
+typename ZC_VAOConfig::UsingFormatsPacker& ZC_VAOConfig::UsingFormatsPacker::Pack(uchar index)
+{
+    value = (1 << (8 + index)) | (value & 0xFFFFFF00) | ((value & 0xFF) + 1);
+    return *this;
+}
+
+
 //  Format
 
 ZC_VAOConfig::Format::Format(GLuint _attribindex, GLint _size, GLenum _type, GLboolean _normalized)

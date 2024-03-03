@@ -18,4 +18,5 @@ ZC_EventsHolder::~ZC_EventsHolder()
 ZC_EventsHolder::ZC_EventsHolder()
 {
     pEventsHolder = this;
+    mouse.Init();
 }

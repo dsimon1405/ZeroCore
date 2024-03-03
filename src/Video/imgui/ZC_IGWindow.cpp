@@ -26,7 +26,7 @@ bool ZC_IGWindow::IsCursorInOneOfWindows() noexcept
     return isCursorInOneOfWindows;
 }
 
-void ZC_IGWindow::Make_isCursorInOneOfWindows_false() noexcept
+void ZC_IGWindow::Make_isCursorInOneOfWindows_false(float time) noexcept
 {
     isCursorInOneOfWindows = false;
 }
@@ -143,7 +143,7 @@ void ZC_IGWindow::SetPosition()
     needSetPosition = false;
 }
 
-void ZC_IGWindow::ChangeDrawingState()
+void ZC_IGWindow::ChangeDrawingState(float time)
 {
     if (isDrawing) AddToRenderer(Level::ImGui);
     else EraseFromRenderer(Level::ImGui);

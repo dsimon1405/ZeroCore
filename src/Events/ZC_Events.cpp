@@ -17,9 +17,19 @@ ZC_SConnection ZC_Events::ConnectMouseMove(ZC_Function<void(float,float,float,fl
     return ZC_EventsHolder::pEventsHolder ? ZC_EventsHolder::pEventsHolder->mouse.ConnectMove(std::move(func)) : ZC_SConnection();
 }
 
+ZC_SConnection ZC_Events::ConnectMouseMoveOnceInFrame(ZC_Function<void(float,float,float,float,float)>&& func)
+{
+    return ZC_EventsHolder::pEventsHolder ? ZC_EventsHolder::pEventsHolder->mouse.ConnectMoveOnceInFrame(std::move(func)) : ZC_SConnection();
+}
+
 ZC_SConnection ZC_Events::ConnectMouseScroll(ZC_Function<void(float,float,float)>&& func)
 {
     return ZC_EventsHolder::pEventsHolder ? ZC_EventsHolder::pEventsHolder->mouse.ConnectScroll(std::move(func)) : ZC_SConnection();
+}
+
+ZC_SConnection ZC_Events::ConnectMouseScrollOnceInFrame(ZC_Function<void(float,float,float)>&& func)
+{
+    return ZC_EventsHolder::pEventsHolder ? ZC_EventsHolder::pEventsHolder->mouse.ConnectScrollOnceInFrame(std::move(func)) : ZC_SConnection();
 }
 
 ZC_SConnection ZC_Events::ConnectWindowResize(ZC_Function<void(float,float)>&& func)
@@ -27,7 +37,7 @@ ZC_SConnection ZC_Events::ConnectWindowResize(ZC_Function<void(float,float)>&& f
     return ZC_EventsHolder::pEventsHolder ? ZC_EventsHolder::pEventsHolder->sigWindowResize.Connect(std::move(func)) : ZC_SConnection();
 }
 
-ZC_SConnection ZC_Events::ConnectHandleEventsEnd(ZC_Function<void()>&& func)
+ZC_SConnection ZC_Events::ConnectHandleEventsEnd(ZC_Function<void(float)>&& func)
 {
     return ZC_EventsHolder::pEventsHolder ? ZC_EventsHolder::pEventsHolder->sigHandleEventsEnd.Connect(std::move(func)) : ZC_SConnection();
 }

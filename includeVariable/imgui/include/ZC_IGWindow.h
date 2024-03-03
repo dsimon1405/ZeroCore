@@ -90,8 +90,8 @@ private:
     void ZC_WindowResized(float width, float height);
     //  set position of next window calls before ImGui::Begin();
     void SetPosition();
-    void ChangeDrawingState();
+    void ChangeDrawingState(float time);
 
     //  refresh for next frame in events handle events end signal
-    static void Make_isCursorInOneOfWindows_false() noexcept;
+    static void Make_isCursorInOneOfWindows_false(float time) noexcept;
 };

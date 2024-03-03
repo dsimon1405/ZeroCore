@@ -6,44 +6,27 @@
 class ZC_Mouse
 {
 public:
-
-    /*
-    Binds the function to the move event.
-
-    Params:
-    func - binding function (binding function parameters:
-                                                        first - X coordinates in the window,
-                                                        second - Y coordinates in the window,
-                                                        third - changes along the X axis,
-                                                        fourth - changes along the Y axis.
-                                                        fifth - previous frame time.
-
-    Return:
-    Connection to event.
-    */
+    void Init();
     ZC_SConnection ConnectMove(ZC_Function<void(float,float,float,float,float)>&& func);
-
-    /*
-    Binds the function to the scroll event.
-
-    Params:
-    func - function for binding (binding function params:
-                                                        first - scroll vertical.
-                                                        second - scroll horizontal.
-                                                        third - previous frame time.
-
-    Return:
-    Connection to event.
-    */
+    ZC_SConnection ConnectMoveOnceInFrame(ZC_Function<void(float,float,float,float,float)>&& func);
     ZC_SConnection ConnectScroll(ZC_Function<void(float,float,float)>&& func);
+    ZC_SConnection ConnectScrollOnceInFrame(ZC_Function<void(float,float,float)>&& func);
     void GetMousePosition(float& _x, float& _y) noexcept;
-
-    void MouseMove(float _x, float _y, float _xRel, float _yRel, float time);
-    void MouseScroll(float rotationVertical, float rotationHorizontal, float time);
+    void MouseMove(float _cursorPosX, float _cursorPosY, float _cursorRelX, float _cursorRelY, float time);
+    void MouseScroll(float horizontal, float vertical, float time);
 
 private:
     ZC_Signal<void(float,float,float,float,float)> sigMove { false };
+    ZC_Signal<void(float,float,float,float,float)> sigMoveOnceInFrame { false };
     ZC_Signal<void(float,float,float)> sigScroll { false };
-    float x = 0,
-        y = 0;
+    ZC_Signal<void(float,float,float)> sigScrollOnceInFrame { false };
+    float cursorPosX = 0,
+        cursorPosY = 0,
+        cursorRelX = 0,
+        cursorRelY = 0,
+        scrolledHorizontal = 0,
+        scrolledVertical = 0;
+
+    void MoveOnceInFrame(float time);
+    void ScrollOnceInFrame(float time);
 };
