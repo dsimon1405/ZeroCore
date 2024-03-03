@@ -3,6 +3,8 @@
 #include <ZC/Video/OpenGL/Renderer/ZC_RendererSetAndDrawingSet.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
+#include <algorithm>
+
 ZC_RSTexs::ZC_RSTexs(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw,
         std::forward_list<ZC_Buffer>&& _buffers, std::vector<TexSet>&& _texSets)
     : ZC_RS(pShPInitSet, std::move(_vao), std::move(_upDraw), std::move(_buffers)),

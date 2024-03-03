@@ -2,6 +2,8 @@
 
 #include <Video/OpenGL/ZC_OpenGL.h>
 
+#include <algorithm>
+
 void ZC_ShProgs::Load(Name* pShPName, size_t ShPNameCount)
 {
     for (size_t i = 0; i < ShPNameCount; ++i)

@@ -5,6 +5,7 @@
 #include <ZC/Events/ZC_Events.h>
 
 #include <imgui.h>
+#include <algorithm>
 
 ZC_IGWindow::~ZC_IGWindow()
 {

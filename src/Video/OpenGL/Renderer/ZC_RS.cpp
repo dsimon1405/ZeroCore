@@ -4,6 +4,8 @@
 #include "ZC_Renderer.h"
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
+#include <algorithm>
+
 ZC_RS::ZC_RS(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw,
         std::forward_list<ZC_Buffer>&& _buffers)
     : pShP(&pShPInitSet->shProg),

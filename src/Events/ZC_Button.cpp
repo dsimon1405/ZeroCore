@@ -2,6 +2,8 @@
 
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 
+#include <algorithm>
+
 ZC_SConnection ZC_Button::ConnectDown(ZC_ButtonID buttonId, ZC_Function<void(float)>&& function)
 {
     auto downConnectedButtonsIter = std::find(downConnectedButtons.begin(), downConnectedButtons.end(), buttonId);
