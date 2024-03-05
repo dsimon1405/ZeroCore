@@ -138,7 +138,9 @@ bool ZC_SDL_Window::LoadOpenGLFunctions()
     if (!pglDisable) { ZC_ErrorLogger::Err("glDisable SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     //  depth
     pglDepthFunc = (PFNGLDEPTHFUNCPROC)SDL_GL_GetProcAddress("glDepthFunc");
-    if (!pglDepthFunc) { ZC_ErrorLogger::Err("glDisable SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    if (!pglDepthFunc) { ZC_ErrorLogger::Err("glDepthFunc SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglDepthMask = (PFNGLDEPTHMASKPROC)SDL_GL_GetProcAddress("glDepthMask");
+    if (!pglDepthMask) { ZC_ErrorLogger::Err("glDepthMask SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     
     // auto q = glGetString(GL_VERSION);
     // std::string a(reinterpret_cast<const char *>(glGetString(GL_VERSION)));
@@ -230,5 +232,5 @@ PFNGLSTENCILFUNCPROC pglStencilFunc = nullptr;
 PFNGLSTENCILOPPROC pglStencilOp = nullptr;
 
 //  depth
-PFNGLDEPTHFUNCPROC pglDepthFunc = nullptr; 
-#define glDepthFunc pglDepthFunc
+PFNGLDEPTHFUNCPROC pglDepthFunc = nullptr;
+PFNGLDEPTHMASKPROC pglDepthMask = nullptr;

@@ -27,7 +27,7 @@ private:
     ZC_RBufferCleaner bufferCleaner;
     ZC_Function<void()> funcSwapBuffer;
 
-    void DrawDrawing(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& fl);
-    void DrawStencil(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& fl);
-    void DrawImGui(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& fl);
+    void DrawDrawing(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& mapShPRS);
+    void DrawStencil(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& mapShPRS);
+    void DrawImGui(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& mapShPRS);
 };

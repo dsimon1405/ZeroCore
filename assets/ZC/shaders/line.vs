@@ -13,7 +13,7 @@ out vec3 vColor;
 void main()
 {
     vec4 position = unModel * vec4(inPosition, 1.f);
-    vec3 dirPosToCam = normalize(camPos - vec3(position).xyz) * 0.04f;
+    vec3 dirPosToCam = normalize(camPos - vec3(position).xyz) * 0.01f;
     vec3 newPos = inPosition + dirPosToCam;
     gl_Position = perspView * unModel * vec4(newPos, 1.f);
 

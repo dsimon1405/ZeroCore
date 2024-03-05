@@ -4,6 +4,7 @@
 
 #define ZC_OPEN_GL_COLLOR_BUFFER_SIZE 8
 #define ZC_OPEN_GL_DEPTH_BUFFER_SIZE 24
+#define ZC_OPEN_GL_STENCIL_BUFFER_SIZE 8
 
 void ZC_OpenGLAssigneErrorCallback();
 
@@ -218,5 +219,8 @@ extern PFNGLSTENCILOPPROC pglStencilOp;
 
 extern PFNGLDEPTHFUNCPROC pglDepthFunc; 
 #define glDepthFunc pglDepthFunc
+
+extern PFNGLDEPTHMASKPROC pglDepthMask;
+#define glDepthMask pglDepthMask
 
 #endif

@@ -82,6 +82,11 @@ void ZC_RS::LevelController::LevelStencil::Draw(ZC_uptr<ZC_GLDraw>& upDraw, std:
 {
     if (isFirstDrawing)
     {
+        SimpleDraw(upDraw, pTextures);
+        isFirstDrawing = false;
+    }
+    else 
+    {
         for (auto pDrSet : drawingSets)
         {
             typedef typename ZC_Uniform::Name UName;
@@ -92,11 +97,6 @@ void ZC_RS::LevelController::LevelStencil::Draw(ZC_uptr<ZC_GLDraw>& upDraw, std:
             pActiveUniformsStencil->Activate();
             upDraw->Draw();
         }
-        isFirstDrawing = false;
-    }
-    else 
-    {
-        SimpleDraw(upDraw, pTextures);
         isFirstDrawing = true;
     }
 }

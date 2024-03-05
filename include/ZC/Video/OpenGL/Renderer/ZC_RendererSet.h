@@ -18,7 +18,6 @@ public:
 
         Drawing = 0,
         Stencil,        //  must be after scene objects!
-
 #ifdef ZC_IMGUI
         ImGui,          //  before None
 #endif

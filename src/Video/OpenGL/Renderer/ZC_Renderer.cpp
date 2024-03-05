@@ -92,26 +92,26 @@ void ZC_Renderer::DrawDrawing(std::map<ZC_ShProg*, std::forward_list<ZC_Renderer
 
 void ZC_Renderer::DrawStencil(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& mapShPRS)
 {
-    pRenderer->bufferCleaner.GlEnable(GL_STENCIL_TEST);
+    bufferCleaner.GlEnable(GL_STENCIL_TEST);
+
     glStencilFunc(GL_ALWAYS, 1, 255);
     glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-
-    pRenderer->bufferCleaner.GlDisable(GL_DEPTH_TEST);
-    pRenderer->pShPStencil->UseProgram();
-    for (auto pairShPRS : mapShPRS)
-        for (auto pRendSet : pairShPRS.second)
-            pRendSet->Draw(RSLevel::Stencil);
-    pRenderer->bufferCleaner.GlEnable(GL_DEPTH_TEST);
-
-    // glStencilFunc(GL_ALWAYS, 1, 255);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    glStencilMask(255);
     for (auto pairShPRS : mapShPRS)
     {
         pairShPRS.first->UseProgram();
         for (auto pRendSet : pairShPRS.second) pRendSet->Draw(RSLevel::Stencil);
     }
+
+    glStencilFunc(GL_NOTEQUAL, 1, 255);
+    bufferCleaner.GlDisable(GL_DEPTH_TEST);
+    pShPStencil->UseProgram();
+    for (auto pairShPRS : mapShPRS)
+        for (auto pRendSet : pairShPRS.second)
+            pRendSet->Draw(RSLevel::Stencil);
+    bufferCleaner.GlEnable(GL_DEPTH_TEST);
     
-    pRenderer->bufferCleaner.GlDisable(GL_STENCIL_TEST);
+    bufferCleaner.GlDisable(GL_STENCIL_TEST);
 }
 
 void ZC_Renderer::DrawImGui(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& mapShPRS)

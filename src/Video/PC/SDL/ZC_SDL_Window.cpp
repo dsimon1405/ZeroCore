@@ -135,12 +135,22 @@ bool ZC_SDL_Window::SetOpenGLAttributes(int samplesCount)
 		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
 		return false;
 	}
+	if (SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, ZC_OPEN_GL_COLLOR_BUFFER_SIZE) != 0)
+	{
+		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		return false;
+	}
 	if (SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, ZC_OPEN_GL_COLLOR_BUFFER_SIZE) != 0)
 	{
 		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
 		return false;
 	}
 	if (SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, ZC_OPEN_GL_DEPTH_BUFFER_SIZE) != 0)
+	{
+		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		return false;
+	}
+	if (SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, ZC_OPEN_GL_STENCIL_BUFFER_SIZE) != 0)
 	{
 		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
 		return false;
