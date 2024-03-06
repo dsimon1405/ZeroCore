@@ -26,11 +26,11 @@ struct ZC_Uniform
     void GetUniformLocation(ZC_ShProg& shP);
 };
 
-struct ZC_U1ui : public ZC_Uniform
+struct ZC_U1uiValue : public ZC_Uniform
 {
     GLuint value;
 
-    ZC_U1ui(Name _name, GLint _location = -1);
+    ZC_U1uiValue(Name _name, GLint _location = -1);
 
     void Activate() override;
     void Set(void* _value) override;
@@ -45,11 +45,23 @@ struct ZC_UCount : public ZC_Uniform
     ZC_UCount(Name _name, GLsizei _count, GLint _location);
 };
 
-struct ZC_U3fv : public ZC_UCount
+struct ZC_U3fvValue : public ZC_UCount
 {
     ZC_Vec3<float> value;
 
-    ZC_U3fv(Name _name, GLsizei _count, GLint _location = -1);
+    ZC_U3fvValue(Name _name, GLsizei _count, GLint _location = -1);
+
+    void Activate() override;
+    void Set(void* _value) override;
+    void* Get() override;
+    ZC_uptr<ZC_Uniform> GetCopy() override;
+};
+
+struct ZC_U4fvValue : public ZC_UCount
+{
+    ZC_Vec4<float> value;
+
+    ZC_U4fvValue(Name _name, GLsizei _count, GLint _location = -1);
 
     void Activate() override;
     void Set(void* _value) override;
@@ -64,11 +76,11 @@ struct ZC_UTranspose : public ZC_UCount
     ZC_UTranspose(Name _name, GLsizei _count, GLboolean _transpose, GLint _location);
 };
 
-struct ZC_UMatrix4fv : public ZC_UTranspose
+struct ZC_UMatrix4fvValue : public ZC_UTranspose
 {
     ZC_Mat4<float> value;
 
-    ZC_UMatrix4fv(Name _name, GLsizei _count, GLboolean _transpose, GLint _location = -1);
+    ZC_UMatrix4fvValue(Name _name, GLsizei _count, GLboolean _transpose, GLint _location = -1);
 
     void Activate() override;
     void Set(void* _value) override;
@@ -78,7 +90,7 @@ struct ZC_UMatrix4fv : public ZC_UTranspose
 
 struct ZC_UMatrix4fvPointer : public ZC_UTranspose
 {
-    ZC_Mat4<float>* value;
+    ZC_Mat4<float>* pointer;
 
     ZC_UMatrix4fvPointer(Name _name, GLsizei _count, GLboolean _transpose, GLint _location = -1);
 

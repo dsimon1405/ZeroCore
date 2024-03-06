@@ -52,27 +52,3 @@ GLint ZC_ShProg::GetUniformLocation(const char* name)
     if (result == -1) ZC_ErrorLogger::Err("glGetUniformLocation() fail!", __FILE__, __LINE__);
     return result;
 }
-
-// bool ZC_ShProg::UniformMatrix4fv(const char* name, const float* pData)
-// {
-//     GLint location = glGetUniformLocation(id, name);
-//     if(location == -1) return false;
-//     glUniformMatrix4fv(location, 1, GL_FALSE, pData);
-//     return true;
-// }
-
-// bool ZC_ShProg::Uniform1i(const char* name, int data)
-// {
-//     GLint location = glGetUniformLocation(id, name);
-//     if(location == -1) return false;
-//     glUniform1i(location, data);
-//     return true;
-// }
-
-// bool ZC_ShProg::Uniform3fv(const char* name, const float* pData)
-// {
-//     GLint location = glGetUniformLocation(id, name);
-//     if(location == -1) return false;
-//     glUniform3fv(location, 1, pData);
-//     return true;
-// }

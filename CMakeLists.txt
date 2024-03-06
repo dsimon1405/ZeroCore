@@ -134,6 +134,7 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShProgs.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShVertex.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShFragment.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShGeometry.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_Buffer.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_Buffers.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_UBO.cpp

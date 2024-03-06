@@ -95,6 +95,7 @@ ZC_DA<typename ZC_VAOConfig::Format> ZC_VAOConfig::GetFormats(FormatShVLayout sp
     case F_3_0__F_2_1: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 2, GL_FLOAT, GL_FALSE } }, 2 };
     case F_3_0__F_2_3: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 3, 2, GL_FLOAT, GL_FALSE } }, 2 };
     case F_3_0__UB_3_1: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
+    case F_4_0__UB_3_1: return { new Format[]{ { 0, 4, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
     case F_3_0__UB_3_1__I_2_10_10_10_REV_1_2: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE }, { 2, 4, GL_INT_2_10_10_10_REV, GL_TRUE } }, 3 };
     default: return {};
     }

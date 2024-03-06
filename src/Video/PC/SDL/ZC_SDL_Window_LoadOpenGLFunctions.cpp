@@ -62,6 +62,8 @@ bool ZC_SDL_Window::LoadOpenGLFunctions()
     if (!pglUniform1i) { ZC_ErrorLogger::Err("glUniform1i SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglUniform3fv = (PFNGLUNIFORM3FVPROC)SDL_GL_GetProcAddress("glUniform3fv");
     if (!pglUniform3fv) { ZC_ErrorLogger::Err("glUniform3fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform4fv = (PFNGLUNIFORM4FVPROC)SDL_GL_GetProcAddress("glUniform4fv");
+    if (!pglUniform4fv) { ZC_ErrorLogger::Err("glUniform4fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglUniform1ui = (PFNGLUNIFORM1UIPROC)SDL_GL_GetProcAddress("glUniform1ui");
     if (!pglUniform1ui) { ZC_ErrorLogger::Err("glUniform1ui SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     //  buffer
@@ -185,6 +187,7 @@ PFNGLGETUNIFORMLOCATIONPROC pglGetUniformLocation = nullptr;
 PFNGLUNIFORMMATRIX4FVPROC pglUniformMatrix4fv = nullptr;
 PFNGLUNIFORM1IPROC pglUniform1i = nullptr;
 PFNGLUNIFORM3FVPROC pglUniform3fv = nullptr;
+PFNGLUNIFORM4FVPROC pglUniform4fv = nullptr;
 PFNGLUNIFORM1UIPROC pglUniform1ui = nullptr;
 
 //  buffer

@@ -11,8 +11,9 @@ void ZC_ShProgs::Load(Name* pShPName, size_t ShPNameCount)
         ShNames shNames = GetShNames(pShPName[i]);
         auto vertexData = shVertex.GetSet(shNames.vName, shNames.vaoConFSVL);
         auto fragmentData = shFragment.GetSet(shNames.fName);
+        auto pGeometryShader = shGeometry.GetShader(shNames.gName);
 
-        ZC_ShProg shProg(vertexData.shader->id, fragmentData.shader->id, 0);
+        ZC_ShProg shProg(vertexData.shader->id, fragmentData.shader->id, pGeometryShader ? pGeometryShader->id : 0);
 
         shProg.UseProgram();
         
@@ -40,12 +41,13 @@ typename ZC_ShProgs::ShNames ZC_ShProgs::GetShNames(Name name) const noexcept
 {
     switch (name)
     {
-    case Name::ZCR_Color: return {VName::color, VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2, FName::color};
-    case Name::ZCR_Point: return {VName::point, VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2, FName::color};
-    case Name::ZCR_Line: return {VName::line, VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2, FName::color};
-    case Name::ZCR_Stencil: return {VName::stencil, VAOConFSVL::None, FName::color};
-    case Name::ZCR_Texture_Vertex_TexCoord: return {VName::texture, VAOConFSVL::F_3_0__F_2_3, FName::texture};
-    case Name::ZCR_Mesh: return {VName::mesh, VAOConFSVL::F_3_0, FName::color};
+    case Name::ZCR_ColorFigure: return {VName::colorFigure, VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2, FName::color, GName::none};
+    case Name::ZCR_Point: return {VName::point, VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2, FName::color, GName::none};
+    case Name::ZCR_LineFigure: return {VName::lineFigure, VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2, FName::color, GName::none};
+    case Name::ZCR_Stencil: return {VName::stencil, VAOConFSVL::None, FName::color, GName::none};
+    case Name::ZCR_Texture_Vertex_TexCoord: return {VName::texture, VAOConFSVL::F_3_0__F_2_3, FName::texture, GName::none};
+    case Name::ZCR_LineMesh: return {VName::lineMesh, VAOConFSVL::F_3_0, FName::color, GName::none};
+    case Name::ZCR_LineOrientation3D: return {VName::lineOrientation3D, VAOConFSVL::F_4_0__UB_3_1, FName::color, GName::lineOrientation3D};
     default: return {};
     }
 }

@@ -25,3 +25,20 @@ typedef unsigned char uchar;
 typedef unsigned short ushort;
 
 #define ZC_ROUND(val) (val + 0.5)   //  round float or double to integer value
+
+/*
+Packs color from 3 float channels into one unsigned int.
+
+Params:
+r - red color (diaposone 0.f - 1.f).
+g - green color (diaposone 0.f - 1.f).
+b - blue color (diaposone 0.f - 1.f).
+
+Return:
+On success packed color, otherwise 0.
+*/
+constexpr uint ZC_PackColorFloatToUInt(float r, float g, float b) noexcept
+{
+    if (r < 0.f || r > 1.f || g < 0.f || g > 1.f || b < 0.f || b > 1.f) return 0;
+    return ((uint)(r * 255.f) << 8 | (uint)(g * 255.f)) << 8 | (uint)(b * 255.f);
+};

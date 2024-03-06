@@ -5,6 +5,7 @@
 #include <ZC/Video/OpenGL/Texture/ZC_TexSets.h>
 #include "ZC_ShVertex.h"
 #include "ZC_ShFragment.h"
+#include "ZC_ShGeometry.h"
 
 #include <forward_list>
 
@@ -13,12 +14,13 @@ class ZC_ShProgs
 public:
     enum Name
     {
-        ZCR_Color,
+        ZCR_ColorFigure,
         ZCR_Point,
-        ZCR_Line,
+        ZCR_LineFigure,
         ZCR_Stencil,
         ZCR_Texture_Vertex_TexCoord,
-        ZCR_Mesh,
+        ZCR_LineMesh,
+        ZCR_LineOrientation3D
     };
 
     typedef typename ZC_VAOConfig::FormatShVLayoutAndUsingFormatsPacker VAOConData;
@@ -45,15 +47,18 @@ private:
     
     ZC_ShVertex shVertex;
     ZC_ShFragment shFragment;
+    ZC_ShGeometry shGeometry;
 
     typedef typename ZC_ShVertex::Name VName;
     typedef typename ZC_ShFragment::Name FName;
+    typedef typename ZC_ShGeometry::Name GName;
     typedef typename ZC_VAOConfig::FormatShVLayout VAOConFSVL;
     struct ShNames
     {
         VName vName;
         VAOConFSVL vaoConFSVL;
         FName fName;
+        GName gName;
     };
 
     ShNames GetShNames(Name name) const noexcept;
