@@ -47,6 +47,11 @@ ZC_Camera& ZC_Camera::SetUp(const ZC_Vec3<float>& _up) noexcept
     return *this;
 }
 
+float ZC_Camera::GetWindowAspect() const noexcept
+{
+    return perspView.persp.aspect;
+}
+
 ZC_Camera::ZC_Camera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho)
     : perspView(_perspView),
     ortho(_ortho)

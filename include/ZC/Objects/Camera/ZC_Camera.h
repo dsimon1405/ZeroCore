@@ -29,6 +29,7 @@ public:
     ZC_Camera& SetCamPos(const ZC_Vec3<float>& _camPos) noexcept;
     ZC_Camera& SetLookOn(const ZC_Vec3<float>& _lookOn) noexcept;
     ZC_Camera& SetUp(const ZC_Vec3<float>& _wUp) noexcept;
+    float GetWindowAspect() const noexcept;
 
 private:
     ZC_PerspView perspView;
