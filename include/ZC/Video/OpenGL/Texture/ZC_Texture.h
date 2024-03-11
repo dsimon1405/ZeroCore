@@ -15,6 +15,8 @@ public:
 
     ~ZC_Texture();
 
+    void Bind();
+    void Unbind();
     void ActiveTexture(GLuint num = 0);
 
 // private:

@@ -1,6 +1,6 @@
 #include <ZC/Video/OpenGL/Renderer/ZC_RendererSetAndDrawingSet.h>
 
-ZC_RendererSetAndDrawingSet::ZC_RendererSetAndDrawingSet(ZC_RendererSet* _pRendSet, RSDS&& _drawingSet)
+ZC_RendererSetAndDrawingSet::ZC_RendererSetAndDrawingSet(ZC_RendererSet* _pRendSet, RSDrawingSet&& _drawingSet)
     : pRendSet(_pRendSet),
     drawingSet(std::move(_drawingSet))
 {}

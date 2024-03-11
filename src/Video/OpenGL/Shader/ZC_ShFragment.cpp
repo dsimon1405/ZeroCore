@@ -18,7 +18,8 @@ ZC_Shader* ZC_ShFragment::GetShader(Name name)
     switch (name)
     {
     case Name::color: path = ZC_FSPath(shadersPath).append("color.fs").string(); break;
-    case Name::texture: path = ZC_FSPath(shadersPath).append("tex.fs").string(); break;
+    case Name::colorTex: path = ZC_FSPath(shadersPath).append("colorTex.fs").string(); break;
+    case Name::text: path = ZC_FSPath(shadersPath).append("text.fs").string(); break;
     }
 
     return &(shaders.emplace(name, ZC_Shader(ZC_Shader::ReadShaderFile(path.c_str(), GL_FRAGMENT_SHADER).pHead, GL_FRAGMENT_SHADER)).first->second);
@@ -26,7 +27,7 @@ ZC_Shader* ZC_ShFragment::GetShader(Name name)
 
 typename ZC_ShFragment::Set ZC_ShFragment::GetVAOAndUniformData(Name name)
 {
-    // typedef typename ZC_Uniform::Name UName;
+    typedef typename ZC_Uniform::Name UName;
     typedef typename ZC_TexSets::TextureName TName;
     switch (name)
     {
@@ -36,11 +37,17 @@ typename ZC_ShFragment::Set ZC_ShFragment::GetVAOAndUniformData(Name name)
         {},
         {}
     };
-    case Name::texture: return
+    case Name::colorTex: return
     {
         GetShader(name),
         { { new TName[]{ TName::texColor }, 1 } },
         {}
+    };
+    case Name::text: return
+    {
+        GetShader(name),
+        { { new TName[]{ TName::texColor }, 1 } },
+        { ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_U1uiValue(UName::unColor) }, 1) }
     };
     default: return {};
     }

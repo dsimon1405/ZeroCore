@@ -11,7 +11,8 @@ struct ZC_ShFragment
     enum Name
     {
         color,
-        texture,
+        colorTex,
+        text,
     };
 
     struct Set

@@ -1,7 +1,7 @@
 #include "ZC/Video/OpenGL/Texture/ZC_Textures.h"
 
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
-#include <ZC/Tools/Math/ZC_Limits.h>
+#include <ZC/Tools/Math/ZC_Math.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <Tools/stb_image.h>

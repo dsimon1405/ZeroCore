@@ -2,7 +2,7 @@
 
 #include <ZC_Config.h>
 #include <ZC/Video/OpenGL/GL/glcorearb.h>
-#include <ZC/Tools/Math/ZC_Limits.h>
+#include <ZC/Tools/Math/ZC_Math.h>
 #ifdef ZC_ANDROID
 #include <list>
 #endif

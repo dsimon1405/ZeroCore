@@ -22,6 +22,16 @@ ZC_Texture::~ZC_Texture()
     glDeleteTextures(1, &id);
 }
 
+void ZC_Texture::Bind()
+{
+    glBindTexture(type, id);
+}
+
+void ZC_Texture::Unbind()
+{
+    glBindTexture(type, 0);
+}
+
 void ZC_Texture::ActiveTexture(GLuint num)
 {
     glActiveTexture(GL_TEXTURE0 + num);

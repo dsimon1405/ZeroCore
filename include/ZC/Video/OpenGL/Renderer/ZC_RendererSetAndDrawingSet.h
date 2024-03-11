@@ -4,8 +4,8 @@
 
 struct ZC_RendererSetAndDrawingSet
 {
-    typedef typename ZC_RendererSet::DrawingSet RSDS;
-    ZC_RendererSetAndDrawingSet(ZC_RendererSet* _pRendSet, RSDS&& _drawingSet);
+    typedef typename ZC_RendererSet::DrawingSet RSDrawingSet;
+    ZC_RendererSetAndDrawingSet(ZC_RendererSet* _pRendSet, RSDrawingSet&& _drawingSet);
 
     typedef typename ZC_RendererSet::Level RSLvl;
     
@@ -16,5 +16,5 @@ struct ZC_RendererSetAndDrawingSet
 
 private:
     ZC_RendererSet* pRendSet;
-    RSDS drawingSet;
+    RSDrawingSet drawingSet;
 };

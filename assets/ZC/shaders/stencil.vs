@@ -10,8 +10,8 @@ out vec3 vColor;
 void main()
 {
     gl_Position = perspView * unModel * vec4(inPosition, 1.f);
-    float r = (unColor >> 16) / 255.f;
-    float g = (unColor >> 8 & uint(255)) / 255.f;
-    float b = (unColor & uint(255)) / 255.f;
+    float r = (unColor >> 20) / 255.f;
+    float g = (unColor >> 10 & uint(1023)) / 255.f;
+    float b = (unColor & uint(1023)) / 255.f;
     vColor = vec3(r, g, b);
 }

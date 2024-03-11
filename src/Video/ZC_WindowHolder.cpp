@@ -50,7 +50,6 @@ void ZC_WindowHolder::LoadShProgs()
 {
     ZC_ShProgs shProgs;
     typedef typename ZC_ShProgs::Name ShPName; 
-    ShPName shPNames[] { ShPName::ZCR_ColorFigure, ShPName::ZCR_Point, ShPName::ZCR_LineFigure, ShPName::ZCR_Stencil, ShPName::ZCR_Texture_Vertex_TexCoord,
-        ShPName::ZCR_LineMesh, ShPName::ZCR_LineOrientation3D };
-    shProgs.Load(shPNames, sizeof(shPNames) / sizeof(ShPName));
+    ShPName loadAll = ShPName::LoadAll;
+    shProgs.Load(&loadAll, 0);
 }

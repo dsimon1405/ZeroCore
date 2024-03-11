@@ -27,12 +27,12 @@ typedef unsigned short ushort;
 #define ZC_ROUND(val) (val + 0.5)   //  round float or double to integer value
 
 /*
-Packs color from 3 float channels into one unsigned int.
+Packs color from 3 float channels into one uint[32] indices -> [0-1] nothing, [2-11] red, [12-21] green, [22-31] blue.
 
 Params:
-r - red color (diaposone 0.f - 1.f).
-g - green color (diaposone 0.f - 1.f).
-b - blue color (diaposone 0.f - 1.f).
+r - red color (range 0.f - 1.f).
+g - green color (range 0.f - 1.f).
+b - blue color (range 0.f - 1.f).
 
 Return:
 On success packed color, otherwise 0.
@@ -40,5 +40,21 @@ On success packed color, otherwise 0.
 constexpr uint ZC_PackColorFloatToUInt(float r, float g, float b) noexcept
 {
     if (r < 0.f || r > 1.f || g < 0.f || g > 1.f || b < 0.f || b > 1.f) return 0;
-    return ((uint)(r * 255.f) << 8 | (uint)(g * 255.f)) << 8 | (uint)(b * 255.f);
+    return ((uint)(r * 255.f) << 10 | (uint)(g * 255.f)) << 10 | (uint)(b * 255.f);
+};
+
+/*
+Packs color from 3 float channels into one uint[32] indices -> [0-1] nothing, [2-11] red, [12-21] green, [22-31] blue.
+
+Params:
+r - red color (range 0.f - 1.f).
+g - green color (range 0.f - 1.f).
+b - blue color (range 0.f - 1.f).
+
+Return:
+On success packed color, otherwise 0.
+*/
+constexpr uint ZC_PackColorUCharToUInt(uchar r, uchar g, uchar b) noexcept
+{
+    return ((static_cast<uint>(r) << 10) | static_cast<uint>(g)) << 10 | static_cast<uint>(b);
 };

@@ -14,7 +14,7 @@ ZC_RSNonTex::ZC_RSNonTex(ZC_RSNonTex&& rs)
 void ZC_RSNonTex::Draw(Level lvl)
 {
     vao.BindVertexArray();
-    levelController.Draw(lvl, upDraw, nullptr);
+    levelController.Draw(lvl, upGLDraw, nullptr, 0);
 }
 
 ZC_uptr<ZC_RendererSetAndDrawingSet> ZC_RSNonTex::Make_uptrRendererSetDrawingSet(const char* texSetName, float stencilScale, unsigned int stencilColor)

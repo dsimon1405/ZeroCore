@@ -20,7 +20,12 @@ public:
         ZCR_Stencil,
         ZCR_Texture_Vertex_TexCoord,
         ZCR_LineMesh,
-        ZCR_LineOrientation3D
+        ZCR_LineOrientation3D,
+        ZCR_QuadOrientation3D,
+        ZC_TextWindow,
+        // ZC_TextScene,
+        
+        LoadAll,    //  must be last
     };
 
     typedef typename ZC_VAOConfig::FormatShVLayoutAndUsingFormatsPacker VAOConData;

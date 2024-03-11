@@ -44,6 +44,9 @@ extern PFNGLENABLEPROC pglEnable;
 extern PFNGLDISABLEPROC pglDisable;
 #define glDisable pglDisable
 
+extern PFNGLBLENDFUNCPROC pglBlendFunc;
+#define glBlendFunc pglBlendFunc
+
 //  debug
 
 extern PFNGLDEBUGMESSAGECALLBACKPROC pglDebugMessageCallback;
@@ -206,6 +209,12 @@ extern PFNGLGENERATEMIPMAPPROC pglGenerateMipmap;
 
 extern PFNGLACTIVETEXTUREPROC pglActiveTexture;
 #define glActiveTexture pglActiveTexture
+
+extern PFNGLPIXELSTOREIPROC pglPixelStorei;
+#define glPixelStorei pglPixelStorei
+
+extern PFNGLTEXSUBIMAGE2DPROC pglTexSubImage2D;
+#define glTexSubImage2D pglTexSubImage2D
 
 //  stencil
 

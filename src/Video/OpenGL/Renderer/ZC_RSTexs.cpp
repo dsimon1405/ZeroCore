@@ -21,7 +21,7 @@ ZC_RSTexs::ZC_RSTexs(ZC_RSTexs&& rs)
 void ZC_RSTexs::Draw(Level lvl)
 {
     vao.BindVertexArray();
-    for (auto& texSet : texSets) texSet.levelController.Draw(lvl, upDraw, &(texSet.textures));
+    for (auto& texSet : texSets) texSet.levelController.Draw(lvl, upGLDraw, &(texSet.textures[0]), texSet.textures.size());
 }
 
 ZC_uptr<ZC_RendererSetAndDrawingSet> ZC_RSTexs::Make_uptrRendererSetDrawingSet(const char* texSetName, float stencilScale, unsigned int stencilColor)

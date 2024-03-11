@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ZC/Video/OpenGL/GL/glcorearb.h>
-#include <ZC/Tools/Math/ZC_Limits.h>
+#include <ZC/Tools/Math/ZC_Math.h>
 #include <ZC/Tools/ZC_uptr.h>
 #include <ZC/Tools/Container/ZC_DA.h>
 
@@ -24,7 +24,8 @@ public:
         F_3_0__F_2_3,
         F_3_0__UB_3_1,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
         F_4_0__UB_3_1,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
-        F_3_0__UB_3_1__I_2_10_10_10_REV_1_2     //  I_2_10_10_10_REV_1 one int32 in code and vec4 of floats in GLSL
+        F_3_0__UB_3_1__I_2_10_10_10_REV_1_2,     //  I_2_10_10_10_REV_1 one int32 in code and vec4 of floats in GLSL
+        F_4_0,
     };
 
     /*

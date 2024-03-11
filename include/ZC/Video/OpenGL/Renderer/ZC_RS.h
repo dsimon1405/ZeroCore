@@ -10,7 +10,7 @@ struct ZC_RS : public ZC_RendererSet
     ZC_ShProg* pShP;
     ZC_Uniforms* pBaseUniforms;   //  for creatiion of activeUniforms
     ZC_VAO vao;
-    ZC_uptr<ZC_GLDraw> upDraw;
+    ZC_uptr<ZC_GLDraw> upGLDraw;
     std::forward_list<ZC_Buffer> buffers;
 
     ZC_RS(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw,
@@ -27,7 +27,7 @@ protected:
         LevelController() = default;
         LevelController(LevelController&& lc);
 
-        void Draw(Level lvl, ZC_uptr<ZC_GLDraw>& upDraw, std::vector<ZC_Texture>* pTextures);
+        void Draw(Level lvl, ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount);
         //  return true if was empty
         bool Add(DrawingSet* pDS);
         //  return true if became empty
@@ -46,8 +46,8 @@ protected:
             void Add(DrawingSet* pDrSet);
             //  if empty return - true
             bool Erase(DrawingSet* pDrSet);
-            virtual void Draw(ZC_uptr<ZC_GLDraw>& upDraw, std::vector<ZC_Texture>* pTextures);
-            void SimpleDraw(ZC_uptr<ZC_GLDraw>& upDraw, std::vector<ZC_Texture>* pTextures);
+            virtual void Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount);
+            void SimpleDraw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount);
         };
         
         struct LevelStencil : public LevelDrawing
@@ -57,7 +57,7 @@ protected:
 
             LevelStencil();
             
-            void Draw(ZC_uptr<ZC_GLDraw>& upDraw, std::vector<ZC_Texture>* pTextures) override;
+            void Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount) override;
         };
 
     private:

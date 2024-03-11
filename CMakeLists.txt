@@ -181,12 +181,14 @@ set(ZC_INCLUDE_DIRS ${ZC_INCLUDE_DIRS}
 	PUBLIC ${PROJECT_SOURCE_DIR}/src
 	PUBLIC ${PROJECT_BINARY_DIR}/config
 	PUBLIC $<$<BOOL:${ZC_AUDIO}>:${PROJECT_SOURCE_DIR}/includeVariable/Audio>
+	PUBLIC /home/dmitry/projects/external/freetype/include
 	)
 
 target_include_directories(${PROJECT_NAME} ${ZC_INCLUDE_DIRS})
 
 #========================= link libs
-set(ZC_LINK_LIBS ${ZC_LINK_LIBS})
+set(ZC_LINK_LIBS ${ZC_LINK_LIBS}
+	PUBLIC /home/dmitry/projects/external/freetype/lib/libfreetype.a)
 
 target_link_libraries(${PROJECT_NAME} ${ZC_LINK_LIBS})
 

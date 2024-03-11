@@ -11,7 +11,7 @@ ZC_RS::ZC_RS(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_upt
     : pShP(&pShPInitSet->shProg),
     pBaseUniforms(&pShPInitSet->uniforms),
     vao(std::move(_vao)),
-    upDraw(std::move(_upDraw)),
+    upGLDraw(std::move(_upDraw)),
     buffers(std::move(_buffers))
 {
     static bool isFirstCall = true;
@@ -28,7 +28,7 @@ ZC_RS::ZC_RS(ZC_RS&& rs)
     pShP(rs.pShP),
     pBaseUniforms(std::move(rs.pBaseUniforms)),
     vao(std::move(rs.vao)),
-    upDraw(std::move(rs.upDraw)),
+    upGLDraw(std::move(rs.upGLDraw)),
     buffers(std::move(rs.buffers))
 {}
 
@@ -55,15 +55,15 @@ bool ZC_RS::LevelController::LevelDrawing::Erase(DrawingSet* pDrSet)
     return drawingSets.empty();
 }
 
-void ZC_RS::LevelController::LevelDrawing::Draw(ZC_uptr<ZC_GLDraw>& upDraw, std::vector<ZC_Texture>* pTextures)
+void ZC_RS::LevelController::LevelDrawing::Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
 {
-    SimpleDraw(upDraw, pTextures);
+    SimpleDraw(upDraw, pTextures, texturesCount);
 }
 
-void ZC_RS::LevelController::LevelDrawing::SimpleDraw(ZC_uptr<ZC_GLDraw>& upDraw, std::vector<ZC_Texture>* pTextures)
+void ZC_RS::LevelController::LevelDrawing::SimpleDraw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
 {
     if (pTextures)
-        for (size_t i = 0; i < pTextures->size(); ++i) (*pTextures)[i].ActiveTexture(i);
+        for (size_t i = 0; i < texturesCount; ++i) (pTextures + i)->ActiveTexture(i);
     for (auto pDrSet : drawingSets)
     {
         pDrSet->uniforms.Activate();
@@ -78,11 +78,11 @@ ZC_RS::LevelController::LevelStencil::LevelStencil()
     : LevelDrawing(Level::Stencil)
 {}
 
-void ZC_RS::LevelController::LevelStencil::Draw(ZC_uptr<ZC_GLDraw>& upDraw, std::vector<ZC_Texture>* pTextures)
+void ZC_RS::LevelController::LevelStencil::Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
 {
     if (isFirstDrawing)
     {
-        SimpleDraw(upDraw, pTextures);
+        SimpleDraw(upDraw, pTextures, texturesCount);
         isFirstDrawing = false;
     }
     else 
@@ -108,10 +108,10 @@ ZC_RS::LevelController::LevelController(LevelController&& lc)
     : lvlDrawings(std::move(lc.lvlDrawings))
 {}
 
-void ZC_RS::LevelController::Draw(Level lvl, ZC_uptr<ZC_GLDraw>& upDraw, std::vector<ZC_Texture>* pTextures)
+void ZC_RS::LevelController::Draw(Level lvl, ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
 {
     for (auto& upLvlDrawing : lvlDrawings)
-        if (upLvlDrawing->lvl == lvl) upLvlDrawing->Draw(upDraw, pTextures);
+        if (upLvlDrawing->lvl == lvl) upLvlDrawing->Draw(upDraw, pTextures, texturesCount);
 }
 
 bool ZC_RS::LevelController::Add(DrawingSet* pDS)

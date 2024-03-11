@@ -33,7 +33,7 @@ struct ZC_RSTexs : public ZC_RS
     void Draw(Level lvl) override;
 
     /*
-    Return unique pointer to ZC_RSDrawingSet.
+    Return unique pointer to ZC_RendererSetAndDrawingSet.
 
     texSetName - name of the texture set (ZC_RSTexs::TexSet), can be nullptr if used for heir ZC_RSNonTex.
     stencilScale - scale for drawing the stencil border of the object. Should be greater than 1.0f. Can be anything if ZC_RendererSet::Level::Stencil will not be used.
@@ -42,7 +42,7 @@ struct ZC_RSTexs : public ZC_RS
     ZC_uptr<ZC_RendererSetAndDrawingSet> Make_uptrRendererSetDrawingSet(const char* texSetName, float stencilScale, unsigned int stencilColor) override;
 
     /*
-    Return shared pointer to ZC_RSDrawingSet.
+    Return shared pointer to ZC_RendererSetAndDrawingSet.
 
     texSetName - name of the texture set (ZC_RSTexs::TexSet), can be nullptr if used for heir ZC_RSNonTex.
     stencilScale - scale for drawing the stencil border of the object. Should be greater than 1.0f. Can be anything if ZC_RendererSet::Level::Stencil will not be used.

@@ -22,6 +22,10 @@ bool ZC_SDL_Window::LoadOpenGLFunctions()
     //  enble
     pglEnable = (PFNGLENABLEPROC)SDL_GL_GetProcAddress("glEnable");
     if (!pglEnable) { ZC_ErrorLogger::Err("glEnable SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglDisable = (PFNGLDISABLEPROC)SDL_GL_GetProcAddress("glDisable");
+    if (!pglDisable) { ZC_ErrorLogger::Err("glDisable SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglBlendFunc = (PFNGLBLENDFUNCPROC)SDL_GL_GetProcAddress("glBlendFunc");
+    if (!pglBlendFunc) { ZC_ErrorLogger::Err("glBlendFunc SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     //  debug
     pglDebugMessageCallback = (PFNGLDEBUGMESSAGECALLBACKPROC)SDL_GL_GetProcAddress("glDebugMessageCallback");
     if (!pglDebugMessageCallback) { ZC_ErrorLogger::Err("glDebugMessageCallback SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
@@ -129,6 +133,10 @@ bool ZC_SDL_Window::LoadOpenGLFunctions()
     if (!pglGenerateMipmap) { ZC_ErrorLogger::Err("glGenerateMipmap SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglActiveTexture = (PFNGLACTIVETEXTUREPROC)SDL_GL_GetProcAddress("glActiveTexture");
     if (!pglActiveTexture) { ZC_ErrorLogger::Err("glActiveTexture SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglPixelStorei = (PFNGLPIXELSTOREIPROC)SDL_GL_GetProcAddress("glPixelStorei");
+    if (!pglPixelStorei) { ZC_ErrorLogger::Err("glPixelStorei SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglTexSubImage2D = (PFNGLTEXSUBIMAGE2DPROC)SDL_GL_GetProcAddress("glTexSubImage2D");
+    if (!pglTexSubImage2D) { ZC_ErrorLogger::Err("glTexSubImage2D SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     //  stencil
     pglStencilMask = (PFNGLSTENCILMASKPROC)SDL_GL_GetProcAddress("glStencilMask");
     if (!pglStencilMask) { ZC_ErrorLogger::Err("glStencilMask SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
@@ -136,8 +144,6 @@ bool ZC_SDL_Window::LoadOpenGLFunctions()
     if (!pglStencilFunc) { ZC_ErrorLogger::Err("glStencilFunc SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglStencilOp = (PFNGLSTENCILOPPROC)SDL_GL_GetProcAddress("glStencilOp");
     if (!pglStencilOp) { ZC_ErrorLogger::Err("glStencilOp SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
-    pglDisable = (PFNGLDISABLEPROC)SDL_GL_GetProcAddress("glDisable");
-    if (!pglDisable) { ZC_ErrorLogger::Err("glDisable SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     //  depth
     pglDepthFunc = (PFNGLDEPTHFUNCPROC)SDL_GL_GetProcAddress("glDepthFunc");
     if (!pglDepthFunc) { ZC_ErrorLogger::Err("glDepthFunc SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
@@ -164,6 +170,7 @@ PFNGLGETINTEGERVPROC pglGetIntegerv = nullptr;
 //  enble
 PFNGLENABLEPROC pglEnable = nullptr;
 PFNGLDISABLEPROC pglDisable = nullptr;
+PFNGLBLENDFUNCPROC pglBlendFunc = nullptr;
 
 //  debug
 PFNGLDEBUGMESSAGECALLBACKPROC pglDebugMessageCallback = nullptr;
@@ -228,6 +235,8 @@ PFNGLTEXPARAMETERIPROC pglTexParameteri = nullptr;
 PFNGLTEXIMAGE2DPROC pglTexImage2D = nullptr;
 PFNGLGENERATEMIPMAPPROC pglGenerateMipmap = nullptr;
 PFNGLACTIVETEXTUREPROC pglActiveTexture = nullptr;
+PFNGLPIXELSTOREIPROC pglPixelStorei = nullptr;
+PFNGLTEXSUBIMAGE2DPROC pglTexSubImage2D = nullptr;
 
 //  stencil
 PFNGLSTENCILMASKPROC pglStencilMask = nullptr;
