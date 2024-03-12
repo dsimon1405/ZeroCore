@@ -71,6 +71,7 @@ void ZC_Renderer::DrawAll()
         {
         case RSLevel::Drawing: DrawDrawing(rendSetsP.second); break;
         case RSLevel::Stencil: DrawStencil(rendSetsP.second); break;
+        case RSLevel::TextWindow: DrawTextWidndow(rendSetsP.second); break;
 #ifdef ZC_IMGUI
         case RSLevel::ImGui: DrawImGui(rendSetsP.second); break;
 #endif
@@ -119,4 +120,13 @@ void ZC_Renderer::DrawImGui(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSe
     ZC_ImGui::FrameStart();
     for (auto pRendSet : mapShPRS.begin()->second) pRendSet->Draw(RSLevel::Drawing);
     ZC_ImGui::FrameEnd();
+}
+
+void ZC_Renderer::DrawTextWidndow(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& mapShPRS)
+{
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    mapShPRS.begin()->first->UseProgram();
+    for (auto pRendSet : mapShPRS.begin()->second) pRendSet->Draw(RSLevel::Drawing);
+    glDisable(GL_BLEND);
 }

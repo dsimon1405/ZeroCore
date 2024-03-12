@@ -30,4 +30,5 @@ private:
     void DrawDrawing(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& mapShPRS);
     void DrawStencil(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& mapShPRS);
     void DrawImGui(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& mapShPRS);
+    void DrawTextWidndow(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& mapShPRS);
 };

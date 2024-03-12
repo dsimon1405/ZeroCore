@@ -3,13 +3,14 @@
 #include <ZC/Tools/ZC_string.h>
 #include <ZC/Video/OpenGL/Renderer/ZC_RendererSet.h>
 #include <ZC/Tools/Signal/ZC_SConnection.h>
+#include <ZC/Tools/ZC_WindowOrthoIndent.h>
 
 #include <forward_list>
 
 namespace ZC_ImGui { bool Init(void* pWindow, void* pGlContext); }
-typedef int ZC_IGWIndentFlags;  //  ZC_IGWindow::IndentFlag
+// typedef int ZC_IGWIndentFlags;  //  ZC_IGWindow::IndentFlag
 
-class ZC_IGWindow : protected ZC_RendererSet
+class ZC_IGWindow : protected ZC_RendererSet, public ZC_WindowOrthoIndent
 {
     friend bool ZC_ImGui::Init(void* pWindow, void* pGlContext);
 public:
@@ -26,19 +27,19 @@ public:
     static bool IsCursorInOneOfWindows() noexcept;
 
 protected:
-    enum IndentFlag
-    {
-        X_Left_Pixel              = 1,
-        X_Left_Percent            = 1 << 1,
-        X_Right_Pixel             = 1 << 2,
-        X_Right_Percent           = 1 << 3,
-        X_Center                  = 1 << 4,
-        Y_Top_Pixel               = 1 << 5,
-        Y_Top_Percent             = 1 << 6,
-        Y_Bottom_Pixel            = 1 << 7,
-        Y_Bottom_Percent          = 1 << 8,
-        Y_Center                  = 1 << 9,
-    };
+    // enum IndentFlag
+    // {
+    //     X_Left_Pixel              = 1,
+    //     X_Left_Percent            = 1 << 1,
+    //     X_Right_Pixel             = 1 << 2,
+    //     X_Right_Percent           = 1 << 3,
+    //     X_Center                  = 1 << 4,
+    //     Y_Top_Pixel               = 1 << 5,
+    //     Y_Top_Percent             = 1 << 6,
+    //     Y_Bottom_Pixel            = 1 << 7,
+    //     Y_Bottom_Percent          = 1 << 8,
+    //     Y_Center                  = 1 << 9,
+    // };
 
     /*
     Create ImGui window for heir.
@@ -61,21 +62,24 @@ protected:
     _igfw - ImGuiWindowFlags.
     */
     ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, float _height,
-        float _indentX, float _indentY, ZC_IGWIndentFlags _indentFlags, bool _mayClose, int _igwf);
+        float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags, bool _mayClose, int _igwf);
+    // ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, float _height,
+    //     float _indentX, float _indentY, ZC_IGWIndentFlags _indentFlags, bool _mayClose, int _igwf);
 
 private:
     static inline std::forward_list<std::string> unicNames;
 
     const char* name;
     bool isDrawing;
-    float width,
-        height,
-        indentX,
-        indentY;
-    IndentFlag indentFlags;
-    ZC_SConnection sconZC_WindowResized,
-         //  used for safely remove from ZC_Renderer in handle events end signal (caurse NeedDraw function may calls from ZC_Renderer::DrawAll() and change ZC_Renderer state!)
-        sconChangeDrawingState;
+    // float width,
+    //     height,
+    //     indentX,
+    //     indentY;
+    // IndentFlag indentFlags;
+    // ZC_SConnection sconZC_WindowResized,
+    
+    //  used for safely remove from ZC_Renderer in handle events end signal (caurse NeedDraw function may calls from ZC_Renderer::DrawAll() and change ZC_Renderer state!)
+    ZC_SConnection sconChangeDrawingState;
     bool mayClose;
     int igwf;
     bool needSetPosition = true;
@@ -86,8 +90,9 @@ private:
     virtual void DrawWindow() = 0;
 
     const char* AddName(std::string&& unicName);
-    ZC_SConnection SetIndentData(float _indentX, float _indentY, ZC_IGWIndentFlags _indents);
-    void ZC_WindowResized(float width, float height);
+    // ZC_SConnection SetIndentData(float _indentX, float _indentY, ZC_IGWIndentFlags _indents);
+    // void ZC_WindowResized(float width, float height);
+    void ZC_WindowResized();
     //  set position of next window calls before ImGui::Begin();
     void SetPosition();
     void ChangeDrawingState(float time);

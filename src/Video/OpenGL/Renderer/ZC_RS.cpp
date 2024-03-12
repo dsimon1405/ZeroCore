@@ -149,6 +149,7 @@ ZC_uptr<ZC_RS::LevelController::LevelDrawing> ZC_RS::LevelController::GetLvl(Lev
     {
     case Level::Drawing: return { new LevelDrawing{} };
     case Level::Stencil: return { new LevelStencil{} };
+    case Level::TextWindow: return { new LevelDrawing{} };
     case Level::None: return nullptr;
     default: return nullptr;
     }
