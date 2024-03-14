@@ -105,6 +105,9 @@ extern PFNGLUNIFORMMATRIX4FVPROC pglUniformMatrix4fv;
 extern PFNGLUNIFORM1IPROC pglUniform1i;
 #define glUniform1i pglUniform1i
 
+extern PFNGLUNIFORM2FVPROC pglUniform2fv;
+#define glUniform2fv pglUniform2fv
+
 extern PFNGLUNIFORM3FVPROC pglUniform3fv;
 #define glUniform3fv pglUniform3fv
 

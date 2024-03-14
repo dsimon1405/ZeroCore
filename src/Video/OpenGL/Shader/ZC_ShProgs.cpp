@@ -42,15 +42,15 @@ typename ZC_ShProgs::ShNames ZC_ShProgs::GetShNames(Name name) const noexcept
 {
     switch (name)
     {
-    case Name::ZCR_ColorFigure: return {VName::colorFigure, VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2, FName::color, GName::none};
-    case Name::ZCR_Point: return {VName::point, VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2, FName::color, GName::none};
-    case Name::ZCR_LineFigure: return {VName::lineFigure, VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2, FName::color, GName::none};
+    case Name::ZCR_ColorFigure: return {VName::colorFigure, VAOConFSVL::F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N, FName::color, GName::none};
+    case Name::ZCR_Point: return {VName::point, VAOConFSVL::F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N, FName::color, GName::none};
+    case Name::ZCR_LineFigure: return {VName::lineFigure, VAOConFSVL::F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N, FName::color, GName::none};
     case Name::ZCR_Stencil: return {VName::stencil, VAOConFSVL::None, FName::color, GName::none};
     case Name::ZCR_Texture_Vertex_TexCoord: return {VName::texture, VAOConFSVL::F_3_0__F_2_3, FName::colorTex, GName::none};
     case Name::ZCR_LineMesh: return {VName::lineMesh, VAOConFSVL::F_3_0, FName::color, GName::none};
-    case Name::ZCR_LineOrientation3D: return {VName::lineOrientation3D, VAOConFSVL::F_4_0__UB_3_1, FName::color, GName::lineOrientation3D};
+    case Name::ZCR_LineOrientation3D: return {VName::lineOrientation3D, VAOConFSVL::F_4_0__UB_3_1_N, FName::color, GName::lineOrientation3D};
     case Name::ZCR_QuadOrientation3D: return {VName::quadOrientation3D, VAOConFSVL::F_3_0__F_2_1, FName::colorTex, GName::none};
-    case Name::ZC_TextWindow: return {VName::textWindow, VAOConFSVL::F_4_0, FName::text, GName::none};
+    case Name::ZC_TextWindow: return {VName::textWindow, VAOConFSVL::F_2_0__US_2_1_N, FName::text, GName::none};
     default: return {};
     }
 }

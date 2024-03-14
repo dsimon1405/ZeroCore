@@ -45,9 +45,15 @@ public:
     {
         ZC_Uniforms uniforms;
         Level lvl = Level::None;
-        void* pTexSet = nullptr; //  pointer on TexSet  delete ??????????????????????????????????? 
+        void* pTexSet = nullptr; //  pointer on TexSet use in ZC_RSTexture::Add(), ZC_RSTexture::Erase()
         float stencilScale = 0.f;
         unsigned int stencilColor = 0;
+
+        //  Return copy with Level::None.
+        DrawingSet GetCopy() const
+        {
+            return { uniforms.GetCopy(), Level::None, pTexSet, stencilScale, stencilColor };
+        }
     };
     virtual void Add(DrawingSet* upDS) {}
     virtual void Erase(DrawingSet* upDS) {}

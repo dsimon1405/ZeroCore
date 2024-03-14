@@ -10,21 +10,24 @@ class ZC_VAOConfig
 {
 public:
     /*
-    Example => F_3_0:
-    F - type float
+    Example => S_3_0_N:
+    S - type short
     3 - count
     0 - location in vertex shader
+    N - normalizes, S is signed short [-1,1], if US unsigned short [0,1] (if don't used normalization - N missing!)
     */
     enum FormatShVLayout
     {
         None,
+        F_2_0__UB_2_1_N,
+        F_2_0__US_2_1_N,
         F_3_0,
         F_3_0__F_3_1,
         F_3_0__F_2_1,
         F_3_0__F_2_3,
-        F_3_0__UB_3_1,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
-        F_4_0__UB_3_1,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
-        F_3_0__UB_3_1__I_2_10_10_10_REV_1_2,     //  I_2_10_10_10_REV_1 one int32 in code and vec4 of floats in GLSL
+        F_3_0__UB_3_1_N,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
+        F_4_0__UB_3_1_N,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
+        F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N,     //  I_2_10_10_10_REV_1 one int32 in code and vec4 of floats in GLSL
         F_4_0,
     };
 

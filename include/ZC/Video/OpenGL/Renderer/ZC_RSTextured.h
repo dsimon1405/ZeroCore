@@ -6,7 +6,7 @@
 
 #include <vector>
 
-struct ZC_RSTexs : public ZC_RS
+struct ZC_RSTextured : public ZC_RS
 {
     struct TexSet
     {
@@ -25,10 +25,10 @@ struct ZC_RSTexs : public ZC_RS
     std::vector<TexSet> texSets;
     unsigned int lvlCounter[Level::None];   //  counting how much LevelDrawing on each ZC_Renderer::Level in each TexSet (total amount for adding and erasing from ZC_Renderer)
 
-    ZC_RSTexs(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw,
+    ZC_RSTextured(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw,
             std::forward_list<ZC_Buffer>&& _buffers, std::vector<TexSet>&& _texSets);
 
-    ZC_RSTexs(ZC_RSTexs&& rs);
+    ZC_RSTextured(ZC_RSTextured&& rs);
 
     void Draw(Level lvl) override;
 

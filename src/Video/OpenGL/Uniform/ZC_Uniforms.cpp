@@ -28,7 +28,7 @@ void ZC_Uniforms::Set(typename ZC_Uniform::Name name, void* value)
     ZC_ErrorLogger::Err("Can't find Uniform " + std::to_string(name) + ", to set value!", __FILE__, __LINE__);
 }
 
-void* ZC_Uniforms::Get(typename ZC_Uniform::Name name)
+const void* ZC_Uniforms::Get(typename ZC_Uniform::Name name) const
 {
     for (auto& uniform : uniforms)
         if (uniform->name == name) return uniform->Get();
@@ -41,7 +41,7 @@ void ZC_Uniforms::Activate()
     for (auto& uniform : uniforms) uniform->Activate();
 }
 
-ZC_Uniforms ZC_Uniforms::GetCopy()
+ZC_Uniforms ZC_Uniforms::GetCopy() const
 {
     std::vector<ZC_uptr<ZC_Uniform>> copy;
     copy.reserve(uniforms.size());

@@ -127,6 +127,6 @@ void ZC_Renderer::DrawTextWidndow(std::map<ZC_ShProg*, std::forward_list<ZC_Rend
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     mapShPRS.begin()->first->UseProgram();
-    for (auto pRendSet : mapShPRS.begin()->second) pRendSet->Draw(RSLevel::Drawing);
+    for (auto pRendSet : mapShPRS.begin()->second) pRendSet->Draw(RSLevel::TextWindow);
     glDisable(GL_BLEND);
 }

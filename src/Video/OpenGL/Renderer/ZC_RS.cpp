@@ -18,7 +18,7 @@ ZC_RS::ZC_RS(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_upt
     if (isFirstCall)
     {
         auto pShPog = ZC_ShProgs::Get(ZC_ShProgs::Name::ZCR_Stencil);
-        if (pShPog) LevelController::LevelStencil::pActiveUniformsStencil = &(pShPog->uniforms);
+        if (pShPog) LevelController::DrawingStyleStencil::pActiveUniformsStencil = &(pShPog->uniforms);
         isFirstCall = false;
     }
 }
@@ -35,32 +35,32 @@ ZC_RS::ZC_RS(ZC_RS&& rs)
 
 //  LevelDrawing
 
-ZC_RS::LevelController::LevelDrawing::LevelDrawing(Level _lvl)
+ZC_RS::LevelController::DrawingStyleSimple::DrawingStyleSimple(Level _lvl)
     : lvl(_lvl)
 {}
 
-bool ZC_RS::LevelController::LevelDrawing::operator == (Level _lvl)
+bool ZC_RS::LevelController::DrawingStyleSimple::operator == (Level _lvl) const
 {
     return lvl == _lvl;
 }
 
-void ZC_RS::LevelController::LevelDrawing::Add(DrawingSet* pDrSet)
+void ZC_RS::LevelController::DrawingStyleSimple::Add(DrawingSet* pDrSet)
 {
     drawingSets.emplace_front(pDrSet);
 }
 
-bool ZC_RS::LevelController::LevelDrawing::Erase(DrawingSet* pDrSet)
+bool ZC_RS::LevelController::DrawingStyleSimple::Erase(DrawingSet* pDrSet)
 {
     if (!ZC_ForwardListErase(drawingSets, pDrSet)) ZC_ErrorLogger::Err("Can't find DrawingSet in drawingSets!", __FILE__, __LINE__);
     return drawingSets.empty();
 }
 
-void ZC_RS::LevelController::LevelDrawing::Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
+void ZC_RS::LevelController::DrawingStyleSimple::Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
 {
     SimpleDraw(upDraw, pTextures, texturesCount);
 }
 
-void ZC_RS::LevelController::LevelDrawing::SimpleDraw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
+void ZC_RS::LevelController::DrawingStyleSimple::SimpleDraw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
 {
     if (pTextures)
         for (size_t i = 0; i < texturesCount; ++i) (pTextures + i)->ActiveTexture(i);
@@ -74,11 +74,11 @@ void ZC_RS::LevelController::LevelDrawing::SimpleDraw(ZC_uptr<ZC_GLDraw>& upDraw
 
 //  LvlStencil
 
-ZC_RS::LevelController::LevelStencil::LevelStencil()
-    : LevelDrawing(Level::Stencil)
+ZC_RS::LevelController::DrawingStyleStencil::DrawingStyleStencil(Level lvl)
+    : DrawingStyleSimple(lvl)
 {}
 
-void ZC_RS::LevelController::LevelStencil::Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
+void ZC_RS::LevelController::DrawingStyleStencil::Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
 {
     if (isFirstDrawing)
     {
@@ -90,7 +90,7 @@ void ZC_RS::LevelController::LevelStencil::Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_T
         for (auto pDrSet : drawingSets)
         {
             typedef typename ZC_Uniform::Name UName;
-            auto model = *static_cast<ZC_Mat4<float>*>(pDrSet->uniforms.Get(UName::unModel));
+            auto model = *static_cast<const ZC_Mat4<float>*>(pDrSet->uniforms.Get(UName::unModel));
             model.Scale({ pDrSet->stencilScale, pDrSet->stencilScale, pDrSet->stencilScale});
             pActiveUniformsStencil->Set(UName::unModel, &model);
             pActiveUniformsStencil->Set(UName::unColor, &(pDrSet->stencilColor));
@@ -105,34 +105,40 @@ void ZC_RS::LevelController::LevelStencil::Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_T
 //  LevelController
 
 ZC_RS::LevelController::LevelController(LevelController&& lc)
-    : lvlDrawings(std::move(lc.lvlDrawings))
+    : drawingStyles(std::move(lc.drawingStyles))
 {}
 
 void ZC_RS::LevelController::Draw(Level lvl, ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
 {
-    for (auto& upLvlDrawing : lvlDrawings)
+    for (auto& upLvlDrawing : drawingStyles)
         if (upLvlDrawing->lvl == lvl) upLvlDrawing->Draw(upDraw, pTextures, texturesCount);
 }
 
 bool ZC_RS::LevelController::Add(DrawingSet* pDS)
 {
-    bool isEmpty = lvlDrawings.empty();
-    auto lvlDrawingsIter = std::find(lvlDrawings.begin(), lvlDrawings.end(), pDS->lvl);
-    if (lvlDrawingsIter != lvlDrawings.end()) lvlDrawingsIter->Get()->Add(pDS);
-    else lvlDrawings.emplace_front(GetLvl(pDS->lvl))->Add(pDS);
+    bool isEmpty = drawingStyles.empty();
+    for (auto& upDrawingStyle : drawingStyles)
+    {
+        if (upDrawingStyle->lvl == pDS->lvl)
+        {
+            upDrawingStyle->Add(pDS);
+            return isEmpty;
+        }
+    }
+    drawingStyles.emplace_front(GetLvl(pDS->lvl))->Add(pDS);
     return isEmpty;
 }
 
 bool ZC_RS::LevelController::Erase(DrawingSet* pDS)
 { 
-    auto prevIter = lvlDrawings.before_begin();
-    for (auto lvlDrIter = lvlDrawings.begin(); lvlDrIter != lvlDrawings.end(); )
+    auto prevIter = drawingStyles.before_begin();
+    for (auto lvlDrIter = drawingStyles.begin(); lvlDrIter != drawingStyles.end(); )
     {
         if ((*lvlDrIter)->lvl == pDS->lvl)
         {
             if ((*lvlDrIter)->Erase(pDS))
             {
-                lvlDrawings.erase_after(prevIter);
+                drawingStyles.erase_after(prevIter);
                 return true;
             }
             return false;
@@ -143,14 +149,11 @@ bool ZC_RS::LevelController::Erase(DrawingSet* pDS)
     return true;
 }
 
-ZC_uptr<ZC_RS::LevelController::LevelDrawing> ZC_RS::LevelController::GetLvl(Level lvl)
+ZC_uptr<ZC_RS::LevelController::DrawingStyleSimple> ZC_RS::LevelController::GetLvl(Level lvl)
 {
     switch (lvl)
     {
-    case Level::Drawing: return { new LevelDrawing{} };
-    case Level::Stencil: return { new LevelStencil{} };
-    case Level::TextWindow: return { new LevelDrawing{} };
-    case Level::None: return nullptr;
-    default: return nullptr;
+    case Level::Stencil: return { new DrawingStyleStencil(lvl) };   //  at now only for stencil need some special draawing prepares in separate class
+    default: return { new DrawingStyleSimple(lvl) };
     }
 }

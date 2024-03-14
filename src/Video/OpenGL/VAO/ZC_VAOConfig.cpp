@@ -90,18 +90,19 @@ ZC_DA<typename ZC_VAOConfig::Format> ZC_VAOConfig::GetFormats(FormatShVLayout sp
 {
     switch (spf)
     {
+    case F_2_0__UB_2_1_N: return { new Format[]{ { 0, 2, GL_FLOAT, GL_FALSE }, { 1, 2, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
+    case F_2_0__US_2_1_N: return { new Format[]{ { 0, 2, GL_FLOAT, GL_FALSE }, { 1, 2, GL_UNSIGNED_SHORT, GL_TRUE } }, 2 };
     case F_3_0: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE } }, 1 };
     case F_3_0__F_3_1: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_FLOAT, GL_FALSE } }, 2 };
     case F_3_0__F_2_1: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 2, GL_FLOAT, GL_FALSE } }, 2 };
     case F_3_0__F_2_3: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 3, 2, GL_FLOAT, GL_FALSE } }, 2 };
-    case F_3_0__UB_3_1: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
-    case F_4_0__UB_3_1: return { new Format[]{ { 0, 4, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
-    case F_3_0__UB_3_1__I_2_10_10_10_REV_1_2: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE }, { 2, 4, GL_INT_2_10_10_10_REV, GL_TRUE } }, 3 };
+    case F_3_0__UB_3_1_N: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
+    case F_4_0__UB_3_1_N: return { new Format[]{ { 0, 4, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
+    case F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE }, { 2, 4, GL_INT_2_10_10_10_REV, GL_TRUE } }, 3 };
     case F_4_0: return { new Format[]{ { 0, 4, GL_FLOAT, GL_FALSE } }, 1 };
     default: return {};
     }
 }
-
 
 // void ZC_VAOConfig::Config(const GLuint& config) const noexcept
 // {

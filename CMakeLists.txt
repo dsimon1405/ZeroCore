@@ -152,8 +152,8 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RS.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RendererSet.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RendererSetAndDrawingSet.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RSNonTex.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RSTexs.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RSNotTextured.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RSTextured.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RBufferCleaner.cpp
     ${PROJECT_SOURCE_DIR}/src/Tools/Signal/ZC_SConnection.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/Exception/ZC_Exception.cpp

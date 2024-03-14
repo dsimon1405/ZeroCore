@@ -58,3 +58,8 @@ constexpr uint ZC_PackColorUCharToUInt(uchar r, uchar g, uchar b) noexcept
 {
     return ((static_cast<uint>(r) << 10) | static_cast<uint>(g)) << 10 | static_cast<uint>(b);
 };
+
+constexpr ushort ZC_PackTexCoordFloatToUShort(float coord)
+{
+    return coord * ZC_USHRT_MAX;
+}

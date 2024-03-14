@@ -33,16 +33,16 @@ protected:
         //  return true if became empty
         bool Erase(DrawingSet* pDS);
     
-        struct LevelDrawing
+        struct DrawingStyleSimple
         {
             Level lvl;
             std::forward_list<DrawingSet*> drawingSets;
 
-            LevelDrawing(Level _lvl = Level::Drawing);
+            DrawingStyleSimple(Level _lvl);
 
-            virtual ~LevelDrawing() = default;
+            virtual ~DrawingStyleSimple() = default;
 
-            bool operator == (Level _lvl);
+            bool operator == (Level _lvl) const;
             void Add(DrawingSet* pDrSet);
             //  if empty return - true
             bool Erase(DrawingSet* pDrSet);
@@ -50,19 +50,19 @@ protected:
             void SimpleDraw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount);
         };
         
-        struct LevelStencil : public LevelDrawing
+        struct DrawingStyleStencil : public DrawingStyleSimple
         {
             static inline ZC_Uniforms* pActiveUniformsStencil;
             bool isFirstDrawing = true;
 
-            LevelStencil();
+            DrawingStyleStencil(Level lvl);
             
             void Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount) override;
         };
 
     private:
-        std::forward_list<ZC_uptr<LevelDrawing>> lvlDrawings {};
+        std::forward_list<ZC_uptr<DrawingStyleSimple>> drawingStyles {};
 
-        ZC_uptr<LevelDrawing> GetLvl(Level lvl);
+        ZC_uptr<DrawingStyleSimple> GetLvl(Level lvl);
     };
 };

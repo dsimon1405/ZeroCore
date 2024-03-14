@@ -10,5 +10,6 @@
 
 // uniform mat4 unModel;
 // uniform uint unColor;  stencil.vs
+// uniform uint unPosition;  textWindow.vs
 
 // uniform sampler2D texColor;

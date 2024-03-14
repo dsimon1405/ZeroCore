@@ -43,7 +43,7 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
     {
         switch (vaoConFSVL)
         {
-        case VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(2)}; break;
+        case VAOConFSVL::F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(2)}; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
         rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(UName::unModel, 1, false) }, 1));
@@ -52,7 +52,7 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
     {
         switch (vaoConFSVL)
         {
-        case VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
+        case VAOConFSVL::F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
         rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(UName::unModel, 1, false) }, 1));
@@ -61,7 +61,7 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
     {
         switch (vaoConFSVL)
         {
-        case VAOConFSVL::F_3_0__UB_3_1__I_2_10_10_10_REV_1_2: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
+        case VAOConFSVL::F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
         rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(UName::unModel, 1, false) }, 1));
@@ -92,7 +92,7 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
     {
         switch (vaoConFSVL)
         {
-        case VAOConFSVL::F_4_0__UB_3_1: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
+        case VAOConFSVL::F_4_0__UB_3_1_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
     } break;
@@ -109,9 +109,10 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
     {
         switch (vaoConFSVL)
         {
-        case VAOConFSVL::F_4_0: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0) }; break;
+        case VAOConFSVL::F_2_0__US_2_1_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
+        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_U2fvPointer(UName::unPosition, 1) }, 1));
     } break;
     }
 }

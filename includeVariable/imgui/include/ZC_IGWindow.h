@@ -27,20 +27,6 @@ public:
     static bool IsCursorInOneOfWindows() noexcept;
 
 protected:
-    // enum IndentFlag
-    // {
-    //     X_Left_Pixel              = 1,
-    //     X_Left_Percent            = 1 << 1,
-    //     X_Right_Pixel             = 1 << 2,
-    //     X_Right_Percent           = 1 << 3,
-    //     X_Center                  = 1 << 4,
-    //     Y_Top_Pixel               = 1 << 5,
-    //     Y_Top_Percent             = 1 << 6,
-    //     Y_Bottom_Pixel            = 1 << 7,
-    //     Y_Bottom_Percent          = 1 << 8,
-    //     Y_Center                  = 1 << 9,
-    // };
-
     /*
     Create ImGui window for heir.
 
@@ -63,21 +49,13 @@ protected:
     */
     ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, float _height,
         float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags, bool _mayClose, int _igwf);
-    // ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, float _height,
-    //     float _indentX, float _indentY, ZC_IGWIndentFlags _indentFlags, bool _mayClose, int _igwf);
 
 private:
     static inline std::forward_list<std::string> unicNames;
 
     const char* name;
     bool isDrawing;
-    // float width,
-    //     height,
-    //     indentX,
-    //     indentY;
-    // IndentFlag indentFlags;
-    // ZC_SConnection sconZC_WindowResized,
-    
+
     //  used for safely remove from ZC_Renderer in handle events end signal (caurse NeedDraw function may calls from ZC_Renderer::DrawAll() and change ZC_Renderer state!)
     ZC_SConnection sconChangeDrawingState;
     bool mayClose;
@@ -86,13 +64,11 @@ private:
     static inline bool isCursorInOneOfWindows = false;
 
     void Draw(Level lvl) override;
+    void CallAfterZC_WindowResized() override;
 
     virtual void DrawWindow() = 0;
 
     const char* AddName(std::string&& unicName);
-    // ZC_SConnection SetIndentData(float _indentX, float _indentY, ZC_IGWIndentFlags _indents);
-    // void ZC_WindowResized(float width, float height);
-    void ZC_WindowResized();
     //  set position of next window calls before ImGui::Begin();
     void SetPosition();
     void ChangeDrawingState(float time);

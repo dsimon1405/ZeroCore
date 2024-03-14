@@ -3,13 +3,13 @@
 #include "ZC_RS.h"
 #include <ZC/Video/OpenGL/Uniform/ZC_Uniforms.h>
 
-struct ZC_RSNonTex : public ZC_RS
+struct ZC_RSNotTextured : public ZC_RS
 {
     // std::forward_list<ZC_uptr<LevelDrawing>> lvlDrawings {};
 
-    ZC_RSNonTex(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw,
+    ZC_RSNotTextured(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw,
         std::forward_list<ZC_Buffer>&& _buffers);
-    ZC_RSNonTex(ZC_RSNonTex&& rs);
+    ZC_RSNotTextured(ZC_RSNotTextured&& rs);
 
     void Draw(Level lvl) override;
 
