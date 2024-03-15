@@ -1,9 +1,10 @@
 // #version 460 core
 
-// layout (location = 0) in vec3 inPosition;
-// layout (location = 1) in vec3 inColor;
-// layout (location = 2) in vec4 inNormal;
-// layout (location = 3) in vec2 inTexCoords;
+// layout (location = 0) in vec2 inPosition;    on cpu 2 float
+// layout (location = 0) in vec3 inPosition;    on cpu 3 float
+// layout (location = 1) in vec3 inColor;       on cpu 3 uchar
+// layout (location = 2) in vec4 inNormal;      on cpu 1 GL_INT_2_10_10_10_REV
+// layout (location = 3) in vec2 inTexCoords;   on cpu 2 ushort
 
 // layout (std140, binding = 0) uniform Persp { mat4 perspView; };
 // layout (std140, binding = 1) uniform Ortho { mat4 ortho; };

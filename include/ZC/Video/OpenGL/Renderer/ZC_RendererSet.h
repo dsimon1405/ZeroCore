@@ -12,17 +12,14 @@ class ZC_RendererSet
 public:
     enum Level
     {
-        //  firt must be 0!
-        //  all must be increment by 1
-        //  this all use in ZC_RSTexs::lvlCounter as indeces
-
         Drawing = 0,
-        Stencil,        //  must be after scene objects!
+        TextScene,
+        StencilBorder,        //  must be after scene objects!
         TextWindow,
 #ifdef ZC_IMGUI
         ImGui,          //  before None
 #endif
-        None,           //  must be last use in ZC_RSTexs as arrays size!!!
+        None,
     };
 
     virtual ~ZC_RendererSet() = default;
@@ -45,7 +42,7 @@ public:
     {
         ZC_Uniforms uniforms;
         Level lvl = Level::None;
-        void* pTexSet = nullptr; //  pointer on TexSet use in ZC_RSTexture::Add(), ZC_RSTexture::Erase()
+        void* pTexSet = nullptr;    //  pointer on TexSet uses in ZC_RSTexture::Add(), ZC_RSTexture::Erase()
         float stencilScale = 0.f;
         unsigned int stencilColor = 0;
 

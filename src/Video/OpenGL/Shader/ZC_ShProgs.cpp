@@ -51,6 +51,7 @@ typename ZC_ShProgs::ShNames ZC_ShProgs::GetShNames(Name name) const noexcept
     case Name::ZCR_LineOrientation3D: return {VName::lineOrientation3D, VAOConFSVL::F_4_0__UB_3_1_N, FName::color, GName::lineOrientation3D};
     case Name::ZCR_QuadOrientation3D: return {VName::quadOrientation3D, VAOConFSVL::F_3_0__F_2_1, FName::colorTex, GName::none};
     case Name::ZC_TextWindow: return {VName::textWindow, VAOConFSVL::F_2_0__US_2_1_N, FName::text, GName::none};
+    case Name::ZC_TextScene: return {VName::textScene, VAOConFSVL::F_2_0__US_2_1_N, FName::text, GName::none};
     default: return {};
     }
 }

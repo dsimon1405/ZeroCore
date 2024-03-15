@@ -19,6 +19,7 @@ struct ZC_ShVertex
         lineOrientation3D,  //  draw as POINTS!!!
         quadOrientation3D,
         textWindow,
+        textScene,
     };
 
     typedef typename ZC_VAOConfig::FormatShVLayoutAndUsingFormatsPacker VAO_FSVLaUFP; 

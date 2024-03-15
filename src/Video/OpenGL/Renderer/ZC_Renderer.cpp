@@ -70,7 +70,7 @@ void ZC_Renderer::DrawAll()
         switch (rendSetsP.first)
         {
         case RSLevel::Drawing: DrawDrawing(rendSetsP.second); break;
-        case RSLevel::Stencil: DrawStencil(rendSetsP.second); break;
+        case RSLevel::StencilBorder: DrawStencil(rendSetsP.second); break;
         case RSLevel::TextWindow: DrawTextWidndow(rendSetsP.second); break;
 #ifdef ZC_IMGUI
         case RSLevel::ImGui: DrawImGui(rendSetsP.second); break;
@@ -101,7 +101,7 @@ void ZC_Renderer::DrawStencil(std::map<ZC_ShProg*, std::forward_list<ZC_Renderer
     for (auto pairShPRS : mapShPRS)
     {
         pairShPRS.first->UseProgram();
-        for (auto pRendSet : pairShPRS.second) pRendSet->Draw(RSLevel::Stencil);
+        for (auto pRendSet : pairShPRS.second) pRendSet->Draw(RSLevel::StencilBorder);
     }
 
     glStencilFunc(GL_NOTEQUAL, 1, 255);
@@ -109,7 +109,7 @@ void ZC_Renderer::DrawStencil(std::map<ZC_ShProg*, std::forward_list<ZC_Renderer
     pShPStencil->UseProgram();
     for (auto pairShPRS : mapShPRS)
         for (auto pRendSet : pairShPRS.second)
-            pRendSet->Draw(RSLevel::Stencil);
+            pRendSet->Draw(RSLevel::StencilBorder);
     bufferCleaner.GlEnable(GL_DEPTH_TEST);
     
     bufferCleaner.GlDisable(GL_STENCIL_TEST);
@@ -126,7 +126,11 @@ void ZC_Renderer::DrawTextWidndow(std::map<ZC_ShProg*, std::forward_list<ZC_Rend
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    mapShPRS.begin()->first->UseProgram();
-    for (auto pRendSet : mapShPRS.begin()->second) pRendSet->Draw(RSLevel::TextWindow);
+
+    for (auto pairShPRS : mapShPRS)
+    {
+        pairShPRS.first->UseProgram();
+        for (auto pRendSet : pairShPRS.second) pRendSet->Draw(RSLevel::TextWindow);
+    }
     glDisable(GL_BLEND);
 }

@@ -18,7 +18,7 @@ ZC_RS::ZC_RS(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_upt
     if (isFirstCall)
     {
         auto pShPog = ZC_ShProgs::Get(ZC_ShProgs::Name::ZCR_Stencil);
-        if (pShPog) LevelController::DrawingStyleStencil::pActiveUniformsStencil = &(pShPog->uniforms);
+        if (pShPog) LevelController::DrawingStyleStencilBorder::pActiveUniformsStencil = &(pShPog->uniforms);
         isFirstCall = false;
     }
 }
@@ -33,7 +33,7 @@ ZC_RS::ZC_RS(ZC_RS&& rs)
 {}
 
 
-//  LevelDrawing
+//  DrawingStyleSimple
 
 ZC_RS::LevelController::DrawingStyleSimple::DrawingStyleSimple(Level _lvl)
     : lvl(_lvl)
@@ -72,13 +72,13 @@ void ZC_RS::LevelController::DrawingStyleSimple::SimpleDraw(ZC_uptr<ZC_GLDraw>& 
 }
 
 
-//  LvlStencil
+//  DrawingStyleStencil
 
-ZC_RS::LevelController::DrawingStyleStencil::DrawingStyleStencil(Level lvl)
+ZC_RS::LevelController::DrawingStyleStencilBorder::DrawingStyleStencilBorder(Level lvl)
     : DrawingStyleSimple(lvl)
 {}
 
-void ZC_RS::LevelController::DrawingStyleStencil::Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
+void ZC_RS::LevelController::DrawingStyleStencilBorder::Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount)
 {
     if (isFirstDrawing)
     {
@@ -91,7 +91,7 @@ void ZC_RS::LevelController::DrawingStyleStencil::Draw(ZC_uptr<ZC_GLDraw>& upDra
         {
             typedef typename ZC_Uniform::Name UName;
             auto model = *static_cast<const ZC_Mat4<float>*>(pDrSet->uniforms.Get(UName::unModel));
-            model.Scale({ pDrSet->stencilScale, pDrSet->stencilScale, pDrSet->stencilScale});
+            model.Scale(pDrSet->stencilScale, pDrSet->stencilScale, pDrSet->stencilScale);
             pActiveUniformsStencil->Set(UName::unModel, &model);
             pActiveUniformsStencil->Set(UName::unColor, &(pDrSet->stencilColor));
             pActiveUniformsStencil->Activate();
@@ -153,7 +153,7 @@ ZC_uptr<ZC_RS::LevelController::DrawingStyleSimple> ZC_RS::LevelController::GetL
 {
     switch (lvl)
     {
-    case Level::Stencil: return { new DrawingStyleStencil(lvl) };   //  at now only for stencil need some special draawing prepares in separate class
+    case Level::StencilBorder: return { new DrawingStyleStencilBorder(lvl) };   //  at now only for stencil need some special draawing prepares in separate class
     default: return { new DrawingStyleSimple(lvl) };
     }
 }

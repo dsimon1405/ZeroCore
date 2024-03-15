@@ -9,9 +9,7 @@ ZC_RSTextured::ZC_RSTextured(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VA
         std::forward_list<ZC_Buffer>&& _buffers, std::vector<TexSet>&& _texSets)
     : ZC_RS(pShPInitSet, std::move(_vao), std::move(_upDraw), std::move(_buffers)),
     texSets(std::move(_texSets))
-{
-    std::fill(lvlCounter, lvlCounter + Level::None, 0);
-}
+{}
 
 ZC_RSTextured::ZC_RSTextured(ZC_RSTextured&& rs)
     : ZC_RS(dynamic_cast<ZC_RS&&>(rs)),
@@ -45,7 +43,12 @@ void ZC_RSTextured::Add(DrawingSet* pDS)
     auto texSetsIter = std::find(texSets.begin(), texSets.end(), pDS->pTexSet);
     if (texSetsIter == texSets.end()) ZC_ErrorLogger::Err("Can't find ZC_RSTexs::TexSet!", __FILE__,__LINE__);
     texSetsIter->levelController.Add(pDS);
-    if ((lvlCounter[pDS->lvl])++ == 0) AddToRenderer(pDS->lvl);
+    switch (pDS->lvl)
+    {
+    case Level::Drawing: if (drawingStyleSimpleCount++ == 0) AddToRenderer(pDS->lvl); break;
+    case Level::StencilBorder: if (drawingStyleStencilBorderCount++ == 0) AddToRenderer(pDS->lvl); break;
+    default: break;
+    }
 }
 
 void ZC_RSTextured::Erase(DrawingSet* pDS)
@@ -53,7 +56,12 @@ void ZC_RSTextured::Erase(DrawingSet* pDS)
     auto texSetsIter = std::find(texSets.begin(), texSets.end(), pDS->pTexSet);
     if (texSetsIter == texSets.end()) ZC_ErrorLogger::Err("Can't find ZC_RSTexs::TexSet!", __FILE__,__LINE__);
     texSetsIter->levelController.Erase(pDS);
-    if (--(lvlCounter[pDS->lvl]) == 0) EraseFromRenderer(pDS->lvl);
+    switch (pDS->lvl)
+    {
+    case Level::Drawing: if (--drawingStyleSimpleCount == 0) EraseFromRenderer(pDS->lvl); break;
+    case Level::StencilBorder: if (--drawingStyleStencilBorderCount == 0) EraseFromRenderer(pDS->lvl); break;
+    default: break;
+    }
 }
 
 

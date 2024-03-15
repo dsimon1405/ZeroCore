@@ -28,6 +28,7 @@ ZC_Shader* ZC_ShVertex::GetShader(Name name)
     case Name::lineOrientation3D: path = ZC_FSPath(shadersPath).append("lineOrientation3D.vs").string(); break;
     case Name::quadOrientation3D: path = ZC_FSPath(shadersPath).append("quadOrientation3D.vs").string(); break;
     case Name::textWindow: path = ZC_FSPath(shadersPath).append("textWindow.vs").string(); break;
+    case Name::textScene: path = ZC_FSPath(shadersPath).append("textScene.vs").string(); break;
     }
 
     return &(shaders.emplace(name, ZC_Shader(ZC_Shader::ReadShaderFile(path.c_str(), GL_VERTEX_SHADER).pHead, GL_VERTEX_SHADER)).first->second);
@@ -113,6 +114,15 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
         rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_U2fvPointer(UName::unPosition, 1) }, 1));
+    } break;
+    case Name::textScene:
+    {
+        switch (vaoConFSVL)
+        {
+        case VAOConFSVL::F_2_0__US_2_1_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
+        default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
+        }
+        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(UName::unModel, 1, false) }, 1));
     } break;
     }
 }

@@ -50,12 +50,12 @@ protected:
             void SimpleDraw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount);
         };
         
-        struct DrawingStyleStencil : public DrawingStyleSimple
+        struct DrawingStyleStencilBorder : public DrawingStyleSimple
         {
             static inline ZC_Uniforms* pActiveUniformsStencil;
             bool isFirstDrawing = true;
 
-            DrawingStyleStencil(Level lvl);
+            DrawingStyleStencilBorder(Level lvl);
             
             void Draw(ZC_uptr<ZC_GLDraw>& upDraw, ZC_Texture* pTextures, size_t texturesCount) override;
         };

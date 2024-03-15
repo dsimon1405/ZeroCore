@@ -22,9 +22,6 @@ struct ZC_RSTextured : public ZC_RS
         bool operator == (void* pTexSet) const;
     };
 
-    std::vector<TexSet> texSets;
-    unsigned int lvlCounter[Level::None];   //  counting how much LevelDrawing on each ZC_Renderer::Level in each TexSet (total amount for adding and erasing from ZC_Renderer)
-
     ZC_RSTextured(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw,
             std::forward_list<ZC_Buffer>&& _buffers, std::vector<TexSet>&& _texSets);
 
@@ -51,4 +48,9 @@ struct ZC_RSTextured : public ZC_RS
     ZC_sptr<ZC_RendererSetAndDrawingSet> Make_sptrRendererSetDrawingSet(const char* texSetName, float stencilScale, unsigned int stencilColor) override;
     void Add(DrawingSet* pDS) override;
     void Erase(DrawingSet* pDS) override;
+
+private:
+    std::vector<TexSet> texSets;
+    uint drawingStyleSimpleCount = 0,   //  counting how much LevelDrawing on each ZC_Renderer::Level in each TexSet (total amount for adding and erasing from ZC_Renderer)
+        drawingStyleStencilBorderCount = 0;
 };

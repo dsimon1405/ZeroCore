@@ -23,7 +23,7 @@ public:
         ZCR_LineOrientation3D,
         ZCR_QuadOrientation3D,
         ZC_TextWindow,
-        // ZC_TextScene,
+        ZC_TextScene,
         
         LoadAll,    //  must be last
     };

@@ -34,15 +34,28 @@ struct ZC_Mat4
     constexpr ZC_Mat4<TValue> operator * (const ZC_Mat4& mat) const noexcept;
 
     /*
-    Converts a matrix for vector axis scaling.
+    Converts a matrix for vector axises scaling.
 
     Params:
-    scale - a vector with scaling values ​​along the axes.
+    axises - scale axises.
 
     Return:
     Scaling matrix. 
     */
-    ZC_Mat4<TValue>& Scale(const ZC_Vec3<TValue>& scale) noexcept;
+    ZC_Mat4<TValue>& Scale(const ZC_Vec3<TValue>& axises) noexcept;
+
+    /*
+    Converts a matrix for vector axises scaling.
+
+    Params:
+    x - scale along axis X.
+    Y - scale along axis Y.
+    Z - scale along axis Z.
+
+    Return:
+    Scaling matrix. 
+    */
+    ZC_Mat4<TValue>& Scale(TValue x, TValue y, TValue z) noexcept;
 
     /*
     Converts a matrix for rotation along vector axes.
@@ -60,12 +73,25 @@ struct ZC_Mat4
     Transform the matrix for vector translation.
 
     Params:
-    trans - a vector with translate values for each axis.
+    axises - translate along axises.
 
     Return:
     Translation matrix.
     */
-    ZC_Mat4<TValue>& Translate(const ZC_Vec3<TValue>& trans) noexcept;
+    ZC_Mat4<TValue>& Translate(const ZC_Vec3<TValue>& axises) noexcept;
+
+    /*
+    Transform the matrix for vector translation.
+
+    Params:
+    x - translate along axis X.
+    Y - translate along axis Y.
+    Z - translate along axis Z.
+
+    Return:
+    Translation matrix.
+    */
+    ZC_Mat4<TValue>& Translate(TValue x, TValue y, TValue z) noexcept;
 
     /*
     Returns a pointer to the first element of the matrix.
@@ -148,22 +174,31 @@ constexpr ZC_Mat4<TValue> ZC_Mat4<TValue>::operator * (const ZC_Mat4<TValue>& ma
 }
 
 template<typename TValue>
-ZC_Mat4<TValue>& ZC_Mat4<TValue>::Scale(const ZC_Vec3<TValue>& scale) noexcept
+ZC_Mat4<TValue>& ZC_Mat4<TValue>::Scale(const ZC_Vec3<TValue>& axises) noexcept
 {
-    columns[0] *= scale[0];
-    columns[1] *= scale[1];
-    columns[2] *= scale[2];
+    columns[0] *= axises[0];
+    columns[1] *= axises[1];
+    columns[2] *= axises[2];
     return *this;
 }
 
 template<typename TValue>
-ZC_Mat4<TValue>& ZC_Mat4<TValue>::Rotate(TValue angle, const ZC_Vec3<TValue>& axes)
+ZC_Mat4<TValue>& ZC_Mat4<TValue>::Scale(TValue x, TValue y, TValue z) noexcept
+{
+    columns[0] *= x;
+    columns[1] *= y;
+    columns[2] *= z;
+    return *this;
+}
+
+template<typename TValue>
+ZC_Mat4<TValue>& ZC_Mat4<TValue>::Rotate(TValue angle, const ZC_Vec3<TValue>& axises)
 {
     const TValue radAngle = ZC_Vec::Radians(angle);
     const TValue c = cos(radAngle);
     const TValue s = sin(radAngle);
 
-    ZC_Vec3<TValue> axis(ZC_Vec::Normalize(axes));
+    ZC_Vec3<TValue> axis(ZC_Vec::Normalize(axises));
     ZC_Vec3<TValue> temp(axis * (static_cast<TValue>(1) - c));
 
     ZC_Vec3<TValue> rotateX;
@@ -191,9 +226,16 @@ ZC_Mat4<TValue>& ZC_Mat4<TValue>::Rotate(TValue angle, const ZC_Vec3<TValue>& ax
 }
 
 template<typename TValue>
-ZC_Mat4<TValue>& ZC_Mat4<TValue>::Translate(const ZC_Vec3<TValue>& trans) noexcept
+ZC_Mat4<TValue>& ZC_Mat4<TValue>::Translate(const ZC_Vec3<TValue>& axises) noexcept
 {
-    columns[3] = (columns[0] * trans[0]) + (columns[1] * trans[1]) + (columns[2] * trans[2]) + columns[3];
+    columns[3] = (columns[0] * axises[0]) + (columns[1] * axises[1]) + (columns[2] * axises[2]) + columns[3];
+    return *this;
+}
+
+template<typename TValue>
+ZC_Mat4<TValue>& ZC_Mat4<TValue>::Translate(TValue x, TValue y, TValue z) noexcept
+{
+    columns[3] = (columns[0] * x) + (columns[1] * y) + (columns[2] * z) + columns[3];
     return *this;
 }
 

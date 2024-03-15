@@ -1,5 +1,5 @@
 #version 460 core
-layout (location = 0) in vec2 inPosition; 	// <vec2 pos, vec2 tex>
+layout (location = 0) in vec2 inPosition;
 layout (location = 1) in vec2 inTexCoords;
 
 layout (std140, binding = 1) uniform Ortho { mat4 ortho; };
@@ -11,4 +11,4 @@ void main()
 {
     gl_Position = ortho * vec4(inPosition.x + unPosition.x, inPosition.y + unPosition.y, 0.0, 1.0);
     vTexCoords = inTexCoords;
-}  
+}
