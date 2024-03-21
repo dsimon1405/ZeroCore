@@ -1,6 +1,7 @@
 #include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
 
 #include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Tools/Container/ZC_ContFunc.h>
 
 #include <algorithm>
 
@@ -16,7 +17,7 @@ void ZC_ShProgs::Load(Name* pShPName, size_t shPNameCount)
 
         ZC_ShProg shProg(vertexData.shader->id, fragmentData.shader->id, pGeometryShader ? pGeometryShader->id : 0);
 
-        shProg.UseProgram();
+        shProg.ActivateOpenGL();
         
         std::vector<ZC_uptr<ZC_Uniform>> uniforms;
         uniforms.reserve(vertexData.uniforms.size + fragmentData.uniforms.size);
@@ -34,8 +35,7 @@ void ZC_ShProgs::Load(Name* pShPName, size_t shPNameCount)
 
 typename ZC_ShProgs::ShPInitSet* ZC_ShProgs::Get(Name name)
 {
-    auto shProgsI = std::find(shProgs.begin(), shProgs.end(), name);
-    return shProgsI != shProgs.end() ? &(*shProgsI) : nullptr;
+    return ZC_Find(shProgs, name);
 }
 
 typename ZC_ShProgs::ShNames ZC_ShProgs::GetShNames(Name name) const noexcept

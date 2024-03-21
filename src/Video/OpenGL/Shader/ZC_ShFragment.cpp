@@ -27,7 +27,6 @@ ZC_Shader* ZC_ShFragment::GetShader(Name name)
 
 typename ZC_ShFragment::Set ZC_ShFragment::GetVAOAndUniformData(Name name)
 {
-    typedef typename ZC_Uniform::Name UName;
     typedef typename ZC_TexSets::TextureName TName;
     switch (name)
     {
@@ -47,7 +46,7 @@ typename ZC_ShFragment::Set ZC_ShFragment::GetVAOAndUniformData(Name name)
     {
         GetShader(name),
         { { new TName[]{ TName::texColor }, 1 } },
-        { ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_U1uiValue(UName::unColor) }, 1) }
+        { ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ { new ZC_U1uiValue(ZC_UN_unColor) } }, 1) }
     };
     default: return {};
     }

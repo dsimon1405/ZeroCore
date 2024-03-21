@@ -8,11 +8,12 @@
 #include <forward_list>
 
 namespace ZC_ImGui { bool Init(void* pWindow, void* pGlContext); }
-// typedef int ZC_IGWIndentFlags;  //  ZC_IGWindow::IndentFlag
+class ZC_Renderer;
 
-class ZC_IGWindow : protected ZC_RendererSet, public ZC_WindowOrthoIndent
+class ZC_IGWindow : public ZC_WindowOrthoIndent
 {
     friend bool ZC_ImGui::Init(void* pWindow, void* pGlContext);
+    friend class ZC_Renderer;
 public:
     ~ZC_IGWindow();
 
@@ -52,6 +53,7 @@ protected:
 
 private:
     static inline std::forward_list<std::string> unicNames;
+    static inline std::forward_list<ZC_IGWindow*> rendererWindows;  //  heirs for call in ZC_Renderer into ZC_IGWindow::Draw();
 
     const char* name;
     bool isDrawing;
@@ -63,7 +65,7 @@ private:
     bool needSetPosition = true;
     static inline bool isCursorInOneOfWindows = false;
 
-    void Draw(Level lvl) override;
+    void UpdateAndDraw();
     void CallAfterZC_WindowResized() override;
 
     virtual void DrawWindow() = 0;
@@ -71,8 +73,10 @@ private:
     const char* AddName(std::string&& unicName);
     //  set position of next window calls before ImGui::Begin();
     void SetPosition();
-    void ChangeDrawingState(float time);
+    void UpadteRendererState(float time);
 
     //  refresh for next frame in events handle events end signal
     static void Make_isCursorInOneOfWindows_false(float time) noexcept;
+    //  function for call into ZC_Renderer::Draw();
+    static void Draw();
 };

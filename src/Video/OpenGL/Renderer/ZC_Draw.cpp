@@ -9,10 +9,19 @@ ZC_DrawElements::ZC_DrawElements(GLenum _mode, int _count, GLenum _type, GLuint 
     startByteOffset(_startByteOffset)
 {}
 
-void ZC_DrawElements::Draw()
+void ZC_DrawElements::Draw() const
 {
     glDrawElements(mode, count, type, reinterpret_cast<void*>(startByteOffset));
 }
+
+// void ZC_DrawElements::UpdateData(ZC_GLDraw* pGLDraw)
+// {
+//     ZC_DrawElements* pDrawElements = dynamic_cast<ZC_DrawElements*>(pGLDraw);
+//     mode = pDrawElements->mode;
+//     count = pDrawElements->count;
+//     type = pDrawElements->type;
+//     startByteOffset = pDrawElements->startByteOffset;
+// }
 
 
 //  ZC_DrawArrays
@@ -23,7 +32,15 @@ ZC_DrawArrays::ZC_DrawArrays(GLenum _mode, int _first, int _count)
     count(_count)
 {}
 
-void ZC_DrawArrays::Draw()
+void ZC_DrawArrays::Draw() const
 {
     glDrawArrays(mode, first, count);
 }
+
+// void ZC_DrawArrays::UpdateData(ZC_GLDraw* pGLDraw)
+// {
+//     ZC_DrawArrays* pDrawArrays = dynamic_cast<ZC_DrawArrays*>(pGLDraw);
+//     mode = pDrawArrays->mode;
+//     first = pDrawArrays->first;
+//     count = pDrawArrays->count;
+// }

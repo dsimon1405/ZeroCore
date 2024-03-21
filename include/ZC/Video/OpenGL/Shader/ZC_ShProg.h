@@ -19,7 +19,7 @@ struct ZC_ShProg
 	/*
 	Activate shader program.
 	*/
-    void UseProgram() const;
+    void ActivateOpenGL() const;
 
 	GLint GetUniformLocation(const char* name);
 };

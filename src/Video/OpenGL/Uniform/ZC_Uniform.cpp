@@ -5,7 +5,7 @@
 
 //  ZC_Uniform start
 
-ZC_Uniform::ZC_Uniform(Name _name)
+ZC_Uniform::ZC_Uniform(ZC_UniformName _name)
     : name(_name)
 {}
 
@@ -13,20 +13,20 @@ void ZC_Uniform::GetUniformLocation(ZC_ShProg& shP)
 {
     switch (name)
     {
-        case Name::unModel: location = shP.GetUniformLocation("unModel"); break;
-        case Name::unColor: location = shP.GetUniformLocation("unColor"); break;
-        case Name::unPosition: location = shP.GetUniformLocation("unPosition"); break;
+        case ZC_UN_unModel: location = shP.GetUniformLocation("unModel"); break;
+        case ZC_UN_unColor: location = shP.GetUniformLocation("unColor"); break;
+        case ZC_UN_unPosition: location = shP.GetUniformLocation("unPosition"); break;
     }
     if (location == -1) ZC_ErrorLogger::Err("GetUniformLocation fail!", __FILE__,__LINE__);
 }
 
 //  ZC_U1uiValue start
 
-ZC_U1uiValue::ZC_U1uiValue(Name _name)
+ZC_U1uiValue::ZC_U1uiValue(ZC_UniformName _name)
     : ZC_Uniform(_name)
 {}
 
-void ZC_U1uiValue::Activate()
+void ZC_U1uiValue::Activate() const
 {
     glUniform1ui(location, value);
 }
@@ -48,18 +48,18 @@ ZC_uptr<ZC_Uniform> ZC_U1uiValue::GetCopy() const
 
 //  ZC_UCount start
 
-ZC_UCount::ZC_UCount(Name _name, GLsizei _count)
+ZC_UCount::ZC_UCount(ZC_UniformName _name, GLsizei _count)
     : ZC_Uniform(_name),
     count(_count)
 {}
 
 //  ZC_U2fvPointer start
 
-ZC_U2fvPointer::ZC_U2fvPointer(Name _name, GLsizei _count)
+ZC_U2fvPointer::ZC_U2fvPointer(ZC_UniformName _name, GLsizei _count)
     : ZC_UCount(_name, _count)
 {}
 
-void ZC_U2fvPointer::Activate()
+void ZC_U2fvPointer::Activate() const
 {
     glUniform2fv(location, count, pointer->Begin());
 }
@@ -81,11 +81,11 @@ ZC_uptr<ZC_Uniform> ZC_U2fvPointer::GetCopy() const
 
 //  ZC_U3fvValue start
 
-ZC_U3fvValue::ZC_U3fvValue(Name _name, GLsizei _count)
+ZC_U3fvValue::ZC_U3fvValue(ZC_UniformName _name, GLsizei _count)
     : ZC_UCount(_name, _count)
 {}
 
-void ZC_U3fvValue::Activate()
+void ZC_U3fvValue::Activate() const
 {
     glUniform3fv(location, count, &value[0]);
 }
@@ -107,11 +107,11 @@ ZC_uptr<ZC_Uniform> ZC_U3fvValue::GetCopy() const
 
 //  ZC_U4fvValue start
 
-ZC_U4fvValue::ZC_U4fvValue(Name _name, GLsizei _count)
+ZC_U4fvValue::ZC_U4fvValue(ZC_UniformName _name, GLsizei _count)
     : ZC_UCount(_name, _count)
 {}
 
-void ZC_U4fvValue::Activate()
+void ZC_U4fvValue::Activate() const
 {
     glUniform4fv(location, count, &value[0]);
 }
@@ -133,18 +133,18 @@ ZC_uptr<ZC_Uniform> ZC_U4fvValue::GetCopy() const
 
 //  ZC_UTranspose start
 
-ZC_UTranspose::ZC_UTranspose(Name _name, GLsizei _count, GLboolean _transpose)
+ZC_UTranspose::ZC_UTranspose(ZC_UniformName _name, GLsizei _count, GLboolean _transpose)
     : ZC_UCount(_name, _count),
     transpose(_transpose)
 {}
 
 //  ZC_UMatrix4fvValue start
 
-ZC_UMatrix4fvValue::ZC_UMatrix4fvValue(Name _name, GLsizei _count, GLboolean _transpose)
+ZC_UMatrix4fvValue::ZC_UMatrix4fvValue(ZC_UniformName _name, GLsizei _count, GLboolean _transpose)
     : ZC_UTranspose(_name, _count, _transpose)
 {}
 
-void ZC_UMatrix4fvValue::Activate()
+void ZC_UMatrix4fvValue::Activate() const
 {
     glUniformMatrix4fv(location, count, transpose, value.Begin());
 }
@@ -166,11 +166,11 @@ ZC_uptr<ZC_Uniform> ZC_UMatrix4fvValue::GetCopy() const
 
 //  ZC_UMatrix4fvPointer start
 
-ZC_UMatrix4fvPointer::ZC_UMatrix4fvPointer(Name _name, GLsizei _count, GLboolean _transpose)
+ZC_UMatrix4fvPointer::ZC_UMatrix4fvPointer(ZC_UniformName _name, GLsizei _count, GLboolean _transpose)
     : ZC_UTranspose(_name, _count, _transpose)
 {}
 
-void ZC_UMatrix4fvPointer::Activate()
+void ZC_UMatrix4fvPointer::Activate() const
 {
     glUniformMatrix4fv(location, count, transpose, pointer->Begin());
 }

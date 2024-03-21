@@ -28,3 +28,10 @@ bool ZC_ForwardListErase(std::forward_list<TCont>& rCont, const TFind& find)
     }
     return false;
 }
+
+template<typename TData, typename TAllocator, template<typename, typename> typename TCont, typename TFind>
+TData* ZC_Find(TCont<TData, TAllocator>& fl, const TFind& find)
+{
+    for (auto& rContData : fl) if (rContData == find) return &rContData;
+    return nullptr;
+}

@@ -30,5 +30,6 @@ struct ZC_VAO
     verticesCount — number of vertices. The value should be 0 if the data in vbo is stored in VNCVNC style. If the data stored in vbo is in VVNNCC, the value cannot be 0.
     */
 	void Config(VAOConData vaoConData, ZC_Buffer& vbo, ZC_Buffer* ebo, GLuint startOffset, GLuint verticesCount);
-	void BindVertexArray();
+	void ActivateOpenGL();
+	static void UnbindVertexArray();
 };

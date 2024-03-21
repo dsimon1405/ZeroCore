@@ -13,8 +13,9 @@ struct ZC_Uniforms
 
     bool operator == (ZC_Uniforms* pUniforms);
 
-    void Set(typename ZC_Uniform::Name name, void* value);
-    const void* Get(typename ZC_Uniform::Name name) const;
-    void Activate();
+    void Set(ZC_UniformName name, const void* value);
+    void Set(ZC_UniformName name, void* value);
+    const void* Get(ZC_UniformName name) const;
+    void Activate() const;
     ZC_Uniforms GetCopy() const;
 };

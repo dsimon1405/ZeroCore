@@ -1,64 +1,41 @@
 #pragma once
 
-#include <ZC/Tools/ZC_uptr.h>
+#include "ZC_RSController.h"
+#include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
+#include <ZC/Video/OpenGL/VAO/ZC_VAO.h>
 #include <ZC/Tools/ZC_sptr.h>
-#include <ZC/Video/OpenGL/Uniform/ZC_Uniforms.h>
-#include <ZC_Config.h>
 
-struct ZC_RendererSetAndDrawingSet;
-
-class ZC_RendererSet
+struct ZC_TexturesSet
 {
-public:
-    enum Level
-    {
-        Drawing = 0,
-        TextScene,
-        StencilBorder,        //  must be after scene objects!
-        TextWindow,
-#ifdef ZC_IMGUI
-        ImGui,          //  before None
-#endif
-        None,
-    };
+    int id;
+    std::vector<ZC_Texture> textures;
+};
 
-    virtual ~ZC_RendererSet() = default;
+struct ZC_RendererSet
+{
+    ZC_ShProg* pShP;
+    ZC_Uniforms* pBaseUniforms;   //  for creatiion of activeUniforms
+    ZC_VAO vao;
+    ZC_uptr<ZC_GLDraw> upGLDraw;
+    std::forward_list<ZC_Buffer> buffers;
+    std::forward_list<ZC_TexturesSet> texSets;
 
-    bool operator == (ZC_RendererSet* pRS) const noexcept;
+    ZC_RendererSet(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw,
+        std::forward_list<ZC_Buffer>&& _buffers, std::forward_list<ZC_TexturesSet>&& _texSets = {});
 
-    virtual void Draw(Level lvl) = 0;
+    static ZC_uptr<ZC_RendererSet> CreateUptr(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upGLDraw,
+        std::forward_list<ZC_Buffer>&& _buffers, std::forward_list<ZC_TexturesSet>&& _texSets = {});
+
+    static ZC_sptr<ZC_RendererSet> CreateShptr(typename ZC_ShProgs::ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upGLDraw,
+        std::forward_list<ZC_Buffer>&& _buffers, std::forward_list<ZC_TexturesSet>&& _texSets = {});
 
     /*
-    Return unique pointer to ZC_RSDrawingSet.
+    Params:
+    texSetId - ZC_TexturesSet.id or -1 if there's no textures sets were added in ZC_RendererSet.
+    personalData - forward list of ZC_RSPersonalData heirs (all heir among ZC_RSPDUniformData can be added by user!)
 
-    texSetName - name of the texture set (ZC_RSTexs::TexSet), can be nullptr if used for heir ZC_RSNonTex.
-    stencilScale - scale for drawing the stencil border of the object. Should be greater than 1.0f. Can be anything if ZC_RendererSet::Level::Stencil will not be used.
-    stencilColor - color of stencil border packed in unsigned int. Packing -> unsigned char[32] -> [0 - 7]{no metter}, [7 - 15]{red}, [15 - 23]{green}, [23 - 31]{blue}
+    Return:
+    Renderer set controller.
     */
-    virtual ZC_uptr<ZC_RendererSetAndDrawingSet> Make_uptrRendererSetDrawingSet(const char* texSetName, float stencilScale, unsigned int stencilColor);
-    virtual ZC_sptr<ZC_RendererSetAndDrawingSet> Make_sptrRendererSetDrawingSet(const char* texSetName, float stencilScale, unsigned int stencilColor);
-
-    struct DrawingSet
-    {
-        ZC_Uniforms uniforms;
-        Level lvl = Level::None;
-        void* pTexSet = nullptr;    //  pointer on TexSet uses in ZC_RSTexture::Add(), ZC_RSTexture::Erase()
-        float stencilScale = 0.f;
-        unsigned int stencilColor = 0;
-
-        //  Return copy with Level::None.
-        DrawingSet GetCopy() const
-        {
-            return { uniforms.GetCopy(), Level::None, pTexSet, stencilScale, stencilColor };
-        }
-    };
-    virtual void Add(DrawingSet* upDS) {}
-    virtual void Erase(DrawingSet* upDS) {}
-    virtual ZC_ShProg* GetShProg() const noexcept { return nullptr; }
-
-protected:
-    ZC_RendererSet() = default;
-
-    void AddToRenderer(Level lvl);
-    void EraseFromRenderer(Level lvl);
+    ZC_RSController MakeZC_RSController(int texSetId = -1, std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& personalData = {});
 };

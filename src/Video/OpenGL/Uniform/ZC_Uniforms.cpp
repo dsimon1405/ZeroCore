@@ -15,7 +15,12 @@ bool ZC_Uniforms::operator == (ZC_Uniforms* pUniforms)
     return this == pUniforms;
 }
 
-void ZC_Uniforms::Set(typename ZC_Uniform::Name name, void* value)
+void ZC_Uniforms::Set(ZC_UniformName name, const void* value)
+{
+    Set(name, const_cast<void*>(value));
+}
+
+void ZC_Uniforms::Set(ZC_UniformName name, void* value)
 {
     for (auto& uniform : uniforms)
     {
@@ -28,7 +33,7 @@ void ZC_Uniforms::Set(typename ZC_Uniform::Name name, void* value)
     ZC_ErrorLogger::Err("Can't find Uniform " + std::to_string(name) + ", to set value!", __FILE__, __LINE__);
 }
 
-const void* ZC_Uniforms::Get(typename ZC_Uniform::Name name) const
+const void* ZC_Uniforms::Get(ZC_UniformName name) const
 {
     for (auto& uniform : uniforms)
         if (uniform->name == name) return uniform->Get();
@@ -36,7 +41,7 @@ const void* ZC_Uniforms::Get(typename ZC_Uniform::Name name) const
     return nullptr;
 }
 
-void ZC_Uniforms::Activate()
+void ZC_Uniforms::Activate() const
 {
     for (auto& uniform : uniforms) uniform->Activate();
 }

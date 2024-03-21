@@ -41,7 +41,7 @@ ZC_ShProg::~ZC_ShProg()
     glDeleteProgram(id);
 }
 
-void ZC_ShProg::UseProgram() const
+void ZC_ShProg::ActivateOpenGL() const
 {
     if (id != 0) glUseProgram(id);
 }

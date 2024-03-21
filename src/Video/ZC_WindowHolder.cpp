@@ -26,7 +26,7 @@ void ZC_WindowHolder::RunMainCycle()
     while (true)
     {
         if (!(upEventsHolder->PollEvents(fps.StartNewFrame()))) break;
-        renderer.DrawAll();
+        renderer.Draw();
     }
 }
 

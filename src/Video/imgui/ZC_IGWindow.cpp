@@ -10,14 +10,18 @@
 ZC_IGWindow::~ZC_IGWindow()
 {
     ZC_ForwardListErase(unicNames, name);
-    if (isDrawing) EraseFromRenderer(Level::ImGui);
+    if (isDrawing)
+    {
+        bool isErased = ZC_ForwardListErase(rendererWindows, this);
+        assert(isErased);   //  can't find to delete
+    }
 }
 
 void ZC_IGWindow::NeedDraw(bool _needDraw)
 {
     if (_needDraw == isDrawing) return;
     isDrawing = !isDrawing;
-    sconChangeDrawingState = ZC_Events::ConnectHandleEventsEnd({ &ZC_IGWindow::ChangeDrawingState, this });
+    sconChangeDrawingState = ZC_Events::ConnectHandleEventsEnd({ &ZC_IGWindow::UpadteRendererState, this });
 }
 
 bool ZC_IGWindow::IsCursorInOneOfWindows() noexcept
@@ -46,10 +50,10 @@ ZC_IGWindow::ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, fl
     ImGui::End();
     ZC_ImGui::FrameEnd();
 
-    if (isDrawing) AddToRenderer(Level::ImGui);
+    if (isDrawing) rendererWindows.emplace_front(this);
 }
 
-void ZC_IGWindow::Draw(Level lvl)
+void ZC_IGWindow::UpdateAndDraw()
 {
     SetPosition();
     if (mayClose)
@@ -78,7 +82,7 @@ void ZC_IGWindow::CallAfterZC_WindowResized()
 
 const char* ZC_IGWindow::AddName(std::string&& unicName)
 {
-    assert(std::find(unicNames.begin(), unicNames.end(), unicName) == unicNames.end());
+    assert(!ZC_Find(unicNames, unicName));
     return unicNames.emplace_front(std::move(unicName)).c_str();
 }
 
@@ -89,9 +93,20 @@ void ZC_IGWindow::SetPosition()
     needSetPosition = false;
 }
 
-void ZC_IGWindow::ChangeDrawingState(float time)
+void ZC_IGWindow::UpadteRendererState(float time)
 {
-    if (isDrawing) AddToRenderer(Level::ImGui);
-    else EraseFromRenderer(Level::ImGui);
+    if (isDrawing) rendererWindows.emplace_front(this);
+    else
+    {
+        bool isErased = ZC_ForwardListErase(rendererWindows, this);
+        assert(isErased);   //  can't find to delete
+    }
     sconChangeDrawingState.Disconnect();
+}
+
+void ZC_IGWindow::Draw()
+{
+    ZC_ImGui::FrameStart();
+    for (auto pIGWindow : rendererWindows) pIGWindow->UpdateAndDraw();
+    ZC_ImGui::FrameEnd();
 }

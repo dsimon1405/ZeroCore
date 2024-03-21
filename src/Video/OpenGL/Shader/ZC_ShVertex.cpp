@@ -37,7 +37,6 @@ ZC_Shader* ZC_ShVertex::GetShader(Name name)
 void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rSet)
 {
     typedef typename ZC_VAOConfig::UsingFormatsPacker VAOUFP;
-    typedef typename ZC_Uniform::Name UName;
     switch (name)
     {
     case Name::colorFigure:
@@ -47,7 +46,7 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
         case VAOConFSVL::F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(2)}; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(UName::unModel, 1, false) }, 1));
+        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(ZC_UN_unModel, 1, false) }, 1));
     } break;
     case Name::point:
     {
@@ -56,7 +55,7 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
         case VAOConFSVL::F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(UName::unModel, 1, false) }, 1));
+        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(ZC_UN_unModel, 1, false) }, 1));
     } break;
     case Name::lineFigure:
     {
@@ -65,11 +64,11 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
         case VAOConFSVL::F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(UName::unModel, 1, false) }, 1));
+        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(ZC_UN_unModel, 1, false) }, 1));
     } break;
     case Name::stencil:
     {
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(UName::unModel, 1, false), new ZC_U1uiValue(UName::unColor) }, 2));
+        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(ZC_UN_unModel, 1, false), new ZC_U1uiValue(ZC_UN_unColor) }, 2));
     } break;
     case Name::texture:
     {
@@ -78,7 +77,7 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
         case VAOConFSVL::F_3_0__F_2_3: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(UName::unModel, 1, false) }, 1));
+        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(ZC_UN_unModel, 1, false) }, 1));
     } break;
     case Name::lineMesh:
     {
@@ -87,7 +86,7 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
         case VAOConFSVL::F_3_0: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0) }; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvValue(UName::unModel, 1, false) }, 1));
+        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvValue(ZC_UN_unModel, 1, false) }, 1));
     } break;
     case Name::lineOrientation3D:
     {
@@ -104,7 +103,7 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
         case VAOConFSVL::F_3_0__F_2_1: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvValue(UName::unModel, 1, false) }, 1));
+        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvValue(ZC_UN_unModel, 1, false) }, 1));
     } break;
     case Name::textWindow:
     {
@@ -113,7 +112,7 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
         case VAOConFSVL::F_2_0__US_2_1_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_U2fvPointer(UName::unPosition, 1) }, 1));
+        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_U2fvPointer(ZC_UN_unPosition, 1) }, 1));
     } break;
     case Name::textScene:
     {
@@ -122,7 +121,7 @@ void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rS
         case VAOConFSVL::F_2_0__US_2_1_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
         default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
         }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(UName::unModel, 1, false) }, 1));
+        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(ZC_UN_unModel, 1, false) }, 1));
     } break;
     }
 }

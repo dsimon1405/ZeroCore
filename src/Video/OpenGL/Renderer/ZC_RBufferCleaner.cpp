@@ -1,4 +1,4 @@
-#include "ZC_RBufferCleaner.h"
+#include <ZC/Video/OpenGL/Renderer/ZC_RBufferCleaner.h>
 
 #include <Video/OpenGL/ZC_OpenGL.h>
 

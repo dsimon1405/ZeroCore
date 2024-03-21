@@ -2,7 +2,7 @@
 
 #include <Events/ZC_EventsHolder.h>
 #include <Tools/Time/ZC_FPS.h>
-#include <Video/OpenGL/Renderer/ZC_Renderer.h>
+#include <ZC/Video/OpenGL/Renderer/ZC_Renderer.h>
 
 class ZC_WindowHolder
 {
