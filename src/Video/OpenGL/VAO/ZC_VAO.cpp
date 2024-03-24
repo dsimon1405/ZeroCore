@@ -1,6 +1,6 @@
 #include <ZC/Video/OpenGL/VAO/ZC_VAO.h>
 
-#include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 
 ZC_VAO::ZC_VAO()
 {

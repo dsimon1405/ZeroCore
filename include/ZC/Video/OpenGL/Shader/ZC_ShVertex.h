@@ -22,20 +22,17 @@ struct ZC_ShVertex
         textScene,
     };
 
-    typedef typename ZC_VAOConfig::FormatShVLayoutAndUsingFormatsPacker VAO_FSVLaUFP; 
     struct Set
     {
         ZC_Shader* shader;
-        VAO_FSVLaUFP vaoConSets {};
-        ZC_DA<ZC_uptr<ZC_Uniform>> uniforms {};
+        std::vector<ZC_uptr<ZC_Uniform>> uniforms;
     };
 
-    typedef typename ZC_VAOConfig::FormatShVLayout VAOConFSVL;
-    Set GetSet(Name name, VAOConFSVL vaoConFSVL);
+    Set GetSet(Name name);
 
 private:
     std::map<Name, ZC_Shader> shaders;
 
     ZC_Shader* GetShader(Name name);
-    void GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rSet);
+    void GetUniformData(Name name, Set& rSet);
 };

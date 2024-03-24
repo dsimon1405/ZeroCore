@@ -1,6 +1,6 @@
 #include <ZC/Video/OpenGL/Texture/ZC_Texture.h>
 
-#include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 
 ZC_Texture::ZC_Texture(ZC_Texture&& tex) noexcept
     : id(tex.id),

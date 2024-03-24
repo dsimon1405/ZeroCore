@@ -1,6 +1,5 @@
-#include "ZC_OpenGL.h"
+#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 
-#include "ZC_OpenGL.h"
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
 #include <sstream>

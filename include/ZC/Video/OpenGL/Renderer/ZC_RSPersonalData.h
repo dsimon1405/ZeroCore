@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ZC/Video/OpenGL/Uniform/ZC_Uniforms.h>
+#include <ZC/Tools/Math/ZC_Math.h>
 
 enum ZC_RSPDCategory
 {

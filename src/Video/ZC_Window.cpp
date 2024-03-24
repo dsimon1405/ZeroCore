@@ -1,7 +1,7 @@
 #include <ZC/Video/ZC_Window.h>
 
 #include "ZC_WindowHolder.h"
-#include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 
 bool ZC_Window::MakeWindow(ZC_WindowFlags flags, int width, int height, const char* name)
 {

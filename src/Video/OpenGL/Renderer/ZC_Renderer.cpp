@@ -1,7 +1,7 @@
 #include <ZC/Video/OpenGL/Renderer/ZC_Renderer.h>
 
 #include <ZC/Video/OpenGL/Buffer/ZC_UBOs.h>
-#include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/Video/OpenGL/Renderer/ZC_RendererLevelDrawer.h>
 #include <ZC_Config.h>
 #ifdef ZC_IMGUI

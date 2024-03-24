@@ -1,6 +1,6 @@
 #include <ZC/Video/OpenGL/Renderer/ZC_RBufferCleaner.h>
 
-#include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 
 #include <cassert>
 

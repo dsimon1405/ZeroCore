@@ -4,60 +4,63 @@
 #include <ZC/Tools/Math/ZC_Math.h>
 #include <ZC/Tools/ZC_uptr.h>
 #include <ZC/Tools/Container/ZC_DA.h>
+/*
+Example => S_3_0_N:
+S - type short
+3 - count
+0 - location in vertex shader
+N - normalizes, S is signed short [-1,1], if US unsigned short [0,1] (if don't used normalization - N missing!)
+*/
+enum ZC_VAOLayout
+{
+    ZC_VAOL_None,
+    ZC_VAOL_F_2_0__UB_2_1_N,
+    ZC_VAOL_F_2_0__US_2_1_N,
+    ZC_VAOL_F_3_0,
+    ZC_VAOL_F_3_0__F_3_1,
+    ZC_VAOL_F_3_0__F_2_1,
+    ZC_VAOL_F_3_0__F_2_3,
+    ZC_VAOL_F_3_0__UB_3_1_N,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
+    ZC_VAOL_F_4_0__UB_3_1_N,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
+    ZC_VAOL_F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N,     //  I_2_10_10_10_REV_1 one int32 in code and vec4 of floats in GLSL
+    ZC_VAOL_F_4_0,
+};
 
 //  Class for configuring ZC_VAO.
 class ZC_VAOConfig
 {
 public:
-    /*
-    Example => S_3_0_N:
-    S - type short
-    3 - count
-    0 - location in vertex shader
-    N - normalizes, S is signed short [-1,1], if US unsigned short [0,1] (if don't used normalization - N missing!)
-    */
-    enum FormatShVLayout
-    {
-        None,
-        F_2_0__UB_2_1_N,
-        F_2_0__US_2_1_N,
-        F_3_0,
-        F_3_0__F_3_1,
-        F_3_0__F_2_1,
-        F_3_0__F_2_3,
-        F_3_0__UB_3_1_N,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
-        F_4_0__UB_3_1_N,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
-        F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N,     //  I_2_10_10_10_REV_1 one int32 in code and vec4 of floats in GLSL
-        F_4_0,
-    };
 
     /*
     Pack in format uint
     uchar[32] => [0 - 7]{ZC_VAOConfig.useCount - count of using formats}, [8 - 31]{in each bit true or false for using format or not}
     */
-    struct UsingFormatsPacker
+    struct LayoutPacker
     {
         uint value = 0;
 
         //  index - that should be true in Format.isUsing array
-        UsingFormatsPacker& Pack(uchar index);
+        LayoutPacker& Pack(uchar index);
     };
 
-    struct FormatShVLayoutAndUsingFormatsPacker
+    struct ConfigData
     {
-        FormatShVLayout formatShVLayout;
-        UsingFormatsPacker usingFormatsPacker;
+        ZC_VAOLayout formatShVLayout;
+        LayoutPacker usingFormatsPacker;
 
-        bool operator == (FormatShVLayout _formatShVLayout);
+        bool operator == (ZC_VAOLayout _formatShVLayout);
     };
+
+    static ConfigData CreateConfig(ZC_VAOLayout formatShVLayout, uchar* pIndexUsed, size_t indexUsedCount);
     
     ZC_VAOConfig() = default;
     //  isUsingIndexes - Format.isUsing - true indexes in ZC_DA<Format> formats
-    ZC_VAOConfig(FormatShVLayoutAndUsingFormatsPacker fsvlAufp);
+    ZC_VAOConfig(ConfigData configData);
 
     ZC_VAOConfig(ZC_VAOConfig&& vaoConfig) noexcept;
     
     void Config(GLuint startOffset, GLuint vertsCount);
+
 
 private:
     //  Struct contain glVertexAttribFormat parameter data.
@@ -89,5 +92,5 @@ private:
 
     ZC_DA<StrideOffset> CalculateStrideAndOffset(GLuint startOffset, GLuint vertsCount);
     GLint TypeSize(GLenum type) const noexcept;
-    ZC_DA<Format> GetFormats(FormatShVLayout shPFormat);
+    ZC_DA<Format> GetFormats(ZC_VAOLayout shPFormat);
 };

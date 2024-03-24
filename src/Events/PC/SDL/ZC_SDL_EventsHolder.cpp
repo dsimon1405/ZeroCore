@@ -1,7 +1,7 @@
 #include "ZC_SDL_EventsHolder.h"
 
 #include <ZC/Video/ZC_Window.h>
-#include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #ifdef ZC_IMGUI
 #include <Video/imgui/ZC_ImGui.h>
 #include <ZC_IGWindow.h>

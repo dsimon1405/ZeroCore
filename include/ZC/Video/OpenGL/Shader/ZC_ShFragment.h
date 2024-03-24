@@ -19,7 +19,7 @@ struct ZC_ShFragment
     {
         ZC_Shader* shader;
         ZC_TexSets texSets {};
-        ZC_DA<ZC_uptr<ZC_Uniform>> uniforms {};
+        std::vector<ZC_uptr<ZC_Uniform>> uniforms {};
     };
 
     Set GetSet(Name name);

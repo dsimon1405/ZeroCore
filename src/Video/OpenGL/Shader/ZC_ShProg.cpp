@@ -1,6 +1,6 @@
 #include <ZC/Video/OpenGL/Shader/ZC_ShProg.h>
 
-#include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
 ZC_ShProg::ZC_ShProg(GLuint idV, GLuint idF, GLuint idG)

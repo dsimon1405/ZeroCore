@@ -18,7 +18,7 @@ struct ZC_VAO
 
 	~ZC_VAO();
 
-	typedef typename ZC_VAOConfig::FormatShVLayoutAndUsingFormatsPacker VAOConData;
+	typedef typename ZC_VAOConfig::ConfigData VAOConData;
 
     /*
     Configuring VAO.

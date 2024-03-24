@@ -3,10 +3,10 @@
 #include <ZC/File/ZC_File.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
-typename ZC_ShVertex::Set ZC_ShVertex::GetSet(Name name, VAOConFSVL vaoConFSVL)
+typename ZC_ShVertex::Set ZC_ShVertex::GetSet(Name name)
 {
     Set set { GetShader(name) };
-    GetVAOAndUniformData(name, vaoConFSVL, set);
+    GetUniformData(name, set);
     return set;
 }
 
@@ -34,94 +34,56 @@ ZC_Shader* ZC_ShVertex::GetShader(Name name)
     return &(shaders.emplace(name, ZC_Shader(ZC_Shader::ReadShaderFile(path.c_str(), GL_VERTEX_SHADER).pHead, GL_VERTEX_SHADER)).first->second);
 }
 
-void ZC_ShVertex::GetVAOAndUniformData(Name name, VAOConFSVL vaoConFSVL, Set& rSet)
+void ZC_ShVertex::GetUniformData(Name name, Set& rSet)
 {
-    typedef typename ZC_VAOConfig::UsingFormatsPacker VAOUFP;
+    typedef typename ZC_Uniform::NameType UnNT;
     switch (name)
     {
     case Name::colorFigure:
     {
-        switch (vaoConFSVL)
-        {
-        case VAOConFSVL::F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(2)}; break;
-        default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
-        }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(ZC_UN_unModel, 1, false) }, 1));
+        UnNT unoforms[]{{ZC_UN_unModel, true}};
+        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
     } break;
     case Name::point:
     {
-        switch (vaoConFSVL)
-        {
-        case VAOConFSVL::F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
-        default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
-        }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(ZC_UN_unModel, 1, false) }, 1));
+        UnNT unoforms[]{{ZC_UN_unModel, true}};
+        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
     } break;
     case Name::lineFigure:
     {
-        switch (vaoConFSVL)
-        {
-        case VAOConFSVL::F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
-        default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
-        }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(ZC_UN_unModel, 1, false) }, 1));
+        UnNT unoforms[]{{ZC_UN_unModel, true}};
+        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
     } break;
     case Name::stencil:
     {
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(ZC_UN_unModel, 1, false), new ZC_U1uiValue(ZC_UN_unColor) }, 2));
+        UnNT unoforms[]{{ZC_UN_unModel, true}, {ZC_UN_unColor, false}};
+        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 2));
     } break;
     case Name::texture:
     {
-        switch (vaoConFSVL)
-        {
-        case VAOConFSVL::F_3_0__F_2_3: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
-        default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
-        }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(ZC_UN_unModel, 1, false) }, 1));
+        UnNT unoforms[]{{ZC_UN_unModel, true}};
+        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
     } break;
     case Name::lineMesh:
     {
-        switch (vaoConFSVL)
-        {
-        case VAOConFSVL::F_3_0: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0) }; break;
-        default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
-        }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvValue(ZC_UN_unModel, 1, false) }, 1));
-    } break;
-    case Name::lineOrientation3D:
-    {
-        switch (vaoConFSVL)
-        {
-        case VAOConFSVL::F_4_0__UB_3_1_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
-        default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
-        }
+        UnNT unoforms[]{{ZC_UN_unModel, false}};
+        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
     } break;
     case Name::quadOrientation3D:
     {
-        switch (vaoConFSVL)
-        {
-        case VAOConFSVL::F_3_0__F_2_1: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
-        default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
-        }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvValue(ZC_UN_unModel, 1, false) }, 1));
+        UnNT unoforms[]{{ZC_UN_unModel, false}};
+        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
     } break;
     case Name::textWindow:
     {
-        switch (vaoConFSVL)
-        {
-        case VAOConFSVL::F_2_0__US_2_1_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
-        default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
-        }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_U2fvPointer(ZC_UN_unPosition, 1) }, 1));
+        UnNT unoforms[]{{ZC_UN_unPosition, true}};
+        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
     } break;
     case Name::textScene:
     {
-        switch (vaoConFSVL)
-        {
-        case VAOConFSVL::F_2_0__US_2_1_N: rSet.vaoConSets = { vaoConFSVL, VAOUFP().Pack(0).Pack(1) }; break;
-        default: ZC_ErrorLogger::Err("There's no ZC_VAOConfig::FormatShVLayout for that shader!", __FILE__, __LINE__);
-        }
-        rSet.uniforms = std::move(ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ new ZC_UMatrix4fvPointer(ZC_UN_unModel, 1, false) }, 1));
+        UnNT unoforms[]{{ZC_UN_unModel, false, 1, false}};
+        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
     } break;
+    default: break;
     }
 }

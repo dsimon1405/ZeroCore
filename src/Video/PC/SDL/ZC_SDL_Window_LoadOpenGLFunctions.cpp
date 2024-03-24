@@ -1,6 +1,6 @@
 #include "ZC_SDL_Window.h"
 
-#include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
 bool ZC_SDL_Window::LoadOpenGLFunctions()
@@ -60,18 +60,54 @@ bool ZC_SDL_Window::LoadOpenGLFunctions()
     if (!pglUseProgram) { ZC_ErrorLogger::Err("glUseProgram SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)SDL_GL_GetProcAddress("glGetUniformLocation");
     if (!pglGetUniformLocation) { ZC_ErrorLogger::Err("glGetUniformLocation SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
-    pglUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)SDL_GL_GetProcAddress("glUniformMatrix4fv");
-    if (!pglUniformMatrix4fv) { ZC_ErrorLogger::Err("glUniformMatrix4fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform1f = (PFNGLUNIFORM1FPROC)SDL_GL_GetProcAddress("glUniform1f");
+    if (!pglUniform1f) { ZC_ErrorLogger::Err("glUniform1f SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglUniform1i = (PFNGLUNIFORM1IPROC)SDL_GL_GetProcAddress("glUniform1i");
     if (!pglUniform1i) { ZC_ErrorLogger::Err("glUniform1i SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform1ui = (PFNGLUNIFORM1UIPROC)SDL_GL_GetProcAddress("glUniform1ui");
+    if (!pglUniform1ui) { ZC_ErrorLogger::Err("glUniform1ui SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform1fv = (PFNGLUNIFORM1FVPROC)SDL_GL_GetProcAddress("glUniform1fv");
+    if (!pglUniform1fv) { ZC_ErrorLogger::Err("glUniform1fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglUniform2fv = (PFNGLUNIFORM2FVPROC)SDL_GL_GetProcAddress("glUniform2fv");
     if (!pglUniform2fv) { ZC_ErrorLogger::Err("glUniform2fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglUniform3fv = (PFNGLUNIFORM3FVPROC)SDL_GL_GetProcAddress("glUniform3fv");
     if (!pglUniform3fv) { ZC_ErrorLogger::Err("glUniform3fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglUniform4fv = (PFNGLUNIFORM4FVPROC)SDL_GL_GetProcAddress("glUniform4fv");
     if (!pglUniform4fv) { ZC_ErrorLogger::Err("glUniform4fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
-    pglUniform1ui = (PFNGLUNIFORM1UIPROC)SDL_GL_GetProcAddress("glUniform1ui");
-    if (!pglUniform1ui) { ZC_ErrorLogger::Err("glUniform1ui SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform1iv = (PFNGLUNIFORM1IVPROC)SDL_GL_GetProcAddress("glUniform1iv");
+    if (!pglUniform1iv) { ZC_ErrorLogger::Err("glUniform1iv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform2iv = (PFNGLUNIFORM2IVPROC)SDL_GL_GetProcAddress("glUniform2iv");
+    if (!pglUniform2iv) { ZC_ErrorLogger::Err("glUniform2iv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform3iv = (PFNGLUNIFORM3IVPROC)SDL_GL_GetProcAddress("glUniform3iv");
+    if (!pglUniform3iv) { ZC_ErrorLogger::Err("glUniform3iv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform4iv = (PFNGLUNIFORM4IVPROC)SDL_GL_GetProcAddress("glUniform4iv");
+    if (!pglUniform4iv) { ZC_ErrorLogger::Err("glUniform4iv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform1uiv = (PFNGLUNIFORM1UIVPROC)SDL_GL_GetProcAddress("glUniform1uiv");
+    if (!pglUniform1uiv) { ZC_ErrorLogger::Err("glUniform1uiv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform2uiv = (PFNGLUNIFORM2UIVPROC)SDL_GL_GetProcAddress("glUniform2uiv");
+    if (!pglUniform2uiv) { ZC_ErrorLogger::Err("glUniform2uiv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform3uiv = (PFNGLUNIFORM3UIVPROC)SDL_GL_GetProcAddress("glUniform3uiv");
+    if (!pglUniform3uiv) { ZC_ErrorLogger::Err("glUniform3uiv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniform4uiv = (PFNGLUNIFORM4UIVPROC)SDL_GL_GetProcAddress("glUniform4uiv");
+    if (!pglUniform4uiv) { ZC_ErrorLogger::Err("glUniform4uiv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniformMatrix2fv = (PFNGLUNIFORMMATRIX2FVPROC)SDL_GL_GetProcAddress("glUniformMatrix2fv");
+    if (!pglUniformMatrix2fv) { ZC_ErrorLogger::Err("glUniformMatrix2fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniformMatrix3fv = (PFNGLUNIFORMMATRIX3FVPROC)SDL_GL_GetProcAddress("glUniformMatrix3fv");
+    if (!pglUniformMatrix3fv) { ZC_ErrorLogger::Err("glUniformMatrix3fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)SDL_GL_GetProcAddress("glUniformMatrix4fv");
+    if (!pglUniformMatrix4fv) { ZC_ErrorLogger::Err("glUniformMatrix4fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniformMatrix2x3fv = (PFNGLUNIFORMMATRIX2X3FVPROC)SDL_GL_GetProcAddress("glUniformMatrix2x3fv");
+    if (!pglUniformMatrix2x3fv) { ZC_ErrorLogger::Err("glUniformMatrix2x3fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniformMatrix3x2fv = (PFNGLUNIFORMMATRIX3X2FVPROC)SDL_GL_GetProcAddress("glUniformMatrix3x2fv");
+    if (!pglUniformMatrix3x2fv) { ZC_ErrorLogger::Err("glUniformMatrix3x2fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniformMatrix2x4fv = (PFNGLUNIFORMMATRIX2X4FVPROC)SDL_GL_GetProcAddress("glUniformMatrix2x4fv");
+    if (!pglUniformMatrix2x4fv) { ZC_ErrorLogger::Err("glUniformMatrix2x4fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniformMatrix4x2fv = (PFNGLUNIFORMMATRIX4X2FVPROC)SDL_GL_GetProcAddress("glUniformMatrix4x2fv");
+    if (!pglUniformMatrix4x2fv) { ZC_ErrorLogger::Err("glUniformMatrix4x2fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniformMatrix3x4fv = (PFNGLUNIFORMMATRIX3X4FVPROC)SDL_GL_GetProcAddress("glUniformMatrix3x4fv");
+    if (!pglUniformMatrix3x4fv) { ZC_ErrorLogger::Err("glUniformMatrix3x4fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglUniformMatrix4x3fv = (PFNGLUNIFORMMATRIX4X3FVPROC)SDL_GL_GetProcAddress("glUniformMatrix4x3fv");
+    if (!pglUniformMatrix4x3fv) { ZC_ErrorLogger::Err("glUniformMatrix4x3fv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     //  buffer
     pglGenBuffers = (PFNGLGENBUFFERSPROC)SDL_GL_GetProcAddress("glGenBuffers");
     if (!pglGenBuffers) { ZC_ErrorLogger::Err("glGenBuffers SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
@@ -193,12 +229,30 @@ PFNGLGETSHADERINFOLOGPROC pglGetShaderInfoLog = nullptr;
 PFNGLDELETEPROGRAMPROC pglDeleteProgram = nullptr;
 PFNGLUSEPROGRAMPROC pglUseProgram = nullptr;
 PFNGLGETUNIFORMLOCATIONPROC pglGetUniformLocation = nullptr;
-PFNGLUNIFORMMATRIX4FVPROC pglUniformMatrix4fv = nullptr;
+PFNGLUNIFORM1FPROC pglUniform1f = nullptr;
 PFNGLUNIFORM1IPROC pglUniform1i = nullptr;
+PFNGLUNIFORM1UIPROC pglUniform1ui = nullptr;
+PFNGLUNIFORM1FVPROC pglUniform1fv = nullptr;
 PFNGLUNIFORM2FVPROC pglUniform2fv = nullptr;
 PFNGLUNIFORM3FVPROC pglUniform3fv = nullptr;
 PFNGLUNIFORM4FVPROC pglUniform4fv = nullptr;
-PFNGLUNIFORM1UIPROC pglUniform1ui = nullptr;
+PFNGLUNIFORM1IVPROC pglUniform1iv = nullptr;
+PFNGLUNIFORM2IVPROC pglUniform2iv = nullptr;
+PFNGLUNIFORM3IVPROC pglUniform3iv = nullptr;
+PFNGLUNIFORM4IVPROC pglUniform4iv = nullptr;
+PFNGLUNIFORM1UIVPROC pglUniform1uiv = nullptr;
+PFNGLUNIFORM2UIVPROC pglUniform2uiv = nullptr;
+PFNGLUNIFORM3UIVPROC pglUniform3uiv = nullptr;
+PFNGLUNIFORM4UIVPROC pglUniform4uiv = nullptr;
+PFNGLUNIFORMMATRIX2FVPROC pglUniformMatrix2fv = nullptr;
+PFNGLUNIFORMMATRIX3FVPROC pglUniformMatrix3fv = nullptr;
+PFNGLUNIFORMMATRIX4FVPROC pglUniformMatrix4fv = nullptr;
+PFNGLUNIFORMMATRIX2X3FVPROC pglUniformMatrix2x3fv = nullptr;
+PFNGLUNIFORMMATRIX3X2FVPROC pglUniformMatrix3x2fv = nullptr;
+PFNGLUNIFORMMATRIX2X4FVPROC pglUniformMatrix2x4fv = nullptr;
+PFNGLUNIFORMMATRIX4X2FVPROC pglUniformMatrix4x2fv = nullptr;
+PFNGLUNIFORMMATRIX3X4FVPROC pglUniformMatrix3x4fv = nullptr;
+PFNGLUNIFORMMATRIX4X3FVPROC pglUniformMatrix4x3fv = nullptr;
 
 //  buffer
 PFNGLGENBUFFERSPROC pglGenBuffers = nullptr;

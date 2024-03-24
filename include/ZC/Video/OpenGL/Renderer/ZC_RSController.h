@@ -23,7 +23,7 @@ typedef int ZC_RendererLevel;   //  Renderer Levels for user
 
 struct ZC_RSController   //  stores data of object of ZC_RendererSet for search in ZC_Renderer
 {
-    ZC_RSController() = default;
+    // ZC_RSController() = default;
 
     /*
     Params:
@@ -38,6 +38,7 @@ struct ZC_RSController   //  stores data of object of ZC_RendererSet for search 
     //  lvl - where to switch in ZC_Renderer. If lvl - None, just remove from ZC_Renderer.
     void SwitchToLvl(ZC_RendererLevel lvl);
     void SetData(ZC_RSPDCategory category, ZC_RSPDStoredData* pData);
+    void SetUniformsData(ZC_UniformName unNmae, void* pData);
     const void* GetPersonalData(ZC_RSPDCategory category) const;
     const void* GetDataFromUniforms(ZC_UniformName name) const;
     ZC_RSController MakeCopy() const;

@@ -1,13 +1,20 @@
 #include <ZC/Video/OpenGL/VAO/ZC_VAOConfig.h>
 
-#include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
-ZC_VAOConfig::ZC_VAOConfig(FormatShVLayoutAndUsingFormatsPacker fsvlAufp)
-    : formats(GetFormats(fsvlAufp.formatShVLayout)),
-    useCount(fsvlAufp.usingFormatsPacker.value)
+typename ZC_VAOConfig::ConfigData ZC_VAOConfig::CreateConfig(ZC_VAOLayout layout, uchar* pLayoutUsed, size_t layoutUsedCount)
 {
-    uint isUsingArr = fsvlAufp.usingFormatsPacker.value >> 8;
+    LayoutPacker layoutPacker;
+    for (size_t i = 0; i < layoutUsedCount; ++i) layoutPacker.Pack(pLayoutUsed[i]);
+    return { layout, layoutPacker };    
+}
+
+ZC_VAOConfig::ZC_VAOConfig(ConfigData configData)
+    : formats(GetFormats(configData.formatShVLayout)),
+    useCount(configData.usingFormatsPacker.value)
+{
+    uint isUsingArr = configData.usingFormatsPacker.value >> 8;
     uchar useCounter = useCount;
     for (size_t formatsI = 0; formatsI < formats.size ; ++formatsI)
     {
@@ -86,20 +93,20 @@ GLint ZC_VAOConfig::TypeSize(GLenum type) const noexcept
     return 0;
 }
 
-ZC_DA<typename ZC_VAOConfig::Format> ZC_VAOConfig::GetFormats(FormatShVLayout spf)
+ZC_DA<typename ZC_VAOConfig::Format> ZC_VAOConfig::GetFormats(ZC_VAOLayout spf)
 {
     switch (spf)
     {
-    case F_2_0__UB_2_1_N: return { new Format[]{ { 0, 2, GL_FLOAT, GL_FALSE }, { 1, 2, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
-    case F_2_0__US_2_1_N: return { new Format[]{ { 0, 2, GL_FLOAT, GL_FALSE }, { 1, 2, GL_UNSIGNED_SHORT, GL_TRUE } }, 2 };
-    case F_3_0: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE } }, 1 };
-    case F_3_0__F_3_1: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_FLOAT, GL_FALSE } }, 2 };
-    case F_3_0__F_2_1: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 2, GL_FLOAT, GL_FALSE } }, 2 };
-    case F_3_0__F_2_3: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 3, 2, GL_FLOAT, GL_FALSE } }, 2 };
-    case F_3_0__UB_3_1_N: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
-    case F_4_0__UB_3_1_N: return { new Format[]{ { 0, 4, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
-    case F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE }, { 2, 4, GL_INT_2_10_10_10_REV, GL_TRUE } }, 3 };
-    case F_4_0: return { new Format[]{ { 0, 4, GL_FLOAT, GL_FALSE } }, 1 };
+    case ZC_VAOL_F_2_0__UB_2_1_N: return { new Format[]{ { 0, 2, GL_FLOAT, GL_FALSE }, { 1, 2, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
+    case ZC_VAOL_F_2_0__US_2_1_N: return { new Format[]{ { 0, 2, GL_FLOAT, GL_FALSE }, { 1, 2, GL_UNSIGNED_SHORT, GL_TRUE } }, 2 };
+    case ZC_VAOL_F_3_0: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE } }, 1 };
+    case ZC_VAOL_F_3_0__F_3_1: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_FLOAT, GL_FALSE } }, 2 };
+    case ZC_VAOL_F_3_0__F_2_1: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 2, GL_FLOAT, GL_FALSE } }, 2 };
+    case ZC_VAOL_F_3_0__F_2_3: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 3, 2, GL_FLOAT, GL_FALSE } }, 2 };
+    case ZC_VAOL_F_3_0__UB_3_1_N: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
+    case ZC_VAOL_F_4_0__UB_3_1_N: return { new Format[]{ { 0, 4, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE } }, 2 };
+    case ZC_VAOL_F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_UNSIGNED_BYTE, GL_TRUE }, { 2, 4, GL_INT_2_10_10_10_REV, GL_TRUE } }, 3 };
+    case ZC_VAOL_F_4_0: return { new Format[]{ { 0, 4, GL_FLOAT, GL_FALSE } }, 1 };
     default: return {};
     }
 }
@@ -117,7 +124,7 @@ ZC_DA<typename ZC_VAOConfig::Format> ZC_VAOConfig::GetFormats(FormatShVLayout sp
 
 //  UsingFormatsPacker
 
-typename ZC_VAOConfig::UsingFormatsPacker& ZC_VAOConfig::UsingFormatsPacker::Pack(uchar index)
+typename ZC_VAOConfig::LayoutPacker& ZC_VAOConfig::LayoutPacker::Pack(uchar index)
 {
     value = (1 << (8 + index)) | (value & 0xFFFFFF00) | ((value & 0xFF) + 1);
     return *this;
@@ -136,7 +143,7 @@ ZC_VAOConfig::Format::Format(GLuint _attribindex, GLint _size, GLenum _type, GLb
 
 //  ShPFormatAndPacker
 
-bool ZC_VAOConfig::FormatShVLayoutAndUsingFormatsPacker::operator == (FormatShVLayout _formatShVLayout)
+bool ZC_VAOConfig::ConfigData::operator == (ZC_VAOLayout _formatShVLayout)
 {
     return formatShVLayout == _formatShVLayout;
 }

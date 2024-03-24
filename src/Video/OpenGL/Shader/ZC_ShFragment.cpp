@@ -28,26 +28,31 @@ ZC_Shader* ZC_ShFragment::GetShader(Name name)
 typename ZC_ShFragment::Set ZC_ShFragment::GetVAOAndUniformData(Name name)
 {
     typedef typename ZC_TexSets::TextureName TName;
+    typedef typename ZC_Uniform::NameType UnNT;
     switch (name)
     {
     case Name::color: return
-    {
-        GetShader(name),
-        {},
-        {}
-    };
+        {
+            GetShader(name),
+            {},
+            {}
+        };
     case Name::colorTex: return
+        {
+            GetShader(name),
+            { { new TName[]{ TName::texColor }, 1 } },
+            {}
+        };
+    case Name::text:
     {
-        GetShader(name),
-        { { new TName[]{ TName::texColor }, 1 } },
-        {}
-    };
-    case Name::text: return
-    {
-        GetShader(name),
-        { { new TName[]{ TName::texColor }, 1 } },
-        { ZC_DA<ZC_uptr<ZC_Uniform>>(new ZC_uptr<ZC_Uniform>[]{ { new ZC_U1uiValue(ZC_UN_unColor) } }, 1) }
-    };
+        UnNT unoforms[]{{ZC_UN_unColor, false}};
+        return
+        {
+            GetShader(name),
+            { { new TName[]{ TName::texColor }, 1 } },
+            ZC_Uniform::GetUniformsDA(unoforms, 1)
+        };
+    }
     default: return {};
     }
 }

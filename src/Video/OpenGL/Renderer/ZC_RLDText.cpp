@@ -1,6 +1,6 @@
 #include <ZC/Video/OpenGL/Renderer/ZC_RLDText.h>
 
-#include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 
 void ZC_RLDText::Add(ZC_RSController* pRSController)
 {

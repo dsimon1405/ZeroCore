@@ -1,7 +1,8 @@
 #include <ZC/Video/OpenGL/Renderer/ZC_RLDStencilBorder.h>
 
 #include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
-#include <Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Tools/Math/ZC_Mat4.h>
 
 #include <cassert>
 

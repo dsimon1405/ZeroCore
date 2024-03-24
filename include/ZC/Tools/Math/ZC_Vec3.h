@@ -30,6 +30,8 @@ struct ZC_Vec3
     constexpr bool operator == (const ZC_Vec3<TValue> vec) const noexcept;
     constexpr bool operator < (const ZC_Vec3<TValue> vec) const noexcept;
 
+    TValue* Begin() noexcept;
+    const TValue* Begin() const noexcept;
 private:
     TValue values[3];
 };
@@ -138,4 +140,16 @@ template<typename TValue>
 constexpr bool ZC_Vec3<TValue>::operator == (const ZC_Vec3<TValue> vec) const noexcept
 {
     return values[0] == vec.values[0] && values[1] == vec.values[1] && values[2] == vec.values[2];
+}
+
+template<typename TValue>
+TValue* ZC_Vec3<TValue>::Begin() noexcept
+{
+    return values;
+}
+
+template<typename TValue>
+const TValue* ZC_Vec3<TValue>::Begin() const noexcept
+{
+    return values;
 }

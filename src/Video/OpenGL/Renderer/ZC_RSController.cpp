@@ -41,6 +41,20 @@ void ZC_RSController::SetData(ZC_RSPDCategory category, ZC_RSPDStoredData* pData
     assert(false);  //  can't find category!
 }
 
+void ZC_RSController::SetUniformsData(ZC_UniformName unNmae, void* pData)
+{
+    for (auto& upPersData : personalData)
+    {
+        if (upPersData->category == ZC_RSPDC_uniforms)
+        {
+            ZC_RSPDUniformData unData(unNmae, pData);
+            upPersData->SetData(&unData);
+            return;
+        }
+    }
+    assert(false);  //  can't find category!
+}
+
 const void* ZC_RSController::GetPersonalData(ZC_RSPDCategory category) const
 {
     for (auto& upPersData : personalData)

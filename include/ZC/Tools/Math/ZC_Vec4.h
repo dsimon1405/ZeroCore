@@ -25,6 +25,9 @@ struct ZC_Vec4
     ZC_Vec4<TValue>& operator *= (TValue factor) noexcept;
     constexpr ZC_Vec4<TValue> operator * (TValue factor) const noexcept;
 
+    TValue* Begin() noexcept;
+    const TValue* Begin() const noexcept;
+
 private:
     TValue values[4];
 };
@@ -119,4 +122,16 @@ template<typename TValue>
 constexpr ZC_Vec4<TValue> ZC_Vec4<TValue>::operator * (TValue factor) const noexcept
 {
     return ZC_Vec4<TValue>(values[0] * factor, values[1] * factor, values[2] * factor, values[3] * factor);
+}
+
+template<typename TValue>
+TValue* ZC_Vec4<TValue>::Begin() noexcept
+{
+    return values;
+}
+
+template<typename TValue>
+const TValue* ZC_Vec4<TValue>::Begin() const noexcept
+{
+    return values;
 }

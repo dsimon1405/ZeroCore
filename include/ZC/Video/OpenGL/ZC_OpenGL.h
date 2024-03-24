@@ -99,11 +99,17 @@ extern PFNGLUSEPROGRAMPROC pglUseProgram;
 extern PFNGLGETUNIFORMLOCATIONPROC pglGetUniformLocation;
 #define glGetUniformLocation pglGetUniformLocation
 
-extern PFNGLUNIFORMMATRIX4FVPROC pglUniformMatrix4fv;
-#define glUniformMatrix4fv pglUniformMatrix4fv
+extern PFNGLUNIFORM1FPROC pglUniform1f;
+#define glUniform1f pglUniform1f
 
 extern PFNGLUNIFORM1IPROC pglUniform1i;
 #define glUniform1i pglUniform1i
+
+extern PFNGLUNIFORM1UIPROC pglUniform1ui;
+#define glUniform1ui pglUniform1ui
+
+extern PFNGLUNIFORM1FVPROC pglUniform1fv;
+#define glUniform1fv pglUniform1fv
 
 extern PFNGLUNIFORM2FVPROC pglUniform2fv;
 #define glUniform2fv pglUniform2fv
@@ -114,8 +120,56 @@ extern PFNGLUNIFORM3FVPROC pglUniform3fv;
 extern PFNGLUNIFORM4FVPROC pglUniform4fv;
 #define glUniform4fv pglUniform4fv
 
-extern PFNGLUNIFORM1UIPROC pglUniform1ui;
-#define glUniform1ui pglUniform1ui
+extern PFNGLUNIFORM1IVPROC pglUniform1iv;
+#define glUniform1iv pglUniform1iv
+
+extern PFNGLUNIFORM2IVPROC pglUniform2iv;
+#define glUniform2iv pglUniform2iv
+
+extern PFNGLUNIFORM3IVPROC pglUniform3iv;
+#define glUniform3iv pglUniform3iv
+
+extern PFNGLUNIFORM4IVPROC pglUniform4iv;
+#define glUniform4iv pglUniform4iv
+
+extern PFNGLUNIFORM1UIVPROC pglUniform1uiv;
+#define glUniform1uiv pglUniform1uiv
+
+extern PFNGLUNIFORM2UIVPROC pglUniform2uiv;
+#define glUniform2uiv pglUniform2uiv
+
+extern PFNGLUNIFORM3UIVPROC pglUniform3uiv;
+#define glUniform3uiv pglUniform3uiv
+
+extern PFNGLUNIFORM4UIVPROC pglUniform4uiv;
+#define glUniform4uiv pglUniform4uiv
+
+extern PFNGLUNIFORMMATRIX2FVPROC pglUniformMatrix2fv;
+#define glUniformMatrix2fv pglUniformMatrix2fv
+
+extern PFNGLUNIFORMMATRIX3FVPROC pglUniformMatrix3fv;
+#define glUniformMatrix3fv pglUniformMatrix3fv
+
+extern PFNGLUNIFORMMATRIX4FVPROC pglUniformMatrix4fv;
+#define glUniformMatrix4fv pglUniformMatrix4fv
+
+extern PFNGLUNIFORMMATRIX2X3FVPROC pglUniformMatrix2x3fv;
+#define glUniformMatrix2x3fv pglUniformMatrix2x3fv
+
+extern PFNGLUNIFORMMATRIX3X2FVPROC pglUniformMatrix3x2fv;
+#define glUniformMatrix3x2fv pglUniformMatrix3x2fv
+
+extern PFNGLUNIFORMMATRIX2X4FVPROC pglUniformMatrix2x4fv;
+#define glUniformMatrix2x4fv pglUniformMatrix2x4fv
+
+extern PFNGLUNIFORMMATRIX4X2FVPROC pglUniformMatrix4x2fv;
+#define glUniformMatrix4x2fv pglUniformMatrix4x2fv
+
+extern PFNGLUNIFORMMATRIX3X4FVPROC pglUniformMatrix3x4fv;
+#define glUniformMatrix3x4fv pglUniformMatrix3x4fv
+
+extern PFNGLUNIFORMMATRIX4X3FVPROC pglUniformMatrix4x3fv;
+#define glUniformMatrix4x3fv pglUniformMatrix4x3fv
 
 //  buffer
 

@@ -28,16 +28,16 @@ public:
         LoadAll,    //  must be last
     };
 
-    typedef typename ZC_VAOConfig::FormatShVLayoutAndUsingFormatsPacker VAOConData;
+    typedef typename ZC_VAOConfig::ConfigData VAOConfigData;
     struct ShPInitSet
     {
         Name name;
         ZC_ShProg shProg;
-        VAOConData vaoConData;
+        VAOConfigData vaoConfigData;
         ZC_Uniforms uniforms;
         ZC_TexSets texSets;
 
-        ShPInitSet(Name _name, ZC_ShProg&& _shProg, VAOConData _vaoData,
+        ShPInitSet(Name _name, ZC_ShProg&& _shProg, VAOConfigData _vaoData,
             ZC_Uniforms&& _uNameLocs, ZC_TexSets&& pTexSets);
         ShPInitSet(ShPInitSet&& shPIS);
 
@@ -57,11 +57,10 @@ private:
     typedef typename ZC_ShVertex::Name VName;
     typedef typename ZC_ShFragment::Name FName;
     typedef typename ZC_ShGeometry::Name GName;
-    typedef typename ZC_VAOConfig::FormatShVLayout VAOConFSVL;
     struct ShNames
     {
         VName vName;
-        VAOConFSVL vaoConFSVL;
+        VAOConfigData vaoConfigData;
         FName fName;
         GName gName;
     };
