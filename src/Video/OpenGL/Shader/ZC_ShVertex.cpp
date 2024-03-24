@@ -81,7 +81,7 @@ void ZC_ShVertex::GetUniformData(Name name, Set& rSet)
     } break;
     case Name::textScene:
     {
-        UnNT unoforms[]{{ZC_UN_unModel, false, 1, false}};
+        UnNT unoforms[]{{ZC_UN_unModel, true, 1, false}};
         rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
     } break;
     default: break;

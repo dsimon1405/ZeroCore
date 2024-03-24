@@ -6,7 +6,9 @@
 
 ZC_upCamera ZC_Camera::CreateCamera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho)
 {
-    return { new ZC_Camera(_perspView, _ortho) };
+    ZC_upCamera upCamera(new ZC_Camera(_perspView, _ortho));
+    pCurrentCamera = upCamera.Get();
+    return upCamera;
 }
 
 ZC_Camera::~ZC_Camera()
@@ -14,19 +16,19 @@ ZC_Camera::~ZC_Camera()
     sconWindowResize.Disconnect();
 }
 
-ZC_Vec3<float> ZC_Camera::GetCamPos() const noexcept
+ZC_Vec3<float> ZC_Camera::GetCamPos() noexcept
 {
-    return perspView.view.camPos;
+    if (pCurrentCamera) return pCurrentCamera->perspView.view.camPos;
 }
 
-ZC_Vec3<float> ZC_Camera::GetLookOn() const noexcept
+ZC_Vec3<float> ZC_Camera::GetLookOn() noexcept
 {
-    return perspView.view.lookOn;
+    if (pCurrentCamera) return pCurrentCamera->perspView.view.lookOn;
 }
 
-ZC_Vec3<float> ZC_Camera::GetUp() const noexcept
+ZC_Vec3<float> ZC_Camera::GetUp() noexcept
 {
-    return perspView.view.up;
+    if (pCurrentCamera) return pCurrentCamera->perspView.view.up;
 }
 
 ZC_Camera& ZC_Camera::SetCamPos(const ZC_Vec3<float>& _camPos) noexcept

@@ -56,18 +56,3 @@ void ZC_Renderer::Draw()
 #endif
     funcSwapBuffer();
 }
-
-// void ZC_Renderer::DrawTextWidndow(std::map<ZC_ShProg*, std::forward_list<ZC_RendererSet*>>& mapShPRS)
-// {
-//     glEnable(GL_BLEND);
-//     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-//     for (auto pairShPRS : mapShPRS)
-//     {
-//         pairShPRS.first->UseProgram();
-//         for (auto pRendSet : pairShPRS.second) pRendSet->Draw(ZC_RL_TextWindow);
-//     }
-//     glDisable(GL_BLEND);
-// }
-
-
