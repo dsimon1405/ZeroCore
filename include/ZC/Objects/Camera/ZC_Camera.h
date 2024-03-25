@@ -23,9 +23,9 @@ public:
 
     ~ZC_Camera();
 
-    static ZC_Vec3<float> GetCamPos() noexcept;
-    static ZC_Vec3<float> GetLookOn() noexcept;
-    static ZC_Vec3<float> GetUp() noexcept;
+    static ZC_Vec3<float>* GetCamPos() noexcept;
+    static ZC_Vec3<float>* GetLookOn() noexcept;
+    static ZC_Vec3<float>* GetUp() noexcept;
     ZC_Camera& SetCamPos(const ZC_Vec3<float>& _camPos) noexcept;
     ZC_Camera& SetLookOn(const ZC_Vec3<float>& _lookOn) noexcept;
     ZC_Camera& SetUp(const ZC_Vec3<float>& _wUp) noexcept;

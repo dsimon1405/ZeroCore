@@ -22,6 +22,11 @@ struct ZC_Vec2
     ZC_Vec2<TValue>& operator *= (TValue factor) noexcept;
     constexpr ZC_Vec2<TValue> operator * (TValue factor) const noexcept;
 
+    ZC_Vec2<TValue>& operator /= (TValue divisor) noexcept;
+    constexpr ZC_Vec2<TValue> operator / (TValue divisor) const noexcept;
+
+    constexpr bool operator == (const ZC_Vec2<TValue>& vec) const noexcept;
+
     TValue* Begin() noexcept;
     const TValue* Begin() const noexcept;
 
@@ -114,6 +119,25 @@ template<typename TValue>
 constexpr ZC_Vec2<TValue> ZC_Vec2<TValue>::operator * (TValue factor) const noexcept
 {
     return ZC_Vec2<TValue>(values[0] * factor, values[1] * factor);
+}
+
+template<typename TValue>
+ZC_Vec2<TValue>& ZC_Vec2<TValue>::operator /= (TValue factor) noexcept
+{
+    for (short i = 0; i < 2; ++i) values[i] /= factor;
+    return *this;
+}
+
+template<typename TValue>
+constexpr ZC_Vec2<TValue> ZC_Vec2<TValue>::operator / (TValue factor) const noexcept
+{
+    return ZC_Vec4<TValue>(values[0] / factor, values[1] / factor);
+}
+
+template<typename TValue>
+constexpr bool ZC_Vec2<TValue>::operator == (const ZC_Vec2<TValue>& vec) const noexcept
+{
+    return values[0] == vec.values[0] && values[1] == vec.values[1];
 }
 
 template<typename TValue>

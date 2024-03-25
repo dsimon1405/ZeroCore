@@ -27,8 +27,7 @@ struct ZC_Vec3
     ZC_Vec3<TValue>& operator /= (TValue divisor) noexcept;
     constexpr ZC_Vec3<TValue> operator / (TValue divisor) const noexcept;
 
-    constexpr bool operator == (const ZC_Vec3<TValue> vec) const noexcept;
-    constexpr bool operator < (const ZC_Vec3<TValue> vec) const noexcept;
+    constexpr bool operator == (const ZC_Vec3<TValue>& vec) const noexcept;
 
     TValue* Begin() noexcept;
     const TValue* Begin() const noexcept;
@@ -137,7 +136,7 @@ constexpr ZC_Vec3<TValue> ZC_Vec3<TValue>::operator / (TValue divisor) const noe
 }
 
 template<typename TValue>
-constexpr bool ZC_Vec3<TValue>::operator == (const ZC_Vec3<TValue> vec) const noexcept
+constexpr bool ZC_Vec3<TValue>::operator == (const ZC_Vec3<TValue>& vec) const noexcept
 {
     return values[0] == vec.values[0] && values[1] == vec.values[1] && values[2] == vec.values[2];
 }

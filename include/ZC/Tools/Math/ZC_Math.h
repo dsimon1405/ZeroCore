@@ -25,6 +25,8 @@ typedef unsigned char uchar;
 typedef unsigned short ushort;
 
 #define ZC_ROUND(val) (val + 0.5)   //  round float or double to integer value
+#define ZC_ToZeroOneRange(val) ((val + 1.0) / 2.0)  //  from range [-1,1] to range [0,1]
+#define ZC_ToMinusPlusOneRange(val) ((val * 2.0) - 1.0)  //  from range [0,1] to range [-1,1]
 
 /*
 Packs color from 3 float channels into one uint[32] indices -> [0-1] nothing, [2-11] red, [12-21] green, [22-31] blue.
