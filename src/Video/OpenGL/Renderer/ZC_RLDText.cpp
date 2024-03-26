@@ -21,3 +21,15 @@ void ZC_RLDText::Draw(ZC_RBufferCleaner& rBufferCleaner)
     this->DrawRendererSets();   //  ZC_RLDContainerMap::DrawRendererSets();
     glDisable(GL_BLEND);
 }
+
+
+//  ZC_RLDTextWindowIntoScene
+
+void ZC_RLDTextWindowIntoScene::Draw(ZC_RBufferCleaner& rBufferCleaner)
+{
+    rBufferCleaner.GlClear(GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    this->DrawRendererSets();   //  ZC_RLDContainerMap::DrawRendererSets();
+    glDisable(GL_BLEND);
+}

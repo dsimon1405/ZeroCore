@@ -9,7 +9,8 @@ enum ZC_UniformName
 {
     ZC_UN_unModel,
     ZC_UN_unColor,
-    ZC_UN_unPosition,
+    ZC_UN_unPositionWindow,
+    ZC_UN_unPositionScene,
 };
 
 class ZC_Uniform
@@ -33,14 +34,10 @@ public:
     virtual ZC_uptr<ZC_Uniform> GetCopy() const = 0;
 
     void GetUniformLocation(ZC_ShProg& shP);
-    static std::vector<ZC_uptr<ZC_Uniform>> GetUniformsDA(NameType* pNameType, size_t nameTypeCount);
+    static std::vector<ZC_uptr<ZC_Uniform>> GetUniformVector(NameType pNameType);
+    static std::vector<ZC_uptr<ZC_Uniform>> GetUniformVector(NameType* pNameType, size_t nameTypeCount);
 
 protected:
-    ZC_Uniform(ZC_UniformName _name);
-
-    void GLUniform(const void* pData, int count, bool transponse) const;
-
-private:
     enum FunctionType
     {
         FT_glUniform1f,
@@ -69,14 +66,22 @@ private:
         FT_glUniformMatrix4x3fv
     };
 
+    ZC_Uniform(ZC_UniformName _name, FunctionType _functionType);
+
+    void GLUniform(const void* pData, int count, bool transponse) const;
+
+private:
+
     int location = -1;
     FunctionType functionType;
+
+    static ZC_uptr<ZC_Uniform> GetUpUniform(FunctionType functionType, NameType& nameType);
 };
 
 template<typename T>
 struct ZC_UniformData : public ZC_Uniform
 {
-    ZC_UniformData(ZC_UniformName _name);
+    ZC_UniformData(ZC_UniformName _name, FunctionType _functionType);
 
     void Activate() const override;
     void Set(void* _value) override;
@@ -90,7 +95,7 @@ protected:
 template<typename T>
 struct ZC_UDCount : public ZC_UniformData<T>
 {
-    ZC_UDCount(ZC_UniformName _name, int _count);
+    ZC_UDCount(ZC_UniformName _name, typename ZC_Uniform::FunctionType _functionType, int _count);
 
     void Activate() const override;
     ZC_uptr<ZC_Uniform> GetCopy() const override;
@@ -102,7 +107,7 @@ protected:
 template<typename T>
 struct ZC_UDCTransponse : public ZC_UDCount<T>
 {
-    ZC_UDCTransponse(ZC_UniformName _name, int _count, bool _transponse);
+    ZC_UDCTransponse(ZC_UniformName _name, typename ZC_Uniform::FunctionType _functionType, int _count, bool _transponse);
 
     void Activate() const override;
     ZC_uptr<ZC_Uniform> GetCopy() const override;
@@ -115,8 +120,8 @@ private:
 //  ZC_UniformData
 
 template<typename T>
-ZC_UniformData<T>::ZC_UniformData(ZC_UniformName _name)
-    : ZC_Uniform(_name)
+ZC_UniformData<T>::ZC_UniformData(ZC_UniformName _name, FunctionType _functionType)
+    : ZC_Uniform(_name, _functionType)
 {}
 
 template<typename T>
@@ -149,8 +154,8 @@ ZC_uptr<ZC_Uniform> ZC_UniformData<T>::GetCopy() const
 //  ZC_UDCount
 
 template<typename T>
-ZC_UDCount<T>::ZC_UDCount(ZC_UniformName _name, int _count)
-    : ZC_UniformData<T>(_name),
+ZC_UDCount<T>::ZC_UDCount(ZC_UniformName _name, typename ZC_Uniform::FunctionType _functionType, int _count)
+    : ZC_UniformData<T>(_name, _functionType),
     count(_count)
 {}
 
@@ -170,8 +175,8 @@ ZC_uptr<ZC_Uniform> ZC_UDCount<T>::GetCopy() const
 //  ZC_UDCTransponse
 
 template<typename T>
-ZC_UDCTransponse<T>::ZC_UDCTransponse(ZC_UniformName _name, int _count, bool _transponse)
-    : ZC_UDCount<T>(_name, _count),
+ZC_UDCTransponse<T>::ZC_UDCTransponse(ZC_UniformName _name, typename ZC_Uniform::FunctionType _functionType, int _count, bool _transponse)
+    : ZC_UDCount<T>(_name, _functionType, _count),
     transponse(_transponse)
 {}
 

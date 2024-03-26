@@ -1,7 +1,7 @@
 #version 460 core
 
 layout (location = 0) in vec3 inPosition;
-layout (std140, binding = 0) uniform Persp { mat4 perspView; };
+layout (std140, binding = 0) uniform PerspView { mat4 perspView; };
 uniform mat4 unModel;
 uniform uint unColor;
 

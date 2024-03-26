@@ -20,6 +20,8 @@ ZC_ShProg::ZC_ShProg(GLuint idV, GLuint idF, GLuint idG)
         glGetProgramInfoLog(id, 1024, NULL, infoLog);
         ZC_ErrorLogger::Err("glLinkProgram() fail! => " + std::string(infoLog));
     }
+    // int uniforms = 0;
+    // glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &uniforms);
 }
    
 ZC_ShProg::ZC_ShProg(ZC_ShProg&& shader) noexcept

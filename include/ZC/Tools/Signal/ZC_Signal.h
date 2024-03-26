@@ -200,7 +200,7 @@ void ZC_Signal<TReturn(TParams...)>::AddFunctions()
     if (upMutexFuncAndStatesToAdd)
     {
         std::lock_guard<std::mutex> lock(*upMutexFuncAndStatesToAdd);
-        for (auto& rFuncAndState : funcAndStatesToAdd)
+        for (auto& rFuncAndState : funcAndStatesToAdd)      // use emplace front for call in CallLastConnected()
             if (*(rFuncAndState.spIsConnected)) funcAndStates.emplace_front(std::move(rFuncAndState));  //  if still need to connect, connects
     }
     else for (auto& rFuncAndState : funcAndStatesToAdd)

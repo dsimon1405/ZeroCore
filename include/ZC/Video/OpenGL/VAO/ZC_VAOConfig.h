@@ -39,6 +39,8 @@ public:
     {
         uint value = 0;
 
+        LayoutPacker(uchar index = -1);
+
         //  index - that should be true in Format.isUsing array
         LayoutPacker& Pack(uchar index);
     };

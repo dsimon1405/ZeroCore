@@ -8,3 +8,8 @@ struct ZC_RLDText : public ZC_RLDForwardLists<ZC_ShProg*, ZC_TexturesHolder, ZC_
     bool Erase(ZC_RSController* pRSController) override;
     void Draw(ZC_RBufferCleaner& rBufferCleaner) override;
 };
+
+struct ZC_RLDTextWindowIntoScene : public ZC_RLDText
+{
+    void Draw(ZC_RBufferCleaner& rBufferCleaner) override;
+};

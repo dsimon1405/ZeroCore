@@ -51,5 +51,11 @@ void ZC_RBufferCleaner::GlClear()
 void ZC_RBufferCleaner::GlClear(GLenum gl_clear_buffer_bit)
 {
     assert((gl_clear_buffer_bit & (~(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT))) == 0);
-    glClear(GL_COLOR_BUFFER_BIT);
+    if (((gl_clear_buffer_bit & GL_DEPTH_BUFFER_BIT) && needClearDepth) || ((gl_clear_buffer_bit & GL_STENCIL_BUFFER_BIT) && needClearStencil)
+        || (gl_clear_buffer_bit & GL_COLOR_BUFFER_BIT))
+    {
+        glClear(gl_clear_buffer_bit);
+        if ((gl_clear_buffer_bit & GL_DEPTH_BUFFER_BIT) && !isDepthEnable) needClearDepth = false;
+        if ((gl_clear_buffer_bit & GL_STENCIL_BUFFER_BIT) && !isStecncilEnable) needClearStencil = false;
+    }
 }

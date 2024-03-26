@@ -5,12 +5,10 @@
 
 typename ZC_ShVertex::Set ZC_ShVertex::GetSet(Name name)
 {
-    Set set { GetShader(name) };
-    GetUniformData(name, set);
-    return set;
+    return { GetShader(name), GetUniformData(name) };
 }
 
-ZC_Shader* ZC_ShVertex::GetShader(Name name)
+ZC_Shader* ZC_ShVertex::GetShader(Name name)    //  add here new
 {
     auto shadersIter = shaders.find(name);
     if (shadersIter != shaders.end()) return &(shadersIter->second);
@@ -29,61 +27,31 @@ ZC_Shader* ZC_ShVertex::GetShader(Name name)
     case Name::quadOrientation3D: path = ZC_FSPath(shadersPath).append("quadOrientation3D.vs").string(); break;
     case Name::textWindow: path = ZC_FSPath(shadersPath).append("textWindow.vs").string(); break;
     case Name::textScene: path = ZC_FSPath(shadersPath).append("textScene.vs").string(); break;
+    case Name::textWindowIntoScene: path = ZC_FSPath(shadersPath).append("textWindowIntoScene.vs").string(); break;
     }
 
     return &(shaders.emplace(name, ZC_Shader(ZC_Shader::ReadShaderFile(path.c_str(), GL_VERTEX_SHADER).pHead, GL_VERTEX_SHADER)).first->second);
 }
 
-void ZC_ShVertex::GetUniformData(Name name, Set& rSet)
+std::vector<ZC_uptr<ZC_Uniform>> ZC_ShVertex::GetUniformData(Name name)    //  add here new
 {
     typedef typename ZC_Uniform::NameType UnNT;
     switch (name)
     {
-    case Name::colorFigure:
-    {
-        UnNT unoforms[]{{ZC_UN_unModel, true}};
-        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
-    } break;
-    case Name::point:
-    {
-        UnNT unoforms[]{{ZC_UN_unModel, true}};
-        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
-    } break;
-    case Name::lineFigure:
-    {
-        UnNT unoforms[]{{ZC_UN_unModel, true}};
-        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
-    } break;
+    case Name::colorFigure: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
+    case Name::point: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
+    case Name::lineFigure: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
     case Name::stencil:
     {
-        UnNT unoforms[]{{ZC_UN_unModel, true}, {ZC_UN_unColor, false}};
-        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 2));
-    } break;
-    case Name::texture:
-    {
-        UnNT unoforms[]{{ZC_UN_unModel, true}};
-        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
-    } break;
-    case Name::lineMesh:
-    {
-        UnNT unoforms[]{{ZC_UN_unModel, false}};
-        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
-    } break;
-    case Name::quadOrientation3D:
-    {
-        UnNT unoforms[]{{ZC_UN_unModel, false}};
-        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
-    } break;
-    case Name::textWindow:
-    {
-        UnNT unoforms[]{{ZC_UN_unPosition, true}};
-        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
-    } break;
-    case Name::textScene:
-    {
-        UnNT unoforms[]{{ZC_UN_unModel, true, 1, false}};
-        rSet.uniforms = std::move(ZC_Uniform::GetUniformsDA(unoforms, 1));
-    } break;
-    default: break;
+        UnNT unoforms[]{ { ZC_UN_unModel, true }, { ZC_UN_unColor, false }};
+        return ZC_Uniform::GetUniformVector(unoforms, 2);
+    }
+    case Name::texture: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
+    case Name::lineMesh: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, false });
+    case Name::quadOrientation3D: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, false });
+    case Name::textWindow: return ZC_Uniform::GetUniformVector({ ZC_UN_unPositionWindow, true });
+    case Name::textScene: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
+    case Name::textWindowIntoScene: return ZC_Uniform::GetUniformVector({ ZC_UN_unPositionScene, true });
+    default: return std::vector<ZC_uptr<ZC_Uniform>>{};
     }
 }

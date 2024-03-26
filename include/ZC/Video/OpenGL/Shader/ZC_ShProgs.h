@@ -24,6 +24,7 @@ public:
         ZCR_QuadOrientation3D,
         ZC_TextWindow,
         ZC_TextScene,
+        ZC_TextWindowIntoScene,
         
         LoadAll,    //  must be last
     };

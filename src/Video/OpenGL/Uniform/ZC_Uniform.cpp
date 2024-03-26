@@ -4,28 +4,28 @@
 #include <ZC/Tools/Math/ZC_Mat4.h>
 #include <ZC/Tools/Math/ZC_Vec2.h>
 
-ZC_Uniform::ZC_Uniform(ZC_UniformName _name)
-    : name(_name)
-{
-    switch (name)
-    {
-        case ZC_UN_unModel: functionType = FT_glUniformMatrix4fv; break;
-        case ZC_UN_unColor: functionType = FT_glUniform1ui; break;
-        case ZC_UN_unPosition: functionType = FT_glUniform2fv; break;
-    }
-}
+ZC_Uniform::ZC_Uniform(ZC_UniformName _name, FunctionType _fucntionType)
+    : name(_name),
+    functionType(_fucntionType)
+{}
 
-void ZC_Uniform::GetUniformLocation(ZC_ShProg& shP)
+void ZC_Uniform::GetUniformLocation(ZC_ShProg& shP)  //  add here new
 {
     switch (name)
     {
         case ZC_UN_unModel: location = shP.GetUniformLocation("unModel"); break;
         case ZC_UN_unColor: location = shP.GetUniformLocation("unColor"); break;
-        case ZC_UN_unPosition: location = shP.GetUniformLocation("unPosition"); break;
+        case ZC_UN_unPositionWindow: location = shP.GetUniformLocation("unPositionWindow"); break;
+        case ZC_UN_unPositionScene: location = shP.GetUniformLocation("unPositionScene"); break;
     }
 }
 
-std::vector<ZC_uptr<ZC_Uniform>> ZC_Uniform::GetUniformsDA(typename ZC_Uniform::NameType* pNameType, size_t nameTypeCount)
+std::vector<ZC_uptr<ZC_Uniform>> ZC_Uniform::GetUniformVector(typename ZC_Uniform::NameType nameType)
+{
+    return GetUniformVector(&nameType, 1);
+}
+
+std::vector<ZC_uptr<ZC_Uniform>> ZC_Uniform::GetUniformVector(typename ZC_Uniform::NameType* pNameType, size_t nameTypeCount)  //  add here new
 {
     std::vector<ZC_uptr<ZC_Uniform>> uniforms;
     uniforms.reserve(nameTypeCount);
@@ -33,15 +33,10 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_Uniform::GetUniformsDA(typename ZC_Uniform::
     {
         switch (pNameType[i].name)
         {
-            case ZC_UN_unModel: uniforms.emplace_back(pNameType[i].isPointer ?
-                ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCTransponse<ZC_Mat4<float>*>>(pNameType[i].name, pNameType[i].count, pNameType[i].transponse)
-                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCTransponse<ZC_Mat4<float>>>(pNameType[i].name, pNameType[i].count, pNameType[i].transponse)); break;
-            case ZC_UN_unColor: uniforms.emplace_back(pNameType[i].isPointer ?
-                ZC_uptrMakeFromChild<ZC_Uniform, ZC_UniformData<uint*>>(pNameType[i].name)
-                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UniformData<uint>>(pNameType[i].name)); break;
-            case ZC_UN_unPosition: uniforms.emplace_back(pNameType[i].isPointer ?
-                ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec2<float>*>>(pNameType[i].name, pNameType[i].count)
-                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec2<float>>>(pNameType[i].name, pNameType[i].count)); break;
+            case ZC_UN_unModel: uniforms.emplace_back(GetUpUniform(FT_glUniformMatrix4fv, pNameType[i])); break;
+            case ZC_UN_unColor: uniforms.emplace_back(GetUpUniform(FT_glUniform1ui, pNameType[i])); break;
+            case ZC_UN_unPositionWindow: uniforms.emplace_back(GetUpUniform(FT_glUniform2fv, pNameType[i])); break;
+            case ZC_UN_unPositionScene: uniforms.emplace_back(GetUpUniform(FT_glUniform3fv, pNameType[i])); break;
         }
     }
     return uniforms;
@@ -75,5 +70,53 @@ void ZC_Uniform::GLUniform(const void* pData, int count, bool transponse) const
     case FT_glUniformMatrix4x2fv: glUniformMatrix4x2fv(location, count, transponse, static_cast<const float*>(pData)); break;
     case FT_glUniformMatrix3x4fv: glUniformMatrix3x4fv(location, count, transponse, static_cast<const float*>(pData)); break;
     case FT_glUniformMatrix4x3fv: glUniformMatrix4x3fv(location, count, transponse, static_cast<const float*>(pData)); break;
+    }
+}
+
+ZC_uptr<ZC_Uniform> ZC_Uniform::GetUpUniform(FunctionType functionType, NameType& nameType)
+{
+    switch (functionType)
+    {
+    case FT_glUniform1f: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UniformData<float*>>(nameType.name, functionType)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UniformData<float>>(nameType.name, functionType);
+    case FT_glUniform1i: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UniformData<int*>>(nameType.name, functionType)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UniformData<int>>(nameType.name, functionType);
+    case FT_glUniform1ui: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UniformData<uint*>>(nameType.name, functionType)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UniformData<uint>>(nameType.name, functionType);
+    // case FT_glUniform1fv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<float*>>(nameType.name, functionType, nameType.count)  //  don't have .Begin()!
+    //             : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<float>>(nameType.name, functionType, nameType.count);
+    case FT_glUniform2fv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec2<float>*>>(nameType.name, functionType, nameType.count)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec2<float>>>(nameType.name, functionType, nameType.count);
+    case FT_glUniform3fv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec3<float>*>>(nameType.name, functionType, nameType.count)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec3<float>>>(nameType.name, functionType, nameType.count);
+    case FT_glUniform4fv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec4<float>*>>(nameType.name, functionType, nameType.count)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec4<float>>>(nameType.name, functionType, nameType.count);
+    // case FT_glUniform1iv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<int*>>(nameType.name, functionType, nameType.count)
+    //             : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<int>>(nameType.name, functionType, nameType.count);
+    case FT_glUniform2iv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec2<int>*>>(nameType.name, functionType, nameType.count)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec2<int>>>(nameType.name, functionType, nameType.count);
+    case FT_glUniform3iv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec3<int>*>>(nameType.name, functionType, nameType.count)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec3<int>>>(nameType.name, functionType, nameType.count);
+    case FT_glUniform4iv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec4<int>*>>(nameType.name, functionType, nameType.count)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec4<int>>>(nameType.name, functionType, nameType.count);
+    // case FT_glUniform1uiv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<uint*>>(nameType.name, functionType, nameType.count)
+    //             : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<uint>>(nameType.name, functionType, nameType.count);
+    case FT_glUniform2uiv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec2<uint>*>>(nameType.name, functionType, nameType.count)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec2<uint>>>(nameType.name, functionType, nameType.count);
+    case FT_glUniform3uiv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec3<uint>*>>(nameType.name, functionType, nameType.count)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec3<uint>>>(nameType.name, functionType, nameType.count);
+    case FT_glUniform4uiv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec4<uint>*>>(nameType.name, functionType, nameType.count)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec4<uint>>>(nameType.name, functionType, nameType.count);
+    // case FT_glUniformMatrix2fv: 
+    // case FT_glUniformMatrix3fv: 
+    case FT_glUniformMatrix4fv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCTransponse<ZC_Mat4<float>*>>(nameType.name, functionType, nameType.count, nameType.transponse)
+                : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCTransponse<ZC_Mat4<float>>>(nameType.name, functionType, nameType.count, nameType.transponse);
+    // case FT_glUniformMatrix2x3fv: 
+    // case FT_glUniformMatrix3x2fv: 
+    // case FT_glUniformMatrix2x4fv: 
+    // case FT_glUniformMatrix4x2fv: 
+    // case FT_glUniformMatrix3x4fv: 
+    // case FT_glUniformMatrix4x3fv: 
+    default: return {};
     }
 }

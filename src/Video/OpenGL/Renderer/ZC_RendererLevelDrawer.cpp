@@ -14,6 +14,7 @@ ZC_uptr<ZC_RendererLevelDrawer> ZC_RendererLevelDrawer::GetRendererLevelDrawer(Z
     case ZC_RendererLevels::TextScene: return { new ZC_RLDText() };
     case ZC_RendererLevels::StencilBorder: return { new ZC_RLDStencilBorder() };
     case ZC_RendererLevels::TextWindow: return { new ZC_RLDText() };
+    case ZC_RendererLevels::TextWindowIntoScene: return { new ZC_RLDTextWindowIntoScene() };
     default:
     {
         if (funcUsers_GetRendererLevelDrawer)

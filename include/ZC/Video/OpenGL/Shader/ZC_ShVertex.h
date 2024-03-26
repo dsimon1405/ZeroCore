@@ -20,6 +20,7 @@ struct ZC_ShVertex
         quadOrientation3D,
         textWindow,
         textScene,
+        textWindowIntoScene,
     };
 
     struct Set
@@ -34,5 +35,5 @@ private:
     std::map<Name, ZC_Shader> shaders;
 
     ZC_Shader* GetShader(Name name);
-    void GetUniformData(Name name, Set& rSet);
+    std::vector<ZC_uptr<ZC_Uniform>> GetUniformData(Name name);
 };

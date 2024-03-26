@@ -48,6 +48,7 @@ bool ZC_RLDStencilBorder::Erase(ZC_RSController* pRSController)
 
 void ZC_RLDStencilBorder::Draw(ZC_RBufferCleaner& rBufferCleaner)
 {
+    rBufferCleaner.GlClear(GL_STENCIL_BUFFER_BIT);
     rBufferCleaner.GlEnable(GL_STENCIL_TEST);
 
     glStencilFunc(GL_ALWAYS, 1, 255);

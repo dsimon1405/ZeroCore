@@ -6,7 +6,7 @@
 // layout (location = 2) in vec4 inNormal;      on cpu 1 GL_INT_2_10_10_10_REV
 // layout (location = 3) in vec2 inTexCoords;   on cpu 2 ushort
 
-// layout (std140, binding = 0) uniform Persp { mat4 perspView; };
+// layout (std140, binding = 0) uniform PerspView { mat4 perspView; };
 // layout (std140, binding = 1) uniform Ortho { mat4 ortho; };
 
 // uniform mat4 unModel;

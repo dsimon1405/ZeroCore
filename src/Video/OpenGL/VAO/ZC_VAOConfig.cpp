@@ -124,6 +124,11 @@ ZC_DA<typename ZC_VAOConfig::Format> ZC_VAOConfig::GetFormats(ZC_VAOLayout spf)
 
 //  UsingFormatsPacker
 
+ZC_VAOConfig::LayoutPacker::LayoutPacker(uchar index)
+{
+    if (index != -1) Pack(index);
+}
+
 typename ZC_VAOConfig::LayoutPacker& ZC_VAOConfig::LayoutPacker::Pack(uchar index)
 {
     value = (1 << (8 + index)) | (value & 0xFFFFFF00) | ((value & 0xFF) + 1);
