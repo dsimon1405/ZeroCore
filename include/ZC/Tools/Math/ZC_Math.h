@@ -65,3 +65,18 @@ constexpr ushort ZC_PackTexCoordFloatToUShort(float coord)
 {
     return coord * ZC_USHRT_MAX;
 }
+
+constexpr int Pack_INT_2_10_10_10_REV(float x, float y, float z)
+{
+    //  pack float in signed byte array[10]:
+    //  array[0] - sign (0 is pluss, 1 is minus);
+    //  array[1 - 9] - number;
+    //  512(min), 511(max) signed byte[9] values.
+    auto packIn10Bytes = [](float val) -> int
+    {
+        return  val < 0 ?
+        512 | static_cast<int>(ZC_ROUND(512.f + val * 512.f))
+        : static_cast<int>(ZC_ROUND(val * 511.f));
+    };
+    return ((packIn10Bytes(z) << 20) | (packIn10Bytes(y) << 10)) | packIn10Bytes(x);
+};

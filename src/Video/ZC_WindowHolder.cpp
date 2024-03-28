@@ -49,7 +49,6 @@ ZC_WindowHolder::ZC_WindowHolder()
 void ZC_WindowHolder::LoadShProgs()
 {
     ZC_ShProgs shProgs;
-    typedef typename ZC_ShProgs::Name ShPName; 
-    ShPName loadAll = ShPName::LoadAll;
+    ZC_ShPName loadAll { ShPN_LoadAll };
     shProgs.Load(&loadAll, 0);
 }

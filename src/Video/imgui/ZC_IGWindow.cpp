@@ -3,6 +3,7 @@
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 #include "ZC_ImGui.h"
 #include <ZC/Events/ZC_Events.h>
+#include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
 #include <imgui.h>
 
@@ -10,10 +11,7 @@ ZC_IGWindow::~ZC_IGWindow()
 {
     ZC_ForwardListErase(unicNames, name);
     if (isDrawing)
-    {
-        bool isErased = ZC_ForwardListErase(rendererWindows, this);
-        assert(isErased);   //  can't find to delete
-    }
+        if (!ZC_ForwardListErase(rendererWindows, this)) ZC_ErrorLogger::Err("Can't find to delete!", __FILE__, __LINE__);  
 }
 
 void ZC_IGWindow::NeedDraw(bool _needDraw)
@@ -97,8 +95,7 @@ void ZC_IGWindow::UpadteRendererState(float time)
     if (isDrawing) rendererWindows.emplace_front(this);
     else
     {
-        bool isErased = ZC_ForwardListErase(rendererWindows, this);
-        assert(isErased);   //  can't find to delete
+        if (!ZC_ForwardListErase(rendererWindows, this)) ZC_ErrorLogger::Err("Can't find to delete!", __FILE__, __LINE__);  
     }
     sconChangeDrawingState.Disconnect();
 }

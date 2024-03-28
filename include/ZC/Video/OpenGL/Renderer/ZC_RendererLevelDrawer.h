@@ -25,7 +25,7 @@ private:
 
 struct ZC_TexturesHolder
 {
-    ZC_Texture* pTexture;   //  pointer on texture or array of textures
+    const ZC_Texture* pTexture;   //  pointer on texture or array of textures
     size_t texturesCount;   //  pTextures count
 
     bool operator < (const ZC_TexturesHolder& th) const noexcept;
@@ -39,7 +39,7 @@ struct ZC_TexturesHolder
 struct ZC_RLDData_Uniforms_GLDraw
 {
     const ZC_Uniforms* pUniforms;
-    ZC_GLDraw* pGLDraw;
+    const ZC_GLDraw* pGLDraw;
     
     bool operator == (const ZC_RLDData_Uniforms_GLDraw& unifAndGLDraw) const noexcept;
     void Draw() const;

@@ -14,7 +14,7 @@ struct ZC_ShVertex
         point,
         lineFigure,
         stencil,
-        texture,
+        texture_Vertex_TexCoord,
         lineMesh,
         lineOrientation3D,  //  draw as POINTS!!!
         quadOrientation3D,

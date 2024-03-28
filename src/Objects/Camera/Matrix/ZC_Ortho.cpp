@@ -6,7 +6,7 @@
 ZC_Ortho::ZC_Ortho()
     : ubo(ZC_UBOs::Create(ZC_UBO::BindingPoint::Ortho, nullptr))
 {
-    ubo->BufferData(sizeof(ZC_Mat4<float>), nullptr, GL_STATIC_DRAW);
+    ubo->BufferData(sizeof(ZC_Mat4<float>), nullptr, GL_DYNAMIC_DRAW);
 }
 
 void ZC_Ortho::UpdateUBO(float width, float height) noexcept

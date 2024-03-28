@@ -9,44 +9,44 @@
 
 #include <forward_list>
 
+enum ZC_ShPName
+{
+    ShPN_ZCR_ColorFigure,
+    ShPN_ZCR_Point,
+    ShPN_ZCR_LineFigure,
+    ShPN_ZCR_Stencil,
+    ShPN_ZCR_Texture_Vertex_TexCoord,
+    ShPN_ZCR_LineMesh,
+    ShPN_ZCR_LineOrientation3D,
+    ShPN_ZCR_QuadOrientation3D,
+    ShPN_ZC_TextWindow,
+    ShPN_ZC_TextScene,
+    ShPN_ZC_TextWindowIntoScene,
+    
+    ShPN_LoadAll,    //  must be last
+};
+
 class ZC_ShProgs
 {
 public:
-    enum Name
-    {
-        ZCR_ColorFigure,
-        ZCR_Point,
-        ZCR_LineFigure,
-        ZCR_Stencil,
-        ZCR_Texture_Vertex_TexCoord,
-        ZCR_LineMesh,
-        ZCR_LineOrientation3D,
-        ZCR_QuadOrientation3D,
-        ZC_TextWindow,
-        ZC_TextScene,
-        ZC_TextWindowIntoScene,
-        
-        LoadAll,    //  must be last
-    };
-
     typedef typename ZC_VAOConfig::ConfigData VAOConfigData;
     struct ShPInitSet
     {
-        Name name;
+        ZC_ShPName name;
         ZC_ShProg shProg;
         VAOConfigData vaoConfigData;
         ZC_Uniforms uniforms;
         ZC_TexSets texSets;
 
-        ShPInitSet(Name _name, ZC_ShProg&& _shProg, VAOConfigData _vaoData,
+        ShPInitSet(ZC_ShPName _name, ZC_ShProg&& _shProg, VAOConfigData _vaoData,
             ZC_Uniforms&& _uNameLocs, ZC_TexSets&& pTexSets);
         ShPInitSet(ShPInitSet&& shPIS);
 
-        bool operator == (Name _name) const noexcept;
+        bool operator == (ZC_ShPName _name) const noexcept;
     };
 
-    void Load(Name* pShPName, size_t ShPNameCount);
-    static ShPInitSet* Get(Name shNames);
+    void Load(ZC_ShPName* pShPName, size_t ShPNameCount);
+    static ShPInitSet* Get(ZC_ShPName shNames);
 
 private:
     static inline std::forward_list<ShPInitSet> shProgs;
@@ -66,5 +66,5 @@ private:
         GName gName;
     };
 
-    ShNames GetShNames(Name name) const noexcept;
+    ShNames GetShNames(ZC_ShPName name) const noexcept;
 };

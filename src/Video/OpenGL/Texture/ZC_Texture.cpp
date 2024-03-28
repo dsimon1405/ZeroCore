@@ -32,7 +32,7 @@ void ZC_Texture::Unbind()
     glBindTexture(type, 0);
 }
 
-void ZC_Texture::ActiveTexture(GLuint num)
+void ZC_Texture::ActiveTexture(GLuint num) const
 {
     glActiveTexture(GL_TEXTURE0 + num);
     glBindTexture(type, id);

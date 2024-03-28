@@ -21,7 +21,7 @@ ZC_Shader* ZC_ShVertex::GetShader(Name name)    //  add here new
     case Name::point: path = ZC_FSPath(shadersPath).append("point.vs").string(); break;
     case Name::lineFigure: path = ZC_FSPath(shadersPath).append("lineFigure.vs").string(); break;
     case Name::stencil: path = ZC_FSPath(shadersPath).append("stencil.vs").string(); break;
-    case Name::texture: path = ZC_FSPath(shadersPath).append("tex.vs").string(); break;
+    case Name::texture_Vertex_TexCoord: path = ZC_FSPath(shadersPath).append("texture_Vertex_TexCoord.vs").string(); break;
     case Name::lineMesh: path = ZC_FSPath(shadersPath).append("lineMesh.vs").string(); break;
     case Name::lineOrientation3D: path = ZC_FSPath(shadersPath).append("lineOrientation3D.vs").string(); break;
     case Name::quadOrientation3D: path = ZC_FSPath(shadersPath).append("quadOrientation3D.vs").string(); break;
@@ -46,7 +46,7 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_ShVertex::GetUniformData(Name name)    //  a
         UnNT unoforms[]{ { ZC_UN_unModel, true }, { ZC_UN_unColor, false }};
         return ZC_Uniform::GetUniformVector(unoforms, 2);
     }
-    case Name::texture: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
+    case Name::texture_Vertex_TexCoord: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
     case Name::lineMesh: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, false });
     case Name::quadOrientation3D: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, false });
     case Name::textWindow: return ZC_Uniform::GetUniformVector({ ZC_UN_unPositionWindow, true });

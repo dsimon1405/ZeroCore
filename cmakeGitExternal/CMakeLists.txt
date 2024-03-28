@@ -2,11 +2,12 @@
 #   must be set:
 #	GIT_EXTERNAL_PATH - path to external libs directory (example: /home/dmitry/project/external);
 #   GIT_EXTERNAL_LIBS - a list of submodules in 2 parameters:
-#		first - libs directory name (name of cloned directory)
-#   	second - repository URL (example: "sdl3" "https://github.com/libsdl-org/SDL.git"),
-#		third - commit id or its SHA (example one of next:
+#		first - libs directory name (name of cloned directory, example: "sdl3")
+#   	second - repository URL (example: "https://github.com/libsdl-org/SDL.git"),
+#		third - commit id or its SHA (example, one of next:
 #														id - cb4e5d2
 #											  			SHA - 6d759b4f3935becf5228300b8a6926e3533edbfc).
+#		last example(all together): list(APPEND GIT_EXTERNAL_LIBS "SDL" "https://github.com/libsdl-org/SDL.git" "a3b5eb0")
 
 #	fatal error equal function
 function(F_FATAL_EQUAL data1 data2 errorMessage)
@@ -27,19 +28,19 @@ function(F_GIT_CLONE libName link commitID)
 		message(STATUS "Git clone ${libName}")
 		execute_process(COMMAND ${GIT_EXECUTABLE} clone ${link}
 						WORKING_DIRECTORY ${GIT_EXTERNAL_PATH}
-						RESULT_VARIABLE result)
-		F_FATAL_EQUAL(${result} 0 "git clone ${link} ${GIT_EXTERNAL_PATH} => failed with: ${result}")
+						RESULT_VARIABLE process_result)
+		F_FATAL_EQUAL(${process_result} 0 "git clone ${link} ${GIT_EXTERNAL_PATH} => failed with: ${process_result}")
 		#	checkout
 		message(STATUS "Git checkout ${libName} to ${commitID}")
 		execute_process(COMMAND ${GIT_EXECUTABLE} checkout ${commitID}
 						WORKING_DIRECTORY ${GIT_EXTERNAL_PATH}/${libName}
-						RESULT_VARIABLE result)
-		F_FATAL_EQUAL(${result} 0 "git checkout ${commitID} => failed with: ${result}")
+						RESULT_VARIABLE process_result)
+		F_FATAL_EQUAL(${process_result} 0 "git checkout ${commitID} => failed with: ${process_result}")
 	endif()
 endfunction()
 
-list(LENGTH GIT_EXTERNAL_LIBS libsCount)
-math(EXPR libsCount "(${libsCount} / 3) - 1")
+list(LENGTH GIT_EXTERNAL_LIBS libsCount)	#	gets total count of data in GIT_EXTERNAL_LIBS
+math(EXPR libsCount "(${libsCount} / 3) - 1")	#	calculates number of external libs (one lib consists 3 record) (-1 -> changes style count/index)
 foreach(i RANGE ${libsCount})
 	math(EXPR nameIndex "${i} * 3")
 	math(EXPR linkIndex "${i} * 3 + 1")

@@ -42,7 +42,7 @@ void ZC_VAO::Config(VAOConData vaoConData, ZC_Buffer& vbo, ZC_Buffer* ebo, GLuin
     if (ebo) ebo->UnbindBuffer();
 }
 
-void ZC_VAO::ActivateOpenGL()
+void ZC_VAO::ActivateOpenGL() const
 {
     glBindVertexArray(id);
 }

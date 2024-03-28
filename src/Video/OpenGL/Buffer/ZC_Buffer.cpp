@@ -1,7 +1,6 @@
 #include <ZC/Video/OpenGL/Buffer/ZC_Buffer.h>
 
 #include <ZC/Video/OpenGL/ZC_OpenGL.h>
-#include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
 ZC_Buffer::ZC_Buffer(GLenum _type)
     : type(_type)
@@ -54,6 +53,45 @@ void ZC_Buffer::BufferSubData(long offset, long bytesSize, const void* pData)
     AddData(offset, bytesSize, reinterpret_cast<char *>(pData));
 #endif
 }
+
+void ZC_Buffer::GetElementsData(size_t maxElementsIndex, size_t& storingTypeSize, GLenum& rElementsType) noexcept
+{
+    if (maxElementsIndex <= ZC_UCHAR_MAX)
+    {
+        storingTypeSize = sizeof(uchar);
+        rElementsType = GL_UNSIGNED_BYTE;
+    }
+    else if (maxElementsIndex <= ZC_USHRT_MAX)
+    {
+        storingTypeSize = sizeof(ushort);
+        rElementsType = GL_UNSIGNED_SHORT;
+    }
+    else
+    {
+        storingTypeSize = sizeof(uint);
+        rElementsType = GL_UNSIGNED_INT;
+    }
+}
+
+ZC_DA<uchar> ZC_Buffer::GetTriangleElements(size_t& rElementsCount, GLenum& rElementsType, size_t quadsCount, size_t trianglesCount)
+{
+    size_t quadsElementsCount = quadsCount * 6,     //  6 elements in ebo on one quad
+        trianglesElementsCount = trianglesCount * 3;     //  3 elements in ebo on one triangle
+    rElementsCount = quadsElementsCount + trianglesElementsCount;  
+    size_t verticesInVBO = (quadsCount * 4) + trianglesElementsCount,     //  4 vertices in vbo on one quad
+        storingTypeSize = 0;
+    ZC_Buffer::GetElementsData(verticesInVBO - 1, storingTypeSize, rElementsType);
+    ZC_DA<uchar> elements(storingTypeSize * rElementsCount);
+    switch (storingTypeSize)
+    {
+    case 1: FillTriangleElements(elements.pHead, elements.size, quadsElementsCount); break;
+    case 2: FillTriangleElements(reinterpret_cast<ushort*>(elements.pHead), elements.size / 2, quadsElementsCount); break;
+    case 4: FillTriangleElements(reinterpret_cast<uint*>(elements.pHead), elements.size / 4, quadsElementsCount); break;
+    }
+    return elements;
+}
+
+
 #ifdef ZC_PC
 ZC_Buffer::ZC_Buffer(ZC_Buffer&& buf) noexcept
     : id(buf.id),

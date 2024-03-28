@@ -58,7 +58,7 @@ ZC_DA<T>::ZC_DA(ZC_DA&& charArray) noexcept
 template<typename T>
 ZC_DA<T>& ZC_DA<T>::operator = (ZC_DA&& charArray)
 {
-    if(pHead) delete[] pHead;
+    if(pHead) free(pHead);
     pHead = charArray.pHead;
     size = charArray.size;
 
@@ -70,7 +70,7 @@ ZC_DA<T>& ZC_DA<T>::operator = (ZC_DA&& charArray)
 template<typename T>
 ZC_DA<T>::~ZC_DA()
 {
-    delete[] pHead;
+    free(pHead);
     pHead = nullptr;
 }
 

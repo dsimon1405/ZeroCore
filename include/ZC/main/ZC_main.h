@@ -8,7 +8,7 @@ int ZC_main();
 #include <ZC_Config.h>
 
 #ifdef ZC_PC
-    #ifdef NDEBUG
+    #ifdef _NDEBUG
     #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
     #endif
     int main(int argv, char** args)

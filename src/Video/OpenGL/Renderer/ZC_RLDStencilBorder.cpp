@@ -25,7 +25,7 @@ ZC_RLDStencilBorder::ZC_RLDStencilBorder()
 {
     if (!pShPStencilBorder)
     {
-        auto pShProg = ZC_ShProgs::Get(ZC_ShProgs::Name::ZCR_Stencil);
+        auto pShProg = ZC_ShProgs::Get(ShPN_ZCR_Stencil);
         assert (pShProg);      //  stencil shader data wasn't loaded
         pShPStencilBorder = &(pShProg->shProg);
         pUniformsStencilBorder = &(pShProg->uniforms);
@@ -43,7 +43,7 @@ bool ZC_RLDStencilBorder::Erase(ZC_RSController* pRSController)
 {
     ZC_RLDData_Uniforms_GLDraw_StencilBorder uniforms_glDraw_stencilBorder{ static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)),
         pRSController->pGLDraw, static_cast<const ZC_RSPDStencilBorderData*>(pRSController->GetPersonalData(ZC_RSPDC_stencilBorder)) };
-    return this->EraseFromMap(pRSController->pShProg, pRSController->pVAO, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount }, uniforms_glDraw_stencilBorder);
+    return this->EraseFromForwardList(pRSController->pShProg, pRSController->pVAO, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount }, uniforms_glDraw_stencilBorder);
 }
 
 void ZC_RLDStencilBorder::Draw(ZC_RBufferCleaner& rBufferCleaner)

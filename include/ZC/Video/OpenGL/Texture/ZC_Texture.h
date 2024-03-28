@@ -17,7 +17,7 @@ public:
 
     void Bind();
     void Unbind();
-    void ActiveTexture(GLuint num = 0);
+    void ActiveTexture(GLuint num = 0) const;
 
 // private:
     GLuint id = 0;

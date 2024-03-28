@@ -13,8 +13,8 @@ enum ZC_RendererLevels
     Drawing = 0,
     TextScene = 1000,
     StencilBorder = 3000,        //  must be after scene objects!
-    TextWindow = 4000,
-    TextWindowIntoScene = 4001,     //  in ZC_RLDText.h
+    TextWindowIntoScene = 4000,     //  in ZC_RLDText.h
+    TextWindow = 4001,
 };
 
 typedef int ZC_RendererLevel;   //  Renderer Levels for user
@@ -31,7 +31,7 @@ struct ZC_RSController   //  stores data of object of ZC_RendererSet for search 
     _pTexture - in ZC_RSTextured pointer on the start of "textures" into "texSets"; in ZC_RSNotTextured nullptr.
     _pTextureCount - in ZC_RSTextured textures.size(); in ZC_RSNotTextured 0.
     */
-    ZC_RSController(ZC_ShProg* _pShProg, ZC_GLDraw* _pGLDraw, ZC_VAO* _pVAO, ZC_Texture* _pTexture,
+    ZC_RSController(const ZC_ShProg* _pShProg, const ZC_GLDraw* _pGLDraw, const ZC_VAO* _pVAO, const ZC_Texture* _pTexture,
         size_t _texturesCount, std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData);
 
     ~ZC_RSController();
@@ -43,12 +43,13 @@ struct ZC_RSController   //  stores data of object of ZC_RendererSet for search 
     const void* GetPersonalData(ZC_RSPDCategory category) const;
     const void* GetDataFromUniforms(ZC_UniformName name) const;
     ZC_RSController MakeCopy() const;
+    bool IsDrawing() const noexcept;
 
     ZC_RendererLevel rendererLevel = ZC_RL_None;
-    ZC_ShProg* pShProg = nullptr;
-    ZC_GLDraw* pGLDraw = nullptr;
-    ZC_VAO* pVAO = nullptr;
-    ZC_Texture* pTexture = nullptr;   //  in ZC_RSTextured pointer on the start of "textures" into "texSets"; in ZC_RSNotTextured nullptr; in ZC_RSCommonTexture pointer on texture.
+    const ZC_ShProg* pShProg = nullptr;
+    const ZC_GLDraw* pGLDraw = nullptr;
+    const ZC_VAO* pVAO = nullptr;
+    const ZC_Texture* pTexture = nullptr;   //  in ZC_RSTextured pointer on the start of "textures" into "texSets"; in ZC_RSNotTextured nullptr; in ZC_RSCommonTexture pointer on texture.
     size_t texturesCount = 0;   //  in ZC_RSTextured textures.size(); in ZC_RSNotTextured 0; in ZC_RSCommonTexture 1.
     std::forward_list<ZC_uptr<ZC_RSPersonalData>> personalData;
 };

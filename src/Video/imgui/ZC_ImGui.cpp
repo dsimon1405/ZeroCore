@@ -7,7 +7,6 @@
 
 #include "imgui_impl_opengl3.h"
 #ifdef ZC_SDL_VIDEO
-// #include <Video/PC/SDL/ZC_SDL_Window.h>
 #include "imgui_impl_sdl3.h"
 #endif
 

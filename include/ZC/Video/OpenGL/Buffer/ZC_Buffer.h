@@ -3,6 +3,7 @@
 #include <ZC_Config.h>
 #include <ZC/Video/OpenGL/GL/glcorearb.h>
 #include <ZC/Tools/Math/ZC_Math.h>
+#include <ZC/Tools/Container/ZC_DA.h>
 #ifdef ZC_ANDROID
 #include <list>
 #endif
@@ -46,42 +47,30 @@ struct ZC_Buffer
 	*/
 	void BufferSubData(long offset, long bytesSize, const void* pData);
 
-    static void GetElementsData(size_t maxElementsIndex, size_t& storingTypeSize, GLenum& rElementsType)
-    {
-        if (maxElementsIndex <= ZC_UCHAR_MAX)
-        {
-            storingTypeSize = sizeof(uchar);
-            rElementsType = GL_UNSIGNED_BYTE;
-        }
-        else if (maxElementsIndex <= ZC_USHRT_MAX)
-        {
-            storingTypeSize = sizeof(ushort);
-            rElementsType = GL_UNSIGNED_SHORT;
-        }
-        else
-        {
-            storingTypeSize = sizeof(uint);
-            rElementsType = GL_UNSIGNED_INT;
-        }
-    }
+    static void GetElementsData(size_t maxElementsIndex, size_t& storingTypeSize, GLenum& rElementsType) noexcept;
 
-	static constexpr int Pack_INT_2_10_10_10_REV(float x, float y, float z)
-	{
-		//  pack float in signed byte array[10]:
-		//  array[0] - sign (0 is pluss, 1 is minus);
-		//  array[1 - 9] - number;
-		//  512(min), 511(max) signed byte[9] values.
-		auto packIn10Bytes = [](float val) -> int
-		{
-			return  val < 0 ?
-			512 | static_cast<int>(ZC_ROUND(512.f + val * 512.f))
-			: static_cast<int>(ZC_ROUND(val * 511.f));
-		};
-		return ((packIn10Bytes(z) << 20) | (packIn10Bytes(y) << 10)) | packIn10Bytes(x);
-	};
+	/*
+	Create dynamic array of elements for drawing quads and(or) triangles. Im vbo vertices(corners) of quad must be in order [bl -> tr -> tl -> br].
+
+	Params:
+	rElementsCount - set count of elements in ebo (ZC_DrawElements>(..., elementsCount, ..., ...);)
+	rElementsType - set elements type in ebo (ZC_DrawElements>(..., ..., elementsType, ...);)
+	quadsCount - count of quads in vbo.
+	trianglesCount - count of triangles in vbo.
+
+	Return:
+	Array of element in uchar format. Using:
+		ZC_Buffer ebo(GL_ELEMENT_ARRAY_BUFFER);
+		ebo.BufferData(elements.size, elements.Begin(), ...);
+	*/
+	static ZC_DA<uchar> GetTriangleElements(size_t& rElementsCount, GLenum& rElementsType, size_t quadsCount, size_t trianglesCount);
 
 	GLuint id = 0;
 	GLenum type;
+	
+private:
+	template<typename TpHead>
+	static void FillTriangleElements(TpHead pElementsHead, size_t elementsSize, size_t quadsElementsCount);
 
 #ifdef ZC_ANDROID
 	struct Data
@@ -117,3 +106,23 @@ struct ZC_Buffer
     void Reload(GLuint _id);
 #endif
 };
+
+template<typename TpHead>
+void ZC_Buffer::FillTriangleElements(TpHead pElementsHead, size_t elementsSize, size_t quadsElementsCount)
+{
+	size_t elementsI = 0,
+		index = 0;
+	for ( ; elementsI < quadsElementsCount; elementsI += 6)
+	{
+		pElementsHead[elementsI] = pElementsHead[elementsI + 3] = index++;
+		pElementsHead[elementsI + 1] = pElementsHead[elementsI + 5] = index++;
+		pElementsHead[elementsI + 2] = index++;
+		pElementsHead[elementsI + 4] = index++;
+	}
+	while (elementsI < elementsSize)
+	{
+		pElementsHead[elementsI++] = index++;
+		pElementsHead[elementsI++] = index++;
+		pElementsHead[elementsI++] = index++;
+	}
+}

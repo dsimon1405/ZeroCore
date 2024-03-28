@@ -5,14 +5,14 @@
 struct ZC_RLDData_Uniforms_GLDraw_StencilBorder
 {
     const ZC_Uniforms* pUniforms;
-    ZC_GLDraw* pGLDraw;
+    const ZC_GLDraw* pGLDraw;
     const ZC_RSPDStencilBorderData* pStencilBorderData;
     
     bool operator == (const ZC_RLDData_Uniforms_GLDraw_StencilBorder& unifAndGLDraw) const noexcept;
     void Draw() const;
 };
 
-struct ZC_RLDStencilBorder : public ZC_RLDForwardLists<ZC_ShProg*, ZC_VAO*, ZC_TexturesHolder, ZC_RLDData_Uniforms_GLDraw_StencilBorder>
+struct ZC_RLDStencilBorder : public ZC_RLDForwardLists<const ZC_ShProg*, const ZC_VAO*, ZC_TexturesHolder, ZC_RLDData_Uniforms_GLDraw_StencilBorder>
 {
     ZC_RLDStencilBorder();
 

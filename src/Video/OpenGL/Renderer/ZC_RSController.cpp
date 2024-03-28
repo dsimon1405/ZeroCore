@@ -4,7 +4,7 @@
 
 #include <cassert>
 
-ZC_RSController::ZC_RSController(ZC_ShProg* _pShProg, ZC_GLDraw* _pGLDraw, ZC_VAO* _pVAO, ZC_Texture* _pTexture,
+ZC_RSController::ZC_RSController(const ZC_ShProg* _pShProg, const ZC_GLDraw* _pGLDraw, const ZC_VAO* _pVAO, const ZC_Texture* _pTexture,
         size_t _texturesCount, std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData)
     : pShProg(_pShProg),
     pGLDraw(_pGLDraw),
@@ -76,4 +76,9 @@ ZC_RSController ZC_RSController::MakeCopy() const
     std::forward_list<ZC_uptr<ZC_RSPersonalData>> copyPersonalData;
     for (auto& upPersData : personalData) copyPersonalData.emplace_front(upPersData->MakeCopy());
     return { pShProg, pGLDraw, pVAO, pTexture, texturesCount, std::move(copyPersonalData) };
+}
+
+bool ZC_RSController::IsDrawing() const noexcept
+{
+    return rendererLevel != ZC_RL_None;
 }

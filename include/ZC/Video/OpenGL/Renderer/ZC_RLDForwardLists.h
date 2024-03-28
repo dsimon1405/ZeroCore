@@ -20,7 +20,7 @@ protected:
     std::forward_list<Pair<T1, std::forward_list<Pair<T2, std::forward_list<Pair<T3, std::forward_list<TData>>>>>>> rendererSets;
 
     void AddInMap(T1 t1, T2 t2, T3 t3, const TData& data);
-    bool EraseFromMap(T1 t1, T2 t2, T3 t3, const TData& data);
+    bool EraseFromForwardList(T1 t1, T2 t2, T3 t3, const TData& data);
     void DrawRendererSets();
 
 private:
@@ -30,6 +30,7 @@ private:
 
 #include <cassert>
 #include <ZC/Tools/Container/ZC_ContFunc.h>
+#include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
 template<typename T1, typename T2, typename T3, typename TData>
 void ZC_RLDForwardLists<T1, T2, T3, TData>::AddInMap(T1 t1, T2 t2, T3 t3, const TData& data)
@@ -55,7 +56,7 @@ void ZC_RLDForwardLists<T1, T2, T3, TData>::AddInMap(T1 t1, T2 t2, T3 t3, const 
 }
 
 template<typename T1, typename T2, typename T3, typename TData>
-bool ZC_RLDForwardLists<T1, T2, T3, TData>::EraseFromMap(T1 t1, T2 t2, T3 t3, const TData& data)
+bool ZC_RLDForwardLists<T1, T2, T3, TData>::EraseFromForwardList(T1 t1, T2 t2, T3 t3, const TData& data)
 {
     auto t1Iter = FindPreviousIterBeforeFind(rendererSets, t1);
     auto t1PrevIter = t1Iter++;
@@ -69,9 +70,7 @@ bool ZC_RLDForwardLists<T1, T2, T3, TData>::EraseFromMap(T1 t1, T2 t2, T3 t3, co
     auto t3PrevIter = t3Iter++;
     assert(t3Iter != t2Iter->second.end());    //  cant find in ZC_TexturesHolder map
 
-    // ZC_Uniforms_GLDraw newUniformsAndGLDraw{ static_cast<ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)), pRSController->pGLDraw };
-    bool isErased = ZC_ForwardListErase(t3Iter->second, data);
-    assert(isErased);   //  can't find in ZC_UniformsAndGLDraw forward_list
+    if (!ZC_ForwardListErase(t3Iter->second, data)) ZC_ErrorLogger::Err("EraseFromForwardList(), Can't find ZC_UniformsAndGLDraw!", __FILE__, __LINE__);
 
     if (t3Iter->second.empty()) t2Iter->second.erase_after(t3PrevIter);
     else return false;

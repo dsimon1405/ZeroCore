@@ -4,7 +4,7 @@ project(ZeroCore)
 #========================= options
 #	only one could be ON
 option(ZC_PC "ON - build for PC version" ON)
-option(ZC_ANDROID "ON - build for Android version" OFF)
+# option(ZC_ANDROID "ON - build for Android version" OFF)
 
 # set ZC_PARANT_BIN_DIR for copy assets
 
@@ -44,22 +44,24 @@ set(GIT_EXTERNAL_LIBS)
 if(ZC_PC)
 	#	video
 	set(ZC_SDL_VIDEO ON)
-	if(NOT ZC_MY_DEBUG)
-		list(APPEND GIT_EXTERNAL_LIBS "SDL" "https://github.com/libsdl-org/SDL.git" "a3b5eb0")
-	endif()
 	#	audio
 	if(ZC_AUDIO)
 		set(ZC_SDL_AUDIO ON)
 	endif()
-elseif(ZC_ANDROID)
-	#	video
-	set(ZC_ANDROID_NATIVE_APP_GLUE ON)
-	set(ZC_IMGUI OFF)
-	#	audio
-	if(ZC_AUDIO)
-		set(ZC_OBOE ON)
-		list(APPEND GIT_EXTERNAL_LIBS "oboe" "https://github.com/google/oboe.git" "cb4e5d2")
+	# add to GIT_EXTERNAL_LIBS for loading
+	if(NOT ZC_MY_DEBUG)
+		list(APPEND GIT_EXTERNAL_LIBS "SDL" "https://github.com/libsdl-org/SDL.git" "a3b5eb0")
+		list(APPEND GIT_EXTERNAL_LIBS "freetype" "https://github.com/freetype/freetype.git" "f42ce25")
 	endif()
+# elseif(ZC_ANDROID)
+# 	#	video
+# 	set(ZC_ANDROID_NATIVE_APP_GLUE ON)
+# 	set(ZC_IMGUI OFF)
+# 	#	audio
+# 	if(ZC_AUDIO)
+# 		set(ZC_OBOE ON)
+# 		list(APPEND GIT_EXTERNAL_LIBS "oboe" "https://github.com/google/oboe.git" "cb4e5d2")
+# 	endif()
 endif()
 
 #	lib type
@@ -76,27 +78,37 @@ if(GIT_EXTERNAL_LIBS)
 endif()
 
 if(ZC_PC)
-	#	sdl3
-	if(ZC_SDL_VIDEO AND NOT ZC_MY_DEBUG)
-		set(SDL_TEST_LIBRARY OFF)
-		set(SDL_STATIC ON)
-		set(SDL_SHARED OFF)
-		add_subdirectory(${PROJECT_SOURCE_DIR}/external/SDL)
+	if (NOT ZC_MY_DEBUG)
+		#	sdl3
+		if(ZC_SDL_VIDEO)
+			set(SDL_TEST_LIBRARY OFF)
+			set(SDL_STATIC ON)
+			set(SDL_SHARED OFF)
+			add_subdirectory(${PROJECT_SOURCE_DIR}/external/SDL)
+		endif()
+		#	freetype
+		set(FT_DISABLE_ZLIB ON)
+		set(FT_DISABLE_BZIP2 ON)
+		set(FT_DISABLE_PNG ON)
+		set(FT_DISABLE_HARFBUZZ ON)
+		set(FT_DISABLE_BROTLI ON)
+		set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)	# sets for including subdirectory, new policy -> option()
+		add_subdirectory(${PROJECT_SOURCE_DIR}/external/freetype)
 	endif()
 endif()
 
-if(ZC_ANDROID)
-	#	android_native_app_glue
-	if(ZC_ANDROID_NATIVE_APP_GLUE)
-		#   set link flag for calling CMakeLists.txt
-		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate" PARENT_SCOPE)
-	endif()
+# if(ZC_ANDROID)
+# 	#	android_native_app_glue
+# 	if(ZC_ANDROID_NATIVE_APP_GLUE)
+# 		#   set link flag for calling CMakeLists.txt
+# 		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate" PARENT_SCOPE)
+# 	endif()
 
-	#	oboe
-	if(ZC_OBOE)
-		add_subdirectory(${PROJECT_SOURCE_DIR}/external/oboe)
-	endif()
-endif()
+# 	#	oboe
+# 	if(ZC_OBOE)
+# 		add_subdirectory(${PROJECT_SOURCE_DIR}/external/oboe)
+# 	endif()
+# endif()
 
 #========================= ZERO CORE =========================
 
@@ -162,6 +174,7 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_Clock.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_FPS.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_WindowOrthoIndent.cpp
+	${PROJECT_SOURCE_DIR}/src/Tools/ZC_TornToCamera.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_MakeErrorString.cpp
 	${PROJECT_SOURCE_DIR}/src/File/Read/ZC_FileReader.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_ErrorLogger.cpp
@@ -174,6 +187,13 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/Matrix/ZC_Perspective.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/Matrix/ZC_View.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/Matrix/ZC_PerspView.cpp
+	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_Font.cpp
+	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_Fonts.cpp
+	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_TextData.cpp
+	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_TextScene.cpp
+	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_TextSceneTurnedToCamera.cpp
+	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_TextWindow.cpp
+	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_TextWindowIntoScene.cpp
     )
 
 add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES})
@@ -181,17 +201,16 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES})
 #========================= include dirs
 set(ZC_INCLUDE_DIRS ${ZC_INCLUDE_DIRS}
 	PUBLIC ${PROJECT_SOURCE_DIR}/include
-	PUBLIC ${PROJECT_SOURCE_DIR}/src
+	PRIVATE ${PROJECT_SOURCE_DIR}/src
 	PUBLIC ${PROJECT_BINARY_DIR}/config
 	PUBLIC $<$<BOOL:${ZC_AUDIO}>:${PROJECT_SOURCE_DIR}/includeVariable/Audio>
-	PUBLIC /home/dmitry/projects/external/freetype/include
 	)
 
 target_include_directories(${PROJECT_NAME} ${ZC_INCLUDE_DIRS})
 
 #========================= link libs
 set(ZC_LINK_LIBS ${ZC_LINK_LIBS}
-	PUBLIC /home/dmitry/projects/external/freetype/lib/libfreetype.a)
+	)
 
 target_link_libraries(${PROJECT_NAME} ${ZC_LINK_LIBS})
 
@@ -204,7 +223,7 @@ target_compile_options(${PROJECT_NAME}
 #========================= copy assets
 add_custom_target(ZC_COPY_ASSETS ALL
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${ZC_PARANT_BIN_DIR}
-	COMMENT "Copy assets ${PROJECT_SOURCE_DIR}/assets => ${ZC_PARANT_BIN_DIR}/assets")
+	COMMENT "Copy assets ${PROJECT_SOURCE_DIR}/assets => ${ZC_PARANT_BIN_DIR}")
 add_dependencies(${PROJECT_NAME} ZC_COPY_ASSETS)
 
 message(STATUS "======================== ZERO CORE CONFIG ========================")
