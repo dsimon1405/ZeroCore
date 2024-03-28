@@ -14,7 +14,7 @@ option(ZC_STATIC "ON - build static library, else build shared" ON)
 
 message(STATUS "========================= ZERO CORE START ========================")
 
-set(ZC_MY_DEBUG 1)
+set(ZC_MY_DEBUG 0)
 
 #========================= c++ standard
 set(CMAKE_CXX_STANDARD 23)
@@ -30,6 +30,13 @@ if((ZC_PC AND ZC_ANDROID) OR (NOT ZC_PC AND NOT ZC_ANDROID))
 	message(FATAL_ERROR "Options ZC_PC and ZC_ANDROID can't have the same values.")
 endif()
 
+#	lib type
+if(ZC_STATIC)
+	set(ZC_LIB_TYPE STATIC)
+else()
+	set(ZC_LIB_TYPE SHARED)
+endif()
+
 #	all bool used values set off
 	#	video
 set(ZC_SDL_VIDEO OFF)
@@ -38,20 +45,12 @@ set(ZC_ANDROID_NATIVE_APP_GLUE OFF)
 set(ZC_OBOE OFF)
 set(ZC_SDL_AUDIO OFF)
 
-#	git submodules
-set(GIT_EXTERNAL_LIBS)
-
 if(ZC_PC)
 	#	video
 	set(ZC_SDL_VIDEO ON)
 	#	audio
 	if(ZC_AUDIO)
 		set(ZC_SDL_AUDIO ON)
-	endif()
-	# add to GIT_EXTERNAL_LIBS for loading
-	if(NOT ZC_MY_DEBUG)
-		list(APPEND GIT_EXTERNAL_LIBS "SDL" "https://github.com/libsdl-org/SDL.git" "a3b5eb0")
-		list(APPEND GIT_EXTERNAL_LIBS "freetype" "https://github.com/freetype/freetype.git" "f42ce25")
 	endif()
 # elseif(ZC_ANDROID)
 # 	#	video
@@ -64,17 +63,9 @@ if(ZC_PC)
 # 	endif()
 endif()
 
-#	lib type
-if(ZC_STATIC)
-	set(ZC_LIB_TYPE STATIC)
-else()
-	set(ZC_LIB_TYPE SHARED)
-endif()
-
 #========================= external libs
-if(GIT_EXTERNAL_LIBS)
-	set(GIT_EXTERNAL_PATH ${PROJECT_SOURCE_DIR}/external)
-	add_subdirectory(cmakeGitExternal)
+if(NOT ZC_MY_DEBUG)
+	add_subdirectory(cmakeGitSubmodules)
 endif()
 
 if(ZC_PC)

@@ -9,6 +9,24 @@
 #											  			SHA - 6d759b4f3935becf5228300b8a6926e3533edbfc).
 #		last example(all together): list(APPEND GIT_EXTERNAL_LIBS "SDL" "https://github.com/libsdl-org/SDL.git" "a3b5eb0")
 
+
+#================ code from calling CMakeLists.txt:
+#	git submodules
+set(GIT_EXTERNAL_LIBS)
+
+# add to GIT_EXTERNAL_LIBS for loading
+if(NOT ZC_MY_DEBUG)
+	list(APPEND GIT_EXTERNAL_LIBS "SDL" "https://github.com/libsdl-org/SDL.git" "a3b5eb0")
+	list(APPEND GIT_EXTERNAL_LIBS "freetype" "https://github.com/freetype/freetype.git" "f42ce25")
+endif()
+
+if(GIT_EXTERNAL_LIBS)
+	set(GIT_EXTERNAL_PATH ${PROJECT_SOURCE_DIR}/external)
+	add_subdirectory(cmakeGitExternal)
+endif()
+
+
+#================ code from current CMakeLists.txt:
 #	fatal error equal function
 function(F_FATAL_EQUAL data1 data2 errorMessage)
 	if(NOT ${data1} EQUAL ${data2})
@@ -48,6 +66,10 @@ foreach(i RANGE ${libsCount})
 	list(GET GIT_EXTERNAL_LIBS ${nameIndex} ${linkIndex} ${CommitIdIndex} data)
 	F_GIT_CLONE(${data})
 endforeach()
+
+
+
+
 
 # #	git init
 # if(NOT EXISTS "${PROJECT_SOURCE_DIR}/.git")
