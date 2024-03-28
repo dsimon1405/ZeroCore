@@ -14,7 +14,7 @@ option(ZC_STATIC "ON - build static library, else build shared" ON)
 
 message(STATUS "========================= ZERO CORE START ========================")
 
-set(ZC_MY_DEBUG 1)     # 1 true, 0 false
+set(ZC_MY_DEBUG 1)     # 1 true, 0 false   =>  use if(ZCR_MY_DEBUG EQUAL 1) - true; if(NOT ZCR_MY_DEBUG) - false
 
 #========================= c++ standard
 set(CMAKE_CXX_STANDARD 23)
