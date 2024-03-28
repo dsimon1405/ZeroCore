@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 project(ZeroCore)
-
+# test change
 #========================= options
 #	only one could be ON
 option(ZC_PC "ON - build for PC version" ON)
