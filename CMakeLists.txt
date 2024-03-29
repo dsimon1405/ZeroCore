@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 project(ZeroCore)
-# test change
+
 #========================= options
 #	only one could be ON
 option(ZC_PC "ON - build for PC version" ON)
@@ -14,7 +14,11 @@ option(ZC_STATIC "ON - build static library, else build shared" ON)
 
 message(STATUS "========================= ZERO CORE START ========================")
 
-set(ZC_MY_DEBUG 1)     # 1 true, 0 false   =>  use if(ZCR_MY_DEBUG EQUAL 1) - true; if(NOT ZCR_MY_DEBUG) - false
+if(ZC_MY_DEBUG)		#	top project must set preferred ZC_MY_DEBUG, or will be set ZC_MU_DEBUG 0
+	set(ZC_MY_DEBUG 1)     #	1 true, 0 false   =>  use if(ZCR_MY_DEBUG EQUAL 1) - true; if(NOT ZCR_MY_DEBUG) - false
+else()
+	set(ZC_MY_DEBUG 0)
+endif()
 
 #========================= c++ standard
 set(CMAKE_CXX_STANDARD 23)

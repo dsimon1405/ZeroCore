@@ -22,8 +22,9 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/.git")
 	F_FATAL_EQUAL(${process_result} 0 "git init => failed with: ${process_result}")
 endif()
 
-#	git submodule update --init --recursive
-message(STATUS "Git updates submodules")
+#	git submodule update --init --recursive (updates(clone from remote repository) all submodules and their submodules(--recursive),
+#	and makes (checkout) for each submodule, to commit saved in git).
+message(STATUS "Git submodule update --init --recursive")
 execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
                 WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                 RESULT_VARIABLE ZC_GIT_SUBMOD_RESULT)
