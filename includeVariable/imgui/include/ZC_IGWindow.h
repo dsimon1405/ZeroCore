@@ -24,6 +24,8 @@ public:
     _needDraw - if true window will draw until user don't close it (using X on TitleBar if it exists), or calls this function with false.
     */
     void NeedDraw(bool _needDraw);
+    //  Sets to draw or not all ImGui windows.
+    static void NeedImGuiDraw(bool _needDraw) noexcept;
 
     static bool IsCursorInOneOfWindows() noexcept;
 
@@ -54,6 +56,7 @@ protected:
 private:
     static inline std::forward_list<std::string> unicNames;
     static inline std::forward_list<ZC_IGWindow*> rendererWindows;  //  heirs for call in ZC_Renderer into ZC_IGWindow::Draw();
+    static inline bool needDraw = true;     //  for all ImGui
 
     const char* name;
     bool isDrawing;
@@ -79,4 +82,5 @@ private:
     static void Make_isCursorInOneOfWindows_false(float time) noexcept;
     //  function for call into ZC_Renderer::Draw();
     static void Draw();
+    static void NeedDrawImGui(bool _isNeedDraw) noexcept;
 };

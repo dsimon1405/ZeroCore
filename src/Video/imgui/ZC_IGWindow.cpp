@@ -21,6 +21,11 @@ void ZC_IGWindow::NeedDraw(bool _needDraw)
     sconChangeDrawingState = ZC_Events::ConnectHandleEventsEnd({ &ZC_IGWindow::UpadteRendererState, this });
 }
 
+void ZC_IGWindow::NeedImGuiDraw(bool _needDraw) noexcept
+{
+    needDraw = _needDraw;
+}
+
 bool ZC_IGWindow::IsCursorInOneOfWindows() noexcept
 {
     return isCursorInOneOfWindows;
@@ -102,6 +107,7 @@ void ZC_IGWindow::UpadteRendererState(float time)
 
 void ZC_IGWindow::Draw()
 {
+    if (!needDraw) return;
     ZC_ImGui::FrameStart();
     for (auto pIGWindow : rendererWindows) pIGWindow->UpdateAndDraw();
     ZC_ImGui::FrameEnd();
