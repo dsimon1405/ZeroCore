@@ -48,10 +48,10 @@ ZC_Texture ZC_Textures::LoadTexture2D(const char* filePath, GLenum wrapS, GLenum
     ZC_Texture texture(GL_TEXTURE_2D, format, width, height, data, wrapS, wrapT, filterMin, filterMag);
     if (ZC_ErrorLogger::WasError())
     {
-        // stbi_image_free(data);
+        stbi_image_free(data);
     }
 #ifdef ZC_PC
-    // stbi_image_free(data);
+    stbi_image_free(data);
 #endif
     return texture;
 }

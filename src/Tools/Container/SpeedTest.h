@@ -1,15 +1,15 @@
 
 
-// size_t size =   100;
-// size_t search = 82;
-// size_t delet =  93;
-// size_t delet1 = 77;
+// ulong size =   100;
+// ulong search = 82;
+// ulong delet =  93;
+// ulong delet1 = 77;
 
 // void FL()
 // {
 //     ZC_Clock cl;
-//     std::forward_list<size_t> fl;
-//     for (size_t i = 0; i < size; i++)
+//     std::forward_list<ulong> fl;
+//     for (ulong i = 0; i < size; i++)
 //     {
 //         fl.emplace_front(i);
 //     }
@@ -67,8 +67,8 @@
 // void L()
 // {
 //     ZC_Clock cl;
-//     std::list<size_t> fl;
-//     for (size_t i = 0; i < size; i++)
+//     std::list<ulong> fl;
+//     for (ulong i = 0; i < size; i++)
 //     {
 //         fl.emplace_back(i);
 //     }
@@ -123,8 +123,8 @@
 // void M()
 // {
 //     ZC_Clock cl;
-//     std::map<size_t, size_t> fl;
-//     for (size_t i = 0; i < size; i++)
+//     std::map<ulong, ulong> fl;
+//     for (ulong i = 0; i < size; i++)
 //     {
 //         fl.emplace(i, i);
 //     }
@@ -143,15 +143,15 @@
 //     ZC_cout(std::to_string(time) + "  find\n");
 
 //     cl.Start();
-//     size_t erased = fl.erase(delet);
+//     ulong erased = fl.erase(delet);
 //     time = cl.Time<ZC_Nanoseconds>();
 //     ZC_cout(std::to_string(time) + "  erase\n\n");
 // }
 // void V()
 // {
 //     ZC_Clock cl;
-//     std::vector<size_t> fl;
-//     for (size_t i = 0; i < size; i++)
+//     std::vector<ulong> fl;
+//     for (ulong i = 0; i < size; i++)
 //     {
 //         fl.emplace_back(i);
 //     }

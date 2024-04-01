@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ZC/Tools/Exception/ZC_Exception.h>
+#include <ZC/Tools/Math/ZC_Math.h>
 
 #include <cstdlib>
 
@@ -9,10 +10,10 @@ template<typename T>
 struct ZC_DA
 {
     T* pHead = nullptr;
-    size_t size = 0;
+    ulong size = 0;
 
-    ZC_DA(T* _pArray = nullptr, size_t _size = 0);
-    ZC_DA(size_t _size);
+    ZC_DA(T* _pArray = nullptr, ulong _size = 0);
+    ZC_DA(ulong _size);
 
     ZC_DA(const ZC_DA&) = delete;
     ZC_DA& operator = (const ZC_DA&) = delete;
@@ -22,8 +23,8 @@ struct ZC_DA
 
     ~ZC_DA();
 
-    T& operator [] (size_t index);
-    const T& operator [] (size_t index) const;
+    T& operator [] (ulong index);
+    const T& operator [] (ulong index) const;
 
     unsigned long BytesSize() noexcept;
     T* Begin() noexcept;
@@ -35,13 +36,13 @@ struct ZC_DA
 };
 
 template<typename T>
-ZC_DA<T>::ZC_DA(T* _pArray, size_t _size)
+ZC_DA<T>::ZC_DA(T* _pArray, ulong _size)
     : pHead(_pArray),
     size(_size)
 {}
 
 template<typename T>
-ZC_DA<T>::ZC_DA(size_t _size)
+ZC_DA<T>::ZC_DA(ulong _size)
     : pHead(static_cast<T*>(malloc(sizeof(T) * _size))),
     size(_size)
 {}
@@ -75,14 +76,14 @@ ZC_DA<T>::~ZC_DA()
 }
 
 template<typename T>
-T& ZC_DA<T>::operator [] (size_t index)
+T& ZC_DA<T>::operator [] (ulong index)
 {
     if (index >= size) ZC_Exception("Index out of range!");
     return pHead[index];
 }
 
 template<typename T>
-const T& ZC_DA<T>::operator [] (size_t index) const
+const T& ZC_DA<T>::operator [] (ulong index) const
 {
     if (index >= size) ZC_Exception("Index out of range!");
     return const_cast<T&>(pHead[index]);

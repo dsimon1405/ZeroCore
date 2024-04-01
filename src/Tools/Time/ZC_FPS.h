@@ -41,6 +41,6 @@ private:
     // 1 sec = 1 000 000 000 nanosec.
     const float nanosecond = 1000000000.f;
     long previousFrameNanoseconds = 0;
-    long fpsTime = nanosecond / 61;
+    long fpsTime = static_cast<long>(nanosecond / 61.f);
     float nanosecondsDivisor = 0;
 };

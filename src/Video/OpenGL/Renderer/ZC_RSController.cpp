@@ -5,7 +5,7 @@
 #include <cassert>
 
 ZC_RSController::ZC_RSController(const ZC_ShProg* _pShProg, const ZC_GLDraw* _pGLDraw, const ZC_VAO* _pVAO, const ZC_Texture* _pTexture,
-        size_t _texturesCount, std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData)
+        ulong _texturesCount, std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData)
     : pShProg(_pShProg),
     pGLDraw(_pGLDraw),
     pVAO(_pVAO),
@@ -41,13 +41,13 @@ void ZC_RSController::SetData(ZC_RSPDCategory category, ZC_RSPDStoredData* pData
     assert(false);  //  can't find category!
 }
 
-void ZC_RSController::SetUniformsData(ZC_UniformName unNmae, void* pData)
+void ZC_RSController::SetUniformsData(ZC_UniformName unName, void* pData)
 {
     for (auto& upPersData : personalData)
     {
         if (upPersData->category == ZC_RSPDC_uniforms)
         {
-            ZC_RSPDUniformData unData(unNmae, pData);
+            ZC_RSPDUniformData unData(unName, pData);
             upPersData->SetData(&unData);
             return;
         }
@@ -62,11 +62,11 @@ const void* ZC_RSController::GetPersonalData(ZC_RSPDCategory category) const
     return nullptr;
 }
 
-const void* ZC_RSController::GetDataFromUniforms(ZC_UniformName name) const
+const void* ZC_RSController::GetDataFromUniforms(ZC_UniformName unName) const
 {
     for (auto& upPersData : personalData)
         if (upPersData->category == ZC_RSPDC_uniforms)
-            return static_cast<const ZC_Uniforms*>(upPersData->GetPointerOnData())->Get(name);
+            return static_cast<const ZC_Uniforms*>(upPersData->GetPointerOnData())->Get(unName);
     assert(false);  //  can't find uniforms!
     return nullptr;
 }

@@ -39,7 +39,7 @@ void ZC_Font::FillCoordsAndLines(const std::string& text, std::vector<Point>& rC
         startY = 0,
         lineHeightWithoughtBottomTail = 0,
         lineHeightBottomTail = 0;
-    size_t coordsStartIndex = 0,
+    ulong coordsStartIndex = 0,
         coordsCount = 0;
     bool isFirstLine = true;
     for (auto c : text)
@@ -98,7 +98,7 @@ void ZC_Font::CalcutateXYOriginBottomLeft(std::vector<LineData>& rLinesData, std
     {
         if (lineData.width == textWidth) continue;
         float offsetX = alignment == ZC_TA_Right ? textWidth - lineData.width : (textWidth - lineData.width) / 2.f;  //  otherwise Alignment_Center
-        for (size_t i = lineData.coordsStartIndex; i < lineData.coordsStartIndex + lineData.coordsCount; ++i)
+        for (ulong i = lineData.coordsStartIndex; i < lineData.coordsStartIndex + lineData.coordsCount; ++i)
             rCoords[i].x += offsetX;                
     }
 }
@@ -109,7 +109,7 @@ void ZC_Font::CalcutateXYOriginCenter(std::vector<LineData>& rLinesData, std::ve
     float halfTextHeight = textHeight / 2.f;
     for (auto& lineData : rLinesData)    // Y alignment (down tails and next lines height)
     {
-        for (size_t i = lineData.coordsStartIndex; i < lineData.coordsStartIndex + lineData.coordsCount; ++i)
+        for (ulong i = lineData.coordsStartIndex; i < lineData.coordsStartIndex + lineData.coordsCount; ++i)
             rCoords[i].y += lineData.mustBeUp_Y - halfTextHeight;    //  - halfTextHeight (make texts Y origin center)
     }
     
@@ -127,7 +127,7 @@ void ZC_Font::UpY(std::vector<LineData>& rLinesData, std::vector<Point>& rCoords
     for (auto& lineData : rLinesData)    // Y alignment (down tails and next lines height)
     {
         if (lineData.mustBeUp_Y == 0) continue;
-        for (size_t i = lineData.coordsStartIndex; i < lineData.coordsStartIndex + lineData.coordsCount; ++i)
+        for (ulong i = lineData.coordsStartIndex; i < lineData.coordsStartIndex + lineData.coordsCount; ++i)
             rCoords[i].y += lineData.mustBeUp_Y;
     }
 }
@@ -140,13 +140,13 @@ void ZC_Font::MakeCenterX(std::vector<LineData>& rLinesData, std::vector<Point>&
         float offsetX = -halfTextWidth;     //  make texts X origin center
         if (alignment != ZC_TA_Left && lineData.width != textWidth)
             offsetX += alignment == ZC_TA_Right ? textWidth - lineData.width : (textWidth - lineData.width) / 2.f;  //  otherwise Alignment_Center
-        for (size_t i = lineData.coordsStartIndex; i < lineData.coordsStartIndex + lineData.coordsCount; ++i)
+        for (ulong i = lineData.coordsStartIndex; i < lineData.coordsStartIndex + lineData.coordsCount; ++i)
             rCoords[i].x += offsetX;                
     }
 }
 
-void ZC_Font::AddLine(float lineHeightDownTail, float lineHeightWithoughtButtomTail, std::vector<LineData>& rLinesData, size_t& rCoordsStartIndex,
-    size_t coordsCount, float startX, float& rTotalWidth, float& rTotalHeight, bool isFirstLine) const
+void ZC_Font::AddLine(float lineHeightDownTail, float lineHeightWithoughtButtomTail, std::vector<LineData>& rLinesData, ulong& rCoordsStartIndex,
+    ulong coordsCount, float startX, float& rTotalWidth, float& rTotalHeight, bool isFirstLine) const
 {
     float previousLinesMustBeUp_Y = lineHeightDownTail + lineHeightWithoughtButtomTail + (isFirstLine ? 0 : lineSpacing);   //  if not first line, add line spacing
     for (auto& lineData : rLinesData) lineData.mustBeUp_Y += previousLinesMustBeUp_Y;

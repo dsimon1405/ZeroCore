@@ -26,7 +26,7 @@ private:
 struct ZC_TexturesHolder
 {
     const ZC_Texture* pTexture;   //  pointer on texture or array of textures
-    size_t texturesCount;   //  pTextures count
+    ulong texturesCount;   //  pTextures count
 
     bool operator < (const ZC_TexturesHolder& th) const noexcept;
     bool operator == (const ZC_TexturesHolder& th) const noexcept;

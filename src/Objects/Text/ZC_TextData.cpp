@@ -114,11 +114,11 @@ ZC_DrawElements ZC_TextData::CalculateAndSetTextData(ZC_Buffer& rVBO, ZC_Buffer&
     textHeight = 0;
     auto pointsCoords = pFont->FillCoords(text, fontOrigin, alignment, textWidth, textHeight);
 
-    rVBO.BufferData(pointsCoords.size() * sizeof(typename ZC_Font::Point), &(pointsCoords[0]), GL_STATIC_DRAW);
+    rVBO.BufferData(static_cast<long>(pointsCoords.size() * sizeof(typename ZC_Font::Point)), &(pointsCoords[0]), GL_STATIC_DRAW);
 
-    size_t elementsCount = 0;
+    ulong elementsCount = 0;
     GLenum elementsType = 0;
-    ZC_DA<uchar> elements = ZC_Buffer::GetTriangleElements(elementsCount, elementsType, pointsCoords.size() / 4, 0);
+    ZC_DA<uchar> elements = ZC_Buffer::GetTriangleElements(elementsCount, elementsType, static_cast<ulong>(pointsCoords.size() / 4), 0);
 
     rEBO.BufferData(elements.size, elements.Begin(), GL_STATIC_DRAW);
     //  creates on stack ZC_DrawElements cause in MakeRendererSet() will created in heap ZC_uptr<ZC GLDraw>, in other functions updates data created in MakeRendererSet()

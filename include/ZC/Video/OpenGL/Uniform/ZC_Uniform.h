@@ -2,6 +2,7 @@
 
 #include <ZC/Tools/ZC_uptr.h>
 #include <ZC/Video/OpenGL/Shader/ZC_ShProg.h>
+#include <ZC/Tools/Math/ZC_Math.h>
 
 #include <vector>
 
@@ -35,7 +36,7 @@ public:
 
     void GetUniformLocation(ZC_ShProg& shP);
     static std::vector<ZC_uptr<ZC_Uniform>> GetUniformVector(NameType pNameType);
-    static std::vector<ZC_uptr<ZC_Uniform>> GetUniformVector(NameType* pNameType, size_t nameTypeCount);
+    static std::vector<ZC_uptr<ZC_Uniform>> GetUniformVector(NameType* pNameType, ulong nameTypeCount);
 
 protected:
     enum FunctionType

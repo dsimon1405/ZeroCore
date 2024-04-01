@@ -45,7 +45,7 @@ public:
         bool operator == (ZC_ShPName _name) const noexcept;
     };
 
-    void Load(ZC_ShPName* pShPName, size_t ShPNameCount);
+    void Load(ZC_ShPName* pShPName, ulong ShPNameCount);
     static ShPInitSet* Get(ZC_ShPName shNames);
 
 private:

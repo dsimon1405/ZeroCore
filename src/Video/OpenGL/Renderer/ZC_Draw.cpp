@@ -11,7 +11,7 @@ ZC_DrawElements::ZC_DrawElements(GLenum _mode, int _count, GLenum _type, GLuint 
 
 void ZC_DrawElements::Draw() const
 {
-    glDrawElements(mode, count, type, reinterpret_cast<void*>(startByteOffset));
+    glDrawElements(mode, count, type, (void*)(unsigned long long)startByteOffset);
 }
 
 

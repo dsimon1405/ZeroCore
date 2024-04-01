@@ -32,16 +32,16 @@ struct ZC_RSController   //  stores data of object of ZC_RendererSet for search 
     _pTextureCount - in ZC_RSTextured textures.size(); in ZC_RSNotTextured 0.
     */
     ZC_RSController(const ZC_ShProg* _pShProg, const ZC_GLDraw* _pGLDraw, const ZC_VAO* _pVAO, const ZC_Texture* _pTexture,
-        size_t _texturesCount, std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData);
+        ulong _texturesCount, std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData);
 
     ~ZC_RSController();
 
     //  lvl - where to switch in ZC_Renderer. If lvl - None, just remove from ZC_Renderer.
     void SwitchToLvl(ZC_RendererLevel lvl);
     void SetData(ZC_RSPDCategory category, ZC_RSPDStoredData* pData);
-    void SetUniformsData(ZC_UniformName unNmae, void* pData);
+    void SetUniformsData(ZC_UniformName unName, void* pData);
     const void* GetPersonalData(ZC_RSPDCategory category) const;
-    const void* GetDataFromUniforms(ZC_UniformName name) const;
+    const void* GetDataFromUniforms(ZC_UniformName unName) const;
     ZC_RSController MakeCopy() const;
     bool IsDrawing() const noexcept;
 
@@ -50,6 +50,6 @@ struct ZC_RSController   //  stores data of object of ZC_RendererSet for search 
     const ZC_GLDraw* pGLDraw = nullptr;
     const ZC_VAO* pVAO = nullptr;
     const ZC_Texture* pTexture = nullptr;   //  in ZC_RSTextured pointer on the start of "textures" into "texSets"; in ZC_RSNotTextured nullptr; in ZC_RSCommonTexture pointer on texture.
-    size_t texturesCount = 0;   //  in ZC_RSTextured textures.size(); in ZC_RSNotTextured 0; in ZC_RSCommonTexture 1.
+    ulong texturesCount = 0;   //  in ZC_RSTextured textures.size(); in ZC_RSNotTextured 0; in ZC_RSCommonTexture 1.
     std::forward_list<ZC_uptr<ZC_RSPersonalData>> personalData;
 };

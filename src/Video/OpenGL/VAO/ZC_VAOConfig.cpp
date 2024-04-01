@@ -3,10 +3,10 @@
 #include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
-typename ZC_VAOConfig::ConfigData ZC_VAOConfig::CreateConfig(ZC_VAOLayout layout, uchar* pLayoutUsed, size_t layoutUsedCount)
+typename ZC_VAOConfig::ConfigData ZC_VAOConfig::CreateConfig(ZC_VAOLayout layout, uchar* pLayoutUsed, ulong layoutUsedCount)
 {
     LayoutPacker layoutPacker;
-    for (size_t i = 0; i < layoutUsedCount; ++i) layoutPacker.Pack(pLayoutUsed[i]);
+    for (ulong i = 0; i < layoutUsedCount; ++i) layoutPacker.Pack(pLayoutUsed[i]);
     return { layout, layoutPacker };    
 }
 
@@ -16,7 +16,7 @@ ZC_VAOConfig::ZC_VAOConfig(ConfigData configData)
 {
     uint isUsingArr = configData.usingFormatsPacker.value >> 8;
     uchar useCounter = useCount;
-    for (size_t formatsI = 0; formatsI < formats.size ; ++formatsI)
+    for (ulong formatsI = 0; formatsI < formats.size ; ++formatsI)
     {
         formats[formatsI].isUsing = (isUsingArr >> formatsI) & 1;
         if (formats[formatsI].isUsing && --useCounter == 0) break; 
@@ -32,12 +32,12 @@ void ZC_VAOConfig::Config(GLuint startOffset, GLuint verticesCount)
 {
     ZC_DA<StrideOffset> so = CalculateStrideAndOffset(startOffset, verticesCount);
     uchar useCounter = useCount;
-    for (size_t i = 0; i < formats.size && useCounter != 0; ++i)
+    for (ulong i = 0; i < formats.size && useCounter != 0; ++i)
     {
         if (formats[i].isUsing)
         {
             glEnableVertexAttribArray(formats[i].attribIndex);
-            glVertexAttribPointer(formats[i].attribIndex, formats[i].size, formats[i].type, formats[i].normalized, so[i].stride, reinterpret_cast<void*>(so[i].relativeOffset));
+            glVertexAttribPointer(formats[i].attribIndex, formats[i].size, formats[i].type, formats[i].normalized, so[i].stride, (const void*)(unsigned long long)(so[i].relativeOffset));
             --useCounter;
         }
     }
@@ -60,7 +60,7 @@ ZC_DA<typename ZC_VAOConfig::StrideOffset> ZC_VAOConfig::CalculateStrideAndOffse
     {
         GLint localStartOffset = 0;
         uchar useCounter = useCount;
-        for (size_t i = 0; i < formats.size && useCounter != 0; ++i)
+        for (ulong i = 0; i < formats.size && useCounter != 0; ++i)
         {
             so[i].relativeOffset = startOffset + localStartOffset;
             so[i].stride = TypeSize(formats[i].type) * formats[i].size;

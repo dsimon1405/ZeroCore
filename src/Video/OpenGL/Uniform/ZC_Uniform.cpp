@@ -25,11 +25,11 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_Uniform::GetUniformVector(typename ZC_Unifor
     return GetUniformVector(&nameType, 1);
 }
 
-std::vector<ZC_uptr<ZC_Uniform>> ZC_Uniform::GetUniformVector(typename ZC_Uniform::NameType* pNameType, size_t nameTypeCount)  //  add here new
+std::vector<ZC_uptr<ZC_Uniform>> ZC_Uniform::GetUniformVector(typename ZC_Uniform::NameType* pNameType, ulong nameTypeCount)  //  add here new
 {
     std::vector<ZC_uptr<ZC_Uniform>> uniforms;
     uniforms.reserve(nameTypeCount);
-    for (size_t i = 0; i < nameTypeCount; ++i)
+    for (ulong i = 0; i < nameTypeCount; ++i)
     {
         switch (pNameType[i].name)
         {

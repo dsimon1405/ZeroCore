@@ -19,7 +19,7 @@
 #define ZC_LLONG_MAX 	9223372036854775807
 #define ZC_ULLONG_MAX 	18446744073709551615 // (0xffffffffffffffff)
 
-typedef unsigned long size_t;
+typedef unsigned long ulong;
 typedef unsigned int uint;
 typedef unsigned char uchar;
 typedef unsigned short ushort;
@@ -63,7 +63,7 @@ constexpr uint ZC_PackColorUCharToUInt(uchar r, uchar g, uchar b) noexcept
 
 constexpr ushort ZC_PackTexCoordFloatToUShort(float coord)
 {
-    return coord * ZC_USHRT_MAX;
+    return static_cast<ushort>(coord * ZC_USHRT_MAX);
 }
 
 constexpr int Pack_INT_2_10_10_10_REV(float x, float y, float z)

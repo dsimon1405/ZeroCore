@@ -72,13 +72,13 @@ bool ZC_RLDForwardLists<T1, T2, T3, TData>::EraseFromForwardList(T1 t1, T2 t2, T
 
     if (!ZC_ForwardListErase(t3Iter->second, data)) ZC_ErrorLogger::Err("EraseFromForwardList(), Can't find ZC_UniformsAndGLDraw!", __FILE__, __LINE__);
 
-    if (t3Iter->second.empty()) t2Iter->second.erase_after(t3PrevIter);
+    if (t3Iter->second.empty()) t3PrevIter = t2Iter->second.erase_after(t3PrevIter);    //  need to assign to previous iterator to avoid exception in msvc
     else return false;
 
-    if (t2Iter->second.empty()) t1Iter->second.erase_after(t2PrevIter);
+    if (t2Iter->second.empty()) t2PrevIter = t1Iter->second.erase_after(t2PrevIter);    //  need to assign to previous iterator to avoid exception in msvc
     else return false;
 
-    if (t1Iter->second.empty()) rendererSets.erase_after(t1PrevIter);
+    if (t1Iter->second.empty()) t1PrevIter = rendererSets.erase_after(t1PrevIter);    //  need to assign to previous iterator to avoid exception in msvc
     else return false;
 
     return rendererSets.empty();

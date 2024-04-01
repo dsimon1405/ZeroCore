@@ -3,6 +3,7 @@
 #include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #include <ZC/File/Read/ZC_FileReader.h>
+#include <ZC/Tools/Math/ZC_Math.h>
     
 ZC_Shader::ZC_Shader(const char* code, GLenum type)
 {
@@ -43,24 +44,24 @@ ZC_DA<char> ZC_Shader::ReadShaderFile(const char* path, GLenum type)
 // #endif
 //     static const std::string geometryStart = vertexStart;
 
-//     size_t shaderStartSize = 0;
+//     ulong shaderStartSize = 0;
 //     switch (type)
 //     {
 //         case GL_VERTEX_SHADER:
 //         {
-//             static const size_t size = vertexStart.size();
+//             static const ulong size = vertexStart.size();
 //             shaderStartSize = size;
 //             break;
 //         }
 //         case GL_FRAGMENT_SHADER:
 //         {
-//             static const size_t size = fragmentStart.size();
+//             static const ulong size = fragmentStart.size();
 //             shaderStartSize = size;
 //             break;
 //         }
 //         case GL_GEOMETRY_SHADER:
 //         {
-//             static const size_t size = geometryStart.size();
+//             static const ulong size = geometryStart.size();
 //             shaderStartSize = size;
 //             break;
 //         }
@@ -70,7 +71,7 @@ ZC_DA<char> ZC_Shader::ReadShaderFile(const char* path, GLenum type)
     if (!upFileReader) return nullptr;
 
     ZC_ErrorLogger::Clear();
-    size_t fileSize = upFileReader->Size();
+    ulong fileSize = upFileReader->Size();
     if (fileSize == 0)
     {
         if (ZC_ErrorLogger::WasError()) return nullptr;
@@ -107,7 +108,7 @@ ZC_DA<char> ZC_Shader::ReadShaderFile(const char* path, GLenum type)
 
 // void ZC_Shader::FillShaderStart(char* shaderData, const std::string& shaderStart) noexcept
 // {
-//     for (size_t i = 0; i < shaderStart.size(); ++i)
+//     for (ulong i = 0; i < shaderStart.size(); ++i)
 //     {
 //         shaderData[i] = shaderStart[i];
 //     }

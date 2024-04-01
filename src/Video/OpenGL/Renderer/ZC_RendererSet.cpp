@@ -22,13 +22,13 @@ ZC_RSController ZC_RendererSet::MakeZC_RSController(int texSetId, std::forward_l
     if (texSetId == -1) return ZC_RSController(this->pShP, upGLDraw.Get(), &vao, nullptr, 0, std::move(personalData));
     
     ZC_Texture* pTexture = nullptr;     //  pointer on begin of ZC_TexturesSet::textures
-    size_t texturesCount = 0;
+    ulong texturesCount = 0;
     for (auto& texSet : texSets)
     {
         if (texSet.id == texSetId)
         {
             pTexture = &*(texSet.textures.begin());
-            texturesCount = texSet.textures.size();
+            texturesCount = static_cast<ulong>(texSet.textures.size());
         }
     }
     assert(pTexture);  //  can't find texture set

@@ -21,7 +21,7 @@ namespace ZC_Vec
     template<typename TValue>
     ZC_Vec3<TValue> Normalize(const ZC_Vec3<TValue>& vec)
     {
-        return vec * (1.0 / sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]));
+        return vec * static_cast<TValue>(1.0 / sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]));
     }
 
     /*

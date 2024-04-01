@@ -7,7 +7,7 @@ ZC_Buffer::ZC_Buffer(GLenum _type)
 {
     static const ushort buffersSize = 2000;
     static GLuint buffers[buffersSize];
-    static size_t buffersIndex = 0;
+    static ulong buffersIndex = 0;
     if (buffersIndex == 0 || buffersIndex == buffersSize)
     {
         glGenBuffers(buffersSize, buffers);
@@ -54,7 +54,7 @@ void ZC_Buffer::BufferSubData(long offset, long bytesSize, const void* pData)
 #endif
 }
 
-void ZC_Buffer::GetElementsData(size_t maxElementsIndex, size_t& storingTypeSize, GLenum& rElementsType) noexcept
+void ZC_Buffer::GetElementsData(ulong maxElementsIndex, ulong& storingTypeSize, GLenum& rElementsType) noexcept
 {
     if (maxElementsIndex <= ZC_UCHAR_MAX)
     {
@@ -73,20 +73,20 @@ void ZC_Buffer::GetElementsData(size_t maxElementsIndex, size_t& storingTypeSize
     }
 }
 
-ZC_DA<uchar> ZC_Buffer::GetTriangleElements(size_t& rElementsCount, GLenum& rElementsType, size_t quadsCount, size_t trianglesCount)
+ZC_DA<uchar> ZC_Buffer::GetTriangleElements(ulong& rElementsCount, GLenum& rElementsType, ulong quadsCount, ulong trianglesCount)
 {
-    size_t quadsElementsCount = quadsCount * 6,     //  6 elements in ebo on one quad
+    ulong quadsElementsCount = quadsCount * 6,     //  6 elements in ebo on one quad
         trianglesElementsCount = trianglesCount * 3;     //  3 elements in ebo on one triangle
     rElementsCount = quadsElementsCount + trianglesElementsCount;  
-    size_t verticesInVBO = (quadsCount * 4) + trianglesElementsCount,     //  4 vertices in vbo on one quad
+    ulong verticesInVBO = (quadsCount * 4) + trianglesElementsCount,     //  4 vertices in vbo on one quad
         storingTypeSize = 0;
     ZC_Buffer::GetElementsData(verticesInVBO - 1, storingTypeSize, rElementsType);
     ZC_DA<uchar> elements(storingTypeSize * rElementsCount);
     switch (storingTypeSize)
     {
-    case 1: FillTriangleElements(elements.pHead, elements.size, quadsElementsCount); break;
-    case 2: FillTriangleElements(reinterpret_cast<ushort*>(elements.pHead), elements.size / 2, quadsElementsCount); break;
-    case 4: FillTriangleElements(reinterpret_cast<uint*>(elements.pHead), elements.size / 4, quadsElementsCount); break;
+    case 1: FillTriangleElements<uchar>(elements.pHead, elements.size, quadsElementsCount); break;
+    case 2: FillTriangleElements<ushort>(reinterpret_cast<ushort*>(elements.pHead), elements.size / 2, quadsElementsCount); break;
+    case 4: FillTriangleElements<uint>(reinterpret_cast<uint*>(elements.pHead), elements.size / 4, quadsElementsCount); break;
     }
     return elements;
 }

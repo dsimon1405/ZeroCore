@@ -5,7 +5,7 @@
 
 void ZC_TexSets::Uniformli(ZC_ShProg& shProg)
 {
-    for (size_t texSetsI = 0; texSetsI < texSets.size; ++texSetsI)
+    for (ulong texSetsI = 0; texSetsI < texSets.size; ++texSetsI)
     {
         switch (texSets[texSetsI])
         {
@@ -26,7 +26,7 @@ typename ZC_TexSets::VectorOfTexturesCreator ZC_TexSets::GetCreator()
 
 ZC_TexSets::VectorOfTexturesCreator::VectorOfTexturesCreator(ZC_DA<TextureName>& _texSets, std::vector<ZC_Texture>&& _texs)
     : texSets(_texSets),
-    texs(std::move(texs))
+    texs(std::move(_texs))
 {}
 
 ZC_TexSets::TextureName* ZC_TexSets::VectorOfTexturesCreator::NextName()

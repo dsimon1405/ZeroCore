@@ -55,7 +55,7 @@
 
 //     bool EmplaceBack(TValue&& value) noexcept;
 //     bool Erase(unsigned long index) noexcept;
-//     size_t Size() const noexcept;
+//     ulong Size() const noexcept;
 
 // private:
 //     TValue array[TSize];
@@ -73,7 +73,7 @@
 
 //     bool EmplaceBack(TValue&& value) noexcept;
 //     bool Erase(unsigned long index) noexcept;
-//     size_t Size() const noexcept;
+//     ulong Size() const noexcept;
 
 // private:
 //     TValue* pValue;

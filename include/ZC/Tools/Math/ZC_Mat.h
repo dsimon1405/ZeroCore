@@ -17,8 +17,8 @@ namespace ZC_Mat
     Params:
     fovy - viewing angle in degrees.
     aspect - window width/height.
-    near - length to the top of the frustum.
-    far - length to base of frustum.
+    nearPlane - length to the top of the frustum.
+    farPlane - length to base of frustum.
 
     Return:
     Perspective matrix.

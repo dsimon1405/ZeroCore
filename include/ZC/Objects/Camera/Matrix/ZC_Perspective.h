@@ -8,8 +8,8 @@ struct ZC_Perspective
 {
     float aspect = 0.f,
         fovy,
-        near,
-        far;
+        nearPlane,
+        farPlane;
     ZC_Mat4<float> perspective {};
     bool update = false;
     /*
@@ -17,13 +17,13 @@ struct ZC_Perspective
 
     Params:
     _fovy - viewing angle in degrees (must not tot be 0!).
-    _near - length to the top of the frustum (must not tot be 0!).
-    _far - length to base of frustum (must not tot be 0!).
+    _nearPlane - length to the top of the frustum (must not tot be 0!).
+    _farPlane - length to base of frustum (must not tot be 0!).
     */
-    ZC_Perspective(float _fovy = 45.f, float _near = 0.1f, float _far = 100.f);
+    ZC_Perspective(float _fovy = 45.f, float _nearPlane = 0.1f, float _farPlane = 100.f);
     
     void SetFovy(float _fovy) noexcept;
-    void SetPlane(float _near, float _far) noexcept;
+    void SetPlane(float _nearPlane, float _farPlane) noexcept;
     void SetSize(float _aspect) noexcept;
     bool Update();
 };

@@ -53,7 +53,7 @@ public:
         bool operator == (ZC_VAOLayout _formatShVLayout);
     };
 
-    static ConfigData CreateConfig(ZC_VAOLayout formatShVLayout, uchar* pIndexUsed, size_t indexUsedCount);
+    static ConfigData CreateConfig(ZC_VAOLayout formatShVLayout, uchar* pIndexUsed, ulong indexUsedCount);
     
     ZC_VAOConfig() = default;
     //  isUsingIndexes - Format.isUsing - true indexes in ZC_DA<Format> formats

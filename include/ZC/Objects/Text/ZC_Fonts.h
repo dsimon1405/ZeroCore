@@ -18,7 +18,7 @@ public:
     pNames - is a pointer to the beginning of the font array to load.
     namesCount - size of pNames array.
     */
-    static void Load(ZC_FontNameHeight* pNames, size_t namesCount);
+    static void Load(ZC_FontNameHeight* pNames, ulong namesCount);
     static ZC_Font* GetFont(const ZC_FontNameHeight& name);
 
 private:

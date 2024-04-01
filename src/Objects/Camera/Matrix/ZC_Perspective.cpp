@@ -3,10 +3,10 @@
 #include <ZC/Tools/Math/ZC_Mat.h>
 #include <ZC/Video/OpenGL/Buffer/ZC_UBOs.h>
 
-ZC_Perspective::ZC_Perspective(float _fovy, float _near, float _far)
+ZC_Perspective::ZC_Perspective(float _fovy, float _nearPlane, float _farPlane)
     : fovy(_fovy),
-    near(_near),
-    far(_far)
+    nearPlane(_nearPlane),
+    farPlane(_farPlane)
 {}
 
 void ZC_Perspective::SetFovy(float _fovy) noexcept
@@ -15,10 +15,10 @@ void ZC_Perspective::SetFovy(float _fovy) noexcept
     update = true;
 }
 
-void ZC_Perspective::SetPlane(float _near, float _far) noexcept
+void ZC_Perspective::SetPlane(float _nearPlane, float _farPlane) noexcept
 {
-    near = _near;
-    far = _far;
+    nearPlane = _nearPlane;
+    farPlane = _farPlane;
     update = true;
 }
 
@@ -32,7 +32,7 @@ bool ZC_Perspective::Update()
 {
     if (update)
     {
-        perspective = ZC_Mat::Perspective(fovy, aspect, near, far);
+        perspective = ZC_Mat::Perspective(fovy, aspect, nearPlane, farPlane);
         update = false;
         return true;
     }

@@ -8,14 +8,14 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-void ZC_Fonts::Load(ZC_FontNameHeight* pNames, size_t namesCount)
+void ZC_Fonts::Load(ZC_FontNameHeight* pNames, ulong namesCount)
 {
     FT_Library ft;
     if (FT_Init_FreeType(&ft)) ZC_ErrorLogger::Err("Fail FT_Init_FreeType()!", __FILE__, __LINE__);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    for (size_t namesIndex = 0; namesIndex < namesCount; ++namesIndex)
+    for (ulong namesIndex = 0; namesIndex < namesCount; ++namesIndex)
     {
         auto pFontData = ZC_Find(fonts, pNames[namesIndex]);
         if (pFontData) continue;
@@ -86,7 +86,8 @@ ZC_Font ZC_Fonts::MakeFont(void* ft_face)
         }
         
         if (glyph->bitmap.width != 0 && glyph->bitmap.rows != 0)
-            glTexSubImage2D(GL_TEXTURE_2D, 0, texX, texY, glyph->bitmap.width, glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, glyph->bitmap.buffer);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, static_cast<int>(texX), static_cast<int>(texY), glyph->bitmap.width,
+                glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, glyph->bitmap.buffer);
             
         float texX_left = texX / static_cast<float>(texW),
             texY_bottom = texY / static_cast<float>(texH);
@@ -105,7 +106,7 @@ ZC_Font ZC_Fonts::MakeFont(void* ft_face)
             });
 
         texX += glyph->bitmap.width + pixelPadding;
-        rowH = std::max(glyph->bitmap.rows, rowH);
+        rowH = std::max<uint>(glyph->bitmap.rows, rowH);
     }
     texture.Unbind();
 
@@ -129,16 +130,16 @@ void ZC_Fonts::CalculateTextureSize(uint& texW, uint& texH, void* ft_face)
 
         if (rowW + glyph->bitmap.width + pixelPadding > texMaxW)
         {
-            texW = std::max(rowW, texW);
+            texW = std::max<uint>(rowW, texW);
             texH += rowH + pixelPadding;
             rowW = 0;
             rowH = 0;
         }
 
         rowW += glyph->bitmap.width + pixelPadding;
-        rowH = std::max(rowH, glyph->bitmap.rows);
+        rowH = std::max<uint>(rowH, glyph->bitmap.rows);
     }
 
-    texW = std::max(texW, rowW);
+    texW = std::max<uint>(texW, rowW);
     texH += rowH + pixelPadding;
 }

@@ -21,7 +21,7 @@ enum ZC_FontName
 struct ZC_FontNameHeight
 {
     ZC_FontName name;
-    size_t pixelsHeight;
+    ulong pixelsHeight;
 };
 
 class ZC_Font
@@ -67,12 +67,12 @@ public:
 private:
     ZC_Texture texture;
     std::vector<Character> characters;
-    static const size_t firstASCII = 32;
-    float lineSpacing = characters[static_cast<size_t>(' ') - firstASCII].advX / 3.f;    //  (- 32 is first index of ASCII symbol in chrarcters); line spacing = (white space) / 3
+    static const ulong firstASCII = 32;
+    float lineSpacing = characters[static_cast<ulong>(' ') - firstASCII].advX / 3.f;    //  (- 32 is first index of ASCII symbol in chrarcters); line spacing = (white space) / 3
 
     struct LineData
     {
-        size_t coordsStartIndex,
+        ulong coordsStartIndex,
             coordsCount;
         float mustBeUp_Y,
             width;
@@ -84,6 +84,6 @@ private:
     void CalcutateXYOriginBottomCenter(std::vector<LineData>& rLinesData, std::vector<Point>& rCoords, ZC_TextAlignment alignment, float textWidth) const;
     void UpY(std::vector<LineData>& rLinesData, std::vector<Point>& rCoords) const;
     void MakeCenterX(std::vector<LineData>& rLinesData, std::vector<Point>& rCoords, ZC_TextAlignment alignment, float textWidth) const;
-    void AddLine(float lineHeightDownTail, float lineHeightWithoughtButtomTail, std::vector<LineData>& rLinesData, size_t& rCoordsStartIndex,
-        size_t coordsCount, float startX, float& rTotalWidth, float& rTotalHeight, bool isFirstLine) const;
+    void AddLine(float lineHeightDownTail, float lineHeightWithoughtButtomTail, std::vector<LineData>& rLinesData, ulong& rCoordsStartIndex,
+        ulong coordsCount, float startX, float& rTotalWidth, float& rTotalHeight, bool isFirstLine) const;
 };

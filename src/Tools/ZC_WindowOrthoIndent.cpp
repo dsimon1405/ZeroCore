@@ -34,7 +34,7 @@ void ZC_WindowOrthoIndent::CalculateCurrentIndents()
 {
     int windowWidth, windowHeight;
     ZC_Window::GetSize(windowWidth, windowHeight);
-    CalculateIndents(windowWidth, windowHeight);
+    CalculateIndents(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
 }
 
 void ZC_WindowOrthoIndent::SetNewSize(float _width, float _height)
