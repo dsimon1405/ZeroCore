@@ -4,21 +4,21 @@
 
 void ZC_RLDText::Add(ZC_RSController* pRSController)
 {
-    ZC_RLDData_Uniforms_GLDraw uniforms_glDraw{ static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)), pRSController->pGLDraw };
-    this->AddInMap(pRSController->pShProg, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount }, pRSController->pVAO, uniforms_glDraw);
+    fl.Add(pRSController->pShProg, { pRSController->pTexture, pRSController->texturesCount }, pRSController->pVAO,
+        { static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)), pRSController->pGLDraw });
 }
 
 bool ZC_RLDText::Erase(ZC_RSController* pRSController)
 {
-    ZC_RLDData_Uniforms_GLDraw uniforms_glDraw{ static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)), pRSController->pGLDraw };
-    return this->EraseFromForwardList(pRSController->pShProg, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount }, pRSController->pVAO, uniforms_glDraw);
+    return fl.Erase(pRSController->pShProg, { pRSController->pTexture, pRSController->texturesCount }, pRSController->pVAO,
+        { static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)), pRSController->pGLDraw });
 }
 
 void ZC_RLDText::Draw(ZC_RBufferCleaner& rBufferCleaner)
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    this->DrawRendererSets();   //  ZC_RLDContainerMap::DrawRendererSets();
+    fl.Draw();
     glDisable(GL_BLEND);
 }
 
@@ -30,6 +30,6 @@ void ZC_RLDTextWindowIntoScene::Draw(ZC_RBufferCleaner& rBufferCleaner)
     rBufferCleaner.GlClear(GL_DEPTH_BUFFER_BIT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    this->DrawRendererSets();   //  ZC_RLDContainerMap::DrawRendererSets();
+    fl.Draw();
     glDisable(GL_BLEND);
 }

@@ -4,8 +4,6 @@
 #include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/Tools/Math/ZC_Mat4.h>
 
-#include <cassert>
-
 //  ZC_Uniforms_GLDraw_StencilBorder
 
 bool ZC_RLDData_Uniforms_GLDraw_StencilBorder::operator == (const ZC_RLDData_Uniforms_GLDraw_StencilBorder& unifAndGLDraw) const noexcept
@@ -34,16 +32,15 @@ ZC_RLDStencilBorder::ZC_RLDStencilBorder()
 
 void ZC_RLDStencilBorder::Add(ZC_RSController* pRSController)
 {
-    ZC_RLDData_Uniforms_GLDraw_StencilBorder uniforms_glDraw_stencilBorder{ static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)),
-        pRSController->pGLDraw, static_cast<const ZC_RSPDStencilBorderData*>(pRSController->GetPersonalData(ZC_RSPDC_stencilBorder)) };
-    this->AddInMap(pRSController->pShProg, pRSController->pVAO, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount }, uniforms_glDraw_stencilBorder);
+    fl.Add(pRSController->pShProg, pRSController->pVAO, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount },
+        { static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)),
+            pRSController->pGLDraw, static_cast<const ZC_RSPDStencilBorderData*>(pRSController->GetPersonalData(ZC_RSPDC_stencilBorder)) });
 }
 
 bool ZC_RLDStencilBorder::Erase(ZC_RSController* pRSController)
 {
-    ZC_RLDData_Uniforms_GLDraw_StencilBorder uniforms_glDraw_stencilBorder{ static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)),
-        pRSController->pGLDraw, static_cast<const ZC_RSPDStencilBorderData*>(pRSController->GetPersonalData(ZC_RSPDC_stencilBorder)) };
-    return this->EraseFromForwardList(pRSController->pShProg, pRSController->pVAO, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount }, uniforms_glDraw_stencilBorder);
+    return fl.Erase(pRSController->pShProg, pRSController->pVAO, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount },
+        { static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)), pRSController->pGLDraw, nullptr });   //  ZC_RLDData_Uniforms_GLDraw_StencilBorder last parameter don't need for (==) compaer in forward_list
 }
 
 void ZC_RLDStencilBorder::Draw(ZC_RBufferCleaner& rBufferCleaner)
@@ -55,19 +52,19 @@ void ZC_RLDStencilBorder::Draw(ZC_RBufferCleaner& rBufferCleaner)
     glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
     glStencilMask(255);
     //  draw as usual
-    this->DrawRendererSets();   //  ZC_RLDContainerMap::DrawRendererSets();
+    fl.Draw();
 
     glStencilFunc(GL_NOTEQUAL, 1, 255);
     rBufferCleaner.GlDisable(GL_DEPTH_TEST);
     pShPStencilBorder->ActivateOpenGL();    //  use stencil shader program
-    for (auto& shProgAndVAOsPair : this->rendererSets)
+    for (auto& shProgAndVAOsPair : fl.pairs)
     {
-        for (auto& vaoAndTexHoldersPair : shProgAndVAOsPair.second)
+        for (auto& vaoAndTexHoldersPair : shProgAndVAOsPair.second.pairs)
         {
             vaoAndTexHoldersPair.first->ActivateOpenGL();
-            for (auto& texHolderAndUniforms_GLDraw_StencilBorderPair : vaoAndTexHoldersPair.second)
+            for (auto& texHolderAndUniforms_GLDraw_StencilBorderPair : vaoAndTexHoldersPair.second.pairs)
             {
-                for (auto& uniforms_glDraw_stencilBorder : texHolderAndUniforms_GLDraw_StencilBorderPair.second)
+                for (auto& uniforms_glDraw_stencilBorder : texHolderAndUniforms_GLDraw_StencilBorderPair.second.datas)
                 {
                     //  set stencil uniforms data
                     auto model = *static_cast<const ZC_Mat4<float>*>(uniforms_glDraw_stencilBorder.pUniforms->Get(ZC_UN_unModel));

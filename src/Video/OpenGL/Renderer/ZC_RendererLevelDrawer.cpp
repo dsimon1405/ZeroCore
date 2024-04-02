@@ -37,10 +37,10 @@ void ZC_RendererLevelDrawer::SetUsersFunction_GetRendererLevelDrawer(ZC_Function
 
 //  ZC_TexturesHolder
 
-bool ZC_TexturesHolder::operator < (const ZC_TexturesHolder& th) const noexcept
-{
-    return pTexture < th.pTexture;
-}
+// bool ZC_TexturesHolder::operator < (const ZC_TexturesHolder& th) const noexcept
+// {
+//     return pTexture < th.pTexture;
+// }
 
 bool ZC_TexturesHolder::operator == (const ZC_TexturesHolder& th) const noexcept
 {

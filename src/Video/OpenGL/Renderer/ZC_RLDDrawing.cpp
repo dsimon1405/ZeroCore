@@ -2,17 +2,17 @@
 
 void ZC_RLDDrawing::Add(ZC_RSController* pRSController)
 {
-    ZC_RLDData_Uniforms_GLDraw uniforms_glDraw{ static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)), pRSController->pGLDraw };
-    this->AddInMap(pRSController->pShProg, pRSController->pVAO, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount }, uniforms_glDraw);
+    fl.Add(pRSController->pShProg, pRSController->pVAO, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount },
+        { static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)), pRSController->pGLDraw });
 }
 
 bool ZC_RLDDrawing::Erase(ZC_RSController* pRSController)
 {
-    ZC_RLDData_Uniforms_GLDraw uniforms_glDraw{ static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)), pRSController->pGLDraw };
-    return this->EraseFromForwardList(pRSController->pShProg, pRSController->pVAO, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount }, uniforms_glDraw);
+    return fl.Erase(pRSController->pShProg, pRSController->pVAO, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount },
+        { static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)), pRSController->pGLDraw });
 }
 
 void ZC_RLDDrawing::Draw(ZC_RBufferCleaner& rBufferCleaner)
 {
-    this->DrawRendererSets();   //  ZC_RLDContainerMap::DrawRendererSets();
+    fl.Draw();
 }

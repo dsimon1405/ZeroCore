@@ -28,7 +28,7 @@ struct ZC_TexturesHolder
     const ZC_Texture* pTexture;   //  pointer on texture or array of textures
     ulong texturesCount;   //  pTextures count
 
-    bool operator < (const ZC_TexturesHolder& th) const noexcept;
+    // bool operator < (const ZC_TexturesHolder& th) const noexcept;
     bool operator == (const ZC_TexturesHolder& th) const noexcept;
     void ActivateOpenGL() const;
 };

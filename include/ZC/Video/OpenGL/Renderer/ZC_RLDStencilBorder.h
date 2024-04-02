@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ZC_RLDForwardLists.h"
+#include "ZC_RendererLevelDrawer.h"
+#include "ZC_RLDForwardList.h"
 
 struct ZC_RLDData_Uniforms_GLDraw_StencilBorder
 {
@@ -12,7 +13,7 @@ struct ZC_RLDData_Uniforms_GLDraw_StencilBorder
     void Draw() const;
 };
 
-struct ZC_RLDStencilBorder : public ZC_RLDForwardLists<const ZC_ShProg*, const ZC_VAO*, ZC_TexturesHolder, ZC_RLDData_Uniforms_GLDraw_StencilBorder>
+struct ZC_RLDStencilBorder : public ZC_RendererLevelDrawer
 {
     ZC_RLDStencilBorder();
 
@@ -23,4 +24,6 @@ struct ZC_RLDStencilBorder : public ZC_RLDForwardLists<const ZC_ShProg*, const Z
 private:
     static inline ZC_ShProg* pShPStencilBorder;
     static inline ZC_Uniforms* pUniformsStencilBorder;
+
+    ZC_RLDForwardList<const ZC_ShProg*, const ZC_VAO*, ZC_TexturesHolder, ZC_RLDData_Uniforms_GLDraw_StencilBorder> fl;
 };

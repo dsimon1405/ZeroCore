@@ -14,7 +14,7 @@ enum ZC_RendererLevels
     TextScene = 1000,
     StencilBorder = 3000,        //  must be after scene objects!
     TextWindowIntoScene = 4000,     //  in ZC_RLDText.h
-    TextWindow = 4001,
+    TextWindow = 5000,
 };
 
 typedef int ZC_RendererLevel;   //  Renderer Levels for user
