@@ -4,32 +4,35 @@
 
 #include <algorithm>
 
-ZC_SConnection ZC_Button::ConnectDown(ZC_ButtonID buttonId, ZC_Function<void(float)>&& function)
+ZC_SConnection ZC_Button::ConnectDown(ZC_ButtonID buttonId, ZC_Function<void(float)>&& function, bool callIfDown)
 {
-    auto downConnectedButtonsIter = std::find(downConnectedButtons.begin(), downConnectedButtons.end(), buttonId);
-    if (downConnectedButtonsIter == downConnectedButtons.end())
+    auto pDownConnectedButtonsIter = ZC_Find(downConnectedButtons, buttonId);
+    if (!pDownConnectedButtonsIter)
     {
         auto& rConnectedButton = downConnectedButtons.emplace_back(ConnectedButton{ buttonId });    //  adds button to connected
         auto sConnection = rConnectedButton.sigFunctions.Connect(std::move(function));  //  connects to button signal and get return value ZC_SConnection
-        //  if button already active, adds pointer on button signal to actives
-        auto activeDownButtonsIter = std::find(activeDownButtons.begin(), activeDownButtons.end(), buttonId);
-        if (activeDownButtonsIter != activeDownButtons.end()) activeDownButtonsIter->psigFunctions = &(rConnectedButton.sigFunctions);
+        if (callIfDown)
+        {
+            //  if button already active, adds pointer on button signal to actives
+            auto activeDownButtonsIter = std::find(activeDownButtons.begin(), activeDownButtons.end(), buttonId);
+            if (activeDownButtonsIter != activeDownButtons.end()) activeDownButtonsIter->psigFunctions = &(rConnectedButton.sigFunctions);
+        }
         return sConnection;
     }
-    else return downConnectedButtonsIter->sigFunctions.Connect(std::move(function));
+    else return pDownConnectedButtonsIter->sigFunctions.Connect(std::move(function));
 }
 
 ZC_SConnection ZC_Button::ConnectUp(ZC_ButtonID buttonId, ZC_Function<void(float)>&& function)
 {
-    auto upConnectedButtonsIter = std::find(upConnectedButtons.begin(), upConnectedButtons.end(), buttonId);
-    return upConnectedButtonsIter != upConnectedButtons.end() ? upConnectedButtonsIter->sigFunctions.Connect(std::move(function))
+    auto pUpConnectedButtonsIter = ZC_Find(upConnectedButtons, buttonId);
+    return pUpConnectedButtonsIter ? pUpConnectedButtonsIter->sigFunctions.Connect(std::move(function))
         :  upConnectedButtons.emplace_back(ConnectedButton{ buttonId }).sigFunctions.Connect(std::move(function));
 }
 
 void ZC_Button::AddActiveDownButton(ZC_ButtonID buttonId)
 {
-    auto activeDownButtonsIter = std::find(activeDownButtons.begin(), activeDownButtons.end(), buttonId);
-    if (activeDownButtonsIter == activeDownButtons.end())   //  add active button if not already added
+    auto pActiveDownButtonsIter = ZC_Find(activeDownButtons, buttonId);
+    if (!pActiveDownButtonsIter)   //  add active button if not already added
     {   //  if button connected as (down button) add pointer on downConnectedButtons sigFunctions, otherwise nullptr
         auto downConnectedButtonsIter = std::find(downConnectedButtons.begin(), downConnectedButtons.end(), buttonId);
         if (downConnectedButtonsIter == downConnectedButtons.end()) activeDownButtons.emplace_front(ActiveDownButton{ buttonId, nullptr });

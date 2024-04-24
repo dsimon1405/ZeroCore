@@ -77,7 +77,7 @@ void ZC_IGWindow::UpdateAndDraw()
     ImGui::End();
 }
 
-void ZC_IGWindow::CallAfterZC_WindowResized()
+void ZC_IGWindow::VCallAfterZC_WindowResized()
 {
     needSetPosition = true;
 }

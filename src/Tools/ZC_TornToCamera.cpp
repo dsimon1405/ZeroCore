@@ -7,14 +7,14 @@
 
 #include <cassert>
 
-ZC_TurnToCamera::~ZC_TurnToCamera()
+ZC_TornToCamera::~ZC_TornToCamera()
 {
     if (!ZC_ForwardListErase(allHeirs, this)) ZC_ErrorLogger::Err("Can't find to delete!", __FILE__, __LINE__);  
     if (isNeedUpdate) ZC_ForwardListErase(needUpdate, this);  
     if (allHeirs.empty()) sconEventsEnd.Disconnect();
 }
 
-void ZC_TurnToCamera::SetPosition(const ZC_Vec3<float>& pos)
+void ZC_TornToCamera::SetPosition(const ZC_Vec3<float>& pos)
 {
     if (position == pos) return;
     position = pos;
@@ -25,7 +25,7 @@ void ZC_TurnToCamera::SetPosition(const ZC_Vec3<float>& pos)
     }
 }
 
-void ZC_TurnToCamera::SetScale(float _scale)
+void ZC_TornToCamera::SetScale(float _scale)
 {
     if (scale == _scale) return;
     if (scale != 0.f)   //  need return to 1.0 -> 100%
@@ -40,16 +40,17 @@ void ZC_TurnToCamera::SetScale(float _scale)
     scale = _scale;
 }
 
-ZC_TurnToCamera::ZC_TurnToCamera(const ZC_Vec3<float>& _position, float _scale)
+ZC_TornToCamera::ZC_TornToCamera(const ZC_Vec3<float>& _position, float _scale)
     : position(_position),
     scale(_scale)
 {
-    if (allHeirs.empty()) sconEventsEnd = ZC_Events::ConnectHandleEventsEnd({ &ZC_TurnToCamera::Update });
+    if (allHeirs.empty()) sconEventsEnd = ZC_Events::ConnectHandleEventsEnd({ &ZC_TornToCamera::Update });
     allHeirs.emplace_front(this);
-    this->CalculateModel(*ZC_Camera::GetCamPos(), (*ZC_Camera::GetUp())[2] == 1.f);
+    auto pCamera = ZC_Camera::GetActiveCamera();
+    this->CalculateModel(pCamera->GetPosition(), pCamera->GetUp()[2] == 1.f);
 }
 
-ZC_TurnToCamera::ZC_TurnToCamera(const ZC_TurnToCamera& ttc)
+ZC_TornToCamera::ZC_TornToCamera(const ZC_TornToCamera& ttc)
     : model(ttc.model),
     position(ttc.position),
     isNeedUpdate(ttc.isNeedUpdate),
@@ -59,13 +60,14 @@ ZC_TurnToCamera::ZC_TurnToCamera(const ZC_TurnToCamera& ttc)
     if (isNeedUpdate) needUpdate.emplace_front(this);
 }
 
-void ZC_TurnToCamera::Update(float time)
+void ZC_TornToCamera::Update(float time)
 {
     static ZC_Vec3<float> previousCameraPosition;
 
-    auto currentCamPos = ZC_Camera::GetCamPos();
-    bool isNormalVerticalOrientation = (*ZC_Camera::GetUp())[2] == 1.f;
-    if (previousCameraPosition == *currentCamPos)
+    auto pCamera = ZC_Camera::GetActiveCamera();
+    auto currentCamPos = pCamera->GetPosition();
+    bool isNormalVerticalOrientation = pCamera->GetUp()[2] == 1.f;
+    if (previousCameraPosition == currentCamPos)
     {
         for (auto pHeir : needUpdate)
         {
@@ -74,7 +76,7 @@ void ZC_TurnToCamera::Update(float time)
     }
     else
     {
-        previousCameraPosition = *currentCamPos;
+        previousCameraPosition = currentCamPos;
         for (auto pHeir : allHeirs)
         {
             pHeir->CalculateModel(previousCameraPosition, isNormalVerticalOrientation);
@@ -83,11 +85,9 @@ void ZC_TurnToCamera::Update(float time)
     needUpdate.clear();
 }
 
-void ZC_TurnToCamera::CalculateModel(const ZC_Vec3<float>& camPos, bool isNormalVerticalOrientation)
+void ZC_TornToCamera::CalculateModel(const ZC_Vec3<float>& camPos, bool isNormalVerticalOrientation)
 {
     auto posToCam = position - camPos;
-    ZC_Vec3<float> zeroZ(posToCam[0], posToCam[1], 0);
-
     auto normPosToCam = ZC_Vec::Normalize(posToCam);
     ZC_Vec3<float> vertivalStartPoint = ZC_Vec::Normalize(ZC_Vec3<float>(posToCam[0], posToCam[1], 0.f));    //  also end point for horizontal rotation
     auto cosVertical = ZC_Vec::Dot(normPosToCam, vertivalStartPoint);
@@ -114,7 +114,7 @@ void ZC_TurnToCamera::CalculateModel(const ZC_Vec3<float>& camPos, bool isNormal
     isNeedUpdate = false;
 }
 
-void ZC_TurnToCamera::Rotate(ZC_Mat4<float>& model, float cos, float sin, const ZC_Vec3<float>& axise)
+void ZC_TornToCamera::Rotate(ZC_Mat4<float>& model, float cos, float sin, const ZC_Vec3<float>& axise)
 {
     ZC_Vec3<float> temp(axise * (static_cast<float>(1) - cos));
 

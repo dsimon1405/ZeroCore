@@ -1,10 +1,11 @@
 #include <ZC/Events/ZC_Events.h>
 
 #include "ZC_EventsHolder.h"
+#include <ZC/Objects/Camera/ZC_Camera.h>
 
-ZC_SConnection ZC_Events::ConnectButtonDown(ZC_ButtonID buttonId, ZC_Function<void(float)>&& func)
+ZC_SConnection ZC_Events::ConnectButtonDown(ZC_ButtonID buttonId, ZC_Function<void(float)>&& func, bool callIfDown)
 {
-    return ZC_EventsHolder::pEventsHolder ? ZC_EventsHolder::pEventsHolder->button.ConnectDown(buttonId, std::move(func)) : ZC_SConnection();
+    return ZC_EventsHolder::pEventsHolder ? ZC_EventsHolder::pEventsHolder->button.ConnectDown(buttonId, std::move(func), callIfDown) : ZC_SConnection();
 }
 
 ZC_SConnection ZC_Events::ConnectButtonUp(ZC_ButtonID buttonId, ZC_Function<void(float)>&& func)
@@ -40,4 +41,9 @@ ZC_SConnection ZC_Events::ConnectWindowResize(ZC_Function<void(float,float)>&& f
 ZC_SConnection ZC_Events::ConnectHandleEventsEnd(ZC_Function<void(float)>&& func)
 {
     return ZC_EventsHolder::pEventsHolder ? ZC_EventsHolder::pEventsHolder->sigHandleEventsEnd.Connect(std::move(func)) : ZC_SConnection();
+}
+
+ZC_SConnection ZC_Events::ConnectActiveCameraChangePosition(ZC_Function<void(const ZC_Vec3<float>&)>&& func)
+{
+    return ZC_Camera::GetActiveCamera() ? ZC_Camera::GetActiveCamera()->ConnectChangeCameraPosition(std::move(func)) : ZC_SConnection();
 }

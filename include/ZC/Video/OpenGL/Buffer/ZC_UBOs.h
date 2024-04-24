@@ -2,30 +2,40 @@
 
 #include "ZC_UBO.h"
 #include <ZC/Tools/Function/ZC_Function.h>
+#include <ZC/Video/OpenGL/Renderer/ZC_FrameBuffer.h>
 
 #include <forward_list>
+
+#define ZC_AddToRenderer ZC_INT_MIN
 
 class ZC_UBOs
 {
 public:
-	ZC_UBOs() = delete;
+	virtual ~ZC_UBOs() = default;
 
 	/*
-	Create a uniform buffer object to store data in graphics memory.
+	Adds function for update existing ZC_UBO to one of the ZC_Render (frameBuffer) or to ZC_Renderer.
 
-	bindingPoint - binding point in shader.
-	fUpdate - function to update data in the GPU buffer (the purpose of its existence is to change data on the GPU
-		only once per frame, since data can be changed on the CPU several times in one frame)
-
-	Return:
-	On success pointer to ZC_UBO, otherwise nullptr (in second case ZC_ErrorLogger::ErrorMessage() - for more information).
+	Params:
+	- pUbo - pointer on ubo.
+	- fUpdate - function for update.
+	- frameBuffer - one of the ZC_Render or set ZC_AddToRenderer to add in ZC_Renderer.
 	*/
-	static ZC_UBO* Create(typename ZC_UBO::BindingPoint bindingPoint, ZC_Function<void()> fUpdate);
-	static void Update();
+	static void AddUpdateFunction(ZC_UBO* pUbo, ZC_Function<void()> fUpdate, ZC_FrameBuffer frameBuffer);
+	void AddUBO(ZC_UBO* pUbo, ZC_Function<void()>&& fUpdate);
+	void EraseUBO(ZC_UBO* pUbo);
+
+protected:
+	void UpdateUBO();
 
 private:
-    static inline std::forward_list<std::pair<ZC_UBO, ZC_Function<void()>>> ubos;
-#ifdef ZC_ANDROID
-	static void Reload();
-#endif
+	struct Pair
+	{
+		ZC_UBO* ubo;
+		ZC_Function<void()> fUpdate;
+
+		bool operator == (ZC_UBO* pUbo) const noexcept;
+	};
+
+    std::forward_list<Pair> ubos;
 };

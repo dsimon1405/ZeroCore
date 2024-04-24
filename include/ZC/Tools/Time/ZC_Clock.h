@@ -42,14 +42,19 @@ public:
 
     ~ZC_Clock() = default;
 
-    //  Starts/restarts counting down time.
+    //  Starts/Restart counting down time.
     void Start() noexcept;
 
-    //  Calculate the duration since the previous Start or Stop call. Starts counting down time.
+    /*
+    Starts counting down time.
+    
+    Return:
+    Time in TTimeMeasue, since the previous Start or Restart call.
+    */
     template<ZC_cTimeMeasure TTimeMeasue>
     long Restart();
 
-    //  Calculate the duration since the previous Start or Stop call.
+    //  Returns time in TTimeMeasue, since the previous Start or Restart call
     template<ZC_cTimeMeasure TTimeMeasue>
     long Time();
 

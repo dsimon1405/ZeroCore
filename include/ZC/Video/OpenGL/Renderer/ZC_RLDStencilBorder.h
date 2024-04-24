@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ZC_RendererLevelDrawer.h"
+#include "ZC_RenderLevelDrawer.h"
 #include "ZC_RLDForwardList.h"
 
 struct ZC_RLDData_Uniforms_GLDraw_StencilBorder
@@ -13,13 +13,13 @@ struct ZC_RLDData_Uniforms_GLDraw_StencilBorder
     void Draw() const;
 };
 
-struct ZC_RLDStencilBorder : public ZC_RendererLevelDrawer
+struct ZC_RLDStencilBorder : public ZC_RenderLevelDrawer
 {
     ZC_RLDStencilBorder();
 
-    void Add(ZC_RSController* pRSController) override;
-    bool Erase(ZC_RSController* pRSController) override;
-    void Draw(ZC_RBufferCleaner& rBufferCleaner) override;
+    void VAdd(ZC_RSController* pRSController) override;
+    bool VErase(ZC_RSController* pRSController) override;
+    void VDraw(ZC_FBOBuffersController& rBuffersController) override;
 
 private:
     static inline ZC_ShProg* pShPStencilBorder;

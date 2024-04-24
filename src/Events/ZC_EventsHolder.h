@@ -15,6 +15,8 @@ public:
 
     virtual bool PollEvents(float previousFrameTime) = 0;
 
+    void GetCursorPosition(float& posX, float& posY);
+
 protected:
     ZC_Button button;
     ZC_Mouse mouse;

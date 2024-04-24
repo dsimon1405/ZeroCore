@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ZC_Font.h"
-#include <ZC/Video/OpenGL/Renderer/ZC_RendererSet.h>
+#include <ZC/Video/OpenGL/Renderer/ZC_RenderSet.h>
 #include <ZC/Tools/Math/ZC_Vec3.h>
 
 class ZC_TextData
@@ -11,46 +11,53 @@ public:
 
     //  Add to ZC_Renderer or removes from there.
     void NeedDraw(bool needDraw);
-    //  Sets texts color.
-    void SetColor(const ZC_Vec3<float>& color);
+    bool IsDrawing();
+    //  Sets texts color, each color range [0.f - 1.f].
+    void SetColorFloat(float red, float green, float blue);
+    //  Sets texts color, each color range [0 - 255].
+    void SetColorUChar(uchar red, uchar green, uchar blue);
     //  Resets text.
     void SetText(const std::string& _text);
     //  Changes alignment.
     void SetAlignment(ZC_TextAlignment _alignment);
     //  If need to change text and alignment at the same time, use this function. Calling SetText() and SetAlignment() separately is less effective.
     void SetTextAndAlignment(const std::string& _text, ZC_TextAlignment _alignment);
-    /*
-    Changes level on which gonna be added text in ZC_Renderer. This functionality is designed to be added to user-added rendering layers, not those included with ZeroCore.
-    Don't use it if you don't know what you're doing.
-    */
-    void SetRendererLevel(ZC_RendererLevel _rendererLevel);
+    //  Changes the level at which text will be added to the ZC_Render. If the text is not currently at the ZC_DL_None level, it will switch to a new level.
+    void SetDrawLevel(ZC_DrawLevel _drawLevel);
+    //  Adds new freameBuffer for drawing on it's drawing levels. Needs call NeedDraw(true) for start drawing on new render level.
+    void SetFrameBuffer(ZC_FrameBuffer _renderBuffer);
+    float GetWidth() const noexcept;
+    float GetHeight() const noexcept;
+    std::string GetText() const noexcept;
 
 protected:
     struct SharedData
     {
         std::string text;
         ZC_TextAlignment alignment;
-        ZC_RendererSet rendererSet;
+        ZC_RenderSet rendererSet;
+        uint color = 1;    //  packed color
     };
 
-    typedef typename ZC_Font::Origin FontOrigin;
     ZC_Font* pFont;
-    FontOrigin fontOrigin;
+    ZC_FontOrigin fontOrigin;
     ZC_sptr<SharedData> spTextSharedData;
     ZC_RSController rsController;
     float textWidth,
         textHeight;
-    ZC_RendererLevel rendererLevel;
+    ZC_FrameBuffer frameBuffer = ZC_FB_Default;
+    ZC_DrawLevel drawLevel;
     static inline float startHeightInScene = 2.f;
 
-    ZC_TextData(typename ZC_ShProgs::ShPInitSet* pShPIS, FontOrigin _fontOrigin, const ZC_FontNameHeight& fontData, const std::string& _text,
-            ZC_TextAlignment _alignment, ZC_RendererLevel _rendererLevel);
+    ZC_TextData(typename ZC_ShProgs::ShPInitSet* pShPIS, ZC_FontOrigin _fontOrigin, const ZC_FontData& fontData, const std::string& _text,
+            ZC_TextAlignment _alignment, ZC_DrawLevel _rendererLevel, bool needDraw);
 
     ZC_TextData(const ZC_TextData& td);
 
 private:
     virtual void SetNewTextSize() {};
     
-    ZC_RendererSet MakeRendererSet(typename ZC_ShProgs::ShPInitSet* pShPIS, const std::string& _text, ZC_TextAlignment _alignment);
+    ZC_RenderSet MakeRendererSet(typename ZC_ShProgs::ShPInitSet* pShPIS, const std::string& _text, ZC_TextAlignment _alignment);
     ZC_DrawElements CalculateAndSetTextData(ZC_Buffer& rVBO, ZC_Buffer& rEBO, const std::string& text, ZC_TextAlignment alignment);
+    void UpdateColor(uint color);
 };

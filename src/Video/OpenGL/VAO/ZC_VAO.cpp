@@ -27,12 +27,12 @@ ZC_VAO::~ZC_VAO()
     glDeleteVertexArrays(1, &id);
 }
 
-void ZC_VAO::Config(VAOConData vaoConData, ZC_Buffer& vbo, ZC_Buffer* ebo, GLuint startOffset, GLuint verticesCount)
+void ZC_VAO::Config(VAOConData vaoConfigData, ZC_Buffer& vbo, ZC_Buffer* ebo, GLuint startOffset, GLuint verticesCount)
 {
     glBindVertexArray(id);
     vbo.BindBuffer();
 
-    ZC_VAOConfig config(vaoConData);
+    ZC_VAOConfig config(vaoConfigData);
     config.Config(startOffset, verticesCount);
     
     if (ebo) ebo->BindBuffer();

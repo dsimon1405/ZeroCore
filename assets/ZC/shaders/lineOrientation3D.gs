@@ -4,11 +4,11 @@ layout (points) in;
 layout (line_strip, max_vertices = 2) out;     // 2 points for one line
 in vec3 color[];
 
-out vec3 vColor;
+out vec4 vColor;
 
 void main()
 {
-    vColor = color[0];
+    vColor = vec4(color[0], 1.f);
     
     gl_Position = gl_in[0].gl_Position;
     EmitVertex();

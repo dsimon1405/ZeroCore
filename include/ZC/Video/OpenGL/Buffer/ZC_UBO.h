@@ -6,15 +6,9 @@ struct ZC_UBO
 {
 	enum BindingPoint
 	{
-		ProjView = 0,
-		Ortho = 1,
-		CamPos = 2,
-		MeshData = 3,
+		Camera = 0,
 	};
-
-	ZC_Buffer buffer;
-	GLuint bindingPoint;
-
+	
     ZC_UBO(BindingPoint _bindingPoint);
 
 	ZC_UBO(ZC_UBO&& vbo) noexcept;
@@ -44,4 +38,8 @@ struct ZC_UBO
 	On success true, otherwise false (in second case ZC_ErrorLogger::ErrorMessage() - for more information).
 	*/
 	void BufferSubData(long offset, long bytesSize, void* pData);
+
+private:
+	ZC_Buffer buffer;
+	GLuint bindingPoint;
 };

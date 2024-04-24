@@ -7,7 +7,7 @@ ZC_Font::ZC_Font(ZC_Texture&& _texture, std::vector<Character>&& _characters)
     characters(std::move(_characters))
 {}
 
-std::vector<typename ZC_Font::Point> ZC_Font::FillCoords(const std::string& text, Origin origin, ZC_TextAlignment alignment, float& rTextWidth, float& rTextHeight) const
+std::vector<typename ZC_Font::Point> ZC_Font::FillCoords(const std::string& text, ZC_FontOrigin origin, ZC_TextAlignment alignment, float& rTextWidth, float& rTextHeight) const
 {
     auto newLineCount = std::count(text.begin(), text.end(), '\n');
     std::vector<LineData> linesData;
@@ -20,9 +20,9 @@ std::vector<typename ZC_Font::Point> ZC_Font::FillCoords(const std::string& text
 
     switch (origin)
     {
-    case Origin::center: CalcutateXYOriginCenter(linesData, coords, alignment, rTextWidth, rTextHeight); break;
-    case Origin::bottomLeft: CalcutateXYOriginBottomLeft(linesData, coords, alignment, rTextWidth); break;
-    case Origin::bottomCenter: CalcutateXYOriginBottomCenter(linesData, coords, alignment, rTextWidth); break;
+    case ZC_FontOrigin::ZC_FO_center: CalcutateXYOriginCenter(linesData, coords, alignment, rTextWidth, rTextHeight); break;
+    case ZC_FontOrigin::ZC_FO_bottomLeft: CalcutateXYOriginBottomLeft(linesData, coords, alignment, rTextWidth); break;
+    case ZC_FontOrigin::ZC_FO_bottomCenter: CalcutateXYOriginBottomCenter(linesData, coords, alignment, rTextWidth); break;
     }
 
     return coords;

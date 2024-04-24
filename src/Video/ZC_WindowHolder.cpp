@@ -10,7 +10,7 @@ bool ZC_WindowHolder::MakeWindowHolder(int flags, int width, int height, const c
     upWindowHolder = ZC_uptrMakeFromChild<ZC_WindowHolder, ZC_SDL_Window>(flags, width, height, name);
     if (!upWindowHolder) return false;
     upWindowHolder->LoadShProgs();
-    upWindowHolder->renderer.Configure(true);  //  make user chois use 3D grapfics or not in ZC_Window::Flags ? (depth test) (need change stencil test =( )
+    upWindowHolder->AddZC_RenderLevels();
     return true;
 }
 // #elif defined(ZC_ANDROID_NATIVE_APP_GLUE)
@@ -40,6 +40,21 @@ float ZC_WindowHolder::GetPreviousFrameTime() const noexcept
 	return fps.PreviousFrameTime();
 }
 
+void ZC_WindowHolder::NeedDrawFPS(bool needDraw)
+{
+    fps.NeedDraw(needDraw);
+}
+
+bool ZC_WindowHolder::IsFPSDrawing()
+{
+    return fps.IsDrawing();
+}
+
+void ZC_WindowHolder::GetCursorPosition(float& posX, float& posY)
+{
+    upEventsHolder->GetCursorPosition(posX, posY);
+}
+
 ZC_WindowHolder::ZC_WindowHolder()
     : upEventsHolder(ZC_EventsHolder::MakeEventsHolder()),
 	fps(ZC_FPS::Seconds),
@@ -51,4 +66,9 @@ void ZC_WindowHolder::LoadShProgs()
     ZC_ShProgs shProgs;
     ZC_ShPName loadAll { ShPN_LoadAll };
     shProgs.Load(&loadAll, 0);
+}
+
+void ZC_WindowHolder::AddZC_RenderLevels()
+{
+    ZC_Renders::CreateRender(ZC_FB_Default, ZC_Render::DS_Loop, ZC_FBO());
 }

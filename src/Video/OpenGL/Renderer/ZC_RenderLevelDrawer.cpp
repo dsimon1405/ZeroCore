@@ -1,4 +1,4 @@
-#include <ZC/Video/OpenGL/Renderer/ZC_RendererLevelDrawer.h>
+#include <ZC/Video/OpenGL/Renderer/ZC_RenderLevelDrawer.h>
 
 #include <ZC/Video/OpenGL/Renderer/ZC_RLDDrawing.h>
 #include <ZC/Video/OpenGL/Renderer/ZC_RLDStencilBorder.h>
@@ -6,15 +6,15 @@
 
 #include <cassert>
 
-ZC_uptr<ZC_RendererLevelDrawer> ZC_RendererLevelDrawer::GetRendererLevelDrawer(ZC_RendererLevel lvl)
+ZC_uptr<ZC_RenderLevelDrawer> ZC_RenderLevelDrawer::GetRendererLevelDrawer(ZC_DrawLevel lvl)
 {
     switch (lvl)
     {
-    case ZC_RendererLevels::Drawing: return { new ZC_RLDDrawing() };
-    case ZC_RendererLevels::TextScene: return { new ZC_RLDText() };
-    case ZC_RendererLevels::StencilBorder: return { new ZC_RLDStencilBorder() };
-    case ZC_RendererLevels::TextWindow: return { new ZC_RLDText() };
-    case ZC_RendererLevels::TextWindowIntoScene: return { new ZC_RLDTextWindowIntoScene() };
+    case ZC_DrawLevels::Drawing: return { new ZC_RLDDrawing() };
+    case ZC_DrawLevels::TextScene: return { new ZC_RLDTextScene() };
+    case ZC_DrawLevels::StencilBorder: return { new ZC_RLDStencilBorder() };
+    case ZC_DrawLevels::OrthoBlend: return { new ZC_RLDOrthoBlend() };
+    case ZC_DrawLevels::TextWindowIntoScene: return { new ZC_RLDTextWindowIntoScene() };
     default:
     {
         if (funcUsers_GetRendererLevelDrawer)
@@ -29,18 +29,13 @@ ZC_uptr<ZC_RendererLevelDrawer> ZC_RendererLevelDrawer::GetRendererLevelDrawer(Z
     return nullptr;
 }
 
-void ZC_RendererLevelDrawer::SetUsersFunction_GetRendererLevelDrawer(ZC_Function<ZC_uptr<ZC_RendererLevelDrawer>(ZC_RendererLevel)>&& func)
+void ZC_RenderLevelDrawer::SetUsersFunction_GetRendererLevelDrawer(ZC_Function<ZC_uptr<ZC_RenderLevelDrawer>(ZC_DrawLevel)>&& func)
 {
     funcUsers_GetRendererLevelDrawer = std::move(func);
 }
 
 
 //  ZC_TexturesHolder
-
-// bool ZC_TexturesHolder::operator < (const ZC_TexturesHolder& th) const noexcept
-// {
-//     return pTexture < th.pTexture;
-// }
 
 bool ZC_TexturesHolder::operator == (const ZC_TexturesHolder& th) const noexcept
 {
@@ -51,6 +46,7 @@ void ZC_TexturesHolder::ActivateOpenGL() const
 {
     for (uint i = 0; i < static_cast<uint>(texturesCount); i++) pTexture->ActiveTexture(i);
 }
+
 
 //  ZC_Uniforms_GLDraw
 

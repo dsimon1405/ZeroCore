@@ -15,6 +15,11 @@ ZC_EventsHolder::~ZC_EventsHolder()
     pEventsHolder = nullptr;
 }
 
+void ZC_EventsHolder::GetCursorPosition(float& posX, float& posY)
+{
+    mouse.GetCursorPosition(posX, posY);
+}
+
 ZC_EventsHolder::ZC_EventsHolder()
 {
     pEventsHolder = this;

@@ -22,6 +22,8 @@ ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, cons
     	}
 		sdlVideoInited = true;
 	}
+	//	after init but before window creation			check on windows
+    if (SDL_GL_LoadLibrary(NULL) != 0) { ZC_ErrorLogger::Err("SDL_GL_LoadLibrary() faild! " + std::string(SDL_GetError()), __FILE__, __LINE__);}
 
     using namespace ZC_Window;
 	if (!SetOpenGLAttributes(flags & ZC_Window_Multisampling_4 ? 4
@@ -59,10 +61,11 @@ ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, cons
 		return;
 	}
 
+
     if (!LoadOpenGLFunctions()) return;
 
 	ZC_OpenGLAssigneErrorCallback();
-
+	
 #ifdef ZC_IMGUI
 	ZC_ImGui::Init(pWindow, glContext);
 #endif
@@ -135,12 +138,12 @@ bool ZC_SDL_Window::SetOpenGLAttributes(int samplesCount)
 		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
 		return false;
 	}
-	if (SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, ZC_OPEN_GL_COLLOR_BUFFER_SIZE) != 0)
+	if (SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, ZC_OPEN_GL_COLLOR_BUFFER_SIZE) != 0)
 	{
 		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
 		return false;
 	}
-	if (SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, ZC_OPEN_GL_COLLOR_BUFFER_SIZE) != 0)
+	if (SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, ZC_OPEN_GL_COLLOR_BUFFER_SIZE) != 0)
 	{
 		ZC_ErrorLogger::Err("SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
 		return false;

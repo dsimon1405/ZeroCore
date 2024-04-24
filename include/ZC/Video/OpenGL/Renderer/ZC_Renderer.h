@@ -1,28 +1,22 @@
 #pragma once
 
-#include "ZC_RSController.h"
-#include <ZC/Tools/Function/ZC_Function.h>
-#include "ZC_RBufferCleaner.h"
-#include "ZC_RendererLevelDrawer.h"
+#include "ZC_Render.h"
 
-#include <map>
-
-class ZC_Renderer
+class ZC_Renderer : public ZC_UBOs
 {
 public:
     ZC_Renderer(ZC_Function<void()>&& _funcSwapBuffer);
     ~ZC_Renderer();
 
-    void Configure(bool useDepthTest);
-    static void Add(ZC_RSController* pRSController);
-    static void Erase(ZC_RSController* pRSController);
-
+    static void AddUBOs(ZC_UBO* ubo, ZC_Function<void()>&& fUpdate);
+    static void EraseUBOs(ZC_UBO* pUbo);
+    static void Add(ZC_Render* pRender);
+    static void Erase(ZC_Render* pRender);
     void Draw();
-
+    
 private:
-    static inline ZC_Renderer* pCurrentRenderer;
+    static inline ZC_Renderer* pRenderer;
 
-    std::map<ZC_RendererLevel, ZC_uptr<ZC_RendererLevelDrawer>> rendererLevelDrawers;
-    ZC_RBufferCleaner bufferCleaner;
     ZC_Function<void()> funcSwapBuffer;
+    std::forward_list<ZC_Render*> renders;
 };

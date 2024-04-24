@@ -20,7 +20,7 @@ ZC_Shader* ZC_ShVertex::GetShader(Name name)    //  add here new
     case Name::colorFigure: path = ZC_FSPath(shadersPath).append("colorFigure.vs").string(); break;
     case Name::point: path = ZC_FSPath(shadersPath).append("point.vs").string(); break;
     case Name::lineFigure: path = ZC_FSPath(shadersPath).append("lineFigure.vs").string(); break;
-    case Name::stencil: path = ZC_FSPath(shadersPath).append("stencil.vs").string(); break;
+    case Name::stencilBorder: path = ZC_FSPath(shadersPath).append("stencilBorder.vs").string(); break;
     case Name::texture_Vertex_TexCoord: path = ZC_FSPath(shadersPath).append("texture_Vertex_TexCoord.vs").string(); break;
     case Name::lineMesh: path = ZC_FSPath(shadersPath).append("lineMesh.vs").string(); break;
     case Name::lineOrientation3D: path = ZC_FSPath(shadersPath).append("lineOrientation3D.vs").string(); break;
@@ -38,13 +38,17 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_ShVertex::GetUniformData(Name name)    //  a
     typedef typename ZC_Uniform::NameType UnNT;
     switch (name)
     {
-    case Name::colorFigure: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
+    case Name::colorFigure:
+    {
+        UnNT uniforms[]{ { ZC_UN_unModel, true }, { ZC_UN_unAlpha, true }, { ZCR_UN_unUseLight, true } };
+        return ZC_Uniform::GetUniformVector(uniforms, 3);
+    }
     case Name::point: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
     case Name::lineFigure: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
-    case Name::stencil:
+    case Name::stencilBorder:
     {
-        UnNT unoforms[]{ { ZC_UN_unModel, true }, { ZC_UN_unColor, false }};
-        return ZC_Uniform::GetUniformVector(unoforms, 2);
+        UnNT uniforms[]{ { ZC_UN_unModel, true }, { ZC_UN_unColor, false } };
+        return ZC_Uniform::GetUniformVector(uniforms, 2);
     }
     case Name::texture_Vertex_TexCoord: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
     case Name::lineMesh: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, false });

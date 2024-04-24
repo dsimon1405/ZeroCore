@@ -14,7 +14,7 @@ enum ZC_ShPName
     ShPN_ZCR_ColorFigure,
     ShPN_ZCR_Point,
     ShPN_ZCR_LineFigure,
-    ShPN_ZCR_Stencil,
+    ShPN_ZCR_StencilBorder,
     ShPN_ZCR_Texture_Vertex_TexCoord,
     ShPN_ZCR_LineMesh,
     ShPN_ZCR_LineOrientation3D,
@@ -22,6 +22,7 @@ enum ZC_ShPName
     ShPN_ZC_TextWindow,
     ShPN_ZC_TextScene,
     ShPN_ZC_TextWindowIntoScene,
+    ShPN_ZC_OrthoTexture,
     
     ShPN_LoadAll,    //  must be last
 };

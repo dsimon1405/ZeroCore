@@ -13,7 +13,7 @@ struct ZC_ShVertex
         colorFigure,
         point,
         lineFigure,
-        stencil,
+        stencilBorder,
         texture_Vertex_TexCoord,
         lineMesh,
         lineOrientation3D,  //  draw as POINTS!!!

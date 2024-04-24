@@ -8,40 +8,41 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-void ZC_Fonts::Load(ZC_FontNameHeight* pNames, ulong namesCount)
+void ZC_Fonts::Load(ZC_FontData* pFontData, ulong fontDataCount)
 {
     FT_Library ft;
     if (FT_Init_FreeType(&ft)) ZC_ErrorLogger::Err("Fail FT_Init_FreeType()!", __FILE__, __LINE__);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    for (ulong namesIndex = 0; namesIndex < namesCount; ++namesIndex)
+    for (ulong namesIndex = 0; namesIndex < fontDataCount; ++namesIndex)
     {
-        auto pFontData = ZC_Find(fonts, pNames[namesIndex]);
+        auto& nameData = pFontData[namesIndex];
+        auto pFontData = ZC_Find(fonts, nameData);
         if (pFontData) continue;
 
         FT_Face face;
-        if (FT_New_Face(ft, GetPath(pNames[namesIndex].name).c_str(), 0, &face))
+        if (FT_New_Face(ft, GetPath(nameData.name).c_str(), 0, &face))
         {
             ZC_ErrorLogger::Err("Fail FT_New_Face()!", __FILE__, __LINE__);
             continue;
         }
 
-        if (FT_Set_Pixel_Sizes(face, 0, pNames[namesIndex].pixelsHeight))
+        if (FT_Set_Pixel_Sizes(face, 0, nameData.pixelsHeight))
         {
             ZC_ErrorLogger::Err("Fail FT_Set_Pixel_Sizes()!", __FILE__, __LINE__);
             continue;
         }
 
-        fonts.emplace_front(pNames[namesIndex], MakeFont(face));
+        fonts.emplace_front(nameData, MakeFont(face));
     }
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
 
-ZC_Font* ZC_Fonts::GetFont(const ZC_FontNameHeight& name)
+ZC_Font* ZC_Fonts::GetFont(const ZC_FontData& fontData)
 {
-    auto pFontData = ZC_Find(fonts, name);
+    auto pFontData = ZC_Find(fonts, fontData);
     if (!pFontData) ZC_ErrorLogger::Err("Error in GetFont() Font wasn't loaded!", __FILE__,__LINE__);
     return &(pFontData->font);
 }
@@ -51,7 +52,8 @@ std::string ZC_Fonts::GetPath(ZC_FontName name)
     static const ZC_FSPath ZC_fontsPath = ZC_FSPath(ZC_ZCDirPath).append("fonts");
     switch (name)
     {
-    case Arial: return ZC_FSPath(ZC_fontsPath).append("arial.ttf").string();
+    case ZC_F_Arial: return ZC_FSPath(ZC_fontsPath).append("arial.ttf").string();
+    case ZC_F_ChunkFivePrint: return ZC_FSPath(ZC_fontsPath).append("chunkFivePrint.otf").string();
     default: return "";
     }
 }
@@ -63,7 +65,7 @@ ZC_Font ZC_Fonts::MakeFont(void* ft_face)
         texH = 0;
     CalculateTextureSize(texW, texH, ft_face);
 
-    ZC_Texture texture(GL_TEXTURE_2D, GL_RED, texW, texH, nullptr, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR);
+    ZC_Texture texture(GL_TEXTURE_2D, GL_RED, texW, texH, GL_RED, GL_UNSIGNED_BYTE, nullptr, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR, false);
     texture.Bind();
 
     float texX = 0,
@@ -142,4 +144,12 @@ void ZC_Fonts::CalculateTextureSize(uint& texW, uint& texH, void* ft_face)
 
     texW = std::max<uint>(texW, rowW);
     texH += rowH + pixelPadding;
+}
+
+
+//  FontData
+
+bool ZC_Fonts::FontData::operator == (const ZC_FontData& _fontData) const noexcept
+{
+    return fontData.name == _fontData.name && fontData.pixelsHeight == _fontData.pixelsHeight;
 }

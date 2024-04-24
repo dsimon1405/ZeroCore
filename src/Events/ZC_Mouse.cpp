@@ -28,10 +28,10 @@ ZC_SConnection ZC_Mouse::ConnectScrollOnceInFrame(ZC_Function<void(float,float,f
     return sigScrollOnceInFrame.Connect(std::move(func));
 }
 
-void ZC_Mouse::GetMousePosition(float& _x, float& _y) noexcept
+void ZC_Mouse::GetCursorPosition(float& posX, float& posY) noexcept
 {
-    _x = cursorPosX;
-    _y = cursorPosY;
+    posX = cursorPosX;
+    posY = cursorPosY;
 }
 
 void ZC_Mouse::MouseMove(float _cursorPosX, float _cursorPosY, float _cursorRelX, float _cursorRelY, float time)

@@ -22,7 +22,7 @@ typename ZC_TexSets::VectorOfTexturesCreator ZC_TexSets::GetCreator()
 }
 
 
-//  VecCreator
+//  VectorOfTexturesCreator
 
 ZC_TexSets::VectorOfTexturesCreator::VectorOfTexturesCreator(ZC_DA<TextureName>& _texSets, std::vector<ZC_Texture>&& _texs)
     : texSets(_texSets),

@@ -15,13 +15,21 @@ enum ZC_TextAlignment
 
 enum ZC_FontName
 {
-    Arial,
+    ZC_F_Arial,
+    ZC_F_ChunkFivePrint
 };
 
-struct ZC_FontNameHeight
+struct ZC_FontData
 {
     ZC_FontName name;
     ulong pixelsHeight;
+};
+
+enum ZC_FontOrigin
+{
+    ZC_FO_center,
+    ZC_FO_bottomLeft,
+    ZC_FO_bottomCenter
 };
 
 class ZC_Font
@@ -52,16 +60,9 @@ public:
             t;  // texCoords Y
     };
 
-    enum Origin
-    {
-        center,
-        bottomLeft,
-        bottomCenter
-    };
-
     ZC_Font(ZC_Texture&& _texture, std::vector<Character>&& characters);
 
-    std::vector<Point> FillCoords(const std::string& text, Origin origin, ZC_TextAlignment alignment, float& rTextWidth, float& rTextHeight) const;
+    std::vector<Point> FillCoords(const std::string& text, ZC_FontOrigin origin, ZC_TextAlignment alignment, float& rTextWidth, float& rTextHeight) const;
     const ZC_Texture* GetTexture() const noexcept;
 
 private:

@@ -1,44 +1,35 @@
 #include <ZC/Video/OpenGL/Buffer/ZC_UBOs.h>
 
+#include <cassert>
+#include <ZC/Tools/Container/ZC_ContFunc.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
-#ifdef ZC_ANDROID
-#include <Video/OpenGL/ZC_OpenGL.h>
-#include <Video/OpenGL/Android/ZC_AndroidOpenGLReloder.h>
-#endif
+#include <ZC/Video/OpenGL/Renderer/ZC_Renderer.h>
+#include <ZC/Video/OpenGL/Renderer/ZC_Renders.h>
 
-ZC_UBO* ZC_UBOs::Create(typename ZC_UBO::BindingPoint bindingPoint, ZC_Function<void()> fUpdate)
+void ZC_UBOs::AddUpdateFunction(ZC_UBO* pUbo, ZC_Function<void()> fUpdate, ZC_FrameBuffer frameBuffer)
 {
-#ifdef ZC_ANDROID
-    static auto connectReload = ZC_AndroidOpenGLReloader::sReload.Connect(ZC_UBOs::Reload);
-#endif
-    for (auto& uboP : ubos)
-    {
-        if (uboP.first.bindingPoint == bindingPoint)
-        {
-		    ZC_ErrorLogger::Err("ZC_UBO allready exists with bindingPoint = " + std::to_string(bindingPoint), __FILE__, __LINE__);
-            return nullptr;
-        }
-    }
-    return &(ubos.emplace_front(std::pair<ZC_UBO, ZC_Function<void()>>(ZC_UBO(bindingPoint), std::move(fUpdate))).first);
+    frameBuffer == ZC_AddToRenderer ? ZC_Renderer::AddUBOs(pUbo, std::move(fUpdate)) : ZC_Renders::GetRender(frameBuffer)->AddUBO(pUbo, std::move(fUpdate));
 }
 
-void ZC_UBOs::Update()
+void ZC_UBOs::AddUBO(ZC_UBO* pUbo, ZC_Function<void()>&& fUpdate)
 {
-    for (auto& uboP : ubos) 
-        if (uboP.second) uboP.second();
+    ubos.emplace_front(Pair{ pUbo, std::move(fUpdate) });
 }
-#ifdef ZC_ANDROID
-void ZC_UBOs::Reload()
+
+void ZC_UBOs::EraseUBO(ZC_UBO* pUbo)
 {
-    int ubosSize = static_cast<int>(ubos.size());
-    GLuint ids[ubosSize];
-    glGenBuffers(ubosSize, ids);
-    int idsIndex = 0;
-    for (ZC_UBO& ubo : ubos)
-    {
-        ubo.Reload(ids[idsIndex++]);
-	    glBindBufferRange(GL_UNIFORM_BUFFER, ubo.bindingPoint, ubo.buffer.id, 0, static_cast<GLsizeiptr>(ubo.buffer.Size()));
-    }
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    if (!ZC_ForwardListErase(ubos, pUbo)) ZC_ErrorLogger::Err("EraseUBO(), Can't find ubo to erase!", __FILE__, __LINE__);
 }
-#endif
+
+void ZC_UBOs::UpdateUBO()
+{
+    for (auto& uboPair : ubos) uboPair.fUpdate();
+}
+
+
+//  Pair
+
+bool ZC_UBOs::Pair::operator == (ZC_UBO* pUbo) const noexcept
+{
+    return ubo == pUbo;
+}

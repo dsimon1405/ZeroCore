@@ -15,22 +15,19 @@ public:
     Load fonts.
 
     Params:
-    pNames - is a pointer to the beginning of the font array to load.
-    namesCount - size of pNames array.
+    - pNames - is a pointer to the beginning of the font array to load.
+    - namesCount - size of pNames array.
     */
-    static void Load(ZC_FontNameHeight* pNames, ulong namesCount);
-    static ZC_Font* GetFont(const ZC_FontNameHeight& name);
+    static void Load(ZC_FontData* pNames, ulong namesCount);
+    static ZC_Font* GetFont(const ZC_FontData& name);
 
 private:
     struct FontData
     {
-        ZC_FontNameHeight nameHeight;
+        ZC_FontData fontData;
         ZC_Font font;
 
-        bool operator == (ZC_FontNameHeight _nameHeight)
-        {
-            return nameHeight.name == _nameHeight.name && nameHeight.pixelsHeight == _nameHeight.pixelsHeight;
-        }
+        bool operator == (const ZC_FontData& fontData) const noexcept;
     };
 
     static inline std::forward_list<FontData> fonts;

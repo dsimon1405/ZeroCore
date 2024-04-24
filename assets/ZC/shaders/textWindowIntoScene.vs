@@ -1,9 +1,12 @@
 #version 460 core
 layout (location = 0) in vec2 inPosition;   //  position into bottom left corner of the window (centralized by X axis -> ZC_Fonts::Font::CalcutateXYOriginBottomCenter(...))
 layout (location = 1) in vec2 inTexCoords;
-
-layout (std140, binding = 0) uniform PerspView { mat4 perspView; };
-layout (std140, binding = 1) uniform Ortho { mat4 ortho; };
+layout (std140, binding = 0) uniform Camera
+{
+    mat4 ortho;
+    mat4 perspView;
+    vec3 camPos;
+};
 
 uniform vec3 unPositionScene;
 
@@ -32,8 +35,8 @@ void main()
 
     vec2 endPos_zo = posStart_zo + posScene_zo,     //  translates to scene position, [0,1]
         endPos_mpo = vec2(ToMinusPlusOneRange(endPos_zo.x), ToMinusPlusOneRange(endPos_zo.y)),  //  [-1,1]
-        enPos_w = endPos_mpo * posScene_w.w;      //  returns to scene's position depth coefficient
+        endPos_w = endPos_mpo * posScene_w.w;      //  returns to scene's position depth coefficient
 
-    gl_Position = vec4(enPos_w, posScene_w.z, posScene_w.w);   //  returns to [-1,1]
+    gl_Position = vec4(endPos_w, posScene_w.z, posScene_w.w);   //  returns to [-1,1]
     vTexCoords = inTexCoords;
 }

@@ -13,6 +13,8 @@ struct ZC_ShFragment
         color,
         colorTex,
         text,
+        textWindow,     //  shader same as text, but different uniform configuration
+        orthoTexture,
     };
 
     struct Set

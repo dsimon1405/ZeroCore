@@ -1,18 +1,26 @@
 #pragma once
 
-#include "ZC_RendererLevelDrawer.h"
+#include "ZC_RenderLevelDrawer.h"
 #include "ZC_RLDForwardList.h"
 
-struct ZC_RLDText : public ZC_RendererLevelDrawer
+struct ZC_RLDOrthoBlend : public ZC_RenderLevelDrawer
 {
     ZC_RLDForwardList<const ZC_ShProg*, ZC_TexturesHolder, const ZC_VAO*, ZC_RLDData_Uniforms_GLDraw> fl;
 
-    void Add(ZC_RSController* pRSController) override;
-    bool Erase(ZC_RSController* pRSController) override;
-    void Draw(ZC_RBufferCleaner& rBufferCleaner) override;
+    void VAdd(ZC_RSController* pRSController) override;
+    bool VErase(ZC_RSController* pRSController) override;
+    void VDraw(ZC_FBOBuffersController& rBuffersController) override;
+
+protected:
+    void Draw();
 };
 
-struct ZC_RLDTextWindowIntoScene : public ZC_RLDText
+struct ZC_RLDTextScene : public ZC_RLDOrthoBlend
 {
-    void Draw(ZC_RBufferCleaner& rBufferCleaner) override;
+    void VDraw(ZC_FBOBuffersController& rBuffersController) override;
+};
+
+struct ZC_RLDTextWindowIntoScene : public ZC_RLDOrthoBlend
+{
+    void VDraw(ZC_FBOBuffersController& rBuffersController) override;
 };

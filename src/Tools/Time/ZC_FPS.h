@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ZC/Tools/Time/ZC_Clock.h>
+#include <ZC/Objects/Text/ZC_TextWindow.h>
 
 struct ZC_FPS
 {
@@ -36,11 +37,20 @@ struct ZC_FPS
     */
     float PreviousFrameTime() const noexcept;
 
+    void NeedDraw(bool _needDraw);
+    bool IsDrawing();
+
 private:
     ZC_Clock clock;
     // 1 sec = 1 000 000 000 nanosec.
     const float nanosecond = 1000000000.f;
     long previousFrameNanoseconds = 0;
     long fpsTime = static_cast<long>(nanosecond / 61.f);
-    float nanosecondsDivisor = 0;
+    float nanosecondsDivisor;
+
+    bool needDraw = false;
+    ZC_uptr<ZC_TextWindow> upTextFPS;
+
+    ZC_uptr<ZC_TextWindow> CreateText();
+    void UpdateText(long timeFromPreviousrestart);
 };

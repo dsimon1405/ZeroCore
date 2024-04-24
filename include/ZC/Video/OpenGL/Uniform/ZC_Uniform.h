@@ -12,6 +12,8 @@ enum ZC_UniformName
     ZC_UN_unColor,
     ZC_UN_unPositionWindow,
     ZC_UN_unPositionScene,
+    ZC_UN_unAlpha,
+    ZCR_UN_unUseLight,
 };
 
 class ZC_Uniform

@@ -4,12 +4,13 @@
 typedef int ZC_WindowFlags;     //  ZC_Window::Flags
 /*
 Window management namespace.
-
-Window coords:
-    top left corner: x = 0, y = 0;
-    top right corner: x = window width, y = 0;
-    bottom left corner: x = 0, y = window heigth;
-    bottom right corner: x = window with , y = window height.
+Window coords shema:
+-   x = 0, y = 1 ----- x = 1, y = 1
+-      |               |
+-      |               |
+-      |               |
+-      |               |
+-   x = 0, y = 0 ----- x = 1, y = 0
 */
 namespace ZC_Window
 {
@@ -38,8 +39,8 @@ namespace ZC_Window
     bool MakeWindow(ZC_WindowFlags flags = ZC_Window_None, int width = 0, int height = 0, const char* name = "");
 
     /*
-    Set the window buffer clear color.
-
+    Set the default context buffer clear color.
+    
     Params:
     r - red color.
     g - green color.
@@ -62,7 +63,7 @@ namespace ZC_Window
     //  Returns the creation time of the previous frame.
     float GetPreviousFrameTime() noexcept;
     
-    //  Returns the width of the window.
+    //  Sets the width and height of the window in references.
     void GetSize(int& width, int& height);
 
     //  Hide mouses cursor (have effect only in ZC_PC build mode).
@@ -79,4 +80,13 @@ namespace ZC_Window
 
     //  Run cycle (handle events => OpenGL draw).
     void RuntMainCycle();
+
+    //  Displays or not the number of frames per second.
+    void NeedDrawFPS(bool needDraw);
+    
+    //  Returns true if the number of frames per second is displayed, false otherwise.
+    bool IsFPSDrawing();
+
+    //  Sets the position X, Y coords in references.
+    void GetCursorPosition(float& posX, float& posY);
 };

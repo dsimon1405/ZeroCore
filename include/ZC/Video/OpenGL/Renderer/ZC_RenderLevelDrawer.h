@@ -1,23 +1,23 @@
 #pragma once
 
-#include "ZC_RBufferCleaner.h"
+#include <ZC/Video/OpenGL/ZC_FBOBuffersController.h>
 #include <ZC/Tools/Function/ZC_Function.h>
 #include "ZC_RSController.h"
 
-struct ZC_RendererLevelDrawer
+struct ZC_RenderLevelDrawer
 {
-    virtual ~ZC_RendererLevelDrawer() = default;
+    virtual ~ZC_RenderLevelDrawer() = default;
 
-    static ZC_uptr<ZC_RendererLevelDrawer> GetRendererLevelDrawer(ZC_RendererLevel lvl);
-    static void SetUsersFunction_GetRendererLevelDrawer(ZC_Function<ZC_uptr<ZC_RendererLevelDrawer>(ZC_RendererLevel)>&& func);
+    static ZC_uptr<ZC_RenderLevelDrawer> GetRendererLevelDrawer(ZC_DrawLevel lvl);
+    static void SetUsersFunction_GetRendererLevelDrawer(ZC_Function<ZC_uptr<ZC_RenderLevelDrawer>(ZC_DrawLevel)>&& func);
 
-    virtual void Draw(ZC_RBufferCleaner& rBufferCleaner) = 0;
-    virtual void Add(ZC_RSController* pRSController) = 0;
+    virtual void VAdd(ZC_RSController* pRSController) = 0;
     //  return true if empty, otherwise false
-    virtual bool Erase(ZC_RSController* pRSController) = 0;
+    virtual bool VErase(ZC_RSController* pRSController) = 0;
+    virtual void VDraw(ZC_FBOBuffersController& rBuffersController) = 0;
 
 private:
-    static inline ZC_Function<ZC_uptr<ZC_RendererLevelDrawer>(ZC_RendererLevel)> funcUsers_GetRendererLevelDrawer;
+    static inline ZC_Function<ZC_uptr<ZC_RenderLevelDrawer>(ZC_DrawLevel)> funcUsers_GetRendererLevelDrawer;
 };
 
 

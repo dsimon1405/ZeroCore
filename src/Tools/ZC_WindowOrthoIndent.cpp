@@ -10,39 +10,13 @@ ZC_WindowOrthoIndent::~ZC_WindowOrthoIndent()
     sconZC_WindowResized.Disconnect();
 }
 
-ZC_WindowOrthoIndent::ZC_WindowOrthoIndent(bool _is_Y_ZeroPointOnTop, float _width, float _height, float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags)
-    : is_Y_ZeroPointOnTop(_is_Y_ZeroPointOnTop),
-    width(_width),
-    height(_height),
-    sconZC_WindowResized(ZC_Events::ConnectWindowResize({ &ZC_WindowOrthoIndent::ZC_WindowResized, this }))
+bool ZC_WindowOrthoIndent::SetNewSize(float _width, float _height)
 {
-    CheckAndSetIndentData(_indentX, _indentY, _indentFlags);
-}
-
-ZC_WindowOrthoIndent::ZC_WindowOrthoIndent(const ZC_WindowOrthoIndent& woi)
-    : currentIndents{ woi.currentIndents[0], woi.currentIndents[1] },
-    is_Y_ZeroPointOnTop(woi.is_Y_ZeroPointOnTop),
-    width(woi.width),
-    height(woi.height),
-    indentX(woi.indentX),
-    indentY(woi.indentY),
-    indentFlags(woi.indentFlags),
-    sconZC_WindowResized(ZC_Events::ConnectWindowResize({ &ZC_WindowOrthoIndent::ZC_WindowResized, this }))
-{}
-
-void ZC_WindowOrthoIndent::CalculateCurrentIndents()
-{
-    int windowWidth, windowHeight;
-    ZC_Window::GetSize(windowWidth, windowHeight);
-    CalculateIndents(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
-}
-
-void ZC_WindowOrthoIndent::SetNewSize(float _width, float _height)
-{
-    if (width == _width && height == _height) return;
+    if (width == _width && height == _height) return false;
     width = _width;
     height = _height;
     CalculateCurrentIndents();
+    return true;
 }
 
 void ZC_WindowOrthoIndent::GetSize(float& _width, float& _height)
@@ -62,6 +36,39 @@ void ZC_WindowOrthoIndent::GetIndentParams(float& _indentX, float& _indentY, ZC_
     _indentX = indentX;
     _indentY = indentY;
     _indentFlags = _indentFlags;
+}
+
+const ZC_Vec2<float>& ZC_WindowOrthoIndent::GetIndents()
+{
+    return currentIndents;
+}
+
+ZC_WindowOrthoIndent::ZC_WindowOrthoIndent(bool _is_Y_ZeroPointOnTop, float _width, float _height, float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags)
+    : is_Y_ZeroPointOnTop(_is_Y_ZeroPointOnTop),
+    width(_width),
+    height(_height),
+    sconZC_WindowResized(ZC_Events::ConnectWindowResize({ &ZC_WindowOrthoIndent::ZC_WindowResized, this }))
+{
+    CheckAndSetIndentData(_indentX, _indentY, _indentFlags);
+    CalculateCurrentIndents();
+}
+
+ZC_WindowOrthoIndent::ZC_WindowOrthoIndent(const ZC_WindowOrthoIndent& woi)
+    : currentIndents{ woi.currentIndents[0], woi.currentIndents[1] },
+    is_Y_ZeroPointOnTop(woi.is_Y_ZeroPointOnTop),
+    width(woi.width),
+    height(woi.height),
+    indentX(woi.indentX),
+    indentY(woi.indentY),
+    indentFlags(woi.indentFlags),
+    sconZC_WindowResized(ZC_Events::ConnectWindowResize({ &ZC_WindowOrthoIndent::ZC_WindowResized, this }))
+{}
+
+void ZC_WindowOrthoIndent::CalculateCurrentIndents()
+{
+    int windowWidth, windowHeight;
+    ZC_Window::GetSize(windowWidth, windowHeight);
+    CalculateIndents(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
 }
 
 void ZC_WindowOrthoIndent::CheckAndSetIndentData(float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags)
@@ -93,7 +100,7 @@ void ZC_WindowOrthoIndent::CheckAndSetIndentData(float _indentX, float _indentY,
 void ZC_WindowOrthoIndent::ZC_WindowResized(float windowWidth, float windowHeight)
 {
     CalculateIndents(windowWidth, windowHeight);
-    CallAfterZC_WindowResized();
+    VCallAfterZC_WindowResized();
 }
 
 void ZC_WindowOrthoIndent::CalculateIndents(float windowWidth, float windowHeight)

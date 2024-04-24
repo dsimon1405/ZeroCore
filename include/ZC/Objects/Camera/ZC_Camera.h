@@ -1,45 +1,42 @@
 #pragma once
 
-#include "Matrix/ZC_PerspView.h"
-#include "Matrix/ZC_Ortho.h"
-#include <ZC/Tools/ZC_uptr.h>
-#include <ZC/Tools/Signal/ZC_SConnection.h>
+#include "ZC_Ortho.h"
+#include "ZC_Perspective.h"
+#include "ZC_View.h"
+#include <ZC/Video/OpenGL/Renderer/ZC_FrameBuffer.h>
+#include <ZC/Video/OpenGL/Buffer/ZC_UBO.h>
 
-class ZC_Camera;
-using ZC_upCamera = ZC_uptr<ZC_Camera>;
-
-/*
-Camera matrix control class. Must be created after ZC_Window!
-The product of the (perspective * view) and ortho matrices is passed to GLSL.
-Use the global (for all shaders that have this uniform) std140 uniform storage in GLSL code.
-Example GLSL:
-layout (std140, binding = 0) uniform Persp { mat4 perspView; };
-layout (std140, binding = 1) uniform Ortho { mat4 ortho; };
-*/
-class ZC_Camera
+class ZC_Camera : public ZC_View, public ZC_Perspective, public ZC_Ortho
 {
 public:
-    static ZC_upCamera CreateCamera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho);
+    ZC_Camera(const ZC_Vec3<float>& _camPos, const ZC_Vec3<float>& _lookOn, const ZC_Vec3<float>& _up,
+            const ZC_Perspective& persp, const ZC_Ortho& ortho, bool useWindowSize, ZC_FrameBuffer frameBuffer = ZC_FB_Default);
+
+    ZC_Camera(ZC_Camera&& c);
 
     ~ZC_Camera();
 
-    static ZC_Vec3<float>* GetCamPos() noexcept;
-    static ZC_Vec3<float>* GetLookOn() noexcept;
-    static ZC_Vec3<float>* GetUp() noexcept;
-    ZC_Camera& SetCamPos(const ZC_Vec3<float>& _camPos) noexcept;
-    ZC_Camera& SetLookOn(const ZC_Vec3<float>& _lookOn) noexcept;
-    ZC_Camera& SetUp(const ZC_Vec3<float>& _wUp) noexcept;
-    float GetWindowAspect() const noexcept;
+    //  Make camera active, next call GetActiveCamera() retun pointer on that camera.
+    void MakeActive();
+    //  Returns the camera that last called MakeActive(). Used to get the camera status.
+    static ZC_Camera* GetActiveCamera();
+    const ZC_Mat4<float>* GetPerspectiveView();
 
 private:
-    static inline ZC_Camera* pCurrentCamera = nullptr;
+    struct UboSet   //  structure for ubo sub data
+    {
+        ZC_Mat4<float> ortho;
+        ZC_Mat4<float> perspView;
+        ZC_Vec3<float> position;
+    };
 
-    ZC_PerspView perspView;
-    ZC_Ortho ortho;
-    ZC_SConnection sconWindowResize;
+    static inline ZC_uptr<ZC_UBO> ubo;
+    static inline const ZC_Camera* activeUBO = nullptr;      //  pointer on camera wich uboSet was activated last in ZC_Render or ZC_Renderer (GPU data)
+    static inline ZC_Camera* activeCamera = nullptr;   //  pointer on active camera for getting camera information throught GetActiveCamera() (CPU data)
 
-    ZC_Camera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho);
-    
-    void Update();
-    void ResizeCallBack(float width, float height);
+    UboSet uboSet;
+    ZC_SConnection sConWindowResize;
+
+    void UboUpdate();
+    void WindowResize(float width, float height);
 };

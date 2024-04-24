@@ -29,6 +29,7 @@ struct ZC_RLDForwardList<TFirst, TTail...> : public ZC_RLDForwardList<TTail...>
     //  returns true if empty
     bool Erase(const TFirst& _first, const TTail&... _tail);
     void Draw();
+    bool Empty() const noexcept;
 };
 
 template<typename TRLData>
@@ -44,6 +45,7 @@ struct ZC_RLDForwardList<TRLData>
     //  returns true if empty
     bool Erase(const TRLData& data);
     void Draw();
+    bool Empty() const noexcept;
 };
 
 
@@ -89,6 +91,12 @@ void ZC_RLDForwardList<TFirst, TTail...>::Draw()
     }
 }
 
+template<typename TFirst, typename... TTail>
+bool ZC_RLDForwardList<TFirst, TTail...>::Empty() const noexcept
+{
+    return pairs.empty();
+}
+
 
 //  Pair
 
@@ -124,4 +132,10 @@ template<typename TRLData>
 void ZC_RLDForwardList<TRLData>::Draw()
 {
     for (auto& data : datas) data.Draw();
+}
+
+template<typename TRLData>
+bool ZC_RLDForwardList<TRLData>::Empty() const noexcept
+{
+    return datas.empty();
 }

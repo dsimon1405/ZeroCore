@@ -11,7 +11,8 @@ public:
     ZC_SConnection ConnectMoveOnceInFrame(ZC_Function<void(float,float,float,float,float)>&& func);
     ZC_SConnection ConnectScroll(ZC_Function<void(float,float,float)>&& func);
     ZC_SConnection ConnectScrollOnceInFrame(ZC_Function<void(float,float,float)>&& func);
-    void GetMousePosition(float& _x, float& _y) noexcept;
+    void GetCursorPosition(float& _x, float& _y) noexcept;
+    //  axise Y data must be with Y zero point at buttom left corner of the window
     void MouseMove(float _cursorPosX, float _cursorPosY, float _cursorRelX, float _cursorRelY, float time);
     void MouseScroll(float horizontal, float vertical, float time);
 

@@ -28,13 +28,16 @@ extern PFNGLCLEARPROC pglClear;
 extern PFNGLCLEARCOLORPROC pglClearColor;
 #define glClearColor pglClearColor
 
-//  get
+//  get/read
 
 extern PFNGLGETSTRINGPROC pglGetString;
 #define glGetString pglGetString
 
 extern PFNGLGETINTEGERVPROC pglGetIntegerv;
 #define glGetIntegerv pglGetIntegerv
+
+extern PFNGLREADPIXELSPROC pglReadPixels;
+#define glReadPixels pglReadPixels
 
 //  enable
 
@@ -273,6 +276,9 @@ extern PFNGLPIXELSTOREIPROC pglPixelStorei;
 extern PFNGLTEXSUBIMAGE2DPROC pglTexSubImage2D;
 #define glTexSubImage2D pglTexSubImage2D
 
+extern PFNGLTEXIMAGE2DMULTISAMPLEPROC pglTexImage2DMultisample;
+#define glTexImage2DMultisample pglTexImage2DMultisample
+
 //  stencil
 
 extern PFNGLSTENCILMASKPROC pglStencilMask; 
@@ -292,4 +298,53 @@ extern PFNGLDEPTHFUNCPROC pglDepthFunc;
 extern PFNGLDEPTHMASKPROC pglDepthMask;
 #define glDepthMask pglDepthMask
 
+//  framebuffer
+
+extern PFNGLGENFRAMEBUFFERSPROC pglGenFramebuffers;
+#define glGenFramebuffers pglGenFramebuffers
+
+extern PFNGLDELETEFRAMEBUFFERSPROC pglDeleteFramebuffers;
+#define glDeleteFramebuffers pglDeleteFramebuffers
+
+extern PFNGLBINDFRAMEBUFFERPROC pglBindFramebuffer;
+#define glBindFramebuffer pglBindFramebuffer
+
+extern PFNGLCHECKFRAMEBUFFERSTATUSPROC pglCheckFramebufferStatus;
+#define glCheckFramebufferStatus pglCheckFramebufferStatus
+
+extern PFNGLFRAMEBUFFERTEXTURE2DPROC pglFramebufferTexture2D;
+#define glFramebufferTexture2D pglFramebufferTexture2D
+
+extern PFNGLFRAMEBUFFERRENDERBUFFERPROC pglFramebufferRenderbuffer;
+#define glFramebufferRenderbuffer pglFramebufferRenderbuffer
+
+extern PFNGLDRAWBUFFERPROC pglDrawBuffer;
+#define glDrawBuffer pglDrawBuffer
+
+extern PFNGLREADBUFFERPROC pglReadBuffer;
+#define glReadBuffer pglReadBuffer
+
+extern PFNGLBLITFRAMEBUFFERPROC pglBlitFramebuffer;
+#define glBlitFramebuffer pglBlitFramebuffer
+
+//  renderbuffer
+
+extern PFNGLGENRENDERBUFFERSPROC pglGenRenderbuffers;
+#define glGenRenderbuffers pglGenRenderbuffers
+
+extern PFNGLDELETERENDERBUFFERSPROC pglDeleteRenderbuffers;
+#define glDeleteRenderbuffers pglDeleteRenderbuffers
+
+extern PFNGLBINDRENDERBUFFERPROC pglBindRenderbuffer;
+#define glBindRenderbuffer pglBindRenderbuffer
+
+extern PFNGLRENDERBUFFERSTORAGEPROC pglRenderbufferStorage;
+#define glRenderbufferStorage pglRenderbufferStorage
+
+extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC pglRenderbufferStorageMultisample;
+#define glRenderbufferStorageMultisample pglRenderbufferStorageMultisample
+
 #endif
+
+// extern PFNGL ;
+// #define 

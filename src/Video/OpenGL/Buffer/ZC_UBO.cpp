@@ -1,7 +1,6 @@
 #include <ZC/Video/OpenGL/Buffer/ZC_UBO.h>
 
 #include <ZC/Video/OpenGL/ZC_OpenGL.h>
-#include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
 ZC_UBO::ZC_UBO(BindingPoint _bindingPoint)
 	: buffer(GL_UNIFORM_BUFFER),

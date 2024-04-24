@@ -5,7 +5,7 @@
 
 bool ZC_SDL_Window::LoadOpenGLFunctions()
 {
-    if (SDL_GL_LoadLibrary(NULL) != 0) { ZC_ErrorLogger::Err("SDL_GL_LoadLibrary() faild! " + std::string(SDL_GetError()), __FILE__, __LINE__); return false;}
+    // if (SDL_GL_LoadLibrary(NULL) != 0) { ZC_ErrorLogger::Err("SDL_GL_LoadLibrary() faild! " + std::string(SDL_GetError()), __FILE__, __LINE__); return false;}
 
     //  window
     pglViewport = (PFNGLVIEWPORTPROC)SDL_GL_GetProcAddress("glViewport");
@@ -14,11 +14,13 @@ bool ZC_SDL_Window::LoadOpenGLFunctions()
     if (!pglClear) { ZC_ErrorLogger::Err("glClear SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglClearColor = (PFNGLCLEARCOLORPROC)SDL_GL_GetProcAddress("glClearColor");
     if (!pglClearColor) { ZC_ErrorLogger::Err("glClearColor SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
-    //  get resource
+    //  get/read
     pglGetString = (PFNGLGETSTRINGPROC)SDL_GL_GetProcAddress("glGetString");
     if (!pglGetString) { ZC_ErrorLogger::Err("glGetString SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglGetIntegerv = (PFNGLGETINTEGERVPROC)SDL_GL_GetProcAddress("glGetIntegerv");
     if (!pglGetIntegerv) { ZC_ErrorLogger::Err("glGetIntegerv SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglReadPixels = (PFNGLREADPIXELSPROC)SDL_GL_GetProcAddress("glReadPixels");
+    if (!pglReadPixels) { ZC_ErrorLogger::Err("glReadPixels SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     //  enble
     pglEnable = (PFNGLENABLEPROC)SDL_GL_GetProcAddress("glEnable");
     if (!pglEnable) { ZC_ErrorLogger::Err("glEnable SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
@@ -175,6 +177,8 @@ bool ZC_SDL_Window::LoadOpenGLFunctions()
     if (!pglPixelStorei) { ZC_ErrorLogger::Err("glPixelStorei SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglTexSubImage2D = (PFNGLTEXSUBIMAGE2DPROC)SDL_GL_GetProcAddress("glTexSubImage2D");
     if (!pglTexSubImage2D) { ZC_ErrorLogger::Err("glTexSubImage2D SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglTexImage2DMultisample = (PFNGLTEXIMAGE2DMULTISAMPLEPROC)SDL_GL_GetProcAddress("glTexImage2DMultisample");
+    if (!pglTexImage2DMultisample) { ZC_ErrorLogger::Err("glTexImage2DMultisample SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     //  stencil
     pglStencilMask = (PFNGLSTENCILMASKPROC)SDL_GL_GetProcAddress("glStencilMask");
     if (!pglStencilMask) { ZC_ErrorLogger::Err("glStencilMask SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
@@ -187,6 +191,36 @@ bool ZC_SDL_Window::LoadOpenGLFunctions()
     if (!pglDepthFunc) { ZC_ErrorLogger::Err("glDepthFunc SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglDepthMask = (PFNGLDEPTHMASKPROC)SDL_GL_GetProcAddress("glDepthMask");
     if (!pglDepthMask) { ZC_ErrorLogger::Err("glDepthMask SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    //  framebuffer
+    pglGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)SDL_GL_GetProcAddress("glGenFramebuffers");
+    if (!pglGenFramebuffers) { ZC_ErrorLogger::Err("glGenFramebuffers SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)SDL_GL_GetProcAddress("glDeleteFramebuffers");
+    if (!pglDeleteFramebuffers) { ZC_ErrorLogger::Err("glDeleteFramebuffers SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)SDL_GL_GetProcAddress("glBindFramebuffer");
+    if (!pglBindFramebuffer) { ZC_ErrorLogger::Err("glBindFramebuffer SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)SDL_GL_GetProcAddress("glCheckFramebufferStatus");
+    if (!pglCheckFramebufferStatus) { ZC_ErrorLogger::Err("glCheckFramebufferStatus SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)SDL_GL_GetProcAddress("glFramebufferTexture2D");
+    if (!pglFramebufferTexture2D) { ZC_ErrorLogger::Err("glFramebufferTexture2D SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)SDL_GL_GetProcAddress("glFramebufferRenderbuffer");
+    if (!pglFramebufferRenderbuffer) { ZC_ErrorLogger::Err("glFramebufferRenderbuffer SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglDrawBuffer = (PFNGLDRAWBUFFERPROC)SDL_GL_GetProcAddress("glDrawBuffer");
+    if (!pglDrawBuffer) { ZC_ErrorLogger::Err("glDrawBuffer SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglReadBuffer = (PFNGLREADBUFFERPROC)SDL_GL_GetProcAddress("glReadBuffer");
+    if (!pglReadBuffer) { ZC_ErrorLogger::Err("glReadBuffer SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglBlitFramebuffer = (PFNGLBLITFRAMEBUFFERPROC)SDL_GL_GetProcAddress("glBlitFramebuffer");
+    if (!pglBlitFramebuffer) { ZC_ErrorLogger::Err("glBlitFramebuffer SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    //  renderbuffer
+    pglGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)SDL_GL_GetProcAddress("glGenRenderbuffers");
+    if (!pglGenRenderbuffers) { ZC_ErrorLogger::Err("glGenRenderbuffers SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)SDL_GL_GetProcAddress("glDeleteRenderbuffers");
+    if (!pglDeleteRenderbuffers) { ZC_ErrorLogger::Err("glDeleteRenderbuffers SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)SDL_GL_GetProcAddress("glBindRenderbuffer");
+    if (!pglBindRenderbuffer) { ZC_ErrorLogger::Err("glBindRenderbuffer SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)SDL_GL_GetProcAddress("glRenderbufferStorage");
+    if (!pglRenderbufferStorage) { ZC_ErrorLogger::Err("glRenderbufferStorage SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglRenderbufferStorageMultisample = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)SDL_GL_GetProcAddress("glRenderbufferStorageMultisample");
+    if (!pglRenderbufferStorageMultisample) { ZC_ErrorLogger::Err("glRenderbufferStorageMultisample SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     
     // auto q = glGetString(GL_VERSION);
     // std::string a(reinterpret_cast<const char *>(glGetString(GL_VERSION)));
@@ -201,9 +235,10 @@ PFNGLVIEWPORTPROC pglViewport = nullptr;
 PFNGLCLEARPROC pglClear = nullptr;
 PFNGLCLEARCOLORPROC pglClearColor = nullptr;
 
-//  get resource
+//  get/read
 PFNGLGETSTRINGPROC pglGetString = nullptr;
 PFNGLGETINTEGERVPROC pglGetIntegerv = nullptr;
+PFNGLREADPIXELSPROC pglReadPixels = nullptr;
 
 //  enble
 PFNGLENABLEPROC pglEnable = nullptr;
@@ -294,6 +329,7 @@ PFNGLGENERATEMIPMAPPROC pglGenerateMipmap = nullptr;
 PFNGLACTIVETEXTUREPROC pglActiveTexture = nullptr;
 PFNGLPIXELSTOREIPROC pglPixelStorei = nullptr;
 PFNGLTEXSUBIMAGE2DPROC pglTexSubImage2D = nullptr;
+PFNGLTEXIMAGE2DMULTISAMPLEPROC pglTexImage2DMultisample = nullptr;
 
 //  stencil
 PFNGLSTENCILMASKPROC pglStencilMask = nullptr;
@@ -303,3 +339,21 @@ PFNGLSTENCILOPPROC pglStencilOp = nullptr;
 //  depth
 PFNGLDEPTHFUNCPROC pglDepthFunc = nullptr;
 PFNGLDEPTHMASKPROC pglDepthMask = nullptr;
+
+//  framebuffer
+PFNGLGENFRAMEBUFFERSPROC pglGenFramebuffers = nullptr;
+PFNGLDELETEFRAMEBUFFERSPROC pglDeleteFramebuffers = nullptr;
+PFNGLBINDFRAMEBUFFERPROC pglBindFramebuffer = nullptr;
+PFNGLCHECKFRAMEBUFFERSTATUSPROC pglCheckFramebufferStatus = nullptr;
+PFNGLFRAMEBUFFERTEXTURE2DPROC pglFramebufferTexture2D = nullptr;
+PFNGLFRAMEBUFFERRENDERBUFFERPROC pglFramebufferRenderbuffer = nullptr;
+PFNGLDRAWBUFFERPROC pglDrawBuffer = nullptr;
+PFNGLREADBUFFERPROC pglReadBuffer = nullptr;
+PFNGLBLITFRAMEBUFFERPROC pglBlitFramebuffer = nullptr;
+
+//  renderbuffer
+PFNGLGENRENDERBUFFERSPROC pglGenRenderbuffers = nullptr;
+PFNGLDELETERENDERBUFFERSPROC pglDeleteRenderbuffers = nullptr;
+PFNGLBINDRENDERBUFFERPROC pglBindRenderbuffer = nullptr;
+PFNGLRENDERBUFFERSTORAGEPROC pglRenderbufferStorage = nullptr;
+PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC pglRenderbufferStorageMultisample = nullptr;

@@ -2,15 +2,16 @@
 
 #include "ZC_WindowHolder.h"
 #include <ZC/Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/OpenGL/Renderer/ZC_Renders.h>
 
 bool ZC_Window::MakeWindow(ZC_WindowFlags flags, int width, int height, const char* name)
 {
     return ZC_WindowHolder::MakeWindowHolder(flags, width, height, name);
 }
 
-void ZC_Window::GlClearColor(float r, float g, float b, float a)
+void ZC_Window::GlClearColor(float red, float green, float blue, float alpha)
 {
-    glClearColor(r, g, b, a);
+    ZC_Renders::GetRender(ZC_FB_Default)->SetClearColor(red, green, blue, alpha);
 }
 
 void ZC_Window::GlEnablePointSize()
@@ -56,4 +57,19 @@ void ZC_Window::UnlimitCursor()
 void ZC_Window::RuntMainCycle()
 {
     if (ZC_WindowHolder::upWindowHolder) ZC_WindowHolder::upWindowHolder->RunMainCycle();
+}
+
+void ZC_Window::NeedDrawFPS(bool needDraw)
+{
+    if (ZC_WindowHolder::upWindowHolder) ZC_WindowHolder::upWindowHolder->NeedDrawFPS(needDraw);
+}
+
+bool ZC_Window::IsFPSDrawing()
+{
+    return ZC_WindowHolder::upWindowHolder && ZC_WindowHolder::upWindowHolder->IsFPSDrawing();
+}
+
+void ZC_Window::GetCursorPosition(float& posX, float& posY)
+{
+    if (ZC_WindowHolder::upWindowHolder) ZC_WindowHolder::upWindowHolder->GetCursorPosition(posX, posY);
 }

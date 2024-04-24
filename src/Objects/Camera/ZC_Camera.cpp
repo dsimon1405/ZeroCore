@@ -1,80 +1,93 @@
 #include <ZC/Objects/Camera/ZC_Camera.h>
 
-#include <ZC_Config.h>
-#include <ZC/Video/ZC_Window.h>
+#include <ZC/Video/OpenGL/Buffer/ZC_UBOs.h>
 #include <ZC/Events/ZC_Events.h>
 
-ZC_upCamera ZC_Camera::CreateCamera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho)
+ZC_Camera::ZC_Camera(const ZC_Vec3<float>& _camPos, const ZC_Vec3<float>& _lookOn, const ZC_Vec3<float>& _up,
+        const ZC_Perspective& persp, const ZC_Ortho& ortho, bool useWindowSize, ZC_FrameBuffer frameBuffer)
+    : ZC_View(&(uboSet.position), _lookOn, _up),
+    ZC_Perspective(persp),
+    ZC_Ortho(ortho),
+    uboSet{ {}, {}, _camPos },
+    sConWindowResize(useWindowSize ? ZC_Events::ConnectWindowResize({ &ZC_Camera::WindowResize, this }) : ZC_SConnection())
 {
-    ZC_upCamera upCamera(new ZC_Camera(_perspView, _ortho));
-    pCurrentCamera = upCamera.Get();
-    return upCamera;
+    this->pOrtho = &(uboSet.ortho);
+
+    static bool first = true;
+    if (first)
+    {
+        first = false;
+        ubo = new ZC_UBO(ZC_UBO::Camera);
+        ubo->BufferData(sizeof(uboSet), nullptr, GL_DYNAMIC_DRAW);
+        activeUBO = this + 1; // set in current ubo some random data, to set in update this object data and don't have in activeUBO nullptr
+    }
+
+    UboUpdate();
+
+    ZC_UBOs::AddUpdateFunction(ubo.Get(), { &ZC_Camera::UboUpdate, this }, frameBuffer);
+}
+
+ZC_Camera::ZC_Camera(ZC_Camera&& c)
+    : ZC_View(dynamic_cast<ZC_View&&>(c)),
+    ZC_Perspective(dynamic_cast<ZC_Perspective&&>(c)),
+    ZC_Ortho(dynamic_cast<ZC_Ortho&&>(c)),
+    uboSet(c.uboSet),
+    sConWindowResize(c.sConWindowResize.IsConnected() ? ZC_Events::ConnectWindowResize({ &ZC_Camera::WindowResize, this }) : ZC_SConnection())
+{
+    if (c.sConWindowResize.IsConnected()) c.sConWindowResize.Disconnect();
+    if (activeCamera == &c) activeCamera = this;    
 }
 
 ZC_Camera::~ZC_Camera()
 {
-    sconWindowResize.Disconnect();
+    if (activeCamera == this) activeCamera = nullptr;
+    if (sConWindowResize.IsConnected()) sConWindowResize.Disconnect();
 }
 
-ZC_Vec3<float>* ZC_Camera::GetCamPos() noexcept
+void ZC_Camera::MakeActive()
 {
-    return pCurrentCamera ? &(pCurrentCamera->perspView.view.camPos) : nullptr;
+    activeCamera = this;
 }
 
-ZC_Vec3<float>* ZC_Camera::GetLookOn() noexcept
+ZC_Camera* ZC_Camera::GetActiveCamera()
 {
-    return pCurrentCamera ? &(pCurrentCamera->perspView.view.lookOn) : nullptr;
+    return activeCamera;
 }
 
-ZC_Vec3<float>* ZC_Camera::GetUp() noexcept
+const ZC_Mat4<float>* ZC_Camera::GetPerspectiveView()
 {
-    return pCurrentCamera ? &(pCurrentCamera->perspView.view.up) : nullptr;
+    bool perspNeedUpdate = this->PerspectiveUpdate(),
+        viewNeedUpdate = this->ViewUpdate();
+    if (perspNeedUpdate || viewNeedUpdate) uboSet.perspView = this->perspective * this->view;
+    return &(uboSet.perspView);
 }
 
-ZC_Camera& ZC_Camera::SetCamPos(const ZC_Vec3<float>& _camPos) noexcept
+void ZC_Camera::UboUpdate()
 {
-    perspView.view.SetCamPos(_camPos);
-    return *this;
-}
+    bool perspNeedUpdate = this->PerspectiveUpdate(),
+        viewNeedUpdate = this->ViewUpdate();
+    bool perspViewNeedUpdate = perspNeedUpdate || viewNeedUpdate;
+    if (perspViewNeedUpdate) uboSet.perspView = this->perspective * this->view;
 
-ZC_Camera& ZC_Camera::SetLookOn(const ZC_Vec3<float>& _lookOn) noexcept
-{
-    perspView.view.SetLookOn(_lookOn);
-    return *this;
-}
-
-ZC_Camera& ZC_Camera::SetUp(const ZC_Vec3<float>& _up) noexcept
-{
-    perspView.view.SetUp(_up);
-    return *this;
-}
-
-float ZC_Camera::GetWindowAspect() const noexcept
-{
-    return perspView.persp.aspect;
-}
-
-ZC_Camera::ZC_Camera(const ZC_PerspView& _perspView, const ZC_Ortho& _ortho)
-    : perspView(_perspView),
-    ortho(_ortho)
-{
-    perspView.ubo = ZC_UBOs::Create(ZC_UBO::BindingPoint::ProjView, { &ZC_Camera::Update, this });
-    perspView.ubo->BufferData(sizeof(ZC_Mat4<float>), nullptr, GL_DYNAMIC_DRAW);
+    bool orthoNeedUpdate = this->OrthoUpdate();
     
-    sconWindowResize = ZC_Events::ConnectWindowResize({ &ZC_Camera::ResizeCallBack, this });
-    
-    int width = 0, height = 0;
-    ZC_Window::GetSize(width, height);
-    ResizeCallBack(static_cast<float>(width), static_cast<float>(height));
+    if (activeUBO != this)  //  last gpu update were from another camera, need update gpu
+    {
+        perspViewNeedUpdate = true;
+        orthoNeedUpdate = true;
+        activeUBO = this;
+    }
+
+    if (perspViewNeedUpdate && orthoNeedUpdate) ubo->BufferSubData(0, sizeof(uboSet), &uboSet);
+    else if (perspViewNeedUpdate) ubo->BufferSubData(sizeof(uboSet.ortho), sizeof(uboSet.perspView) + sizeof(uboSet.position), &(uboSet.perspView));      //  if need update perspective view hight probability that camPos need too
+    else if (orthoNeedUpdate) ubo->BufferSubData(0, sizeof(uboSet.ortho), &(uboSet.ortho));
 }
 
-void ZC_Camera::Update()
+void ZC_Camera::WindowResize(float width, float height)
 {
-    perspView.UpdateUBO();
-}
-
-void ZC_Camera::ResizeCallBack(float width, float height)
-{
-    perspView.persp.SetSize(width / height);
-    ortho.UpdateUBO(width, height);
+    //  perspective
+    this->SetAspect(width / height);
+    //  ortho
+    this->SetEndX(width);
+    this->SetEndY(height);
 }

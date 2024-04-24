@@ -1,7 +1,7 @@
 #include <ZC/Objects/Text/ZC_TextScene.h>
 
-ZC_TextScene::ZC_TextScene(const ZC_FontNameHeight& fontData, const std::string& _text, ZC_TextAlignment _alignment)
-    : ZC_TextData(ZC_ShProgs::Get(ShPN_ZC_TextScene), FontOrigin::center, fontData, _text, _alignment, ZC_RendererLevels::TextScene),
+ZC_TextScene::ZC_TextScene(ZC_FontData fontData, const std::string& _text, ZC_TextAlignment _alignment, bool needDraw)
+    : ZC_TextData(ZC_ShProgs::Get(ShPN_ZC_TextScene), ZC_FO_center, fontData, _text, _alignment, ZC_DrawLevels::TextScene, needDraw),
     scale(startHeightInScene / fontData.pixelsHeight)
 {
     rsController.SetUniformsData(ZC_UN_unModel, &(model.Scale(scale, scale, scale)));

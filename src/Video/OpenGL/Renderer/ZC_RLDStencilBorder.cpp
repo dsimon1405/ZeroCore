@@ -23,39 +23,41 @@ ZC_RLDStencilBorder::ZC_RLDStencilBorder()
 {
     if (!pShPStencilBorder)
     {
-        auto pShProg = ZC_ShProgs::Get(ShPN_ZCR_Stencil);
+        auto pShProg = ZC_ShProgs::Get(ShPN_ZCR_StencilBorder);
         assert (pShProg);      //  stencil shader data wasn't loaded
         pShPStencilBorder = &(pShProg->shProg);
         pUniformsStencilBorder = &(pShProg->uniforms);
     }
 }
 
-void ZC_RLDStencilBorder::Add(ZC_RSController* pRSController)
+void ZC_RLDStencilBorder::VAdd(ZC_RSController* pRSController)
 {
     fl.Add(pRSController->pShProg, pRSController->pVAO, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount },
         { static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)),
             pRSController->pGLDraw, static_cast<const ZC_RSPDStencilBorderData*>(pRSController->GetPersonalData(ZC_RSPDC_stencilBorder)) });
 }
 
-bool ZC_RLDStencilBorder::Erase(ZC_RSController* pRSController)
+bool ZC_RLDStencilBorder::VErase(ZC_RSController* pRSController)
 {
     return fl.Erase(pRSController->pShProg, pRSController->pVAO, ZC_TexturesHolder{ pRSController->pTexture, pRSController->texturesCount },
         { static_cast<const ZC_Uniforms*>(pRSController->GetPersonalData(ZC_RSPDC_uniforms)), pRSController->pGLDraw, nullptr });   //  ZC_RLDData_Uniforms_GLDraw_StencilBorder last parameter don't need for (==) compaer in forward_list
 }
 
-void ZC_RLDStencilBorder::Draw(ZC_RBufferCleaner& rBufferCleaner)
+void ZC_RLDStencilBorder::VDraw(ZC_FBOBuffersController& rBuffersController)
 {
-    rBufferCleaner.GlClear(GL_STENCIL_BUFFER_BIT);
-    rBufferCleaner.GlEnable(GL_STENCIL_TEST);
-
+    rBuffersController.GlClear(GL_STENCIL_BUFFER_BIT);
+    rBuffersController.GlEnable(GL_DEPTH_TEST);
+    rBuffersController.GlEnable(GL_STENCIL_TEST);
+ 
     glStencilFunc(GL_ALWAYS, 1, 255);
     glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
     glStencilMask(255);
     //  draw as usual
     fl.Draw();
 
+    // rBuffersController.GlDisable(GL_DEPTH_TEST);
+
     glStencilFunc(GL_NOTEQUAL, 1, 255);
-    rBufferCleaner.GlDisable(GL_DEPTH_TEST);
     pShPStencilBorder->ActivateOpenGL();    //  use stencil shader program
     for (auto& shProgAndVAOsPair : fl.pairs)
     {
@@ -78,7 +80,8 @@ void ZC_RLDStencilBorder::Draw(ZC_RBufferCleaner& rBufferCleaner)
             }
         }
     }
-    rBufferCleaner.GlEnable(GL_DEPTH_TEST);
+
+    rBuffersController.GlDisable(GL_DEPTH_TEST);    // !!!
     
-    rBufferCleaner.GlDisable(GL_STENCIL_TEST);
+    rBuffersController.GlDisable(GL_STENCIL_TEST);
 }

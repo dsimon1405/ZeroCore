@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ZC/Tools/ZC_string.h>
-#include <ZC/Video/OpenGL/Renderer/ZC_RendererSet.h>
+#include <ZC/Video/OpenGL/Renderer/ZC_RenderSet.h>
 #include <ZC/Tools/Signal/ZC_SConnection.h>
 #include <ZC/Tools/ZC_WindowOrthoIndent.h>
 
@@ -10,7 +10,7 @@
 namespace ZC_ImGui { bool Init(void* pWindow, void* pGlContext); }
 class ZC_Renderer;
 
-class ZC_IGWindow : public ZC_WindowOrthoIndent
+class ZC_IGWindow : protected ZC_WindowOrthoIndent
 {
     friend bool ZC_ImGui::Init(void* pWindow, void* pGlContext);
     friend class ZC_Renderer;
@@ -26,7 +26,10 @@ public:
     void NeedDraw(bool _needDraw);
     //  Sets to draw or not all ImGui windows.
     static void NeedImGuiDraw(bool _needDraw) noexcept;
-
+    /*
+    Returns true if the cursor is in one of the ImGui windows.
+    Only relevant after the start of polling events and before calling the end of polling events signal (sigHandleEventsEnd in ZC_SDL_EventsHolder.cpp).
+    */
     static bool IsCursorInOneOfWindows() noexcept;
 
 protected:
@@ -69,7 +72,7 @@ private:
     static inline bool isCursorInOneOfWindows = false;
 
     void UpdateAndDraw();
-    void CallAfterZC_WindowResized() override;
+    void VCallAfterZC_WindowResized() override;
 
     virtual void DrawWindow() = 0;
 

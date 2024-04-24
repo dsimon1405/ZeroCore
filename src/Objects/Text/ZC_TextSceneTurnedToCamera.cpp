@@ -1,9 +1,9 @@
 #include <ZC/Objects/Text/ZC_TextSceneTurnedToCamera.h>
     
-ZC_TextSceneTurnedToCamera::ZC_TextSceneTurnedToCamera(ZC_FontNameHeight fontData, const std::string& _text, ZC_TextAlignment _alignment,
-        const ZC_Vec3<float>& _position, float _scale)
-    : ZC_TextData(ZC_ShProgs::Get(ShPN_ZC_TextScene), FontOrigin::center, fontData, _text, _alignment, ZC_RendererLevels::TextScene),
-    ZC_TurnToCamera(_position, _scale == 0.f ? startHeightInScene / fontData.pixelsHeight : _scale)   //  if user don't sets scale, make text height = startHeightInScene
+ZC_TextSceneTurnedToCamera::ZC_TextSceneTurnedToCamera(ZC_FontData fontData, const std::string& _text, ZC_TextAlignment _alignment,
+        const ZC_Vec3<float>& _position, bool needDraw , float _scale)
+    : ZC_TextData(ZC_ShProgs::Get(ShPN_ZC_TextScene), ZC_FO_center, fontData, _text, _alignment, ZC_DrawLevels::TextScene, needDraw),
+    ZC_TornToCamera(_position, _scale == 0.f ? startHeightInScene / fontData.pixelsHeight : _scale)   //  if user don't sets scale, make text height = startHeightInScene
 {
     this->rsController.SetUniformsData(ZC_UN_unModel, &(this->model));
 }
@@ -15,7 +15,7 @@ ZC_TextSceneTurnedToCamera ZC_TextSceneTurnedToCamera::MakeCopy() const
 
 ZC_TextSceneTurnedToCamera::ZC_TextSceneTurnedToCamera(const ZC_TextSceneTurnedToCamera& tsttc)
     : ZC_TextData(dynamic_cast<const ZC_TextData&>(tsttc)),
-    ZC_TurnToCamera(dynamic_cast<const ZC_TurnToCamera&>(tsttc))
+    ZC_TornToCamera(dynamic_cast<const ZC_TornToCamera&>(tsttc))
 {
     this->rsController.SetUniformsData(ZC_UN_unModel, &(this->model));
 }

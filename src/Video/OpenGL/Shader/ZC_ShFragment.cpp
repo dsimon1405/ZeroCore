@@ -20,6 +20,8 @@ ZC_Shader* ZC_ShFragment::GetShader(Name name)    //  add here new
     case Name::color: path = ZC_FSPath(shadersPath).append("color.fs").string(); break;
     case Name::colorTex: path = ZC_FSPath(shadersPath).append("colorTex.fs").string(); break;
     case Name::text: path = ZC_FSPath(shadersPath).append("text.fs").string(); break;
+    case Name::orthoTexture: path = ZC_FSPath(shadersPath).append("orthoTexture.fs").string(); break;
+    default: break;
     }
 
     return &(shaders.emplace(name, ZC_Shader(ZC_Shader::ReadShaderFile(path.c_str(), GL_FRAGMENT_SHADER).pHead, GL_FRAGMENT_SHADER)).first->second);
@@ -28,12 +30,18 @@ ZC_Shader* ZC_ShFragment::GetShader(Name name)    //  add here new
 typename ZC_ShFragment::Set ZC_ShFragment::GetVAOAndUniformData(Name name)    //  add here new
 {
     typedef typename ZC_TexSets::TextureName TName;
-    // typedef typename ZC_Uniform::NameType UnNT;
+    typedef typename ZC_Uniform::NameType UnNT;
     switch (name)
     {
     case Name::color: return { GetShader(name), {}, {} };
     case Name::colorTex: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, {} };
     case Name::text: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, ZC_Uniform::GetUniformVector({ZC_UN_unColor, false}) };
+    case Name::textWindow:
+    {
+        UnNT unoforms[]{ { ZC_UN_unColor, false }, { ZC_UN_unAlpha, false } };
+        return { GetShader(Name::text), { { new TName[]{ TName::texColor }, 1 } }, ZC_Uniform::GetUniformVector(unoforms, 2) };      //  shader same as text, but different uniform configuration
+    }
+    case Name::orthoTexture: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, ZC_Uniform::GetUniformVector({ ZC_UN_unAlpha, false }) };
     default: return {};
     }
 }

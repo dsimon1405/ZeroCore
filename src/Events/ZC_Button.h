@@ -10,7 +10,7 @@
 class ZC_Button
 {
 public:
-    ZC_SConnection ConnectDown(ZC_ButtonID buttonId, ZC_Function<void(float)>&& function);
+    ZC_SConnection ConnectDown(ZC_ButtonID buttonId, ZC_Function<void(float)>&& function, bool callIfDown);
     ZC_SConnection ConnectUp(ZC_ButtonID buttonId, ZC_Function<void(float)>&& function);
 
     void AddActiveDownButton(ZC_ButtonID buttonId);

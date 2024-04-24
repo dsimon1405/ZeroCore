@@ -40,17 +40,18 @@ typename ZC_ShProgs::ShNames ZC_ShProgs::GetShNames(ZC_ShPName name) const noexc
     typedef ZC_VAOConfig::LayoutPacker VAOPack;
     switch (name)
     {
-    case ShPN_ZCR_ColorFigure: return {VName::colorFigure, { ZC_VAOL_F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N, VAOPack(0).Pack(2) }, FName::color, GName::none};
-    case ShPN_ZCR_Point: return {VName::point, { ZC_VAOL_F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N, VAOPack(0).Pack(1) }, FName::color, GName::none};
-    case ShPN_ZCR_LineFigure: return {VName::lineFigure, { ZC_VAOL_F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N, VAOPack(0).Pack(1) }, FName::color, GName::none};
-    case ShPN_ZCR_Stencil: return {VName::stencil, { ZC_VAOL_None }, FName::color, GName::none};
-    case ShPN_ZCR_Texture_Vertex_TexCoord: return {VName::texture_Vertex_TexCoord, { ZC_VAOL_F_3_0__F_2_1, VAOPack(0).Pack(1) }, FName::colorTex, GName::none};
-    case ShPN_ZCR_LineMesh: return {VName::lineMesh, { ZC_VAOL_F_3_0, VAOPack(0)}, FName::color, GName::none};
-    case ShPN_ZCR_LineOrientation3D: return {VName::lineOrientation3D, { ZC_VAOL_F_4_0__UB_3_1_N, VAOPack(0).Pack(1) }, FName::color, GName::lineOrientation3D};
-    case ShPN_ZCR_QuadOrientation3D: return {VName::quadOrientation3D, { ZC_VAOL_F_3_0__F_2_1, VAOPack(0).Pack(1) }, FName::colorTex, GName::none};
-    case ShPN_ZC_TextWindow: return {VName::textWindow, { ZC_VAOL_F_2_0__US_2_1_N, VAOPack(0).Pack(1) }, FName::text, GName::none};
-    case ShPN_ZC_TextScene: return {VName::textScene, { ZC_VAOL_F_2_0__US_2_1_N, VAOPack(0).Pack(1) }, FName::text, GName::none};
-    case ShPN_ZC_TextWindowIntoScene: return {VName::textWindowIntoScene, { ZC_VAOL_F_2_0__US_2_1_N, VAOPack(0).Pack(1) }, FName::text, GName::none};
+    case ShPN_ZCR_ColorFigure: return { VName::colorFigure, { ZC_VAOL_F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N, VAOPack(0).Pack(2) }, FName::color, GName::none };
+    case ShPN_ZCR_Point: return { VName::point, { ZC_VAOL_F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N, VAOPack(0).Pack(1) }, FName::color, GName::none };
+    case ShPN_ZCR_LineFigure: return { VName::lineFigure, { ZC_VAOL_F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N, VAOPack(0).Pack(1) }, FName::color, GName::none };
+    case ShPN_ZCR_StencilBorder: return { VName::stencilBorder, { ZC_VAOL_None }, FName::color, GName::none };
+    case ShPN_ZCR_Texture_Vertex_TexCoord: return { VName::texture_Vertex_TexCoord, { ZC_VAOL_F_3_0__F_2_1, VAOPack(0).Pack(1) }, FName::colorTex, GName::none };
+    case ShPN_ZCR_LineMesh: return { VName::lineMesh, { ZC_VAOL_F_3_0, VAOPack(0)}, FName::color, GName::none };
+    case ShPN_ZCR_LineOrientation3D: return { VName::lineOrientation3D, { ZC_VAOL_F_4_0__UB_3_1_N, VAOPack(0).Pack(1) }, FName::color, GName::lineOrientation3D };
+    case ShPN_ZCR_QuadOrientation3D: return { VName::quadOrientation3D, { ZC_VAOL_F_3_0__F_2_1, VAOPack(0).Pack(1) }, FName::colorTex, GName::none };
+    case ShPN_ZC_TextWindow: return { VName::textWindow, { ZC_VAOL_F_2_0__US_2_1_N, VAOPack(0).Pack(1) }, FName::textWindow, GName::none };
+    case ShPN_ZC_TextScene: return { VName::textScene, { ZC_VAOL_F_2_0__US_2_1_N, VAOPack(0).Pack(1) }, FName::text, GName::none };
+    case ShPN_ZC_TextWindowIntoScene: return { VName::textWindowIntoScene, { ZC_VAOL_F_2_0__US_2_1_N, VAOPack(0).Pack(1) }, FName::text, GName::none };
+    case ShPN_ZC_OrthoTexture: return { VName::textWindow, { ZC_VAOL_F_2_0__US_2_1_N, VAOPack(0).Pack(1) }, FName::orthoTexture, GName::none };
     default: return {};
     }
 }
