@@ -9,5 +9,5 @@ struct ZC_RLDDrawing : public ZC_RenderLevelDrawer
 
     void VAdd(ZC_RSController* pRSController) override;
     bool VErase(ZC_RSController* pRSController) override;
-    void VDraw(ZC_FBOBuffersController& rBuffersController) override;
+    void VDraw() override;
 };

@@ -9,7 +9,7 @@ struct ZC_RLDOrthoBlend : public ZC_RenderLevelDrawer
 
     void VAdd(ZC_RSController* pRSController) override;
     bool VErase(ZC_RSController* pRSController) override;
-    void VDraw(ZC_FBOBuffersController& rBuffersController) override;
+    void VDraw() override;
 
 protected:
     void Draw();
@@ -17,10 +17,10 @@ protected:
 
 struct ZC_RLDTextScene : public ZC_RLDOrthoBlend
 {
-    void VDraw(ZC_FBOBuffersController& rBuffersController) override;
+    void VDraw() override;
 };
 
 struct ZC_RLDTextWindowIntoScene : public ZC_RLDOrthoBlend
 {
-    void VDraw(ZC_FBOBuffersController& rBuffersController) override;
+    void VDraw() override;
 };

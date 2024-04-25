@@ -20,13 +20,12 @@ ZC_Viewport ZC_Viewport::CreateStandardWindowViewport()
 
 void ZC_Viewport::Use()
 {
-    if (startX == currentStartX && startY == currentStartY && width == currentWidth && height == currentHeight) return;
+    static ZC_Viewport* pActiveViewport = nullptr;
+    
+    if (pActiveViewport == this) return;
+    pActiveViewport = this;
     
     glViewport(startX, startY, width, height);
-    currentStartX = startX;
-    currentStartY = startY;
-    currentWidth = width;
-    currentHeight = height;
 }
 
 void ZC_Viewport::SetSize(int _width, int _height)

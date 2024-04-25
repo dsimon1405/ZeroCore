@@ -26,13 +26,17 @@ ZC_Framebuffer::~ZC_Framebuffer()
     if (id != 0) glDeleteFramebuffers(1, &id);
 }
 
-void ZC_Framebuffer::Bind(unsigned int targer) const
+void ZC_Framebuffer::Bind() const
 {
-    glBindFramebuffer(targer, id);
+    if (activeId == id) return;
+    activeId = id;
+    glBindFramebuffer(GL_FRAMEBUFFER, id);
 }
 
 void ZC_Framebuffer::Unbind()
 {
+    if (activeId == 0) return;
+    activeId = 0;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

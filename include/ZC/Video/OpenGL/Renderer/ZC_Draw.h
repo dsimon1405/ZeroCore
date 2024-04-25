@@ -5,7 +5,10 @@
 struct ZC_GLDraw
 {
     virtual ~ZC_GLDraw() = default;
-    virtual void Draw() const = 0;
+    void Draw() const;
+
+private:
+    virtual void VDraw() const = 0;
     // virtual void UpdateData(ZC_GLDraw* pGLDraw) = 0;
 };
 
@@ -25,7 +28,7 @@ struct ZC_DrawElements : public ZC_GLDraw
     */
     ZC_DrawElements(GLenum _mode, int _count, GLenum _type, GLuint _startByteOffset);
 
-    void Draw() const override;
+    void VDraw() const override;
     // void UpdateData(ZC_GLDraw* pGLDraw);
 };
 
@@ -43,7 +46,7 @@ struct ZC_DrawArrays : public ZC_GLDraw
     */
     ZC_DrawArrays(GLenum _mode, int _first, int _count);
 
-    void Draw() const override;
+    void VDraw() const override;
     // void UpdateData(ZC_GLDraw* pGLDraw);
 };
 

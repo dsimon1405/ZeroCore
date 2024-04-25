@@ -86,7 +86,6 @@ struct ZC_FBO
 
     ~ZC_FBO();
 
-    ZC_FBOBuffersController& GetBuffersController();
     //  Activates framebuffer, viewport and clear supported buffers (color, depth, stencil).
     void Use();
     // Called after rendering in the framebuffer is complete. If framebuffer multisample, updates the result textures using glBlit. And bind deafult frambuffer.

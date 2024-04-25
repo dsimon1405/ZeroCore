@@ -12,10 +12,13 @@ public:
     //  Add to ZC_Renderer or removes from there.
     void NeedDraw(bool needDraw);
     bool IsDrawing();
-    //  Sets texts color, each color range [0.f - 1.f].
+    //  Sets text color, each color range [0.f - 1.f].
     void SetColorFloat(float red, float green, float blue);
-    //  Sets texts color, each color range [0 - 255].
+    //  Sets text color, each color range [0 - 255].
     void SetColorUChar(uchar red, uchar green, uchar blue);
+    //  Sets text color packed in (unsigned int 32) with packing shema uint[32] indices -> [0-1] nothing, [2-11] red, [12-21] green, [22-31] blue.
+    //  For packing may be used ZC_PackColorFloatToUInt(...) or ZC_PackColorUCharToUInt(...) from <ZC/Tools/Math/ZC_Math.h>.
+    void SetColorUInt(uint packedColor);
     //  Resets text.
     void SetText(const std::string& _text);
     //  Changes alignment.

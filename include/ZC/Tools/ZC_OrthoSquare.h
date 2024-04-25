@@ -59,13 +59,12 @@ ZC_OrthoSquare::ZC_OrthoSquare(TTexture _texture, float _width, float _height, f
     rsController(renderSet.MakeZC_RSController()),
     funcIndentChange(std::move(_funcIndentChange))
 {
-    if constexpr (std::is_pointer<TTexture>()) rsController.pTexture = _texture;
+    if constexpr (std::is_pointer<TTexture>()) rsController.SetTexturesHolder(ZC_TexturesHolder{ _texture, 1 });
     else
     {
         texture = std::move(_texture);
-        rsController.pTexture = &texture;
+        rsController.SetTexturesHolder(ZC_TexturesHolder{ &texture, 1 });
     }
-    rsController.texturesCount = 1;
 
     rsController.SetUniformsData(ZC_UN_unPositionWindow, &this->currentIndents);
     SetAlpha(1.f);

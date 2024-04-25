@@ -11,13 +11,16 @@ public:
 
     ZC_FBOBuffersController(bool useColorBuffer, bool useDepthBuffer, bool useStencilBuffer);
 
+    //  makes ZC_FBOBuffersController active, all calls of static functions will call that object.
+    void MakeActive();
+
     /*
     Call glEnable(cap).
 
     Params:
     cap - GL_DEPTH_TEST or GL_STENCIL_TEST.
     */
-    void GlEnable(unsigned int cap);
+    static void GlEnable(unsigned int cap);
 
     /*
     Call glDisable(cap).
@@ -25,9 +28,9 @@ public:
     Params:
     cap - GL_DEPTH_TEST or GL_STENCIL_TEST.
     */
-    void GlDisable(unsigned int cap);
+    static void GlDisable(unsigned int cap);
 
-    //  Clear all enabled buffers (GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT) or those of them, that was disabled, but wasn't cleaned.
+    //  Calls in ZC_FBO::Use(). Clears all buffers which have.
     void GlClear();
 
     /*
@@ -36,12 +39,18 @@ public:
     Params:
     gl_clear_buffer_bit - any combination of next caps: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT.
     */
-    void GlClear(unsigned int gl_clear_buffer_bit);
+    static void GlClear(unsigned int gl_clear_buffer_bit);
+
+    //  calls ZC_GLDraw to update which buffers need to be cleared
+    static void UsingGLDraw();
 
     void SetClearColor(const ZC_Vec4<float>& _clearColor);
 
 private:
-    bool needClearDepth,
+    static inline ZC_FBOBuffersController* pActiveBufferController;
+
+    bool needClearColor,
+        needClearDepth,
         needClearStencil,
         isDepthEnable = false,
         isStecncilEnable = false;

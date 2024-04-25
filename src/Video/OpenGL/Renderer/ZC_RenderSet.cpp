@@ -32,29 +32,13 @@ ZC_RSController ZC_RenderSet::MakeZC_RSController(int texSetId, std::forward_lis
     //  if pBaseUniforms was added make copy
     if (pBaseUniforms) personalData.emplace_front(ZC_RSPDUniforms::Make(pBaseUniforms->GetCopy()));
     //  if no textures sets create without pointer on textures
-    if (texSetId == -1) return ZC_RSController(this->pShP, upGLDraw.Get(), &vao, nullptr, 0, std::move(personalData), renderSets);
+    if (texSetId == -1) return ZC_RSController(this->pShP, upGLDraw.Get(), &vao, ZC_TexturesHolder{ nullptr, 0 }, std::move(personalData), renderSets);
 
     auto pTexSet = ZC_Find(texSets, texSetId);
     assert(pTexSet);  //  can't find texture set
     
-    return ZC_RSController(this->pShP, upGLDraw.Get(), &vao, &*(pTexSet->textures.begin()),
-        static_cast<ulong>(pTexSet->textures.size()), std::move(personalData), renderSets);
-    
-    
-    // ZC_Texture* pTexture = nullptr;     //  pointer on begin of ZC_TexturesSet::textures
-    // ulong texturesCount = 0;
-
-    // for (auto& texSet : texSets)
-    // {
-    //     if (texSet.id == rscConfig.texSetId)
-    //     {
-    //         pTexture = &*(texSet.textures.begin());
-    //         texturesCount = static_cast<ulong>(texSet.textures.size());
-    //     }
-    // }
-    // assert(pTexture);  //  can't find texture set
-    
-    // return ZC_RSController(this->pShP, upGLDraw.Get(), &vao, pTexture, texturesCount, std::move(rscConfig.personalData), renderSets);
+    return ZC_RSController(this->pShP, upGLDraw.Get(), &vao, ZC_TexturesHolder{ &*(pTexSet->textures.begin()), static_cast<uint>(pTexSet->textures.size()) },
+        std::move(personalData), renderSets);
 }
 
 void ZC_RenderSet::AddRenderLevel(ZC_FrameBuffer renderLevel)

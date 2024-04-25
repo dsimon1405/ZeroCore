@@ -19,9 +19,4 @@ private:
         startY,
         width,
         height;
-
-    static inline int currentStartX,
-        currentStartY,
-        currentWidth,
-        currentHeight;
 };

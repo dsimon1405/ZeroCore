@@ -56,13 +56,10 @@ void ZC_Render::SetDrawState(DrawState _drawState)
 
 bool ZC_Render::Draw()
 {
-    if (!renderLevelDrawers.empty())
-    {
-        this->UpdateUBO();
-        fbo.Use();
-        for (auto& upRendererLevelDrawerPair : renderLevelDrawers) upRendererLevelDrawerPair.second->VDraw(fbo.GetBuffersController());
-        fbo.Finish();
-    }
+    this->UpdateUBO();
+    fbo.Use();
+    for (auto& upRendererLevelDrawerPair : renderLevelDrawers) upRendererLevelDrawerPair.second->VDraw();
+    fbo.Finish();
     
     if (drawState == DS_OneFrame) drawState = DS_None;
     return drawState == DS_Loop;

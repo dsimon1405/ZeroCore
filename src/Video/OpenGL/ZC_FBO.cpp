@@ -46,15 +46,11 @@ ZC_FBO::~ZC_FBO()
     sconWindowResize.Disconnect();
 }
 
-ZC_FBOBuffersController& ZC_FBO::GetBuffersController()
-{
-    return buffersController;
-}
-
 void ZC_FBO::Use()
 {
     viewport.Use();
-    framebuffer.Bind(GL_FRAMEBUFFER);
+    framebuffer.Bind();
+    buffersController.MakeActive();
     buffersController.GlClear();
 }
 
@@ -190,7 +186,7 @@ ZC_Texture ZC_FBO::CreateDepthStencilTexture()
 ZC_Framebuffer ZC_FBO::CreateFrameBuffer()
 {
     ZC_Framebuffer _framebuffer(true);
-    _framebuffer.Bind(GL_FRAMEBUFFER);
+    _framebuffer.Bind();
 
     //  color
     if (rendBuffColor.GetId() != 0) glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rendBuffColor.GetId());
@@ -218,7 +214,7 @@ ZC_Framebuffer ZC_FBO::CreateFrameBufferForBlit()
     if (samples == 0 || (!blitColor && !blitDepth && !blitStencil)) return { false };
 
     ZC_Framebuffer _framebufferForBlit(true);
-    _framebufferForBlit.Bind(GL_FRAMEBUFFER);
+    _framebufferForBlit.Bind();
 
     if (blitColor) glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor.GetId(), 0);
     if (blitDepth) glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texDepthStencil.GetId(), 0);

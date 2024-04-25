@@ -3,23 +3,13 @@
 #include "ZC_RenderLevelDrawer.h"
 #include "ZC_RLDForwardList.h"
 
-struct ZC_RLDData_Uniforms_GLDraw_StencilBorder
-{
-    const ZC_Uniforms* pUniforms;
-    const ZC_GLDraw* pGLDraw;
-    const ZC_RSPDStencilBorderData* pStencilBorderData;
-    
-    bool operator == (const ZC_RLDData_Uniforms_GLDraw_StencilBorder& unifAndGLDraw) const noexcept;
-    void Draw() const;
-};
-
 struct ZC_RLDStencilBorder : public ZC_RenderLevelDrawer
 {
     ZC_RLDStencilBorder();
 
     void VAdd(ZC_RSController* pRSController) override;
     bool VErase(ZC_RSController* pRSController) override;
-    void VDraw(ZC_FBOBuffersController& rBuffersController) override;
+    void VDraw() override;
 
 private:
     static inline ZC_ShProg* pShPStencilBorder;

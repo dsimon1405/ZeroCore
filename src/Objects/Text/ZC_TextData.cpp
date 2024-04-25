@@ -24,6 +24,11 @@ void ZC_TextData::SetColorUChar(uchar red, uchar green, uchar blue)
     UpdateColor(colorUint);
 }
 
+void ZC_TextData::SetColorUInt(uint packedColor)
+{
+    UpdateColor(packedColor);
+}
+
 void ZC_TextData::SetText(const std::string& _text)
 {
     if (spTextSharedData->text == _text) return;
@@ -84,7 +89,7 @@ void ZC_TextData::SetFrameBuffer(ZC_FrameBuffer _frameBuffer)
     
     //  adds new render level to ZC_RenderSet (following copy of ZC_RSControllers will create with that ZC_RenderLevel), and to current ZC_RSController
     spTextSharedData->rendererSet.AddRenderLevel(frameBuffer);
-    rsController.AddRenderLevel(frameBuffer);
+    rsController.AddRender(frameBuffer);
 }
 
 float ZC_TextData::GetWidth() const noexcept
@@ -110,10 +115,9 @@ ZC_TextData::ZC_TextData(typename ZC_ShProgs::ShPInitSet* pShPIS, ZC_FontOrigin 
     rsController(spTextSharedData->rendererSet.MakeZC_RSController()),
     drawLevel(_rendererLevel)
 {
-    rsController.pTexture = pFont->GetTexture();  //  the texture pointer is manually set because in the case of Text one texture can be used in multiple objects and is stored in Font::Font and not in ZC_RenderSet::texSets
-    rsController.texturesCount = 1;
+    rsController.SetTexturesHolder(ZC_TexturesHolder{ pFont->GetTexture(), 1 });
 
-    SetColorUChar(0, 0, 0);
+    SetColorUInt(0);    //  white color default
     if (needDraw) NeedDraw(true);
 }
 
