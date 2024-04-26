@@ -1,4 +1,4 @@
-#include <ZC/Video/OpenGL/Renderer/ZC_Draw.h>
+#include <ZC/Video/OpenGL/ZC_GLDraw.h>
 
 #include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/Video/OpenGL/ZC_FBOBuffersController.h>

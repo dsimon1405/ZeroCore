@@ -1,7 +1,6 @@
 #pragma once
 
-#include "ZC_RSController.h"
-#include "ZC_RenderLevelDrawer.h"
+#include "ZC_Drawer.h"
 #include <ZC/Video/OpenGL/ZC_FBO.h>
 #include <ZC/Video/OpenGL/Buffer/ZC_UBOs.h>
 
@@ -20,17 +19,17 @@ public:
         DS_OneFrame     //  draw in fbo only in next frame (if don't need to update fbo's buffer every frame)
     };
 
-    const ZC_FrameBuffer frameBuffer;
+    const ZC_RenderLevel renderLevel;
 
     ZC_Render(ZC_Render&& r);
 
     ~ZC_Render();
 
-    bool operator < (ZC_FrameBuffer rl) const noexcept;
-    bool operator == (ZC_FrameBuffer rl) const noexcept;
+    bool operator < (ZC_RenderLevel rl) const noexcept;
+    bool operator == (ZC_RenderLevel rl) const noexcept;
 
-    void Add(ZC_RSController* pRSController, ZC_DrawLevel drawLevel);
-    void Erase(ZC_RSController* pRSController, ZC_DrawLevel drawLevel);
+    void Add(ZC_DSController* pRSController, ZC_DrawerLevel drawerLevel);
+    void Erase(ZC_DSController* pRSController, ZC_DrawerLevel drawerLevel);
     void SetDrawState(DrawState _drawState);
     //  Returns false if don't need render in next frame
     bool Draw();
@@ -43,7 +42,7 @@ public:
 private:
     DrawState drawState = DS_None;
     ZC_FBO fbo;
-    std::map<ZC_DrawLevel, ZC_uptr<ZC_RenderLevelDrawer>> renderLevelDrawers;
+    std::map<ZC_DrawerLevel, ZC_uptr<ZC_Drawer>> renderLevelDrawers;
 
-    ZC_Render(ZC_FrameBuffer _frameBuffer, ZC_FBO&& _fbo);
+    ZC_Render(ZC_RenderLevel _renderLevel, ZC_FBO&& _fbo);
 };

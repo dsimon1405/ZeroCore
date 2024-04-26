@@ -1,13 +1,13 @@
 #pragma once
 
-typedef int ZC_FrameBuffer;
-enum ZC_FrameBuffers
+typedef int ZC_RenderLevel;
+enum ZC_RenderLevels
 {
-    ZC_FB_Default = 1000,
+    ZC_RL_Default = 1000,
 };
 
 
-enum ZC_DrawLevels
+enum ZC_DrawerLevels
 {
     None = -1,
     Drawing = 0,    //  ZC_RLDDrawing.h     ZC_RLDDrawing
@@ -17,7 +17,7 @@ enum ZC_DrawLevels
     OrthoBlend = TextWindowIntoScene + 1000,    //  ZC_RLDText.h    ZC_RLDText
 };
 
-typedef int ZC_DrawLevel;   //  Draw Levels for user
-#define ZC_DL_None ZC_DrawLevels::None
-#define ZC_DL_Drawing ZC_DrawLevels::Drawing
-#define ZC_DL_StencilBorder ZC_DrawLevels::StencilBorder
+typedef int ZC_DrawerLevel;   //  Draw Levels for user
+#define ZC_DL_None ZC_DrawerLevels::None
+#define ZC_DL_Drawing ZC_DrawerLevels::Drawing
+#define ZC_DL_StencilBorder ZC_DrawerLevels::StencilBorder

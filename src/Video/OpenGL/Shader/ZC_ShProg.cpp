@@ -45,7 +45,12 @@ ZC_ShProg::~ZC_ShProg()
 
 void ZC_ShProg::ActivateOpenGL() const
 {
-    if (id != 0) glUseProgram(id);
+    static GLuint activeId = 0;
+    
+    if (activeId == id || id == 0) return;
+    activeId = id;
+    
+    glUseProgram(id);
 }
 
 GLint ZC_ShProg::GetUniformLocation(const char* name)

@@ -15,6 +15,8 @@ public:
     int GetHeight() const noexcept;
 
 private:
+    static inline ZC_Viewport* pActiveViewport = nullptr;
+
     int startX,
         startY,
         width,

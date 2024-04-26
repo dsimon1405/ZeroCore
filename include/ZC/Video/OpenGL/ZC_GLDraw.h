@@ -1,7 +1,5 @@
 #pragma once
 
-#include <ZC/Video/OpenGL/GL/glcorearb.h>
-
 struct ZC_GLDraw
 {
     virtual ~ZC_GLDraw() = default;
@@ -9,15 +7,14 @@ struct ZC_GLDraw
 
 private:
     virtual void VDraw() const = 0;
-    // virtual void UpdateData(ZC_GLDraw* pGLDraw) = 0;
 };
 
 struct ZC_DrawElements : public ZC_GLDraw
 {
-    GLenum mode;
+    unsigned int mode;
     int count;
-    GLenum type;
-    GLuint startByteOffset;
+    unsigned int type;
+    unsigned int startByteOffset;
 
     /*
     Params:
@@ -26,15 +23,14 @@ struct ZC_DrawElements : public ZC_GLDraw
     - _type - type of values in indices: GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, or GL_UNSIGNED_INT.
     - _startByteOffset - start offset in indices buffer.
     */
-    ZC_DrawElements(GLenum _mode, int _count, GLenum _type, GLuint _startByteOffset);
+    ZC_DrawElements(unsigned int _mode, int _count, unsigned int _type, unsigned int _startByteOffset);
 
     void VDraw() const override;
-    // void UpdateData(ZC_GLDraw* pGLDraw);
 };
 
 struct ZC_DrawArrays : public ZC_GLDraw
 {
-    GLenum mode;
+    unsigned int mode;
     int first;
     int count;
 
@@ -44,9 +40,8 @@ struct ZC_DrawArrays : public ZC_GLDraw
     - _first - starting index in the enabled arrays.
     - _count - number of vertices.
     */
-    ZC_DrawArrays(GLenum _mode, int _first, int _count);
+    ZC_DrawArrays(unsigned int _mode, int _first, int _count);
 
     void VDraw() const override;
-    // void UpdateData(ZC_GLDraw* pGLDraw);
 };
 

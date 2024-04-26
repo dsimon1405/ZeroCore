@@ -2,7 +2,7 @@
 
 #include "ZC_UBO.h"
 #include <ZC/Tools/Function/ZC_Function.h>
-#include <ZC/Video/OpenGL/Renderer/ZC_FrameBuffer.h>
+#include <ZC/Video/OpenGL/Renderer/ZC_RenderLevel.h>
 
 #include <forward_list>
 
@@ -14,14 +14,14 @@ public:
 	virtual ~ZC_UBOs() = default;
 
 	/*
-	Adds function for update existing ZC_UBO to one of the ZC_Render (frameBuffer) or to ZC_Renderer.
+	Adds function for update existing ZC_UBO to one of the ZC_Render (renderLevel) or to ZC_Renderer.
 
 	Params:
 	- pUbo - pointer on ubo.
 	- fUpdate - function for update.
-	- frameBuffer - one of the ZC_Render or set ZC_AddToRenderer to add in ZC_Renderer.
+	- renderLevel - one of the ZC_Render or set ZC_AddToRenderer to add in ZC_Renderer.
 	*/
-	static void AddUpdateFunction(ZC_UBO* pUbo, ZC_Function<void()> fUpdate, ZC_FrameBuffer frameBuffer);
+	static void AddUpdateFunction(ZC_UBO* pUbo, ZC_Function<void()> fUpdate, ZC_RenderLevel renderLevel);
 	void AddUBO(ZC_UBO* pUbo, ZC_Function<void()>&& fUpdate);
 	void EraseUBO(ZC_UBO* pUbo);
 

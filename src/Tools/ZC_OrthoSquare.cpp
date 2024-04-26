@@ -12,7 +12,7 @@ void ZC_OrthoSquare::SetSize(float _width, float _height)
         0.f,    _height,     //  tl
     };
                                 //  8 -> is size of bl wich don't change
-    renderSet.buffers.begin()->BufferSubData(8, sizeof(vertices), vertices);
+    drawerSet.buffers.begin()->BufferSubData(8, sizeof(vertices), vertices);
 }
 
 void ZC_OrthoSquare::SetAlpha(float alpha)
@@ -20,20 +20,20 @@ void ZC_OrthoSquare::SetAlpha(float alpha)
     alpha = alpha < 0.f ? 0.f
         : alpha > 1.f ? 1.f
         : alpha;
-    rsController.SetUniformsData(ZC_UN_unAlpha, &alpha);
+    dsController.SetUniformsData(ZC_UN_unAlpha, &alpha);
 }
 
 void ZC_OrthoSquare::NeedDraw(bool needDraw)
 {
-    needDraw ? rsController.SwitchToDrawLvl(frameBuffer, ZC_DrawLevels::OrthoBlend) : rsController.SwitchToDrawLvl(frameBuffer, ZC_DL_None);
+    needDraw ? dsController.SwitchToDrawLvl(renderLevel, ZC_DrawerLevels::OrthoBlend) : dsController.SwitchToDrawLvl(renderLevel, ZC_DL_None);
 }
 
 bool ZC_OrthoSquare::IsDrawing()
 {
-    return rsController.IsDrawing(frameBuffer);
+    return dsController.IsDrawing(renderLevel);
 }
 
-ZC_RenderSet ZC_OrthoSquare::CreateRenderSet(float _width, float _height)
+ZC_DrawerSet ZC_OrthoSquare::CreateDrawerSet(float _width, float _height)
 {
     float vertices[]
     {
@@ -66,7 +66,7 @@ ZC_RenderSet ZC_OrthoSquare::CreateRenderSet(float _width, float _height)
     std::forward_list<ZC_Buffer> buffers;
     buffers.emplace_front(std::move(vbo));
 
-    return ZC_RenderSet(pShPIS, std::move(vao), std::move(upGLDraw), std::move(buffers), {}, { { frameBuffer } });
+    return ZC_DrawerSet(pShPIS, std::move(vao), std::move(upGLDraw), std::move(buffers), {}, { { renderLevel } });
 }
 
 void ZC_OrthoSquare::VCallAfterZC_WindowResized()

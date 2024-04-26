@@ -4,12 +4,12 @@
 
 void ZC_TextData::NeedDraw(bool needDraw)
 {
-    needDraw ? rsController.SwitchToDrawLvl(frameBuffer, drawLevel) : rsController.SwitchToDrawLvl(frameBuffer, ZC_DL_None);
+    needDraw ? dsController.SwitchToDrawLvl(renderLevel, drawerLevel) : dsController.SwitchToDrawLvl(renderLevel, ZC_DL_None);
 }
 
 bool ZC_TextData::IsDrawing()
 {
-    return rsController.IsDrawing(frameBuffer);
+    return dsController.IsDrawing(renderLevel);
 }
 
 void ZC_TextData::SetColorFloat(float red, float green, float blue)
@@ -34,9 +34,9 @@ void ZC_TextData::SetText(const std::string& _text)
     if (spTextSharedData->text == _text) return;
     spTextSharedData->text = _text;
 
-    //  change data in ZC_DrawElements don't changing pointer in spTextSharedData->rendererSet.upGLDraw
-    dynamic_cast<ZC_DrawElements&>(*(spTextSharedData->rendererSet.upGLDraw)) =     //  vbo - second in buffers (firsts added); ebo - first in buffers (seconds added)
-        CalculateAndSetTextData(*(++(spTextSharedData->rendererSet.buffers.begin())), *(spTextSharedData->rendererSet.buffers.begin()),
+    //  change data in ZC_DrawElements don't changing pointer in spTextSharedData->drawerSet.upGLDraw
+    dynamic_cast<ZC_DrawElements&>(*(spTextSharedData->drawerSet.upGLDraw)) =     //  vbo - second in buffers (firsts added); ebo - first in buffers (seconds added)
+        CalculateAndSetTextData(*(++(spTextSharedData->drawerSet.buffers.begin())), *(spTextSharedData->drawerSet.buffers.begin()),
         spTextSharedData->text, spTextSharedData->alignment);
     SetNewTextSize();
 }
@@ -46,9 +46,9 @@ void ZC_TextData::SetAlignment(ZC_TextAlignment _alignment)
     if (spTextSharedData->alignment == _alignment) return;
     spTextSharedData->alignment = _alignment;
 
-    //  change data in ZC_DrawElements don't changing pointer in spTextSharedData->rendererSet.upGLDraw
-    dynamic_cast<ZC_DrawElements&>(*(spTextSharedData->rendererSet.upGLDraw)) =     //  vbo - second in buffers (firsts added); ebo - first in buffers (seconds added)
-        CalculateAndSetTextData(*(++(spTextSharedData->rendererSet.buffers.begin())), *(spTextSharedData->rendererSet.buffers.begin()),
+    //  change data in ZC_DrawElements don't changing pointer in spTextSharedData->drawerSet.upGLDraw
+    dynamic_cast<ZC_DrawElements&>(*(spTextSharedData->drawerSet.upGLDraw)) =     //  vbo - second in buffers (firsts added); ebo - first in buffers (seconds added)
+        CalculateAndSetTextData(*(++(spTextSharedData->drawerSet.buffers.begin())), *(spTextSharedData->drawerSet.buffers.begin()),
         spTextSharedData->text, spTextSharedData->alignment);
 }
 
@@ -67,29 +67,29 @@ void ZC_TextData::SetTextAndAlignment(const std::string& _text, ZC_TextAlignment
         recalculateAlignment = true;
     }
     if (recalculateText || recalculateAlignment)
-        dynamic_cast<ZC_DrawElements&>(*(spTextSharedData->rendererSet.upGLDraw)) =     //  vbo - second in buffers (firsts added); ebo - first in buffers (seconds added)
-            CalculateAndSetTextData(*(++(spTextSharedData->rendererSet.buffers.begin())), *(spTextSharedData->rendererSet.buffers.begin()),
+        dynamic_cast<ZC_DrawElements&>(*(spTextSharedData->drawerSet.upGLDraw)) =     //  vbo - second in buffers (firsts added); ebo - first in buffers (seconds added)
+            CalculateAndSetTextData(*(++(spTextSharedData->drawerSet.buffers.begin())), *(spTextSharedData->drawerSet.buffers.begin()),
             spTextSharedData->text, spTextSharedData->alignment);
 
     if (recalculateText) SetNewTextSize();
 }
 
-void ZC_TextData::SetDrawLevel(ZC_DrawLevel _drawLevel)
+void ZC_TextData::SetDrawLevel(ZC_DrawerLevel _drawLevel)
 {
-    if (drawLevel == _drawLevel) return;
-    drawLevel = _drawLevel;
-    if (rsController.IsDrawing(frameBuffer)) rsController.SwitchToDrawLvl(frameBuffer, drawLevel);
+    if (drawerLevel == _drawLevel) return;
+    drawerLevel = _drawLevel;
+    if (dsController.IsDrawing(renderLevel)) dsController.SwitchToDrawLvl(renderLevel, drawerLevel);
 }
 
-void ZC_TextData::SetFrameBuffer(ZC_FrameBuffer _frameBuffer)
+void ZC_TextData::SetFrameBuffer(ZC_RenderLevel _frameBuffer)
 {
-    if (frameBuffer == _frameBuffer) return;
-    rsController.SwitchToDrawLvl(frameBuffer, ZC_DL_None);  //  stop drawing on previous render level
-    frameBuffer = _frameBuffer;
+    if (renderLevel == _frameBuffer) return;
+    dsController.SwitchToDrawLvl(renderLevel, ZC_DL_None);  //  stop drawing on previous render level
+    renderLevel = _frameBuffer;
     
-    //  adds new render level to ZC_RenderSet (following copy of ZC_RSControllers will create with that ZC_RenderLevel), and to current ZC_RSController
-    spTextSharedData->rendererSet.AddRenderLevel(frameBuffer);
-    rsController.AddRender(frameBuffer);
+    //  adds new render level to ZC_DrawerSet (following copy of ZC_RSControllers will create with that ZC_RenderLevel), and to current ZC_DSController
+    spTextSharedData->drawerSet.AddRenderLevel(renderLevel);
+    dsController.AddRender(renderLevel);
 }
 
 float ZC_TextData::GetWidth() const noexcept
@@ -108,14 +108,14 @@ std::string ZC_TextData::GetText() const noexcept
 }
 
 ZC_TextData::ZC_TextData(typename ZC_ShProgs::ShPInitSet* pShPIS, ZC_FontOrigin _fontOrigin, const ZC_FontData& fontData, const std::string& _text,
-        ZC_TextAlignment _alignment, ZC_DrawLevel _rendererLevel, bool needDraw)
+        ZC_TextAlignment _alignment, ZC_DrawerLevel _rendererLevel, bool needDraw)
     : pFont(ZC_Fonts::GetFont(fontData)),
     fontOrigin(_fontOrigin),
-    spTextSharedData(ZC_sptrMake<SharedData>(_text, _alignment, MakeRendererSet(pShPIS, _text, _alignment))),
-    rsController(spTextSharedData->rendererSet.MakeZC_RSController()),
-    drawLevel(_rendererLevel)
+    spTextSharedData(ZC_sptrMake<SharedData>(_text, _alignment, CreateDrawerSet(pShPIS, _text, _alignment))),
+    dsController(spTextSharedData->drawerSet.MakeZC_DSController()),
+    drawerLevel(_rendererLevel)
 {
-    rsController.SetTexturesHolder(ZC_TexturesHolder{ pFont->GetTexture(), 1 });
+    dsController.SetTexturesHolder(ZC_TexturesHolder{ pFont->GetTexture(), 1 });
 
     SetColorUInt(0);    //  white color default
     if (needDraw) NeedDraw(true);
@@ -125,13 +125,13 @@ ZC_TextData::ZC_TextData(const ZC_TextData& td)
     : pFont(td.pFont),
     fontOrigin(td.fontOrigin),
     spTextSharedData(td.spTextSharedData),
-    rsController(td.rsController.MakeCopy()),
+    dsController(td.dsController.MakeCopy()),
     textWidth(td.textWidth),
     textHeight(td.textHeight),
-    drawLevel(td.drawLevel)
+    drawerLevel(td.drawerLevel)
 {}
 
-ZC_RenderSet ZC_TextData::MakeRendererSet(typename ZC_ShProgs::ShPInitSet* pShPIS, const std::string& _text, ZC_TextAlignment _alignment)
+ZC_DrawerSet ZC_TextData::CreateDrawerSet(typename ZC_ShProgs::ShPInitSet* pShPIS, const std::string& _text, ZC_TextAlignment _alignment)
 {
     ZC_Buffer vbo(GL_ARRAY_BUFFER);
     ZC_Buffer ebo(GL_ELEMENT_ARRAY_BUFFER);
@@ -144,7 +144,7 @@ ZC_RenderSet ZC_TextData::MakeRendererSet(typename ZC_ShProgs::ShPInitSet* pShPI
     buffers.emplace_front(std::move(vbo));
     buffers.emplace_front(std::move(ebo));
 
-    return ZC_RenderSet(pShPIS, std::move(vao), std::move(upGLDraw), std::move(buffers));
+    return ZC_DrawerSet(pShPIS, std::move(vao), std::move(upGLDraw), std::move(buffers));
 }
 
 ZC_DrawElements ZC_TextData::CalculateAndSetTextData(ZC_Buffer& rVBO, ZC_Buffer& rEBO, const std::string& text, ZC_TextAlignment alignment)
@@ -160,7 +160,7 @@ ZC_DrawElements ZC_TextData::CalculateAndSetTextData(ZC_Buffer& rVBO, ZC_Buffer&
     ZC_DA<uchar> elements = ZC_Buffer::GetTriangleElements(elementsCount, elementsType, static_cast<ulong>(pointsCoords.size() / 4), 0);
 
     rEBO.BufferData(elements.size, elements.Begin(), GL_STATIC_DRAW);
-    //  creates on stack ZC_DrawElements cause in MakeRendererSet() will created in heap ZC_uptr<ZC GLDraw>, in other functions updates data created in MakeRendererSet()
+    //  creates on stack ZC_DrawElements cause in CreateDrawerSet() will created in heap ZC_uptr<ZC GLDraw>, in other functions updates data created in CreateDrawerSet()
     return { GL_TRIANGLES, static_cast<int>(elementsCount), elementsType, 0 };
 }
 
@@ -170,5 +170,5 @@ void ZC_TextData::UpdateColor(uint color)
     spTextSharedData->color = color;
 
     ZC_RSPDUniformData unColor(ZC_UN_unColor, &color);
-    rsController.SetData(ZC_RSPDC_uniforms, &unColor);
+    dsController.SetData(ZC_RSPDC_uniforms, &unColor);
 }

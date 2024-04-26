@@ -34,12 +34,12 @@ public:
     void GlClear();
 
     /*
-    Clears selected buffer(s). That function must be called before GLEnable, if need clear some buffer(s) before filling that buffer(s).
+    Clears selected buffer(s).
 
     Params:
-    gl_clear_buffer_bit - any combination of next caps: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT.
+    clearMask - any combination of next caps: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT.
     */
-    static void GlClear(unsigned int gl_clear_buffer_bit);
+    static void GlClear(unsigned int clearMask);
 
     //  calls ZC_GLDraw to update which buffers need to be cleared
     static void UsingGLDraw();

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <ZC/Video/OpenGL/Renderer/ZC_Draw.h>
+#include <ZC/Video/OpenGL/ZC_GLDraw.h>
 #include <ZC/Video/OpenGL/Texture/ZC_Texture.h>
 #include <ZC/Video/OpenGL/VAO/ZC_VAO.h>
 #include "ZC_RSPersonalData.h"
-#include "ZC_FrameBuffer.h"
+#include "ZC_RenderLevel.h"
 
 #include <forward_list>
 
@@ -20,47 +20,47 @@ struct ZC_TexturesHolder
 
 class ZC_Render;
 
-struct ZC_RSController   //  stores data of object of ZC_RenderSet for search in ZC_Renderer
+struct ZC_DSController   //  stores data of object of ZC_DrawerSet for search in ZC_Renderer
 {
     struct RenderSet
     {
         ZC_Render* pRender;
-        ZC_DrawLevel drawLevel;
+        ZC_DrawerLevel drawerLevel;
 
-        RenderSet(ZC_FrameBuffer renderLevel);
+        RenderSet(ZC_RenderLevel renderLevel);
 
-        bool operator == (ZC_FrameBuffer renderLevel);
+        bool operator == (ZC_RenderLevel renderLevel);
 
-        void SwitchToDrawLevel(ZC_DrawLevel _drawLevel, ZC_RSController* pRSController);
+        void SwitchToDrawLevel(ZC_DrawerLevel _drawLevel, ZC_DSController* pRSController);
     };
 
-    // ZC_RSController() = default;
+    // ZC_DSController() = default;
 
     /*
     Params:
     _pTexture - in ZC_RSTextured pointer on the start of "textures" into "texSets"; in ZC_RSNotTextured nullptr.
     _texturesCount - count of textures in _pTexture array.
     */
-    ZC_RSController(const ZC_ShProg* _pShProg, const ZC_GLDraw* _pGLDraw, const ZC_VAO* _pVAO, const ZC_TexturesHolder& _texturesHolder,
+    ZC_DSController(const ZC_ShProg* _pShProg, const ZC_GLDraw* _pGLDraw, const ZC_VAO* _pVAO, const ZC_TexturesHolder& _texturesHolder,
         std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData, std::forward_list<RenderSet> _renderSets);
 
-    ~ZC_RSController();
+    ~ZC_DSController();
 
     /*
     Switchs to choosen draw level in choosen render level. In one render level could only at one draw level at time.
 
     Paramas:
-    - frameBuffer - level of render for switching.
-    - drawLevel - where to switch in ZC_Render. If ZC_DL_None, just remove from ZC_Render.
+    - renderLevel - level of render for switching.
+    - drawerLevel - where to switch in ZC_Render. If ZC_DL_None, just remove from ZC_Render.
     */
-    void SwitchToDrawLvl(ZC_FrameBuffer frameBuffer, ZC_DrawLevel drawLevel);
+    void SwitchToDrawLvl(ZC_RenderLevel renderLevel, ZC_DrawerLevel drawerLevel);
     void SetData(ZC_RSPDCategory category, ZC_RSPDStoredData* pData);
     void SetUniformsData(ZC_UniformName unName, void* pData);
     const void* GetPersonalData(ZC_RSPDCategory category) const;
     const void* GetDataFromUniforms(ZC_UniformName unName) const;
-    ZC_RSController MakeCopy() const;
-    bool IsDrawing(ZC_FrameBuffer frameBuffer);
-    void AddRender(ZC_FrameBuffer frameBuffer);
+    ZC_DSController MakeCopy() const;
+    bool IsDrawing(ZC_RenderLevel renderLevel);
+    void AddRender(ZC_RenderLevel renderLevel);
     void SetTexturesHolder(const ZC_TexturesHolder& _texturesHolder);
 
     template<typename T>
@@ -81,7 +81,7 @@ struct ZC_RLDData_Uniforms_GLDraw
     const ZC_GLDraw* pGLDraw;
     
     bool operator == (const ZC_RLDData_Uniforms_GLDraw& unifAndGLDraw) const noexcept;
-    void Draw() const;
+    void Draw();
 };
 
 struct ZC_RLDData_Uniforms_GLDraw_StencilBorder
@@ -89,14 +89,15 @@ struct ZC_RLDData_Uniforms_GLDraw_StencilBorder
     const ZC_Uniforms* pUniforms;
     const ZC_GLDraw* pGLDraw;
     const ZC_RSPDStencilBorderData* pStencilBorderData;
+    bool isFirstDraw = true;
     
     bool operator == (const ZC_RLDData_Uniforms_GLDraw_StencilBorder& unifAndGLDraw) const noexcept;
-    void Draw() const;
+    void Draw();
 };
 
 
 template<typename T>
-auto ZC_RSController::GetByType()
+auto ZC_DSController::GetByType()
 {
     if constexpr (std::same_as<T, const ZC_ShProg*>) return pShProg;
     else if constexpr (std::same_as<T, const ZC_VAO*>) return pVAO;

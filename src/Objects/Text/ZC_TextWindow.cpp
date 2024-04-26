@@ -3,11 +3,11 @@
 ZC_TextWindow::ZC_TextWindow(ZC_FontData fontData, const std::string& _text, ZC_TextAlignment _alignment,
         float windowIndentX, float windowIndentY, ZC_WindowOrthoIndentFlags indentFlags, bool needDraw)
     : ZC_WindowOrthoIndent(false, 0, 0, windowIndentX, windowIndentY, indentFlags),
-    ZC_TextData(ZC_ShProgs::Get(ShPN_ZC_TextWindow), ZC_FO_bottomLeft, fontData, _text, _alignment, ZC_DrawLevels::OrthoBlend, needDraw)
+    ZC_TextData(ZC_ShProgs::Get(ShPN_ZC_TextWindow), ZC_FO_bottomLeft, fontData, _text, _alignment, ZC_DrawerLevels::OrthoBlend, needDraw)
 {
     SetNewTextSize();
 
-    rsController.SetUniformsData(ZC_UN_unPositionWindow, &this->currentIndents);
+    dsController.SetUniformsData(ZC_UN_unPositionWindow, &this->currentIndents);
     SetAlpha(1.f);
 }
 
@@ -28,14 +28,14 @@ void ZC_TextWindow::SetAlpha(float alpha)
     alpha = alpha < 0.f ? 0.f
         : alpha > 1.f ? 1.f
         : alpha;
-    rsController.SetUniformsData(ZC_UN_unAlpha, &alpha);
+    dsController.SetUniformsData(ZC_UN_unAlpha, &alpha);
 }
 
 ZC_TextWindow::ZC_TextWindow(const ZC_TextWindow& tw)
     : ZC_WindowOrthoIndent(dynamic_cast<const ZC_WindowOrthoIndent&>(tw)),
     ZC_TextData(dynamic_cast<const ZC_TextData&>(tw))
 {
-    rsController.SetUniformsData(ZC_UN_unPositionWindow, &this->currentIndents);
+    dsController.SetUniformsData(ZC_UN_unPositionWindow, &this->currentIndents);
 }
 
 void ZC_TextWindow::SetNewTextSize()

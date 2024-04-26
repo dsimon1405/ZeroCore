@@ -1,10 +1,10 @@
 #include <ZC/Objects/Text/ZC_TextScene.h>
 
 ZC_TextScene::ZC_TextScene(ZC_FontData fontData, const std::string& _text, ZC_TextAlignment _alignment, bool needDraw)
-    : ZC_TextData(ZC_ShProgs::Get(ShPN_ZC_TextScene), ZC_FO_center, fontData, _text, _alignment, ZC_DrawLevels::TextScene, needDraw),
+    : ZC_TextData(ZC_ShProgs::Get(ShPN_ZC_TextScene), ZC_FO_center, fontData, _text, _alignment, ZC_DrawerLevels::TextScene, needDraw),
     scale(startHeightInScene / fontData.pixelsHeight)
 {
-    rsController.SetUniformsData(ZC_UN_unModel, &(model.Scale(scale, scale, scale)));
+    dsController.SetUniformsData(ZC_UN_unModel, &(model.Scale(scale, scale, scale)));
 }
 
 void ZC_TextScene::SetPosition(const ZC_Vec3<float>& pos) noexcept
@@ -56,7 +56,7 @@ ZC_TextScene::ZC_TextScene(const ZC_TextScene& ts)
     rotationAngle(ts.rotationAngle),
     rotationAxises(ts.rotationAxises)
 {
-    rsController.SetUniformsData(ZC_UN_unModel, &model);
+    dsController.SetUniformsData(ZC_UN_unModel, &model);
 }
 
 void ZC_TextScene::RecalculateModelMatrix()

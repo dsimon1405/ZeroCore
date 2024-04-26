@@ -47,8 +47,14 @@ extern PFNGLENABLEPROC pglEnable;
 extern PFNGLDISABLEPROC pglDisable;
 #define glDisable pglDisable
 
+//  blend
+
 extern PFNGLBLENDFUNCPROC pglBlendFunc;
 #define glBlendFunc pglBlendFunc
+
+extern PFNGLBLENDCOLORPROC pglBlendColor;
+#define glBlendColor pglBlendColor
+
 
 //  debug
 

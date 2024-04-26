@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ZC/Tools/ZC_string.h>
-#include <ZC/Video/OpenGL/Renderer/ZC_RenderSet.h>
 #include <ZC/Tools/Signal/ZC_SConnection.h>
 #include <ZC/Tools/ZC_WindowOrthoIndent.h>
 

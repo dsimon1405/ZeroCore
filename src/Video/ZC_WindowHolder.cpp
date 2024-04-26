@@ -70,5 +70,5 @@ void ZC_WindowHolder::LoadShProgs()
 
 void ZC_WindowHolder::AddZC_RenderLevels()
 {
-    ZC_Renders::CreateRender(ZC_FB_Default, ZC_Render::DS_Loop, ZC_FBO());
+    ZC_Renders::CreateRender(ZC_RL_Default, ZC_Render::DS_Loop, ZC_FBO());
 }

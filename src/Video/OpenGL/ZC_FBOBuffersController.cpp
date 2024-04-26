@@ -28,14 +28,12 @@ void ZC_FBOBuffersController::GlEnable(GLenum cap)
         if (pActiveBufferController->isDepthEnable) return;
         glEnable(GL_DEPTH_TEST);
         pActiveBufferController->isDepthEnable = true;
-        // needClearDepth = true;
         break;
     case GL_STENCIL_TEST:
         assert(pActiveBufferController->haveStencilBuffer);
         if (pActiveBufferController->isStecncilEnable) return;
         glEnable(GL_STENCIL_TEST);
         pActiveBufferController->isStecncilEnable = true;
-        // needClearStencil = true;
         break;
     default: assert(false); break;
     }
@@ -47,13 +45,13 @@ void ZC_FBOBuffersController::GlDisable(GLenum cap)
     switch (cap)
     {
     case GL_DEPTH_TEST:
-        assert(pActiveBufferController->haveDepthBuffer);
+        // assert(pActiveBufferController->haveDepthBuffer);
         if (!pActiveBufferController->isDepthEnable) return;
         glDisable(GL_DEPTH_TEST);
         pActiveBufferController->isDepthEnable = false;
         break;
     case GL_STENCIL_TEST:
-        assert(pActiveBufferController->haveStencilBuffer);
+        // assert(pActiveBufferController->haveStencilBuffer);
         if (!pActiveBufferController->isStecncilEnable) return;
         glDisable(GL_STENCIL_TEST);
         pActiveBufferController->isStecncilEnable = false;
@@ -75,31 +73,35 @@ void ZC_FBOBuffersController::GlClear()
     {
         clearMask |= GL_DEPTH_BUFFER_BIT;
         needClearDepth = false;
+        isDepthEnable = false;
     }
     if (haveStencilBuffer)
     {
         clearMask |= GL_STENCIL_BUFFER_BIT;
         needClearStencil = false;
+        isStecncilEnable = false;
     }
     glClear(clearMask);
 }
 
-void ZC_FBOBuffersController::GlClear(GLenum gl_clear_buffer_bit)
+void ZC_FBOBuffersController::GlClear(unsigned int clearMask)
 {
-    assert((gl_clear_buffer_bit & (~(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT))) == 0);
-    if (((gl_clear_buffer_bit & GL_COLOR_BUFFER_BIT) && pActiveBufferController->needClearColor)
-        || ((gl_clear_buffer_bit & GL_DEPTH_BUFFER_BIT) && pActiveBufferController->needClearDepth)
-        || ((gl_clear_buffer_bit & GL_STENCIL_BUFFER_BIT) && pActiveBufferController->needClearStencil))
+    if (clearMask == 0) return;
+    assert((clearMask & (~(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT))) == 0);
+
+    if (((clearMask & GL_COLOR_BUFFER_BIT) && pActiveBufferController->needClearColor)
+        || ((clearMask & GL_DEPTH_BUFFER_BIT) && pActiveBufferController->needClearDepth)
+        || ((clearMask & GL_STENCIL_BUFFER_BIT) && pActiveBufferController->needClearStencil))
     {
-        if (gl_clear_buffer_bit & GL_COLOR_BUFFER_BIT)
+        if (clearMask & GL_COLOR_BUFFER_BIT)
         {
             pActiveBufferController->CheckClearColor();
             pActiveBufferController->needClearColor = false;
         }
-        glClear(gl_clear_buffer_bit);
+        glClear(clearMask);
 
-        if (gl_clear_buffer_bit & GL_DEPTH_BUFFER_BIT) pActiveBufferController->needClearDepth = false;
-        if (gl_clear_buffer_bit & GL_STENCIL_BUFFER_BIT) pActiveBufferController->needClearStencil = false;
+        if (clearMask & GL_DEPTH_BUFFER_BIT) pActiveBufferController->needClearDepth = false;
+        if (clearMask & GL_STENCIL_BUFFER_BIT) pActiveBufferController->needClearStencil = false;
     }
 }
 

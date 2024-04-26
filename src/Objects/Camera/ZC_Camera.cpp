@@ -4,7 +4,7 @@
 #include <ZC/Events/ZC_Events.h>
 
 ZC_Camera::ZC_Camera(const ZC_Vec3<float>& _camPos, const ZC_Vec3<float>& _lookOn, const ZC_Vec3<float>& _up,
-        const ZC_Perspective& persp, const ZC_Ortho& ortho, bool useWindowSize, ZC_FrameBuffer frameBuffer)
+        const ZC_Perspective& persp, const ZC_Ortho& ortho, bool useWindowSize, ZC_RenderLevel renderLevel)
     : ZC_View(&(uboSet.position), _lookOn, _up),
     ZC_Perspective(persp),
     ZC_Ortho(ortho),
@@ -24,7 +24,7 @@ ZC_Camera::ZC_Camera(const ZC_Vec3<float>& _camPos, const ZC_Vec3<float>& _lookO
 
     UboUpdate();
 
-    ZC_UBOs::AddUpdateFunction(ubo.Get(), { &ZC_Camera::UboUpdate, this }, frameBuffer);
+    ZC_UBOs::AddUpdateFunction(ubo.Get(), { &ZC_Camera::UboUpdate, this }, renderLevel);
 }
 
 ZC_Camera::ZC_Camera(ZC_Camera&& c)

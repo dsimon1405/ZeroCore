@@ -8,7 +8,7 @@
 #include <cassert>
 
 ZC_Render::ZC_Render(ZC_Render&& r)
-    : frameBuffer(r.frameBuffer),
+    : renderLevel(r.renderLevel),
     drawState(r.drawState),
     fbo(std::move(r.fbo)),
     renderLevelDrawers(std::move(r.renderLevelDrawers))
@@ -19,28 +19,28 @@ ZC_Render::~ZC_Render()
     if (drawState != DS_None) ZC_Renderer::Erase(this);
 }
 
-bool ZC_Render::operator < (ZC_FrameBuffer rl) const noexcept
+bool ZC_Render::operator < (ZC_RenderLevel rl) const noexcept
 {
-    return frameBuffer < rl;
+    return renderLevel < rl;
 }
 
-bool ZC_Render::operator == (ZC_FrameBuffer rl) const noexcept
+bool ZC_Render::operator == (ZC_RenderLevel rl) const noexcept
 {
-    return frameBuffer == rl;
+    return renderLevel == rl;
 }
 
-void ZC_Render::Add(ZC_RSController* pRSController, ZC_DrawLevel drawLevel)
+void ZC_Render::Add(ZC_DSController* pRSController, ZC_DrawerLevel drawerLevel)
 {
-    auto rendLvlDrawersIter = renderLevelDrawers.find(drawLevel);
+    auto rendLvlDrawersIter = renderLevelDrawers.find(drawerLevel);
     if (rendLvlDrawersIter == renderLevelDrawers.end()) //  add new level in renderLevelDrawers and save iterator on it
-        rendLvlDrawersIter = renderLevelDrawers.emplace(drawLevel, ZC_RenderLevelDrawer::GetRendererLevelDrawer(drawLevel)).first;
+        rendLvlDrawersIter = renderLevelDrawers.emplace(drawerLevel, ZC_Drawer::GetRendererLevelDrawer(drawerLevel)).first;
 
     rendLvlDrawersIter->second->VAdd(pRSController);
 }
     
-void ZC_Render::Erase(ZC_RSController* pRSController, ZC_DrawLevel drawLevel)
+void ZC_Render::Erase(ZC_DSController* pRSController, ZC_DrawerLevel drawerLevel)
 {
-    auto rendLvlDrawersIter = renderLevelDrawers.find(drawLevel);
+    auto rendLvlDrawersIter = renderLevelDrawers.find(drawerLevel);
     assert(rendLvlDrawersIter != renderLevelDrawers.end());   //  can't find Lvl
     //  erase from renderer level, if returns true, renderer level empty and must be erased from renderLevelDrawers.
     if (rendLvlDrawersIter->second->VErase(pRSController)) renderLevelDrawers.erase(rendLvlDrawersIter);
@@ -75,8 +75,8 @@ const ZC_Texture* ZC_Render::GetDepthTexture() const noexcept
     return fbo.GetDepthTexture();
 }
 
-ZC_Render::ZC_Render(ZC_FrameBuffer _frameBuffer, ZC_FBO&& _fbo)
-    : frameBuffer(_frameBuffer),
+ZC_Render::ZC_Render(ZC_RenderLevel _renderLevel, ZC_FBO&& _fbo)
+    : renderLevel(_renderLevel),
     fbo(std::move(_fbo))
 {}
 

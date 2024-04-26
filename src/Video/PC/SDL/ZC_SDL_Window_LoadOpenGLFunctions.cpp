@@ -26,8 +26,11 @@ bool ZC_SDL_Window::LoadOpenGLFunctions()
     if (!pglEnable) { ZC_ErrorLogger::Err("glEnable SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglDisable = (PFNGLDISABLEPROC)SDL_GL_GetProcAddress("glDisable");
     if (!pglDisable) { ZC_ErrorLogger::Err("glDisable SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    //  blend
     pglBlendFunc = (PFNGLBLENDFUNCPROC)SDL_GL_GetProcAddress("glBlendFunc");
     if (!pglBlendFunc) { ZC_ErrorLogger::Err("glBlendFunc SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglBlendColor = (PFNGLBLENDCOLORPROC)SDL_GL_GetProcAddress("glBlendColor");
+    if (!pglBlendColor) { ZC_ErrorLogger::Err("glBlendColor SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     //  debug
     pglDebugMessageCallback = (PFNGLDEBUGMESSAGECALLBACKPROC)SDL_GL_GetProcAddress("glDebugMessageCallback");
     if (!pglDebugMessageCallback) { ZC_ErrorLogger::Err("glDebugMessageCallback SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
@@ -243,7 +246,10 @@ PFNGLREADPIXELSPROC pglReadPixels = nullptr;
 //  enble
 PFNGLENABLEPROC pglEnable = nullptr;
 PFNGLDISABLEPROC pglDisable = nullptr;
+
+//  blend
 PFNGLBLENDFUNCPROC pglBlendFunc = nullptr;
+PFNGLBLENDCOLORPROC pglBlendColor = nullptr;
 
 //  debug
 PFNGLDEBUGMESSAGECALLBACKPROC pglDebugMessageCallback = nullptr;

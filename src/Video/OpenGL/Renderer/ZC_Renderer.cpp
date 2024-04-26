@@ -1,12 +1,11 @@
 #include <ZC/Video/OpenGL/Renderer/ZC_Renderer.h>
 
 #include <ZC/Tools/Container/ZC_ContFunc.h>
-#include <ZC/Video/OpenGL/Buffer/ZC_UBOs.h>
+#include <ZC/Video/OpenGL/ZC_GLBlend.h>
 #include <ZC_Config.h>
 #ifdef ZC_IMGUI
 #include <ZC_IGWindow.h>
 #endif
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 
 #include <cassert>
 
@@ -39,7 +38,7 @@ void ZC_Renderer::Add(ZC_Render* pRender)
     auto prevIter = pRenderer->renders.before_begin();
     for (auto curIter = pRenderer->renders.begin(); curIter != pRenderer->renders.end(); )
     {
-        if (**curIter < (*pRender).frameBuffer)
+        if (**curIter < (*pRender).renderLevel)
         {
             prevIter = curIter;
             ++curIter;
@@ -47,7 +46,7 @@ void ZC_Renderer::Add(ZC_Render* pRender)
         }
         else
         {
-            assert(**curIter != (*pRender).frameBuffer);     //  double adding
+            assert(**curIter != (*pRender).renderLevel);     //  double adding
             break;
         }
     }
@@ -68,11 +67,14 @@ void ZC_Renderer::Draw()
     for (auto curIter = renders.begin(); curIter != renders.end(); )
         curIter = (*curIter)->Draw() ? ++curIter : renders.erase_after(prevIter);
 
+    //  my rendering finished, make openGL state default
+    ZC_VAO::UnbindVertexArray();
+    ZC_GLBlend::Disable();
+    ZC_Framebuffer::Unbind();
+
 #ifdef ZC_IMGUI
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     ZC_IGWindow::Draw();
 #endif
-    glBindVertexArray(0);
 
     funcSwapBuffer();
 }

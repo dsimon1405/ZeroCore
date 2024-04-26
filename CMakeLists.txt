@@ -141,6 +141,8 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_OpenGL.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_Renderbuffer.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_Viewport.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_GLBlend.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_GLDraw.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_Shader.cpp
 	${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShProg.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShProgs.cpp
@@ -158,17 +160,14 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/VAO/ZC_VAOConfig.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Texture/ZC_Texture.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Texture/ZC_TexSets.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_Draw.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_Render.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_Renderer.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RenderLevelDrawer.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RenderSet.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_Drawer.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_DrawerSet.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_Renders.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RLDDrawing.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RLDStencilBorder.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RSController.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_DSController.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RSPersonalData.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RLDText.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_DSStencilBorder.cpp
     ${PROJECT_SOURCE_DIR}/src/Tools/Signal/ZC_SConnection.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/Exception/ZC_Exception.cpp
     ${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_Clock.cpp

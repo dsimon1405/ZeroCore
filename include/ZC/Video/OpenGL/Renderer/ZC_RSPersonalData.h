@@ -51,7 +51,7 @@ private:
 
 
 /*
-scale - scale for drawing the stencil border of the object. Should be greater than 1.0f. Can be anything if ZC_RenderSet::Level::Stencil will not be used.
+scale - scale for drawing the stencil border of the object. Should be greater than 1.0f. Can be anything if ZC_DrawerSet::Level::Stencil will not be used.
 color - color of stencil border packed in unsigned int. Packing -> unsigned char[32] -> [0 - 7]{no metter}, [7 - 15]{red}, [15 - 23]{green}, [23 - 31]{blue}
 */
 struct ZC_RSPDStencilBorderData : public ZC_RSPDStoredData

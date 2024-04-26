@@ -1,12 +1,10 @@
 #pragma once
 
-#include <ZC/Video/OpenGL/GL/glcorearb.h>
-
 struct ZC_ShProg
 {
-    GLuint id;
+    unsigned int id;
 
-    ZC_ShProg(GLuint idV, GLuint idF, GLuint idG);
+    ZC_ShProg(unsigned int idV, unsigned int idF, unsigned int idG);
 
 	ZC_ShProg(const ZC_ShProg&) = delete;
 	ZC_ShProg& operator = (const ZC_ShProg&) = delete;
@@ -21,5 +19,5 @@ struct ZC_ShProg
 	*/
     void ActivateOpenGL() const;
 
-	GLint GetUniformLocation(const char* name);
+	int GetUniformLocation(const char* name);
 };

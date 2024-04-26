@@ -7,14 +7,12 @@ layout (std140, binding = 0) uniform Camera
     mat4 perspView;
     vec3 camPos;
 };
-// layout (std140, binding = 1) uniform Ortho { mat4 lolka; };
 uniform vec2 unPositionWindow;
 
 out vec2 vTexCoords;
 
 void main()
 {
-    // gl_Position = lolka * vec4(inPosition.x + unPositionWindow.x, inPosition.y + unPositionWindow.y, 0, 1);
     gl_Position = ortho * vec4(inPosition.x + unPositionWindow.x, inPosition.y + unPositionWindow.y, 0, 1);
     vTexCoords = inTexCoords;
 }
