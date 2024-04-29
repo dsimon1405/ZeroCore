@@ -1,6 +1,7 @@
 #version 460 core
 
 layout (location = 0) in vec3 inPosition;
+layout (location = 1) in vec3 inColor;
 layout (std140, binding = 0) uniform Camera
 {
     mat4 ortho;
@@ -18,8 +19,8 @@ void main()
     vec3 newPos = inPosition + dirPosToCam;
     gl_Position = perspView * unModel * vec4(newPos, 1.f);
 
-    vColor = worldPsition.y == 0.f && worldPsition.z == 0 ? vec4(0.8f, 0.f, 0.1f, 1.f)
-        : worldPsition.x == 0.f && worldPsition.z == 0.f ? vec4(0.f, 0.6f, 0.f, 1.f)
-        : worldPsition.x == 0.f || worldPsition.y == 0.f ? vec4(0.f, 0.f, 0.8f, 1.f)
-        : vec4(0.37f,0.37f,0.37f, 1.f);
+    vColor = worldPsition.y == 0.f && worldPsition.z == 0 ? vec4(0.8f, 0.f, 0.f, 1.f)
+        : worldPsition.x == 0.f && worldPsition.z == 0.f ? vec4(0.f, 0.8f, 0.f, 1.f)
+        : worldPsition.x == 0.f || worldPsition.y == 0.f ? vec4(0.f, 0.6f, 0.8f, 1.f)
+        : vec4(inColor, 1.f);
 }

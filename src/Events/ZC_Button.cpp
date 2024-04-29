@@ -3,11 +3,12 @@
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 
 #include <algorithm>
+#include <cassert>
 
 ZC_SConnection ZC_Button::ConnectDown(ZC_ButtonID buttonId, ZC_Function<void(float)>&& function, bool callIfDown)
 {
-    auto pDownConnectedButtonsIter = ZC_Find(downConnectedButtons, buttonId);
-    if (!pDownConnectedButtonsIter)
+    auto pDownConnectedButtons = ZC_Find(downConnectedButtons, buttonId);
+    if (!pDownConnectedButtons)
     {
         auto& rConnectedButton = downConnectedButtons.emplace_back(ConnectedButton{ buttonId });    //  adds button to connected
         auto sConnection = rConnectedButton.sigFunctions.Connect(std::move(function));  //  connects to button signal and get return value ZC_SConnection
@@ -19,7 +20,7 @@ ZC_SConnection ZC_Button::ConnectDown(ZC_ButtonID buttonId, ZC_Function<void(flo
         }
         return sConnection;
     }
-    else return pDownConnectedButtonsIter->sigFunctions.Connect(std::move(function));
+    else return pDownConnectedButtons->sigFunctions.Connect(std::move(function));
 }
 
 ZC_SConnection ZC_Button::ConnectUp(ZC_ButtonID buttonId, ZC_Function<void(float)>&& function)
@@ -29,10 +30,15 @@ ZC_SConnection ZC_Button::ConnectUp(ZC_ButtonID buttonId, ZC_Function<void(float
         :  upConnectedButtons.emplace_back(ConnectedButton{ buttonId }).sigFunctions.Connect(std::move(function));
 }
 
-void ZC_Button::AddActiveDownButton(ZC_ButtonID buttonId)
+ZC_SConnection ZC_Button::ConnectFirstDown(ZC_Function<void(ZC_ButtonID, float)>&& function)
 {
-    auto pActiveDownButtonsIter = ZC_Find(activeDownButtons, buttonId);
-    if (!pActiveDownButtonsIter)   //  add active button if not already added
+    return sigFirstDownButton.Connect(std::move(function));
+}
+
+void ZC_Button::AddActiveDownButton(ZC_ButtonID buttonId, float time)
+{
+    auto pActiveDownButtons = ZC_Find(activeDownButtons, buttonId);
+    if (!pActiveDownButtons)   //  add active button if not already added
     {   //  if button connected as (down button) add pointer on downConnectedButtons sigFunctions, otherwise nullptr
         auto downConnectedButtonsIter = std::find(downConnectedButtons.begin(), downConnectedButtons.end(), buttonId);
         if (downConnectedButtonsIter == downConnectedButtons.end()) activeDownButtons.emplace_front(ActiveDownButton{ buttonId, nullptr });
@@ -42,6 +48,10 @@ void ZC_Button::AddActiveDownButton(ZC_ButtonID buttonId)
             activeDownButtons.emplace_front(ActiveDownButton{ buttonId, nullptr });
         }
         else activeDownButtons.emplace_front(ActiveDownButton{ buttonId, &(downConnectedButtonsIter->sigFunctions) });
+
+        //  and finaly if buuton not from mouse, calls that button in first down buttons, if they are
+        if (buttonId != M_LEFT && buttonId != M_RIGHT && buttonId != M_MIDLE && buttonId != M_X1 && buttonId != M_X2)
+            sigFirstDownButton(buttonId, time);
     }
 }
 

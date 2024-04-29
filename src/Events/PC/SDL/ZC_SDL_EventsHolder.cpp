@@ -21,11 +21,11 @@ bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
         {
         case SDL_EVENT_QUIT: return false;
         case SDL_EVENT_WINDOW_RESIZED: sigWindowResize(static_cast<float>(event.window.data1), static_cast<float>(event.window.data2)); break;
-        case SDL_EVENT_KEY_DOWN: button.AddActiveDownButton(static_cast<ZC_ButtonID>(event.key.keysym.scancode)); break;
+        case SDL_EVENT_KEY_DOWN: button.AddActiveDownButton(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
         case SDL_EVENT_KEY_UP: button.CallUpButton(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
 #ifdef ZC_IMGUI		//	if mouse cursor is in one of the ImGui windows, don't poll mouse button down event (same for mouse wheel events)
-            if (!ZC_IGWindow::IsCursorInOneOfWindows()) button.AddActiveDownButton(static_cast<ZC_ButtonID>(event.button.button + 512));
+            if (!ZC_IGWindow::IsCursorInOneOfWindows()) button.AddActiveDownButton(static_cast<ZC_ButtonID>(event.button.button + 512), previousFrameTime);
             break;
 #else
             button.AddActiveDownButton(static_cast<ZC_ButtonID>(event.button.button + 512)); break;

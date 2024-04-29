@@ -74,7 +74,7 @@ void ZC_TextData::SetTextAndAlignment(const std::string& _text, ZC_TextAlignment
     if (recalculateText) SetNewTextSize();
 }
 
-void ZC_TextData::SetDrawLevel(ZC_DrawerLevel _drawLevel)
+void ZC_TextData::SetDrawerLevel(ZC_DrawerLevel _drawLevel)
 {
     if (drawerLevel == _drawLevel) return;
     drawerLevel = _drawLevel;

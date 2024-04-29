@@ -55,7 +55,6 @@ extern PFNGLBLENDFUNCPROC pglBlendFunc;
 extern PFNGLBLENDCOLORPROC pglBlendColor;
 #define glBlendColor pglBlendColor
 
-
 //  debug
 
 extern PFNGLDEBUGMESSAGECALLBACKPROC pglDebugMessageCallback;
@@ -225,12 +224,6 @@ extern PFNGLDISABLEVERTEXATTRIBARRAYPROC pglDisableVertexAttribArray;
 extern PFNGLVERTEXATTRIBPOINTERPROC pglVertexAttribPointer;
 #define glVertexAttribPointer pglVertexAttribPointer
 
-extern PFNGLDRAWARRAYSPROC pglDrawArrays;
-#define glDrawArrays pglDrawArrays
-
-extern PFNGLDRAWELEMENTSPROC pglDrawElements;
-#define glDrawElements pglDrawElements
-
 extern PFNGLVERTEXATTRIBFORMATPROC pglVertexAttribFormat;
 #define glVertexAttribFormat pglVertexAttribFormat
 
@@ -252,6 +245,20 @@ extern PFNGLVERTEXATTRIBBINDINGPROC pglVertexAttribBinding;
 
 // extern PFNGLVERTEXARRAYVERTEXBUFFERPROC pglVertexArrayVertexBuffer;
 // #define glVertexArrayVertexBuffer pglVertexArrayVertexBuffer
+
+//  draw
+
+extern PFNGLDRAWARRAYSPROC pglDrawArrays;
+#define glDrawArrays pglDrawArrays
+
+extern PFNGLDRAWELEMENTSPROC pglDrawElements;
+#define glDrawElements pglDrawElements
+
+extern PFNGLDRAWARRAYSINSTANCEDPROC pglDrawArraysInstanced;
+#define glDrawArraysInstanced pglDrawArraysInstanced
+
+extern PFNGLDRAWELEMENTSINSTANCEDPROC pglDrawElementsInstanced;
+#define glDrawElementsInstanced pglDrawElementsInstanced
 
 //  texture
 

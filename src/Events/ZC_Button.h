@@ -12,8 +12,9 @@ class ZC_Button
 public:
     ZC_SConnection ConnectDown(ZC_ButtonID buttonId, ZC_Function<void(float)>&& function, bool callIfDown);
     ZC_SConnection ConnectUp(ZC_ButtonID buttonId, ZC_Function<void(float)>&& function);
+    ZC_SConnection ConnectFirstDown(ZC_Function<void(ZC_ButtonID, float)>&& function);
 
-    void AddActiveDownButton(ZC_ButtonID buttonId);
+    void AddActiveDownButton(ZC_ButtonID buttonId, float time);
     void CallUpButton(ZC_ButtonID buttonId, float prevFrameTime);
     //  calls active buttons wich have valid pointer on forward_list of down buttons
     void CallActiveButtons(float prevFrameTime);
@@ -38,4 +39,5 @@ private:
     std::list<ConnectedButton> downConnectedButtons;
     std::forward_list<ActiveDownButton> activeDownButtons;
     std::list<ConnectedButton> upConnectedButtons;
+    ZC_Signal<void(ZC_ButtonID, float)> sigFirstDownButton { false };
 };

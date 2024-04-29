@@ -23,11 +23,11 @@ struct ZC_VAO
     /*
     Configuring VAO.
 	
-	config - pointer to vao for configuration.
-	vbo - pointer to vbo for binding.
-	ebo - pointer to ebo for bindig.
-    startOffset - start offset in buffer in bytes.
-    verticesCount — number of vertices. The value should be 0 if the data in vbo is stored in VNCVNC style. If the data stored in vbo is in VVNNCC, the value cannot be 0.
+	- config - pointer to vao for configuration.
+	- vbo - pointer to vbo for binding.
+	- ebo - pointer to ebo for bindig.
+    - startOffset - start offset in buffer in bytes.
+    - verticesCount — number of vertices. The value should be 0 if the data in vbo is stored in VNCVNC style. If the data stored in vbo is in VVNNCC, the value cannot be 0.
     */
 	void Config(VAOConData vaoConfigData, ZC_Buffer& vbo, ZC_Buffer* ebo, GLuint startOffset, GLuint verticesCount);
 	void ActivateOpenGL() const;

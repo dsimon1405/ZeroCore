@@ -14,7 +14,7 @@ struct ZC_Events
 
     Params:
     - func - binding function (binding function parameters: previous frame time).
-    - call IfDown - button could be already pressed while connecting, in that case if call IfDown - true, func will be call immediately, if - false, func will call after reclick.
+    - callIfDown - button could be already pressed while connecting, in that case if call IfDown - true, func will be call immediately, if - false, func will call after reclick.
 
     Return:
     Connection to event.
@@ -143,4 +143,15 @@ struct ZC_Events
     Connection to event.
     */
     static ZC_SConnection ConnectActiveCameraChangePosition(ZC_Function<void(const ZC_Vec3<float>&)>&& func);
+
+    /*
+    Binds the function to the event of the fist button to be down. Works only for keyboards buttons, not mouse. Not called for buttons already pressed.
+
+    Params:
+    - func - binding function (binding function parameters: previous frame time).
+
+    Return:
+    Connection to event.
+    */
+    static ZC_SConnection ConnectFirstDownButton(ZC_Function<void(ZC_ButtonID, float)>&& func);
 };

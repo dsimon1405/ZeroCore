@@ -26,7 +26,7 @@ public:
     //  If need to change text and alignment at the same time, use this function. Calling SetText() and SetAlignment() separately is less effective.
     void SetTextAndAlignment(const std::string& _text, ZC_TextAlignment _alignment);
     //  Changes the level at which text will be added to the ZC_Render. If the text is not currently at the ZC_DL_None level, it will switch to a new level.
-    void SetDrawLevel(ZC_DrawerLevel _drawLevel);
+    void SetDrawerLevel(ZC_DrawerLevel _drawLevel);
     //  Adds new freameBuffer for drawing on it's drawing levels. Needs call NeedDraw(true) for start drawing on new render level.
     void SetFrameBuffer(ZC_RenderLevel _renderBuffer);
     float GetWidth() const noexcept;

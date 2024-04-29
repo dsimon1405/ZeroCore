@@ -142,10 +142,6 @@ bool ZC_SDL_Window::LoadOpenGLFunctions()
     if (!pglDisableVertexAttribArray) { ZC_ErrorLogger::Err("glDisableVertexAttribArray SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)SDL_GL_GetProcAddress("glVertexAttribPointer");
     if (!pglVertexAttribPointer) { ZC_ErrorLogger::Err("glVertexAttribPointer SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
-    pglDrawArrays = (PFNGLDRAWARRAYSPROC)SDL_GL_GetProcAddress("glDrawArrays");
-    if (!pglDrawArrays) { ZC_ErrorLogger::Err("glDrawArrays SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
-    pglDrawElements = (PFNGLDRAWELEMENTSPROC)SDL_GL_GetProcAddress("glDrawElements");
-    if (!pglDrawElements) { ZC_ErrorLogger::Err("glDrawElements SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglVertexAttribFormat = (PFNGLVERTEXATTRIBFORMATPROC)SDL_GL_GetProcAddress("glVertexAttribFormat");
     if (!pglVertexAttribFormat) { ZC_ErrorLogger::Err("glVertexAttribFormat SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     pglVertexAttribBinding = (PFNGLVERTEXATTRIBBINDINGPROC)SDL_GL_GetProcAddress("glVertexAttribBinding");
@@ -161,6 +157,15 @@ bool ZC_SDL_Window::LoadOpenGLFunctions()
     // if (!pglVertexArrayAttribBinding) { ZC_ErrorLogger::Err("glVertexArrayAttribBinding SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     // pglVertexArrayVertexBuffer = (PFNGLVERTEXARRAYVERTEXBUFFERPROC)SDL_GL_GetProcAddress("glVertexArrayVertexBuffer");
     // if (!pglVertexArrayVertexBuffer) { ZC_ErrorLogger::Err("glVertexArrayVertexBuffer SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    //  draw
+    pglDrawArrays = (PFNGLDRAWARRAYSPROC)SDL_GL_GetProcAddress("glDrawArrays");
+    if (!pglDrawArrays) { ZC_ErrorLogger::Err("glDrawArrays SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglDrawElements = (PFNGLDRAWELEMENTSPROC)SDL_GL_GetProcAddress("glDrawElements");
+    if (!pglDrawElements) { ZC_ErrorLogger::Err("glDrawElements SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglDrawArraysInstanced = (PFNGLDRAWARRAYSINSTANCEDPROC)SDL_GL_GetProcAddress("glDrawArraysInstanced");
+    if (!pglDrawArraysInstanced) { ZC_ErrorLogger::Err("glDrawArraysInstanced SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
+    pglDrawElementsInstanced = (PFNGLDRAWELEMENTSINSTANCEDPROC)SDL_GL_GetProcAddress("glDrawElementsInstanced");
+    if (!pglDrawElementsInstanced) { ZC_ErrorLogger::Err("glDrawElementsInstanced SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
     //  texture
     pglGenTextures = (PFNGLGENTEXTURESPROC)SDL_GL_GetProcAddress("glGenTextures");
     if (!pglGenTextures) { ZC_ErrorLogger::Err("glGenTextures SDL_GL_GetProcAddress faild!", __FILE__, __LINE__); return false;}
@@ -313,8 +318,6 @@ PFNGLBINDVERTEXARRAYPROC pglBindVertexArray = nullptr;
 PFNGLENABLEVERTEXATTRIBARRAYPROC pglEnableVertexAttribArray = nullptr;
 PFNGLDISABLEVERTEXATTRIBARRAYPROC pglDisableVertexAttribArray = nullptr;
 PFNGLVERTEXATTRIBPOINTERPROC pglVertexAttribPointer = nullptr;
-PFNGLDRAWARRAYSPROC pglDrawArrays = nullptr;
-PFNGLDRAWELEMENTSPROC pglDrawElements = nullptr;
 PFNGLVERTEXATTRIBFORMATPROC pglVertexAttribFormat = nullptr;
 PFNGLVERTEXATTRIBBINDINGPROC pglVertexAttribBinding = nullptr;
 
@@ -324,6 +327,13 @@ PFNGLVERTEXATTRIBBINDINGPROC pglVertexAttribBinding = nullptr;
 // PFNGLVERTEXARRAYATTRIBFORMATPROC pglVertexArrayAttribFormat = nullptr;
 // PFNGLVERTEXARRAYATTRIBBINDINGPROC pglVertexArrayAttribBinding = nullptr;
 // PFNGLVERTEXARRAYVERTEXBUFFERPROC pglVertexArrayVertexBuffer = nullptr;
+
+//  draw
+
+PFNGLDRAWARRAYSPROC pglDrawArrays = nullptr;
+PFNGLDRAWELEMENTSPROC pglDrawElements = nullptr;
+PFNGLDRAWARRAYSINSTANCEDPROC pglDrawArraysInstanced = nullptr;
+PFNGLDRAWELEMENTSINSTANCEDPROC pglDrawElementsInstanced = nullptr;
 
 //  texture
 PFNGLGENTEXTURESPROC pglGenTextures = nullptr;

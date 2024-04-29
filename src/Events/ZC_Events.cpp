@@ -47,3 +47,8 @@ ZC_SConnection ZC_Events::ConnectActiveCameraChangePosition(ZC_Function<void(con
 {
     return ZC_Camera::GetActiveCamera() ? ZC_Camera::GetActiveCamera()->ConnectChangeCameraPosition(std::move(func)) : ZC_SConnection();
 }
+
+ZC_SConnection ZC_Events::ConnectFirstDownButton(ZC_Function<void(ZC_ButtonID, float)>&& func)
+{
+    return ZC_Camera::GetActiveCamera() ? ZC_EventsHolder::pEventsHolder->button.ConnectFirstDown(std::move(func)) : ZC_SConnection();
+}
