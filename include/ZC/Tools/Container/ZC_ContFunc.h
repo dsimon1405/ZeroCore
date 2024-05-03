@@ -3,61 +3,85 @@
 #include <forward_list>
 
 /*
-Erases from forward list first found data. Type(TCont) storing in forward list must determine for searching type(TFind) operator:
+Erases from forward list first found data. Type(TData) storing in forward list may be pointer on TCont or must determine for searching type(TFind) operator:
 bool operator == (const TFind&) const {}
 
 Params:
-rCont - reference on forward list.
-find - value for searching.
+- rCont - reference on forward list.
+- find - value for searching.
 
 Return:
 true if value was erased, otherwise false.
 */
-template<typename TCont, typename TFind>
-bool ZC_ForwardListErase(std::forward_list<TCont>& rCont, const TFind& find)
+template<typename TData, typename TFind>
+bool ZC_ForwardListErase(std::forward_list<TData>& rCont, const TFind& find)
 {
     auto prev = rCont.before_begin();
     for (auto rContI = rCont.begin(); rContI != rCont.end(); ++rContI)
     {
-        if (*rContI == find)
+        if constexpr (std::same_as<TData*, TFind>)  //  TFind is pointer on TData
         {
-            rCont.erase_after(prev);
-            return true;
+            if (&*rContI == find)   //  take pointer on TData for compare with TFind
+            {
+                rCont.erase_after(prev);
+                return true;
+            }
+        }
+        else
+        {
+            if (*rContI == find)
+            {
+                rCont.erase_after(prev);
+                return true;
+            }
         }
         prev = rContI;
     }
     return false;
 }
 
-// /*
-// Erases from forward list first found data.
+/*
+Find data in stl container. Type(TData) storing in container may be pointer on TCont or must determine for searching type(TFind) operator:
+bool operator == (const TFind&) const {}
 
-// Params:
-// rCont - reference on forward list.
-// find - pointer on object from forward list.
+Params:
+- rCont - reference on stl container.
+- find - value for searching.
 
-// Return:
-// true if value was erased, otherwise false.
-// */
-// template<typename TCont>
-// bool ZC_ForwardListEraseByPointer(std::forward_list<TCont>& rCont, const TCont* pFind)
-// {
-//     auto prev = rCont.before_begin();
-//     for (auto rContI = rCont.begin(); rContI != rCont.end(); ++rContI)
-//     {
-//         if (&*rContI == pFind)
-//         {
-//             rCont.erase_after(prev);
-//             return true;
-//         }
-//         prev = rContI;
-//     }
-//     return false;
-// }
-
+Return:
+If found, pointer on store data, otherwise - nullptr.
+*/
 template<typename TData, typename TAllocator, template<typename, typename> typename TCont, typename TFind>
-TData* ZC_Find(TCont<TData, TAllocator>& fl, const TFind& find)
+TData* ZC_Find(TCont<TData, TAllocator>& container, const TFind& find)
 {
-    for (auto& rContData : fl) if (rContData == find) return &rContData;
+    for (auto& rContData : container)
+    {
+        if constexpr (std::same_as<TData*, TFind>)
+        {
+            if (&rContData == find) return &rContData;
+        }
+        else
+        {
+            if (rContData == find) return &rContData;
+        }
+    }
+    return nullptr;
+}
+
+/*
+Find data in stl container of pointers. Type(TData) storing in container must determine for searching type(TFind) operator:
+bool operator == (const TFind&) const {}
+
+Params:
+- rCont - reference on stl container.
+- find - value for searching.
+
+Return:
+If found, pointer on store data, otherwise - nullptr.
+*/
+template<typename TData, typename TAllocator, template<typename, typename> typename TCont, typename TFind>
+TData ZC_FindInPointers(TCont<TData, TAllocator>& container, const TFind& find)
+{
+    for (auto rContData : container) if (*rContData == find) return rContData;
     return nullptr;
 }

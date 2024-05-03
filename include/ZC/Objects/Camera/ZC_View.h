@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ZC/Tools/Math/ZC_Mat4.h>
-#include <ZC/Tools/Signal/ZC_Signal.h>
+#include <ZC/Events/ZC_ESignal.h>
 
 class ZC_View
 {
@@ -18,7 +18,7 @@ public:
     ZC_Vec3<float> GetPosition() const noexcept;
     ZC_Vec3<float> GetLookOn() const noexcept;
     ZC_Vec3<float> GetUp() const noexcept;
-    ZC_SConnection ConnectChangeCameraPosition(ZC_Function<void(const ZC_Vec3<float>&)>&& func);
+    ZC_EC ConnectChangeCameraPosition(ZC_Function<void(const ZC_Vec3<float>&)>&& func);
     const ZC_Mat4<float>* GetView();
 
 protected:
@@ -33,7 +33,7 @@ private:
                 up;
     bool viewNeedUpdate = true,
         isViewActual = false;
-    ZC_Signal<void(const ZC_Vec3<float>&)> sigChangeCamPos {false};
+    ZC_ESignal<void(const ZC_Vec3<float>&)> sigChangeCamPos;
   
     void ActualizeViewMatrix();
 };

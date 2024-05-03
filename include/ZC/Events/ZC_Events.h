@@ -1,36 +1,67 @@
 #pragma once
 
-#include <ZC/Tools/Signal/ZC_SConnection.h>
+#include <ZC/Events/ZC_EventConnection.h>
 #include <ZC/Tools/Function/ZC_Function.h>
 #include "ZC_ButtonID.h"
 #include <ZC/Tools/Math/ZC_Vec3.h>
+
+#include <vector>
 
 struct ZC_Events
 {
     ZC_Events() = delete;
 
     /*
-    Binds the function to the button down event (will call while the button is pressed).
+    Binds the function to the button down event (will call function while the button is pressed). One down button can only connected once with this ConnectButtonPressDown(...),
+    or once with ConnectButtonClick(...).
 
     Params:
-    - func - binding function (binding function parameters: previous frame time).
-    - callIfDown - button could be already pressed while connecting, in that case if call IfDown - true, func will be call immediately, if - false, func will call after reclick.
+    - buttonId - button id.
+    - function - binding function (binding function parameters: previous frame time).
 
     Return:
     Connection to event.
     */
-    static ZC_SConnection ConnectButtonDown(ZC_ButtonID buttonId, ZC_Function<void(float)>&& func, bool callIfDown);
+    static ZC_EC ConnectButtonPressDown(ZC_ButtonID buttonId, ZC_Function<void(ZC_ButtonID, float)>&& function);
+    
+    /*Binds a function to a button click event. This event calls funcDown when the button is pressed (only called once, even if the button is pressed continuously),
+    and then calls funcUp (can be missed, with {} constructor) when the button is released. One down button, can only connected once with this ConnectButtonPressDown(...),
+    or once with ConnectButtonClick(...), or be the first button in a combination in the ConnectButtonCombination(...) function.
+
+    Params:
+    - buttonId - button id.
+    - funcDown - function for calls on button down event (binding function parameters: previous frame time).
+    - funcUp - function for calls on button up event (binding function parameters: previous frame time). That function could be missed with {} constructor.
+
+    Return:
+    Connection to event.
+    */
+    static ZC_EC ConnectButtonClick(ZC_ButtonID buttonId, ZC_Function<void(ZC_ButtonID, float)>&& funcDown, ZC_Function<void(ZC_ButtonID, float)>&& funcUp);
 
     /*
     Binds the function to the button up event.
 
     Params:
+    - buttonId - button id.
     - func - binding function (binding function parameters: previous frame time).
 
     Return:
     Connection to event.
     */
-    static ZC_SConnection ConnectButtonUp(ZC_ButtonID buttonId, ZC_Function<void(float)>&& func);
+    static ZC_EC ConnectButtonUp(ZC_ButtonID buttonId, ZC_Function<void(ZC_ButtonID, float)>&& func);
+    
+    /*
+    Binds the function to the first button down event. Function will calls each time as some button will be click down.
+
+    Params:
+    - func - binding function (binding function parameters:
+                                                            - button id,
+                                                            - previous frame time).
+
+    Return:
+    Connection to event.
+    */
+    static ZC_EC ConnectFirstDownButton(ZC_Function<void(ZC_ButtonID, float)>&& funcDown);
 
     /*
     Binds the function to the move event.
@@ -54,7 +85,7 @@ struct ZC_Events
     Return:
     Connection to event.
     */
-    static ZC_SConnection ConnectMouseMove(ZC_Function<void(float,float,float,float,float)>&& func);
+    static ZC_EC ConnectMouseMove(ZC_Function<void(float,float,float,float,float)>&& func);
 
     /*
     Binds the function to the move event that calls one in frame.
@@ -78,7 +109,7 @@ struct ZC_Events
     Return:
     Connection to event.
     */
-    static ZC_SConnection ConnectMouseMoveOnceInFrame(ZC_Function<void(float,float,float,float,float)>&& func);
+    static ZC_EC ConnectMouseMoveOnceInFrame(ZC_Function<void(float,float,float,float,float)>&& func);
 
     /*
     Binds the function to the scroll event.
@@ -92,7 +123,7 @@ struct ZC_Events
     Return:
     Connection to event.
     */
-    static ZC_SConnection ConnectMouseScroll(ZC_Function<void(float,float,float)>&& func);
+    static ZC_EC ConnectMouseScroll(ZC_Function<void(float,float,float)>&& func);
 
     /*
     Binds the function to the scroll event.
@@ -106,7 +137,7 @@ struct ZC_Events
     Return:
     Connection to event.
     */
-    static ZC_SConnection ConnectMouseScrollOnceInFrame(ZC_Function<void(float,float,float)>&& func);
+    static ZC_EC ConnectMouseScrollOnceInFrame(ZC_Function<void(float,float,float)>&& func);
 
     /*
     Binds the function to the window resize.
@@ -119,7 +150,7 @@ struct ZC_Events
     Return:
     Connection to event.
     */
-    static ZC_SConnection ConnectWindowResize(ZC_Function<void(float,float)>&& func);
+    static ZC_EC ConnectWindowResize(ZC_Function<void(float,float)>&& func);
 
     /*
     Binds a function to the end of an event handle.
@@ -130,7 +161,7 @@ struct ZC_Events
     Return:
     Connection to event.
     */
-    static ZC_SConnection ConnectHandleEventsEnd(ZC_Function<void(float)>&& func);
+    static ZC_EC ConnectHandleEventsEnd(ZC_Function<void(float)>&& func);
 
     /*
     binds the function to the event of changing the position of the currently active camera. If there is no active camera, ZC_SConnection will be returned disconnected.
@@ -142,16 +173,5 @@ struct ZC_Events
     Return:
     Connection to event.
     */
-    static ZC_SConnection ConnectActiveCameraChangePosition(ZC_Function<void(const ZC_Vec3<float>&)>&& func);
-
-    /*
-    Binds the function to the event of the fist button to be down. Works only for keyboards buttons, not mouse. Not called for buttons already pressed.
-
-    Params:
-    - func - binding function (binding function parameters: previous frame time).
-
-    Return:
-    Connection to event.
-    */
-    static ZC_SConnection ConnectFirstDownButton(ZC_Function<void(ZC_ButtonID, float)>&& func);
+    static ZC_EC ConnectActiveCameraChangePosition(ZC_Function<void(const ZC_Vec3<float>&)>&& func);
 };

@@ -86,7 +86,7 @@ private:
     };
 
     std::list<FuncAndState> funcAndStates;
-    std::forward_list<FuncAndState> funcAndStatesToAdd;
+    std::list<FuncAndState> funcAndStatesToAdd;
     ZC_uptr<std::mutex> upMutexFuncAndStatesToAdd;
     //  from funcAndStatesToAdd to funcAndStates if still spIsConnected == true
     void AddFunctions();
@@ -119,9 +119,9 @@ ZC_SConnection ZC_Signal<TReturn(TParams...)>::Connect(ZC_Function<TReturn(TPara
     if (upMutexFuncAndStatesToAdd)
     {
         std::lock_guard<std::mutex> lock(*upMutexFuncAndStatesToAdd);
-        return { funcAndStatesToAdd.emplace_front(FuncAndState{ std::move(func) }).spIsConnected };
+        return { funcAndStatesToAdd.emplace_back(FuncAndState{ std::move(func) }).spIsConnected };
     }
-    else return { funcAndStatesToAdd.emplace_front(FuncAndState{ std::move(func) }).spIsConnected };
+    else return { funcAndStatesToAdd.emplace_back(FuncAndState{ std::move(func) }).spIsConnected };
 }
 
 template<typename TReturn, ZC_cNotRValueRef1... TParams>
@@ -167,14 +167,20 @@ template<typename TReturn, ZC_cNotRValueRef1... TParams>
 void ZC_Signal<TReturn(TParams...)>::CallLastConnected(TParams... params)
 {
     AddFunctions();
-    for (auto funcAndStatesIter = funcAndStates.begin(); funcAndStatesIter != funcAndStates.end(); )
+    auto beforeBeginIter = --funcAndStates.begin();
+    for (auto funcAndStatesIter = --funcAndStates.end(); funcAndStatesIter != beforeBeginIter; )
     {
         if (*(funcAndStatesIter->spIsConnected))
         {
             funcAndStatesIter->function(params...);
             return;
         }
-        else funcAndStatesIter = funcAndStates.erase(funcAndStatesIter);
+        else
+        {
+            auto eraseIter = funcAndStatesIter;
+            --funcAndStatesIter;
+            funcAndStates.erase(eraseIter);
+        }
     }
 }
 
@@ -182,14 +188,20 @@ template<typename TReturn, ZC_cNotRValueRef1... TParams>
 void ZC_Signal<TReturn(TParams...)>::CallLastConnected(ZC_uptr<TReturn>& container, TParams... params)
 {
     AddFunctions();
-    for (auto funcAndStatesIter = funcAndStates.begin(); funcAndStatesIter != funcAndStates.end(); )
+    auto beforeBeginIter = --funcAndStates.begin();
+    for (auto funcAndStatesIter = --funcAndStates.end(); funcAndStatesIter != beforeBeginIter; )
     {
         if (*(funcAndStatesIter->spIsConnected))
         {
             container = ZC_uptrMake<TReturn>(funcAndStatesIter->function(params...));
             return;
         }
-        else funcAndStatesIter = funcAndStates.erase(funcAndStatesIter);
+        else
+        {
+            auto eraseIter = funcAndStatesIter;
+            --funcAndStatesIter;
+            funcAndStates.erase(eraseIter);
+        }
     }
 }
 
@@ -201,10 +213,10 @@ void ZC_Signal<TReturn(TParams...)>::AddFunctions()
     {
         std::lock_guard<std::mutex> lock(*upMutexFuncAndStatesToAdd);
         for (auto& rFuncAndState : funcAndStatesToAdd)      // use emplace front for call in CallLastConnected()
-            if (*(rFuncAndState.spIsConnected)) funcAndStates.emplace_front(std::move(rFuncAndState));  //  if still need to connect, connects
+            if (*(rFuncAndState.spIsConnected)) funcAndStates.emplace_back(std::move(rFuncAndState));  //  if still need to connect, connects
     }
     else for (auto& rFuncAndState : funcAndStatesToAdd)
-            if (*(rFuncAndState.spIsConnected)) funcAndStates.emplace_front(std::move(rFuncAndState));  //  if still need to connect, connects
+            if (*(rFuncAndState.spIsConnected)) funcAndStates.emplace_back(std::move(rFuncAndState));  //  if still need to connect, connects
 
     funcAndStatesToAdd.clear();
 }

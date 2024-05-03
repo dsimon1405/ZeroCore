@@ -8,22 +8,22 @@ void ZC_Mouse::Init()
     ZC_Events::ConnectHandleEventsEnd({ &ZC_Mouse::ScrollOnceInFrame, this });
 }
 
-ZC_SConnection ZC_Mouse::ConnectMove(ZC_Function<void(float,float,float,float,float)>&& func)
+ZC_EC ZC_Mouse::ConnectMove(ZC_Function<void(float,float,float,float,float)>&& func)
 {
     return sigMove.Connect(std::move(func));
 }
 
-ZC_SConnection ZC_Mouse::ConnectMoveOnceInFrame(ZC_Function<void(float,float,float,float,float)>&& func)
+ZC_EC ZC_Mouse::ConnectMoveOnceInFrame(ZC_Function<void(float,float,float,float,float)>&& func)
 {
     return sigMoveOnceInFrame.Connect(std::move(func));
 }
 
-ZC_SConnection ZC_Mouse::ConnectScroll(ZC_Function<void(float,float,float)>&& func)
+ZC_EC ZC_Mouse::ConnectScroll(ZC_Function<void(float,float,float)>&& func)
 {
     return sigScroll.Connect(std::move(func));
 }
 
-ZC_SConnection ZC_Mouse::ConnectScrollOnceInFrame(ZC_Function<void(float,float,float)>&& func)
+ZC_EC ZC_Mouse::ConnectScrollOnceInFrame(ZC_Function<void(float,float,float)>&& func)
 {
     return sigScrollOnceInFrame.Connect(std::move(func));
 }

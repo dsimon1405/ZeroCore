@@ -35,7 +35,7 @@ private:
     static inline ZC_Camera* activeCamera = nullptr;   //  pointer on active camera for getting camera information throught GetActiveCamera() (CPU data)
 
     UboSet uboSet;
-    ZC_SConnection sConWindowResize;
+    ZC_EC sConWindowResize;
 
     void UboUpdate();
     void WindowResize(float width, float height);

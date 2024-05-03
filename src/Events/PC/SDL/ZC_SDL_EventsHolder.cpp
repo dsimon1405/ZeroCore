@@ -12,6 +12,12 @@
 bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
 {
     static SDL_Event event;
+    
+    bool isCursorInImGuiWindow = false;     //	if mouse cursor is in one of the ImGui windows, don't poll - mouse button down events, and mouse wheel (scroll) events
+#ifdef ZC_IMGUI
+    isCursorInImGuiWindow = ZC_IGWindow::IsCursorInOneOfWindows();
+#endif
+    
     while (SDL_PollEvent(&event) != 0)
     {
 #ifdef ZC_IMGUI
@@ -21,16 +27,10 @@ bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
         {
         case SDL_EVENT_QUIT: return false;
         case SDL_EVENT_WINDOW_RESIZED: sigWindowResize(static_cast<float>(event.window.data1), static_cast<float>(event.window.data2)); break;
-        case SDL_EVENT_KEY_DOWN: button.AddActiveDownButton(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
-        case SDL_EVENT_KEY_UP: button.CallUpButton(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
-        case SDL_EVENT_MOUSE_BUTTON_DOWN:
-#ifdef ZC_IMGUI		//	if mouse cursor is in one of the ImGui windows, don't poll mouse button down event (same for mouse wheel events)
-            if (!ZC_IGWindow::IsCursorInOneOfWindows()) button.AddActiveDownButton(static_cast<ZC_ButtonID>(event.button.button + 512), previousFrameTime);
-            break;
-#else
-            button.AddActiveDownButton(static_cast<ZC_ButtonID>(event.button.button + 512)); break;
-#endif
-        case SDL_EVENT_MOUSE_BUTTON_UP: button.CallUpButton(static_cast<ZC_ButtonID>(event.button.button + 512), previousFrameTime); break;
+        case SDL_EVENT_KEY_DOWN: buttonHolder.ButtonDown(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
+        case SDL_EVENT_KEY_UP: buttonHolder.ButtonUp(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
+        case SDL_EVENT_MOUSE_BUTTON_DOWN: if (!isCursorInImGuiWindow) buttonHolder.ButtonDown(static_cast<ZC_ButtonID>(event.button.button + 512), previousFrameTime); break;
+        case SDL_EVENT_MOUSE_BUTTON_UP: buttonHolder.ButtonUp(static_cast<ZC_ButtonID>(event.button.button + 512), previousFrameTime); break;
         case SDL_EVENT_MOUSE_MOTION:
         {
             int widht, height;
@@ -38,16 +38,10 @@ bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
             //  sdl window have coords with Y start at the top left corner, but in all ZC system trying to make as in opengl Y start at the buttom left corner, so recalculate Y params to buttom left corner
             mouse.MouseMove(event.motion.x, height - event.motion.y, event.motion.xrel, event.motion.yrel * -1.f, previousFrameTime);
         } break;
-        case SDL_EVENT_MOUSE_WHEEL:
-#ifdef ZC_IMGUI
-            if (!ZC_IGWindow::IsCursorInOneOfWindows()) mouse.MouseScroll(event.wheel.x, event.wheel.y, previousFrameTime);
-            break;
-#else
-            mouse.MouseScroll(event.wheel.x, event.wheel.y, previousFrameTime); break;
-#endif
+        case SDL_EVENT_MOUSE_WHEEL: if (!isCursorInImGuiWindow) mouse.MouseScroll(event.wheel.x, event.wheel.y, previousFrameTime); break;
         }
     }
-    button.CallActiveButtons(previousFrameTime);
+    buttonHolder.buttonPressedDown.CallPressedButtons(previousFrameTime);
     sigHandleEventsEnd(previousFrameTime);
     return true;
 }

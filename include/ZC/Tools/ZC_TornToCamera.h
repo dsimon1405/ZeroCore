@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ZC/Tools/Signal/ZC_SConnection.h>
+#include <ZC/Events/ZC_EventConnection.h>
 #include <ZC/Tools/Math/ZC_Mat4.h>
 
 #include <forward_list>
@@ -32,7 +32,7 @@ protected:
     ZC_TornToCamera(const ZC_TornToCamera& ttc);
 
 private:
-    static inline ZC_SConnection sconEventsEnd; //  must be connected to event, which calls after all camera manipulations  !!!!!!!!!!!!
+    static inline ZC_EC ecEventsEnd; //  must be connected to event, which calls after all camera manipulations  !!!!!!!!!!!!
     static inline std::forward_list<ZC_TornToCamera*> allHeirs;
     static inline std::forward_list<ZC_TornToCamera*> needUpdate;
 

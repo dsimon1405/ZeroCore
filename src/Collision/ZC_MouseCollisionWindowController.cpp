@@ -12,15 +12,13 @@
 #include <cassert>
 
 ZC_MouseCollisionWindowController::ZC_MouseCollisionWindowController()
-    : scbButtonLeft(ZC_ButtonID::M_LEFT, { &ZC_MouseCollisionWindowController::ButtonDownLeft, this }, nullptr),
-    scbButtonRight(ZC_ButtonID::M_RIGHT, { &ZC_MouseCollisionWindowController::ButtonDownRight, this }, nullptr)
 {
     pMCWC = this;
 }
 
 ZC_MouseCollisionWindowController::~ZC_MouseCollisionWindowController()
 {
-    sconMove.Disconnect();
+    ecMove.Disconnect();
     pMCWC = nullptr;
 }
 
@@ -38,17 +36,19 @@ void ZC_MouseCollisionWindowController::Add(ZC_MouseCollisionWindow* pMCW)
     if (pMCW->eventMove)
     {
         add(pMCWC->moveCollisions, pMCW);
-        if (!pMCWC->sconMove.IsConnected()) pMCWC->sconMove = ZC_Events::ConnectMouseMoveOnceInFrame({ &ZC_MouseCollisionWindowController::MoveCollision, pMCWC });
+        if (!pMCWC->ecMove.IsConnected()) pMCWC->ecMove.NewConnection(ZC_Events::ConnectMouseMoveOnceInFrame({ &ZC_MouseCollisionWindowController::MoveCollision, pMCWC }));
     }
     if (pMCW->eventLeftButton)
     {
         add(pMCWC->leftButtonCollisions, pMCW);
-        pMCWC->scbButtonLeft.Connect();
+        if (!pMCWC->ecButtonLeft.IsConnected())
+            pMCWC->ecButtonLeft.NewConnection(ZC_Events::ConnectButtonClick(ZC_ButtonID::M_LEFT, { &ZC_MouseCollisionWindowController::ButtonDownLeft, pMCWC }, {}));
     }
     if (pMCW->eventRightButtom)
     {
         add(pMCWC->rightButtonCollisions, pMCW);
-        pMCWC->scbButtonRight.Connect();
+        if (!pMCWC->ecButtonRight.IsConnected())
+            pMCWC->ecButtonRight.NewConnection(ZC_Events::ConnectButtonClick(ZC_ButtonID::M_RIGHT, { &ZC_MouseCollisionWindowController::ButtonDownRight, pMCWC }, {}));
     }
 }
 
@@ -75,21 +75,20 @@ void ZC_MouseCollisionWindowController::Erase(ZC_MouseCollisionWindow* pMCW)
     if (pMCW->eventMove)
     {
         erase(pMCWC->moveCollisions, pMCW);
-        if (pMCWC->moveCollisions.empty()) pMCWC->sconMove.Disconnect();
+        if (pMCWC->moveCollisions.empty()) pMCWC->ecMove.Disconnect();
     }
     if (pMCW->eventLeftButton)
     {
         erase(pMCWC->leftButtonCollisions, pMCW);
-        if (pMCWC->leftButtonCollisions.empty()) pMCWC->scbButtonLeft.Disconnect();
+        if (pMCWC->leftButtonCollisions.empty()) pMCWC->ecButtonLeft.Disconnect();
     }
     if (pMCW->eventRightButtom)
     {
         erase(pMCWC->rightButtonCollisions, pMCW);
-        if (pMCWC->rightButtonCollisions.empty()) pMCWC->scbButtonRight.Disconnect();
+        if (pMCWC->rightButtonCollisions.empty()) pMCWC->ecButtonRight.Disconnect();
     }
 }
 
-//  returns true, if mouse cursor in one of ZC_MouseCollisionWindow areas.
 bool ZC_MouseCollisionWindowController::IsCursorInArea()
 {
     return pMCWC ? pMCWC->pMCWLastActive != nullptr : false;
@@ -121,14 +120,14 @@ void ZC_MouseCollisionWindowController::MoveCollision(float cursorPosX, float cu
     MakeCollision(moveCollisions, MCWEvent::E_Move, cursorPosX, cursorPosY, time);
 }
 
-void ZC_MouseCollisionWindowController::ButtonDownLeft(float time)
+void ZC_MouseCollisionWindowController::ButtonDownLeft(ZC_ButtonID buttonId, float time)
 {
     float cursorPosX, cursorPosY;
     ZC_Window::GetCursorPosition(cursorPosX, cursorPosY);
     MakeCollision(leftButtonCollisions, MCWEvent::E_Down_Mouse_Left, cursorPosX, cursorPosY, time);
 }
 
-void ZC_MouseCollisionWindowController::ButtonDownRight(float time)
+void ZC_MouseCollisionWindowController::ButtonDownRight(ZC_ButtonID buttonId, float time)
 {
     float cursorPosX, cursorPosY;
     ZC_Window::GetCursorPosition(cursorPosX, cursorPosY);

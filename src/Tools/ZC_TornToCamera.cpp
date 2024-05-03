@@ -11,7 +11,7 @@ ZC_TornToCamera::~ZC_TornToCamera()
 {
     if (!ZC_ForwardListErase(allHeirs, this)) ZC_ErrorLogger::Err("Can't find to delete!", __FILE__, __LINE__);  
     if (isNeedUpdate) ZC_ForwardListErase(needUpdate, this);  
-    if (allHeirs.empty()) sconEventsEnd.Disconnect();
+    if (allHeirs.empty()) ecEventsEnd.Disconnect();
 }
 
 void ZC_TornToCamera::SetPosition(const ZC_Vec3<float>& pos)
@@ -44,7 +44,7 @@ ZC_TornToCamera::ZC_TornToCamera(const ZC_Vec3<float>& _position, float _scale)
     : position(_position),
     scale(_scale)
 {
-    if (allHeirs.empty()) sconEventsEnd = ZC_Events::ConnectHandleEventsEnd({ &ZC_TornToCamera::Update });
+    if (allHeirs.empty()) ecEventsEnd.NewConnection(ZC_Events::ConnectHandleEventsEnd({ &ZC_TornToCamera::Update }));
     allHeirs.emplace_front(this);
     auto pCamera = ZC_Camera::GetActiveCamera();
     this->CalculateModel(pCamera->GetPosition(), pCamera->GetUp()[2] == 1.f);

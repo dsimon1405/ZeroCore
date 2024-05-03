@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ZC/Tools/Signal/ZC_SConnection.h>
+#include <ZC/Events/ZC_EventConnection.h>
 #include <ZC/Tools/Function/ZC_Function.h>
 #include <ZC/Tools/Math/ZC_Vec2.h>
 
@@ -59,7 +59,7 @@ protected:
     - _indentFlags - flags of indent horizontal(X) and vertical(Y) from border of global window to IGWindow. Must be set one flag for X and one flag for Y. Example: X_Left_Pixel | Y_Top_Pixel.
     */
     ZC_WindowOrthoIndent(bool _is_Y_ZeroPointOnTop, float _width, float _height, float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags);
-    //  Makes copy of ZC_WindowOrthoIndent with all params, except ZC_SConnection sconZC_WindowResized (connects for new copy).
+    //  Makes copy of ZC_WindowOrthoIndent with all params, except ZC_upEC sconZC_WindowResized (connects for new copy).
     ZC_WindowOrthoIndent(const ZC_WindowOrthoIndent& woi);
 
     //  Set new objects width and height. Returns true, if data was changed, otherwise false.
@@ -74,7 +74,7 @@ private:
         indentX,
         indentY;
     ZC_WindowOrthoIndentFlags indentFlags;
-    ZC_SConnection sconZC_WindowResized;
+    ZC_EC sconZC_WindowResized;
 
     //  override heirs who need
     virtual void VCallAfterZC_WindowResized() {}

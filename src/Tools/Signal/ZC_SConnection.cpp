@@ -8,7 +8,7 @@ void ZC_SConnection::Disconnect()
         isConnected = nullptr;
     }
 }
-bool ZC_SConnection::IsConnected()
+bool ZC_SConnection::IsConnected() const noexcept
 {
     return isConnected;
 }

@@ -178,11 +178,13 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_MakeErrorString.cpp
 	${PROJECT_SOURCE_DIR}/src/File/Read/ZC_FileReader.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_ErrorLogger.cpp
-	${PROJECT_SOURCE_DIR}/src/Events/ZC_Button.cpp
-    ${PROJECT_SOURCE_DIR}/src/Events/ZC_Mouse.cpp
+	${PROJECT_SOURCE_DIR}/src/Events/Button/ZC_ButtonHolder.cpp
+	${PROJECT_SOURCE_DIR}/src/Events/Button/ZC_ButtonPressedDown.cpp
+	${PROJECT_SOURCE_DIR}/src/Events/Button/ZC_ButtonClick.cpp
+	${PROJECT_SOURCE_DIR}/src/Events/Button/ZC_ButtonUp.cpp
+	${PROJECT_SOURCE_DIR}/src/Events/ZC_Mouse.cpp
     ${PROJECT_SOURCE_DIR}/src/Events/ZC_Events.cpp
     ${PROJECT_SOURCE_DIR}/src/Events/ZC_EventsHolder.cpp
-    ${PROJECT_SOURCE_DIR}/src/Events/ZC_SingleClickButton.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/ZC_Camera.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/ZC_Ortho.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/ZC_Perspective.cpp

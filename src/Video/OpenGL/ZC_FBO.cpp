@@ -20,7 +20,7 @@ ZC_FBO::ZC_FBO(const ZC_Viewport& _viewport, int _samples, ColorInternalFormat _
     texDepthStencil(CreateDepthStencilTexture()),
     framebuffer(CreateFrameBuffer()),
     framebufferForBlit(CreateFrameBufferForBlit()),
-    sconWindowResize(useWindowSize ? ZC_Events::ConnectWindowResize({ &ZC_FBO::WindowResize, this }) : ZC_SConnection())
+    ecWindowResize(useWindowSize ? ZC_Events::ConnectWindowResize({ &ZC_FBO::WindowResize, this }) : ZC_EC())
 {}
 
 ZC_FBO::ZC_FBO(ZC_FBO&& fbo)
@@ -38,12 +38,12 @@ ZC_FBO::ZC_FBO(ZC_FBO&& fbo)
     texDepthStencil(std::move(fbo.texDepthStencil)),
     framebuffer(std::move(fbo.framebuffer)),
     framebufferForBlit(std::move(fbo.framebufferForBlit)),
-    sconWindowResize(fbo.sconWindowResize.IsConnected() ? ZC_Events::ConnectWindowResize({ &ZC_FBO::WindowResize, this }) : ZC_SConnection())    //  if connected need reconnect, in signal pointer to moved object
+    ecWindowResize(fbo.ecWindowResize.IsConnected() ? ZC_Events::ConnectWindowResize({ &ZC_FBO::WindowResize, this }) : ZC_EC())    //  if connected need reconnect, in signal pointer to moved object
 {}
 
 ZC_FBO::~ZC_FBO()
 {
-    sconWindowResize.Disconnect();
+    ecWindowResize.Disconnect();
 }
 
 void ZC_FBO::Use()
@@ -83,7 +83,7 @@ const ZC_Texture* ZC_FBO::GetDepthTexture() const noexcept
 ZC_FBO::ZC_FBO()
     : viewport(ZC_Viewport::CreateStandardWindowViewport()),
     buffersController{ true, true, true },
-    sconWindowResize(ZC_Events::ConnectWindowResize({ &ZC_FBO::WindowResize, this }))
+    ecWindowResize(ZC_Events::ConnectWindowResize({ &ZC_FBO::WindowResize, this }))
 {}
 
 ZC_FBOBuffersController ZC_FBO::CreateBufferController()

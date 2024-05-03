@@ -9,7 +9,7 @@ ZC_Camera::ZC_Camera(const ZC_Vec3<float>& _camPos, const ZC_Vec3<float>& _lookO
     ZC_Perspective(persp),
     ZC_Ortho(ortho),
     uboSet{ {}, {}, _camPos },
-    sConWindowResize(useWindowSize ? ZC_Events::ConnectWindowResize({ &ZC_Camera::WindowResize, this }) : ZC_SConnection())
+    sConWindowResize(useWindowSize ? ZC_Events::ConnectWindowResize({ &ZC_Camera::WindowResize, this }) : ZC_EC())
 {
     this->pOrtho = &(uboSet.ortho);
 
@@ -32,16 +32,16 @@ ZC_Camera::ZC_Camera(ZC_Camera&& c)
     ZC_Perspective(dynamic_cast<ZC_Perspective&&>(c)),
     ZC_Ortho(dynamic_cast<ZC_Ortho&&>(c)),
     uboSet(c.uboSet),
-    sConWindowResize(c.sConWindowResize.IsConnected() ? ZC_Events::ConnectWindowResize({ &ZC_Camera::WindowResize, this }) : ZC_SConnection())
+    sConWindowResize(c.sConWindowResize.IsConnected() ? ZC_Events::ConnectWindowResize({ &ZC_Camera::WindowResize, this }) : ZC_EC())
 {
-    if (c.sConWindowResize.IsConnected()) c.sConWindowResize.Disconnect();
+    c.sConWindowResize.Disconnect();
     if (activeCamera == &c) activeCamera = this;    
 }
 
 ZC_Camera::~ZC_Camera()
 {
     if (activeCamera == this) activeCamera = nullptr;
-    if (sConWindowResize.IsConnected()) sConWindowResize.Disconnect();
+    sConWindowResize.Disconnect();
 }
 
 void ZC_Camera::MakeActive()

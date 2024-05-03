@@ -72,7 +72,7 @@ bool ZC_View::ViewUpdate()
     return true;
 }
 
-ZC_SConnection ZC_View::ConnectChangeCameraPosition(ZC_Function<void(const ZC_Vec3<float>&)>&& func)
+ZC_EC ZC_View::ConnectChangeCameraPosition(ZC_Function<void(const ZC_Vec3<float>&)>&& func)
 {
     return sigChangeCamPos.Connect(std::move(func));
 }

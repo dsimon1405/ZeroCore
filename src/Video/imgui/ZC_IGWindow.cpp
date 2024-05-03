@@ -14,16 +14,17 @@ ZC_IGWindow::~ZC_IGWindow()
         if (!ZC_ForwardListErase(rendererWindows, this)) ZC_ErrorLogger::Err("Can't find to delete!", __FILE__, __LINE__);  
 }
 
-void ZC_IGWindow::NeedDraw(bool _needDraw)
+void ZC_IGWindow::NeedDrawIGW(bool _needDraw)
 {
     if (_needDraw == isDrawing) return;
     isDrawing = !isDrawing;
-    sconChangeDrawingState = ZC_Events::ConnectHandleEventsEnd({ &ZC_IGWindow::UpadteRendererState, this });
+    AddAfterDrawEvent({ &ZC_IGWindow::UpdateRendererState, this });
+    VDrawStateChangedIGW(isDrawing);
 }
 
 void ZC_IGWindow::NeedImGuiDraw(bool _needDraw) noexcept
 {
-    needDraw = _needDraw;
+    needDrawImGui = _needDraw;
 }
 
 bool ZC_IGWindow::IsCursorInOneOfWindows() noexcept
@@ -55,6 +56,11 @@ ZC_IGWindow::ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, fl
     if (isDrawing) rendererWindows.emplace_front(this);
 }
 
+void ZC_IGWindow::AddAfterDrawEvent(ZC_Function<void()>&& func)
+{
+    afterDrawEvents.emplace_front(std::move(func));
+}
+
 void ZC_IGWindow::UpdateAndDraw()
 {
     SetPosition();
@@ -64,15 +70,15 @@ void ZC_IGWindow::UpdateAndDraw()
         if (ImGui::Begin(name, &needDrawInNextFrame, igwf))
         {
             if (ImGui::IsWindowHovered()) isCursorInOneOfWindows = true;
-            DrawWindow();
+            VDrawWindowIGW();
         }
-        if (!needDrawInNextFrame && isDrawing) NeedDraw(needDrawInNextFrame);
+        if (!needDrawInNextFrame && isDrawing) NeedDrawIGW(needDrawInNextFrame);
     }
     else
     {
         ImGui::Begin(name, NULL, igwf);
         if (ImGui::IsWindowHovered()) isCursorInOneOfWindows = true;
-        DrawWindow();
+        VDrawWindowIGW();
     }
     ImGui::End();
 }
@@ -95,20 +101,23 @@ void ZC_IGWindow::SetPosition()
     needSetPosition = false;
 }
 
-void ZC_IGWindow::UpadteRendererState(float time)
+void ZC_IGWindow::UpdateRendererState()
 {
     if (isDrawing) rendererWindows.emplace_front(this);
-    else
-    {
-        if (!ZC_ForwardListErase(rendererWindows, this)) ZC_ErrorLogger::Err("Can't find to delete!", __FILE__, __LINE__);  
-    }
-    sconChangeDrawingState.Disconnect();
+    else if (!ZC_ForwardListErase(rendererWindows, this)) ZC_ErrorLogger::Err("Can't find to delete!", __FILE__, __LINE__);  
 }
 
 void ZC_IGWindow::Draw()
 {
-    if (!needDraw) return;
-    ZC_ImGui::FrameStart();
-    for (auto pIGWindow : rendererWindows) pIGWindow->UpdateAndDraw();
-    ZC_ImGui::FrameEnd();
+    if (needDrawImGui)
+    {
+        ZC_ImGui::FrameStart();
+        for (auto pIGWindow : rendererWindows) pIGWindow->UpdateAndDraw();
+        ZC_ImGui::FrameEnd();
+    }
+
+    if (afterDrawEvents.empty()) return;
+    //  call after draw events, added while draw
+    for (auto& func : afterDrawEvents) func();
+    afterDrawEvents.clear();
 }

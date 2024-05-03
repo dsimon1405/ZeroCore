@@ -5,7 +5,7 @@
 #include "ZC_Renderbuffer.h"
 #include "Texture/ZC_Texture.h"
 #include "ZC_FBOBuffersController.h"
-#include <ZC/Tools/Signal/ZC_SConnection.h>
+#include <ZC/Events/ZC_EventConnection.h>
 
 class ZC_WindowHolder;
 
@@ -114,7 +114,7 @@ private:
     ZC_Framebuffer framebuffer { false },
         framebufferForBlit { false };     //  use for blit from framebuffer in multisample case
 
-    ZC_SConnection sconWindowResize;
+    ZC_EC ecWindowResize;
 
     //  only for ZC_WindowHolder use.
     ZC_FBO();

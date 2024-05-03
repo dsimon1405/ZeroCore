@@ -9,7 +9,7 @@ public:
     ZC_SConnection(ZC_sptr<bool>& _isConnected);
     
     void Disconnect();
-    bool IsConnected();
+    bool IsConnected() const noexcept;
 
 private:
     ZC_sptr<bool> isConnected {};

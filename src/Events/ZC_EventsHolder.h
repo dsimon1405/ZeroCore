@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ZC_Button.h"
+// #include "ZC_Button.h"
+#include "Button/ZC_ButtonHolder.h"
 #include "ZC_Mouse.h"
 
 struct ZC_Events;
@@ -18,10 +19,11 @@ public:
     void GetCursorPosition(float& posX, float& posY);
 
 protected:
-    ZC_Button button;
+    // ZC_Button button;
+    ZC_ButtonHolder buttonHolder;
     ZC_Mouse mouse;
-    ZC_Signal<void(float)> sigHandleEventsEnd { false };
-    ZC_Signal<void(float,float)> sigWindowResize { false };
+    ZC_ESignal<void(float)> sigHandleEventsEnd;
+    ZC_ESignal<void(float,float)> sigWindowResize;
 
     ZC_EventsHolder();
 
