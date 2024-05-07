@@ -69,7 +69,7 @@ ZC_DrawerSet ZC_OrthoSquare::CreateDrawerSet(float _width, float _height)
     return ZC_DrawerSet(pShPIS, std::move(vao), std::move(upGLDraw), std::move(buffers), {}, { { renderLevel } });
 }
 
-void ZC_OrthoSquare::VCallAfterZC_WindowResized()
+void ZC_OrthoSquare::VCallAfterZC_WindowResizedWOI()
 {
     if (funcIndentChange) funcIndentChange(this->currentIndents[0], this->currentIndents[1]);
 }

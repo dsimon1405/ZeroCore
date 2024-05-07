@@ -4,6 +4,7 @@
 #include <ZC/Tools/ZC_WindowOrthoIndent.h>
 
 #include <forward_list>
+#include <list>
 
 namespace ZC_ImGui { bool Init(void* pWindow, void* pGlContext); }
 class ZC_Renderer;
@@ -22,8 +23,14 @@ public:
     _needDraw - if true window will draw until user don't close it (using X on TitleBar if it exists), or calls this function with false.
     */
     void NeedDrawIGW(bool _needDraw);
+    bool IsDrawingIGW() const noexcept;
+    void MakeFocusedIGW();
+    //  calls NeedDrawIGW(true); MakeFocusedIGW();
+    void ActivateIGW();
+
     //  Sets to draw or not all ImGui windows.
     static void NeedImGuiDraw(bool _needDraw) noexcept;
+
     /*
     Returns true if the cursor is in one of the ImGui windows.
     Only relevant after the start of polling events and before calling the end of polling events signal (sigHandleEventsEnd in ZC_SDL_EventsHolder.cpp).
@@ -53,35 +60,41 @@ protected:
     */
     ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, float _height,
         float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags, bool _mayClose, int _igwf);
+    // ZC_IGWindow(ZC_IGWindow&& igw);
 
     static void AddAfterDrawEvent(ZC_Function<void()>&& func);
 
 private:
     static inline std::forward_list<std::string> unicNames;
-    static inline std::forward_list<ZC_IGWindow*> rendererWindows;  //  heirs for call in ZC_Renderer into ZC_IGWindow::Draw();
+    static inline std::list<ZC_IGWindow*> drawingWindows;  //  heirs for call in ZC_Renderer into ZC_IGWindow::Draw();
     static inline bool needDrawImGui = true;     //  for all ImGui
     //  Events wich calls after drawing ImGui. Pprocessing ImGui buttons events with high probability changes openGl state or ImGui drawing state.
     //  Both of that can't be processing while ImGui draw!So that container will once call every added function after ImGui finish drawing.
     static inline std::forward_list<ZC_Function<void()>> afterDrawEvents;
+    static inline bool isDrawingInProcess = false;
 
     const char* name;
-    bool isDrawing;
-
-    bool mayClose;
+    bool isDrawing,
+        mayClose,
+        isFocused = false;  //  active
     int igwf;
     bool needSetPosition = true;
+
     static inline bool isCursorInOneOfWindows = false;
 
     void UpdateAndDraw();
-    void VCallAfterZC_WindowResized() override;
+    void VCallAfterZC_WindowResizedWOI() override;
 
     virtual void VDrawWindowIGW() = 0;
-    virtual void VDrawStateChangedIGW(bool _isDrawing) {}
+    virtual void VFocusStateChangedIGW(bool _isFocused) {}
 
     const char* AddName(std::string&& unicName);
     //  set position of next window calls before ImGui::Begin();
     void SetPosition();
-    void UpdateRendererState();
+    void Update_drawingWindows();
+    void UpdateCursorCollisionState();
+    void UpdateFocusState(bool _isFocused, bool needUpdate_drawingWindows);
+    void MakeLastIn_drawingWindows();
 
     //  refresh for next frame in events handle events end signal
     static void Make_isCursorInOneOfWindows_false(float time) noexcept;

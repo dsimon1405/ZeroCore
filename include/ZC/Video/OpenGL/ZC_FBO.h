@@ -5,7 +5,7 @@
 #include "ZC_Renderbuffer.h"
 #include "Texture/ZC_Texture.h"
 #include "ZC_FBOBuffersController.h"
-#include <ZC/Events/ZC_EventConnection.h>
+#include <ZC/Events/ZC_EC.h>
 
 class ZC_WindowHolder;
 

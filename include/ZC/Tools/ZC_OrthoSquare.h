@@ -46,7 +46,7 @@ private:
     ZC_Function<void(float,float)> funcIndentChange;
 
     ZC_DrawerSet CreateDrawerSet(float _width, float _height);
-    void VCallAfterZC_WindowResized() override;
+    void VCallAfterZC_WindowResizedWOI() override;
 };
 
 

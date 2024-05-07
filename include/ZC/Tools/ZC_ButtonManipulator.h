@@ -1,91 +1,56 @@
 #pragma once
 
-#include <ZC/Events/ZC_Events.h>
-#include <ZC/Tools/Container/ZC_ContFunc.h>
 #include <forward_list>
-#include <cassert>
+#include <ZC/Events/ZC_ButtonID.h>
+#include <ZC/Events/ZC_EC.h>
 
-struct ZC_ButtonManipulator
+/*
+Class for controling button events. Heir must override -> void VCallButtonDownBM(ZC_ButtonID buttonId, float time);. In wich must be something like switch with
+reactions on different buttons calls. For activation that fucntion uses button from _activateButtonId (and for deactivation if _use_activateButtonId_ForDeactivation = true),
+for deactivation in each case uses "K_ESCAPE". Heir may have ladder type (windows that may be opened/closed, but active may be only one heir at a time) or not (something like
+window opened under ladder windows, such windows can be several, and you can switch between that windows for activation, but they can't be active until open ladder window(s)).
+VCallButtonDownBM() calls first, for ladder type heirs, until they are deactivate. One of the heirs, MUST be floor type (isFloor = true), it something like desktop,
+he can't be deactivated, became active if no nore active heirs. In overriden VCallButtonDownBM(...) can't be used mouse buttons: M_LEFT, M_MIDLE, M_RIGHT, M_X1, M_X2!
+*/
+class ZC_ButtonManipulator
 {
-    //  descrition                      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ZC_ButtonManipulator(ZC_ButtonID _activateButtonId, bool _isStaircase, bool isFloor)
-        : activateButtonId(_activateButtonId),
-        isStaircase(_isStaircase)
-    {
-        assert(!ZC_FindInPointers(allHeirs, activateButtonId));   //  allready existst ZC_ButtonManipulator with such activateButtonId
-        if (isFloor) pFloorBM = this;
-        if (allHeirs.empty()) ecFistDownButton.NewConnection(ZC_Events::ConnectFirstDownButton({ &ZC_ButtonManipulator::FirstButtonDown }));
-        allHeirs.emplace_front(this);
-    }
+public:
+    const ZC_ButtonID activateButtonId;
+    const bool isLadder,
+        use_activateButtonId_ForDeactivation;
 
-    ~ZC_ButtonManipulator()
-    {
-        if (isActive)
-        {
-            if (isStaircase) ZC_ForwardListErase(staircaseBM, this);
-            else pActiveBM = nullptr;
-        }
-        ZC_ForwardListErase(allHeirs, this);
-        if (allHeirs.empty()) ecFistDownButton.Disconnect();
-    }
+    /*
+    Params:
+    - _activateButtonId - button for activation.
+    - _isLadder - indicates whether the heir is a ladder type or not (can't be ladder and floor at the same time).
+    - _isFloor - indicates whether the heir is a floor type or not, can be only one heir (can't be ladder and floor at the same time).
+    - _use_activateButtonId_ForDeactivation - use _activateButtonId for deactivation or not (no metter, if isFloor = false).
+    */
+    ZC_ButtonManipulator(ZC_ButtonID _activateButtonId, bool _isLadder, bool isFloor, bool _use_activateButtonId_ForDeactivation);
 
-    bool operator == (ZC_ButtonID buttonId)
-    {
-        return buttonId == activateButtonId;
-    }
+    // ZC_ButtonManipulator(ZC_ButtonManipulator&& bm);
 
-    void ActivateBM()
-    {
-        if (isActive) return;
-        isActive = true;
-        if (isStaircase) staircaseBM.emplace_front(this);
-        else pActiveBM = this;
-        VActivateBM();
-    }
+    ~ZC_ButtonManipulator();
 
-    void DeactivateBM()
-    {
-        if (!isActive) return;
-        isActive = false;
-        if (isStaircase) staircaseBM.erase_after(staircaseBM.before_begin());
-        else pFloorBM->ActivateBM();
-        VDeactivateBM();
-    }
+    bool operator == (ZC_ButtonID buttonId);
 
-    bool IsActiveBM()
-    {
-        return isActive;
-    }
+    void ActivateBM();
+    void DeactivateBM();
+    bool IsFloorBM() const noexcept;
+    //  Returns true if current object target for call buttons events, otherwise false. If return true, it doesn't mean that call of button event happening right now!
+    bool IsActiveBM() const noexcept;
 
 private:
     bool isActive = false;
-    ZC_ButtonID activateButtonId;
-    bool isStaircase;
 
     virtual void VCallButtonDownBM(ZC_ButtonID buttonId, float time) = 0;  //  here heir must realize switch for all necessary fucntions
     virtual void VActivateBM() {}      //  if need some activation on activate
     virtual void VDeactivateBM() {}    //  if need some deactivation on deactivate
 
-    static inline std::forward_list<ZC_ButtonManipulator*> allHeirs;
-    static inline std::forward_list<ZC_ButtonManipulator*> staircaseBM;
+    static inline std::forward_list<ZC_ButtonManipulator*> ladderBM;
     static inline ZC_ButtonManipulator* pFloorBM = nullptr;
     static inline ZC_ButtonManipulator* pActiveBM = nullptr;
     static inline ZC_EC ecFistDownButton;
 
-    static void FirstButtonDown(ZC_ButtonID buttonId, float time)
-    {
-        if (!staircaseBM.empty())
-        {
-            buttonId == K_ESCAPE ? (*staircaseBM.begin())->DeactivateBM() : (*staircaseBM.begin())->VCallButtonDownBM(buttonId, time);
-        }
-        else if (pActiveBM)     //  have active manipulator work with them
-        {   //  take ESCAPE as a backspace button for each ZCR_ButtonManipulator. If esacape deactivate allready active heir, otherwise call heir's function
-            buttonId == K_ESCAPE ? pActiveBM->DeactivateBM() : pActiveBM->VCallButtonDownBM(buttonId, time);
-        }
-        else
-        {   //  tries to find heir, that have activate button, if found makes him active
-            auto pManipulator = ZC_FindInPointers(allHeirs, buttonId);
-            if (pManipulator) pManipulator->ActivateBM();
-        }
-    }
+    static void FirstButtonDown(ZC_ButtonID buttonId, float time);
 };

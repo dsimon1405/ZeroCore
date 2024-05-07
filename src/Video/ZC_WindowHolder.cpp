@@ -21,6 +21,12 @@ bool ZC_WindowHolder::MakeWindowHolder(int flags, int width, int height, const c
 // }
 #endif
 
+ZC_WindowHolder::~ZC_WindowHolder()
+{
+    fps.NeedDraw(false);
+    ZC_Renders::EraseRender(ZC_RL_Default);
+}
+
 void ZC_WindowHolder::RunMainCycle()
 {
     while (true)
@@ -57,7 +63,8 @@ void ZC_WindowHolder::GetCursorPosition(float& posX, float& posY)
 
 ZC_WindowHolder::ZC_WindowHolder()
     : upEventsHolder(ZC_EventsHolder::MakeEventsHolder()),
-	fps(ZC_FPS::Seconds),
+	fps(ZC_FPS::Seconds)
+,
     renderer({ &ZC_WindowHolder::SwapBuffer, this })
 {}
 

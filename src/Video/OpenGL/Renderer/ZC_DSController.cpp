@@ -32,11 +32,6 @@ ZC_DSController::ZC_DSController(const ZC_ShProg* _pShProg, const ZC_GLDraw* _pG
     renderSets(std::move(_renderSets))
 {}
 
-ZC_DSController::~ZC_DSController()
-{
-    for (auto& drawerSet : renderSets) drawerSet.SwitchToDrawLevel(ZC_DL_None, this);
-}
-
 void ZC_DSController::SwitchToDrawLvl(ZC_RenderLevel renderLevel, ZC_DrawerLevel drawerLevel)
 {
     auto pRenderSet = ZC_Find(renderSets, renderLevel);

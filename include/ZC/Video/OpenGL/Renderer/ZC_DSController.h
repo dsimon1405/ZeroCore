@@ -44,8 +44,6 @@ struct ZC_DSController   //  stores data of object of ZC_DrawerSet for search in
     ZC_DSController(const ZC_ShProg* _pShProg, const ZC_GLDraw* _pGLDraw, const ZC_VAO* _pVAO, const ZC_TexturesHolder& _texturesHolder,
         std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData, std::forward_list<RenderSet> _renderSets);
 
-    ~ZC_DSController();
-
     /*
     Switchs to choosen draw level in choosen render level. In one render level could only at one draw level at time.
 

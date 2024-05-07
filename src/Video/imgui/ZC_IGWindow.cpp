@@ -10,16 +10,35 @@
 ZC_IGWindow::~ZC_IGWindow()
 {
     ZC_ForwardListErase(unicNames, name);
-    if (isDrawing)
-        if (!ZC_ForwardListErase(rendererWindows, this)) ZC_ErrorLogger::Err("Can't find to delete!", __FILE__, __LINE__);  
+    if (isDrawing) std::erase(drawingWindows, this);
 }
 
 void ZC_IGWindow::NeedDrawIGW(bool _needDraw)
 {
     if (_needDraw == isDrawing) return;
     isDrawing = !isDrawing;
-    AddAfterDrawEvent({ &ZC_IGWindow::UpdateRendererState, this });
-    VDrawStateChangedIGW(isDrawing);
+    
+    if (isDrawingInProcess) AddAfterDrawEvent({ &ZC_IGWindow::Update_drawingWindows, this });
+    else if (isDrawing) drawingWindows.emplace_back(this);
+    else std::erase(drawingWindows, this);
+
+    UpdateFocusState(isDrawing, false);
+}
+
+bool ZC_IGWindow::IsDrawingIGW() const noexcept
+{
+    return isDrawing;
+}
+
+void ZC_IGWindow::MakeFocusedIGW()
+{
+    if (!isFocused) ImGui::SetWindowFocus(name);
+}
+
+void ZC_IGWindow::ActivateIGW()
+{
+    NeedDrawIGW(true);
+    MakeFocusedIGW();
 }
 
 void ZC_IGWindow::NeedImGuiDraw(bool _needDraw) noexcept
@@ -30,11 +49,6 @@ void ZC_IGWindow::NeedImGuiDraw(bool _needDraw) noexcept
 bool ZC_IGWindow::IsCursorInOneOfWindows() noexcept
 {
     return isCursorInOneOfWindows;
-}
-
-void ZC_IGWindow::Make_isCursorInOneOfWindows_false(float time) noexcept
-{
-    isCursorInOneOfWindows = false;
 }
 
 ZC_IGWindow::ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, float _height,
@@ -53,8 +67,20 @@ ZC_IGWindow::ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, fl
     ImGui::End();
     ZC_ImGui::FrameEnd();
 
-    if (isDrawing) rendererWindows.emplace_front(this);
+    if (isDrawing) drawingWindows.emplace_back(this);
 }
+
+// ZC_IGWindow::ZC_IGWindow(ZC_IGWindow&& igw)
+//     : ZC_WindowOrthoIndent(dynamic_cast<ZC_WindowOrthoIndent&&>(igw)),
+//     name(igw.name),
+//     isDrawing(igw.isDrawing),
+//     mayClose(igw.mayClose),
+//     igwf(igw.igwf),
+//     needSetPosition(igw.needSetPosition)
+// {
+//     igw.name = nullptr;
+//     igw.isDrawing = false;
+// }
 
 void ZC_IGWindow::AddAfterDrawEvent(ZC_Function<void()>&& func)
 {
@@ -67,23 +93,18 @@ void ZC_IGWindow::UpdateAndDraw()
     if (mayClose)
     {
         bool needDrawInNextFrame = true;
-        if (ImGui::Begin(name, &needDrawInNextFrame, igwf))
-        {
-            if (ImGui::IsWindowHovered()) isCursorInOneOfWindows = true;
-            VDrawWindowIGW();
-        }
+        if (ImGui::Begin(name, &needDrawInNextFrame, igwf)) UpdateCursorCollisionState();
         if (!needDrawInNextFrame && isDrawing) NeedDrawIGW(needDrawInNextFrame);
     }
     else
     {
         ImGui::Begin(name, NULL, igwf);
-        if (ImGui::IsWindowHovered()) isCursorInOneOfWindows = true;
-        VDrawWindowIGW();
+        UpdateCursorCollisionState();
     }
     ImGui::End();
 }
 
-void ZC_IGWindow::VCallAfterZC_WindowResized()
+void ZC_IGWindow::VCallAfterZC_WindowResizedWOI()
 {
     needSetPosition = true;
 }
@@ -101,19 +122,51 @@ void ZC_IGWindow::SetPosition()
     needSetPosition = false;
 }
 
-void ZC_IGWindow::UpdateRendererState()
+void ZC_IGWindow::Update_drawingWindows()
 {
-    if (isDrawing) rendererWindows.emplace_front(this);
-    else if (!ZC_ForwardListErase(rendererWindows, this)) ZC_ErrorLogger::Err("Can't find to delete!", __FILE__, __LINE__);  
+    if (isDrawing) drawingWindows.emplace_back(this);
+    else std::erase(drawingWindows, this);
+}
+
+void ZC_IGWindow::UpdateCursorCollisionState()
+{
+    if (ImGui::IsWindowHovered()) isCursorInOneOfWindows = true;
+    
+    UpdateFocusState(ImGui::IsWindowFocused(), true);
+
+    VDrawWindowIGW();
+}
+
+void ZC_IGWindow::UpdateFocusState(bool _isFocused, bool needUpdate_drawingWindows)
+{
+    if (_isFocused == isFocused) return;
+    //  window came in focus and need update order of drawing windows, and window not last for drawing now, make it last
+    if (needUpdate_drawingWindows && isFocused && *(--(drawingWindows.end())) != this) AddAfterDrawEvent({ &ZC_IGWindow::MakeLastIn_drawingWindows, this });
+
+    isFocused = _isFocused;
+    VFocusStateChangedIGW(isFocused);
+}
+
+void ZC_IGWindow::MakeLastIn_drawingWindows()
+{
+    std::erase(drawingWindows, this);
+    drawingWindows.emplace_back(this);
+}
+
+void ZC_IGWindow::Make_isCursorInOneOfWindows_false(float time) noexcept
+{
+    isCursorInOneOfWindows = false;
 }
 
 void ZC_IGWindow::Draw()
 {
     if (needDrawImGui)
     {
+        isDrawingInProcess = true;
         ZC_ImGui::FrameStart();
-        for (auto pIGWindow : rendererWindows) pIGWindow->UpdateAndDraw();
+        for (auto pIGWindow : drawingWindows) pIGWindow->UpdateAndDraw();
         ZC_ImGui::FrameEnd();
+        isDrawingInProcess = false;
     }
 
     if (afterDrawEvents.empty()) return;

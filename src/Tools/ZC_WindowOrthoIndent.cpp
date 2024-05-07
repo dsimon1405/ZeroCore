@@ -7,7 +7,7 @@
 
 ZC_WindowOrthoIndent::~ZC_WindowOrthoIndent()
 {
-    sconZC_WindowResized.Disconnect();
+    ecZC_WindowResized.Disconnect();
 }
 
 bool ZC_WindowOrthoIndent::SetNewSize(float _width, float _height)
@@ -47,7 +47,7 @@ ZC_WindowOrthoIndent::ZC_WindowOrthoIndent(bool _is_Y_ZeroPointOnTop, float _wid
     : is_Y_ZeroPointOnTop(_is_Y_ZeroPointOnTop),
     width(_width),
     height(_height),
-    sconZC_WindowResized(ZC_Events::ConnectWindowResize({ &ZC_WindowOrthoIndent::ZC_WindowResized, this }))
+    ecZC_WindowResized(ZC_Events::ConnectWindowResize({ &ZC_WindowOrthoIndent::ZC_WindowResized, this }))
 {
     CheckAndSetIndentData(_indentX, _indentY, _indentFlags);
     CalculateCurrentIndents();
@@ -61,8 +61,20 @@ ZC_WindowOrthoIndent::ZC_WindowOrthoIndent(const ZC_WindowOrthoIndent& woi)
     indentX(woi.indentX),
     indentY(woi.indentY),
     indentFlags(woi.indentFlags),
-    sconZC_WindowResized(ZC_Events::ConnectWindowResize({ &ZC_WindowOrthoIndent::ZC_WindowResized, this }))
+    ecZC_WindowResized(ZC_Events::ConnectWindowResize({ &ZC_WindowOrthoIndent::ZC_WindowResized, this }))
 {}
+
+// ZC_WindowOrthoIndent::ZC_WindowOrthoIndent(ZC_WindowOrthoIndent&& woi)
+//     : currentIndents{ woi.currentIndents[0], woi.currentIndents[1] },
+//     is_Y_ZeroPointOnTop(woi.is_Y_ZeroPointOnTop),
+//     width(woi.width),
+//     height(woi.height),
+//     indentX(woi.indentX),
+//     indentY(woi.indentY),
+//     indentFlags(woi.indentFlags)
+// {
+//     ecZC_WindowResized.NewConnection(std::move(woi.ecZC_WindowResized));
+// }
 
 void ZC_WindowOrthoIndent::CalculateCurrentIndents()
 {
@@ -100,7 +112,7 @@ void ZC_WindowOrthoIndent::CheckAndSetIndentData(float _indentX, float _indentY,
 void ZC_WindowOrthoIndent::ZC_WindowResized(float windowWidth, float windowHeight)
 {
     CalculateIndents(windowWidth, windowHeight);
-    VCallAfterZC_WindowResized();
+    VCallAfterZC_WindowResizedWOI();
 }
 
 void ZC_WindowOrthoIndent::CalculateIndents(float windowWidth, float windowHeight)

@@ -175,6 +175,7 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_OrthoSquare.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_TornToCamera.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_WindowOrthoIndent.cpp
+	${PROJECT_SOURCE_DIR}/src/Tools/ZC_ButtonManipulator.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_MakeErrorString.cpp
 	${PROJECT_SOURCE_DIR}/src/File/Read/ZC_FileReader.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_ErrorLogger.cpp
@@ -182,9 +183,10 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Events/Button/ZC_ButtonPressedDown.cpp
 	${PROJECT_SOURCE_DIR}/src/Events/Button/ZC_ButtonClick.cpp
 	${PROJECT_SOURCE_DIR}/src/Events/Button/ZC_ButtonUp.cpp
-	${PROJECT_SOURCE_DIR}/src/Events/ZC_Mouse.cpp
+    ${PROJECT_SOURCE_DIR}/src/Events/ZC_EC.cpp
     ${PROJECT_SOURCE_DIR}/src/Events/ZC_Events.cpp
     ${PROJECT_SOURCE_DIR}/src/Events/ZC_EventsHolder.cpp
+	${PROJECT_SOURCE_DIR}/src/Events/ZC_Mouse.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/ZC_Camera.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/ZC_Ortho.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/ZC_Perspective.cpp
@@ -199,7 +201,7 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindow.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindowController.cpp
     )
-
+	
 add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES})
 
 #========================= include dirs

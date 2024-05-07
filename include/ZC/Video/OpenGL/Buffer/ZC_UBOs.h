@@ -14,14 +14,14 @@ public:
 	virtual ~ZC_UBOs() = default;
 
 	/*
-	Adds function for update existing ZC_UBO to one of the ZC_Render (renderLevel) or to ZC_Renderer.
+	Adds function for update existing ZC_UBO to one of the ZC_Render (renderLevel) or to ZC_Renderer (use ZC_AddToRenderer).
 
 	Params:
 	- pUbo - pointer on ubo.
 	- fUpdate - function for update.
 	- renderLevel - one of the ZC_Render or set ZC_AddToRenderer to add in ZC_Renderer.
 	*/
-	static void AddUpdateFunction(ZC_UBO* pUbo, ZC_Function<void()> fUpdate, ZC_RenderLevel renderLevel);
+	static void AddUpdateFunction(ZC_UBO* pUbo, ZC_Function<void()>&& fUpdate, ZC_RenderLevel renderLevel);
 	void AddUBO(ZC_UBO* pUbo, ZC_Function<void()>&& fUpdate);
 	void EraseUBO(ZC_UBO* pUbo);
 

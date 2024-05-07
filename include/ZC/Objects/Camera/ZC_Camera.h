@@ -30,9 +30,9 @@ private:
         ZC_Vec3<float> position;
     };
 
-    static inline ZC_uptr<ZC_UBO> ubo;
-    static inline const ZC_Camera* activeUBO = nullptr;      //  pointer on camera wich uboSet was activated last in ZC_Render or ZC_Renderer (GPU data)
-    static inline ZC_Camera* activeCamera = nullptr;   //  pointer on active camera for getting camera information throught GetActiveCamera() (CPU data)
+    static inline ZC_uptr<ZC_UBO> upUbo;
+    static inline const ZC_Camera* pActiveUBO = nullptr;      //  pointer on camera wich uboSet was activated last in ZC_Render or ZC_Renderer (GPU data)
+    static inline ZC_Camera* pActiveCamera = nullptr;   //  pointer on active camera for getting camera information throught GetActiveCamera() (CPU data)
 
     UboSet uboSet;
     ZC_EC sConWindowResize;

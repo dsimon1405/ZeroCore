@@ -12,7 +12,7 @@ public:
 
     static bool MakeWindowHolder(int flags, int width, int height, const char* name);
 
-    virtual ~ZC_WindowHolder() = default;
+    virtual ~ZC_WindowHolder();
 
     virtual void VGetSize(int& width, int& height) const noexcept = 0;
     virtual void VHideCursor() {}
@@ -39,8 +39,6 @@ private:
     void LoadShProgs();
     void AddZC_RenderLevels();
 
-    /*
-    Changes the current buffer to a buffer with a prepared sketch
-    */
+    //  Changes the current buffer to a buffer with a prepared sketch
     virtual void SwapBuffer() = 0;
 };

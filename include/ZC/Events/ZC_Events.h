@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ZC/Events/ZC_EventConnection.h>
+#include <ZC/Events/ZC_EC.h>
 #include <ZC/Tools/Function/ZC_Function.h>
 #include "ZC_ButtonID.h"
 #include <ZC/Tools/Math/ZC_Vec3.h>

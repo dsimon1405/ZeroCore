@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ZC/Events/ZC_EventConnection.h>
+#include <ZC/Events/ZC_EC.h>
 
 template<typename TpTarget, typename TData>
 struct ZC_ECTargetPointer : public ZC_EventConnection

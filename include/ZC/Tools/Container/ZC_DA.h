@@ -71,8 +71,11 @@ ZC_DA<T>& ZC_DA<T>::operator = (ZC_DA&& charArray)
 template<typename T>
 ZC_DA<T>::~ZC_DA()
 {
-    free(pHead);
-    pHead = nullptr;
+    if (pHead)
+    {
+        free(pHead);
+        pHead = nullptr;
+    }
 }
 
 template<typename T>

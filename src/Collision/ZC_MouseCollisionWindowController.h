@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ZC/Collision/ZC_MouseCollisionWindow.h>
-#include <ZC/Events/ZC_EventConnection.h>
+#include <ZC/Events/ZC_EC.h>
 #include <ZC/Events/ZC_ButtonID.h>
 
 #include <forward_list>

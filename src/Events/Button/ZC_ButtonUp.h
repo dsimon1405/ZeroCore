@@ -3,7 +3,7 @@
 #include "ZC_ConnectedButton.h"
 #include <ZC/Events/ZC_ButtonID.h>
 #include <ZC/Tools/Function/ZC_Function.h>
-#include <ZC/Events/ZC_EventConnection.h>
+#include <ZC/Events/ZC_EC.h>
 
 #include <forward_list>
 

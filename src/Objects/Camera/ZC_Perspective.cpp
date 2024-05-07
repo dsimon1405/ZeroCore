@@ -56,7 +56,7 @@ float ZC_Perspective::GetNearPlane() const noexcept
     return nearPlane;
 }
 
-float ZC_Perspective::GetFraPlane() const noexcept
+float ZC_Perspective::GetFarPlane() const noexcept
 {
     return farPlane;
 }

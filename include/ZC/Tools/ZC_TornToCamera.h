@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ZC/Events/ZC_EventConnection.h>
+#include <ZC/Events/ZC_EC.h>
 #include <ZC/Tools/Math/ZC_Mat4.h>
 
 #include <forward_list>

@@ -13,6 +13,10 @@ struct ZC_IGWBM : public ZC_IGWindow, protected ZC_ButtonManipulator
     Create ImGui window for heir with buttons events functionality.
 
     Params:
+    - _activateButtonId - button for activation.
+    - _isLadder - indicates whether the heir is a ladder type or not (can't be ladder and floor at the same time).
+    - _isFloor - indicates whether the heir is a floor type or not, can be only one heir (can't be ladder and floor at the same time).
+    - _use_activateButtonId_ForDeactivation - use _activateButtonId for deactivation or not (no metter, if isFloor = false).
     - unicName - unic name for window.
     - needDraw - window must be draw after creation.
     - _width - window width.
@@ -29,27 +33,38 @@ struct ZC_IGWBM : public ZC_IGWindow, protected ZC_ButtonManipulator
     - _mayClose - window must have cross to close the window.
     - _igfw - ImGuiWindowFlags.
     */
-    ZC_IGWBM(ZC_ButtonID _activateButtonId, bool _isStaircase, bool isFloor, std::string &&unicName, bool needDraw,
+    ZC_IGWBM(ZC_ButtonID _activateButtonId, bool _isStaircase, bool isFloor, bool _use_activateButtonId_ForDeactivation, std::string &&unicName, bool needDraw,
             float _width, float _height, float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags, bool _mayClose, int _igwf)
         : ZC_IGWindow(std::move(unicName), needDraw, _width, _height, _indentX, _indentY, _indentFlags, _mayClose, _igwf),
-        ZC_ButtonManipulator(_activateButtonId, _isStaircase, isFloor)
+        ZC_ButtonManipulator(_activateButtonId, _isStaircase, isFloor, _use_activateButtonId_ForDeactivation)
     {
         if (needDraw) this->ActivateBM();
     }
 
+    bool IsActiveIGWBM() const noexcept
+    {
+        return this->IsActiveBM();
+    }
+
 private:
+    virtual void VActivateIGWBM() {}      //  if need some activation on activate
+    virtual void VDeactivateIGWBM() {}    //  if need some deactivation on deactivate
+    
     void VActivateBM() override
     {
         this->NeedDrawIGW(true);   //  if pFloorBM became active in ZC_ButtonManipulator::DeactivateBM(), not throught ActivateIGWBM() that can change his draw state
+        VActivateIGWBM();
     }
 
     void VDeactivateBM() override
     {
-        this->NeedDrawIGW(this->IsActiveBM());
+        this->NeedDrawIGW((this->IsFloorBM()));    //  stop drawing every heir among ZC_ButtonManipulator::pFloorBM level
+        VDeactivateIGWBM();
     }
 
-    void VDrawStateChangedIGW(bool isDrawing) override
+    void VFocusStateChangedIGW(bool _isFocused) override
     {
-        isDrawing ? this->ActivateBM() : this->DeactivateBM();  //  if changing draw state in ZC_IGWWindow (the window was covered with a cross)
+        if (_isFocused && !this->IsFloorBM()) this->ActivateBM();
+        else if (!this->IsDrawingIGW()) this->DeactivateBM();  //  if changing draw state in ZC_IGWWindow (the window was covered with a cross)
     }
 };

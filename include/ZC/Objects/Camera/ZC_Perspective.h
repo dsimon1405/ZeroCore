@@ -15,7 +15,7 @@ public:
     float GetFovy() const noexcept;
     float GetAspect() const noexcept;
     float GetNearPlane() const noexcept;
-    float GetFraPlane() const noexcept;
+    float GetFarPlane() const noexcept;
     const ZC_Mat4<float>* GetPerspective();
 
 protected:
