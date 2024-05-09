@@ -25,8 +25,8 @@ struct ZC_Events
     static ZC_EC ConnectButtonPressDown(ZC_ButtonID buttonId, ZC_Function<void(ZC_ButtonID, float)>&& function);
     
     /*Binds a function to a button click event. This event calls funcDown when the button is pressed (only called once, even if the button is pressed continuously),
-    and then calls funcUp (can be missed, with {} constructor) when the button is released. One down button, can only connected once with this ConnectButtonPressDown(...),
-    or once with ConnectButtonClick(...), or be the first button in a combination in the ConnectButtonCombination(...) function.
+    and then calls funcUp when the button is released. One of connectiong fucntions can be missed, with {} constructor). One down button, can only connected once
+    with this ConnectButtonPressDown(...), or once with ConnectButtonClick(...), or be the first button in a combination in the ConnectButtonCombination(...) function.
 
     Params:
     - buttonId - button id.
@@ -164,7 +164,7 @@ struct ZC_Events
     static ZC_EC ConnectHandleEventsEnd(ZC_Function<void(float)>&& func);
 
     /*
-    binds the function to the event of changing the position of the currently active camera. If there is no active camera, ZC_SConnection will be returned disconnected.
+    Binds the function to the event of changing the position of the currently active camera. If there is no active camera, ZC_SConnection will be returned disconnected.
     If another camera becomes active, the binding to events will not change and camera change events from a camera that is no longer active will be received.
 
     Params:
@@ -174,4 +174,15 @@ struct ZC_Events
     Connection to event.
     */
     static ZC_EC ConnectActiveCameraChangePosition(ZC_Function<void(const ZC_Vec3<float>&)>&& func);
+
+    /*
+    Binds a function to the end of drawing.
+
+    Params:
+    - func - binding function (binding function parameters: previous frame time).
+
+    Return:
+    Connection to event.
+    */
+    static ZC_EC ConnectHandeEventsStart(ZC_Function<void(float)>&& func);
 };

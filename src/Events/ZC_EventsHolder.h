@@ -22,6 +22,7 @@ protected:
     ZC_Mouse mouse;
     ZC_ESignal<void(float)> sigHandleEventsEnd;
     ZC_ESignal<void(float,float)> sigWindowResize;
+    ZC_ESignal<void(float)> sigHandleEventsStart;
 
     ZC_EventsHolder();
 

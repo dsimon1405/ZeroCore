@@ -19,7 +19,7 @@ class ZC_MouseCollisionWindowController
 
         bool operator == (const MCWBorder& _border);
 
-        ZC_MouseCollisionWindow* MakeCollision(MCWEvent event, float cursorX, float cursorY, float time);
+        ZC_MouseCollisionWindow* MakeCollision(MCWEvent event, bool isButtonDown, float cursorX, float cursorY, float time);
     };
 
 public:
@@ -43,8 +43,8 @@ private:
     std::forward_list<Pair> rightButtonCollisions;
     ZC_MouseCollisionWindow* pMCWLastActive;
 
-    void MakeCollision(std::forward_list<Pair>& rPairs, MCWEvent event, float cursorPosX, float cursorPosY, float time);
-    void MoveCollision(float cursorPosX, float cursorPosY, float cursorRelX, float cursorRelY, float time);
-    void ButtonDownLeft(ZC_ButtonID buttonId, float time);
-    void ButtonDownRight(ZC_ButtonID buttonId, float time);
+    void MakeCollision(std::forward_list<Pair>& rPairs, MCWEvent event, bool isButtonDown, float cursorPosX, float cursorPosY, float time);
+    void CrusorMove(float cursorPosX, float cursorPosY, float cursorRelX, float cursorRelY, float time);
+    void ButtonDown(ZC_ButtonID buttonId, float time);
+    void ButtonUp(ZC_ButtonID buttonId, float time);
 };

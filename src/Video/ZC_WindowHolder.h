@@ -37,7 +37,7 @@ private:
     ZC_MouseCollisionWindowController mcwc;
 
     void LoadShProgs();
-    void AddZC_RenderLevels();
+    void AddZC_Render();
 
     //  Changes the current buffer to a buffer with a prepared sketch
     virtual void SwapBuffer() = 0;

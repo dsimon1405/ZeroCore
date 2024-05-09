@@ -27,10 +27,13 @@ public:
     void MakeFocusedIGW();
     //  calls NeedDrawIGW(true); MakeFocusedIGW();
     void ActivateIGW();
-
-    //  Sets to draw or not all ImGui windows.
+    const char* GetName() const noexcept;
+    bool IsFocusedIGW() const noexcept;
+    
+    //  Returns true if ImGuiDrawing, otherwise false.
+    static bool IsImGuiDrawing() noexcept;
+    //  Sets to draw or not, all ZC_IGWindow windows.
     static void NeedImGuiDraw(bool _needDraw) noexcept;
-
     /*
     Returns true if the cursor is in one of the ImGui windows.
     Only relevant after the start of polling events and before calling the end of polling events signal (sigHandleEventsEnd in ZC_SDL_EventsHolder.cpp).
@@ -44,8 +47,8 @@ protected:
     Params:
     - unicName - unic name for window.
     - needDraw - window must be draw after creation.
-    - _width - window width.
-    - _height - window height.
+    - _width - window width (no metter, if setted _igwf flag ImGuiWindowFlags_AlwaysAutoResize).
+    - _height - window height (no metter, if setted _igwf flag ImGuiWindowFlags_AlwaysAutoResize).
     - _indentX - value of horizontal indent from border of global window. If used IndentFlag:
         X_Left_Pixel, X_Right_Pixel -> value must be not negative, otherwise sets 0.f;
         X_Left_Percent, X_Right_Percent -> value must be 0.0f - 1.f (where 1.f is 100%);
@@ -69,11 +72,11 @@ private:
     static inline std::list<ZC_IGWindow*> drawingWindows;  //  heirs for call in ZC_Renderer into ZC_IGWindow::Draw();
     static inline bool needDrawImGui = true;     //  for all ImGui
     //  Events wich calls after drawing ImGui. Pprocessing ImGui buttons events with high probability changes openGl state or ImGui drawing state.
-    //  Both of that can't be processing while ImGui draw!So that container will once call every added function after ImGui finish drawing.
+    //  Both of that can't be processing while ImGui draw! So that container will once call every added function after ImGui finish drawing.
     static inline std::forward_list<ZC_Function<void()>> afterDrawEvents;
     static inline bool isDrawingInProcess = false;
 
-    const char* name;
+    const char* pName;
     bool isDrawing,
         mayClose,
         isFocused = false;  //  active
@@ -92,7 +95,7 @@ private:
     //  set position of next window calls before ImGui::Begin();
     void SetPosition();
     void Update_drawingWindows();
-    void UpdateCursorCollisionState();
+    void UpdateCursorCollisionStateAndDraw();
     void UpdateFocusState(bool _isFocused, bool needUpdate_drawingWindows);
     void MakeLastIn_drawingWindows();
 

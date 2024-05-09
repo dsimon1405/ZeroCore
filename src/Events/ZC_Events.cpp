@@ -57,3 +57,8 @@ ZC_EC ZC_Events::ConnectActiveCameraChangePosition(ZC_Function<void(const ZC_Vec
 {
     return ZC_Camera::GetActiveCamera() ? ZC_Camera::GetActiveCamera()->ConnectChangeCameraPosition(std::move(func)) : ZC_EC();
 }
+
+ZC_EC ZC_Events::ConnectHandeEventsStart(ZC_Function<void(float)>&& func)
+{
+    return ZC_EventsHolder::pEventsHolder ? ZC_EventsHolder::pEventsHolder->sigHandleEventsStart.Connect(std::move(func)) : ZC_EC();
+}

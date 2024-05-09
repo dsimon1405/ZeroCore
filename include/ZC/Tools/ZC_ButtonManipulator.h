@@ -38,6 +38,8 @@ public:
     void DeactivateBM();
     bool IsFloorBM() const noexcept;
     //  Returns true if current object target for call buttons events, otherwise false. If return true, it doesn't mean that call of button event happening right now!
+    bool IsEventsTargetBM() const noexcept;
+    //  Returns true if active. Last who had called by ActivateBM(). For ladder targets, everyone who in ladder now.
     bool IsActiveBM() const noexcept;
 
 private:

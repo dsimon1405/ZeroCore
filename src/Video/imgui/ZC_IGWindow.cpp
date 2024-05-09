@@ -9,7 +9,7 @@
 
 ZC_IGWindow::~ZC_IGWindow()
 {
-    ZC_ForwardListErase(unicNames, name);
+    ZC_ForwardListErase(unicNames, pName);
     if (isDrawing) std::erase(drawingWindows, this);
 }
 
@@ -32,13 +32,28 @@ bool ZC_IGWindow::IsDrawingIGW() const noexcept
 
 void ZC_IGWindow::MakeFocusedIGW()
 {
-    if (!isFocused) ImGui::SetWindowFocus(name);
+    if (!isFocused) ImGui::SetWindowFocus(pName);
 }
 
 void ZC_IGWindow::ActivateIGW()
 {
     NeedDrawIGW(true);
     MakeFocusedIGW();
+}
+
+const char* ZC_IGWindow::GetName() const noexcept
+{
+    return pName;
+}
+
+bool ZC_IGWindow::IsFocusedIGW() const noexcept
+{
+    return isFocused;
+}
+
+bool ZC_IGWindow::IsImGuiDrawing() noexcept
+{
+    return needDrawImGui;
 }
 
 void ZC_IGWindow::NeedImGuiDraw(bool _needDraw) noexcept
@@ -53,8 +68,10 @@ bool ZC_IGWindow::IsCursorInOneOfWindows() noexcept
 
 ZC_IGWindow::ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, float _height,
         float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags, bool _mayClose, ImGuiWindowFlags _igwf)
-    : ZC_WindowOrthoIndent(true, _width, _height, _indentX, _indentY, _indentFlags),
-    name(AddName(std::move(unicName))),
+        //  if uses auto resize (size can be changed in each frame, depends on window's content), on start take some random width, height 100.f for example
+    : ZC_WindowOrthoIndent(true, _igwf & ImGuiWindowFlags_AlwaysAutoResize ? 100.f : _width, _igwf & ImGuiWindowFlags_AlwaysAutoResize ? 100.f : _height,
+        _indentX, _indentY, _indentFlags),
+    pName(AddName(std::move(unicName))),
     isDrawing(needDraw),
     mayClose(_mayClose),
     igwf(_igwf)
@@ -63,7 +80,7 @@ ZC_IGWindow::ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, fl
     ZC_ImGui::FrameStart();
     SetPosition();
     ImGui::SetNextWindowSize(ImVec2(_width, _height));
-    ImGui::Begin(name, NULL);
+    ImGui::Begin(pName, NULL);
     ImGui::End();
     ZC_ImGui::FrameEnd();
 
@@ -93,13 +110,13 @@ void ZC_IGWindow::UpdateAndDraw()
     if (mayClose)
     {
         bool needDrawInNextFrame = true;
-        if (ImGui::Begin(name, &needDrawInNextFrame, igwf)) UpdateCursorCollisionState();
+        if (ImGui::Begin(pName, &needDrawInNextFrame, igwf)) UpdateCursorCollisionStateAndDraw();
         if (!needDrawInNextFrame && isDrawing) NeedDrawIGW(needDrawInNextFrame);
     }
     else
     {
-        ImGui::Begin(name, NULL, igwf);
-        UpdateCursorCollisionState();
+        ImGui::Begin(pName, NULL, igwf);
+        UpdateCursorCollisionStateAndDraw();
     }
     ImGui::End();
 }
@@ -128,13 +145,19 @@ void ZC_IGWindow::Update_drawingWindows()
     else std::erase(drawingWindows, this);
 }
 
-void ZC_IGWindow::UpdateCursorCollisionState()
+void ZC_IGWindow::UpdateCursorCollisionStateAndDraw()
 {
     if (ImGui::IsWindowHovered()) isCursorInOneOfWindows = true;
     
     UpdateFocusState(ImGui::IsWindowFocused(), true);
 
     VDrawWindowIGW();
+
+    if (igwf & ImGuiWindowFlags_AlwaysAutoResize)
+    {
+        auto windowSize = ImGui::GetWindowSize();
+        needSetPosition = this->SetNewSize(windowSize[0], windowSize[1]);
+    }
 }
 
 void ZC_IGWindow::UpdateFocusState(bool _isFocused, bool needUpdate_drawingWindows)
@@ -164,7 +187,8 @@ void ZC_IGWindow::Draw()
     {
         isDrawingInProcess = true;
         ZC_ImGui::FrameStart();
-        for (auto pIGWindow : drawingWindows) pIGWindow->UpdateAndDraw();
+        for (auto pIGWindow : drawingWindows)
+            pIGWindow->UpdateAndDraw();
         ZC_ImGui::FrameEnd();
         isDrawingInProcess = false;
     }

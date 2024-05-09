@@ -5,6 +5,7 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
     $<$<BOOL:${ZC_IMGUI}>:
         ${PROJECT_SOURCE_DIR}/src/Video/imgui/ZC_ImGui.cpp
         ${PROJECT_SOURCE_DIR}/src/Video/imgui/ZC_IGWindow.cpp
+        ${PROJECT_SOURCE_DIR}/src/Video/imgui/ZC_IGWBM.cpp
         $<$<NOT:${ZC_MY_DEBUG}>:
             ${PROJECT_SOURCE_DIR}/src/Video/imgui/imgui_demo.cpp
             ${PROJECT_SOURCE_DIR}/src/Video/imgui/imgui_draw.cpp

@@ -10,7 +10,7 @@ bool ZC_WindowHolder::MakeWindowHolder(int flags, int width, int height, const c
     upWindowHolder = ZC_uptrMakeFromChild<ZC_WindowHolder, ZC_SDL_Window>(flags, width, height, name);
     if (!upWindowHolder) return false;
     upWindowHolder->LoadShProgs();
-    upWindowHolder->AddZC_RenderLevels();
+    upWindowHolder->AddZC_Render();
     return true;
 }
 // #elif defined(ZC_ANDROID_NATIVE_APP_GLUE)
@@ -75,7 +75,7 @@ void ZC_WindowHolder::LoadShProgs()
     shProgs.Load(&loadAll, 0);
 }
 
-void ZC_WindowHolder::AddZC_RenderLevels()
+void ZC_WindowHolder::AddZC_Render()
 {
     ZC_Renders::CreateRender(ZC_RL_Default, ZC_Render::DS_Loop, ZC_FBO());
 }

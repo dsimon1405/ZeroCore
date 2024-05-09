@@ -13,6 +13,7 @@ ZC_ButtonClick::ZC_ButtonClick(ZC_ButtonHolder* _pButtonHolder)
 ZC_EC ZC_ButtonClick::Connect(ZC_ButtonID buttonId, ZC_Function<void(ZC_ButtonID, float)>&& funcDown, ZC_Function<void(ZC_ButtonID, float)>&& funcUp)
 {
     assert(!pButtonHolder->IsButtonDownConnected(buttonId));    //  down button allready connected some where
+    assert(funcDown || funcUp);    //  must be minimum one function
     return { new ZC_ECTargetPointer<ZC_ButtonClick*, const void*>(this,
         buttonHolders.emplace_front(ButtonHolder{ buttonId, std::move(funcDown), std::move(funcUp) }).funcDown.GetPointerOnData()) };
 }
@@ -56,7 +57,7 @@ bool ZC_ButtonClick::ButtonHolder::CallButtonDown(ZC_ButtonID buttonId, float ti
 {
     if (callDown)
     {
-        funcDown(buttonId, time);   //  if callDown, calls down function
+        if (funcDown) funcDown(buttonId, time);   //  if callDown, calls down function
         callDown = false;
         return true;
     }

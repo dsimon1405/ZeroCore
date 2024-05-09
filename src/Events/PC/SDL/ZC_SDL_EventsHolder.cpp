@@ -13,6 +13,8 @@ bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
 {
     static SDL_Event event;
     
+    sigHandleEventsStart(previousFrameTime);
+
     bool isCursorInImGuiWindow = false;     //	if mouse cursor is in one of the ImGui windows, don't poll - mouse button down events, and mouse wheel (scroll) events
 #ifdef ZC_IMGUI
     isCursorInImGuiWindow = ZC_IGWindow::IsCursorInOneOfWindows();

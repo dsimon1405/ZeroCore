@@ -104,11 +104,16 @@ bool ZC_ButtonManipulator::IsFloorBM() const noexcept
     return this == pFloorBM;
 }
 
-bool ZC_ButtonManipulator::IsActiveBM() const noexcept
+bool ZC_ButtonManipulator::IsEventsTargetBM() const noexcept
 {
     return !isActive ? false
         : ladderBM.empty() ? pActiveBM == this
         : *ladderBM.begin() == this;
+}
+
+bool ZC_ButtonManipulator::IsActiveBM() const noexcept
+{
+    return isActive;
 }
 
 void ZC_ButtonManipulator::FirstButtonDown(ZC_ButtonID buttonId, float time)

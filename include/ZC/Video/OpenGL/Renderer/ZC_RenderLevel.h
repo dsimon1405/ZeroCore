@@ -10,11 +10,11 @@ enum ZC_RenderLevels
 enum ZC_DrawerLevels
 {
     None = -1,
-    Drawing = 0,    //  ZC_RLDDrawing.h     ZC_RLDDrawing
-    StencilBorder = 1,        //  ZC_RLDStencilBorder.h     ZC_RLDStencilBorder
-    TextScene = Drawing + 1000,     //  ZC_RLDText.h    ZC_RLDTextScene
-    TextWindowIntoScene = TextScene + 1000,     //  ZC_RLDText.h    ZC_RLDTextWindowIntoScene
-    OrthoBlend = TextWindowIntoScene + 1000,    //  ZC_RLDText.h    ZC_RLDText
+    Drawing = 0,    //  ZC_Drawer.cpp
+    StencilBorder = 1,        //  ZC_DSStencilBorder.cpp
+    TextScene = Drawing + 1000,     //  ZC_Drawer.cpp
+    TextWindowIntoScene = TextScene + 1000,     //  ZC_Drawer.cpp
+    OrthoBlend = TextWindowIntoScene + 1000,    //  ZC_Drawer.cpp
 };
 
 typedef int ZC_DrawerLevel;   //  Draw Levels for user

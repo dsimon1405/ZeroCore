@@ -7,6 +7,7 @@ class ZC_MouseCollisionWindowController;
 /*
 Class for trekking actions(move, click left, right buttons) of the mouse cursor for heir's quad area (for example textured area like button).
 Class uses const pointers on quad area(sets in constructor) to avoid manual reinstall, but also have function ReinstallCoords(...) for it's reinstall.
+If uses ZC_IGWindow, areas of that windows don't tracks.
 */
 class ZC_MouseCollisionWindow
 {
@@ -27,28 +28,29 @@ public:
 
     virtual ~ZC_MouseCollisionWindow();
 
-    void ConnectMouseCollision();
-    void DisconnectMouseConllision();
+    void ConnectMCW();
+    void DisconnectMCW();
 
 protected:
     typedef int Events;
     enum Event
     {
-        E_Move                 = 1,
-        E_Down_Mouse_Left      = 1 << 1,
-        E_Down_Mouse_Right     = 1 << 2
+        E_Move                  = 1,
+        E_Mouse_Button_Left     = 1 << 1,
+        E_Mouse_Button_Right    = 1 << 2
     };
 
     /*
     Params:
-    - events - trekking events. coude be several at a time (E_Move | E_Down_Mouse_Right). E_Move - overriden VMouseMoveCollision() calls on start (look UseManualMove()) move cursor collision,
-        overriden VMouseMoveCollisionEnd() calls on end move cursor collision. E_Down_Mouse_Left - overriden VMouseLeftDownCollision() calls on click left mouse button.
-        E_Down_Mouse_Right - overriden VMouseRightDownCollision() calls on click right mouse button.
+    - events - trekking events. coude be several at a time (E_Move | E_Mouse_Button_Right). E_Move - overriden VCrusorMoveCollision() calls on start (look UseManualMove())
+        move cursor collision, overriden VCursorMoveCollisionEnd() calls on end move cursor collision; E_Mouse_Button_Left - overriden VLeftButtonDownCollision() calls on 
+        lefr mouse button down, overriden VLeftButtonUpCollision() call on left mouse button up; E_Mouse_Button_Right - overriden VRightButtonDownCollision() calls on right
+        mouse button down, overriden VRightButtonUpCollision() calls on right mouse button up.
     - _blX - bottom left X coord of quad (window's pixel coords).
     - _blY - bottom left Y coord of quad (window's pixel coords).
     - _width - quad's width (pixels).
     - _height - quad's height (pixels).
-    - needConnect - connects to events after cereaetion, calls ConnectMouseCollision().
+    - needConnect - connects to events after cereaetion, calls ConnectMCW().
     - _border - border it's a quad in wich must be you quad. It's uses for grouping several area's in one zone and minimize count of checking areas if them in other border.
         By default taking too large(more then window dimension, to avoid trecking it's size chenging) border quad same for all.
         Example, you have 10(10 heirs) buttons in 2 different quad areas (5 buttons in each area), to avoid check all 10 buttons on each event, set border,
@@ -58,8 +60,8 @@ protected:
     //  Reinstall references of tracking frame.
     void ReinstallCoords(const float* _blX, const float* _blY, const float* _width, const float* _height);
     /*
-    By default VMouseMoveCollision() calls only ance on start of collision and don't call till call VMouseMoveCollisionEnd(). If set manual move true,
-    VMouseMoveCollision() continue calls on each move, into tracking area.
+    By default VCrusorMoveCollision() calls only once on start of collision and don't call till call VCursorMoveCollisionEnd(). If set manual move true,
+    VCrusorMoveCollision() continue calls on each move, into tracking area.
     */
     void UseManualMove(bool _manualMove);
 
@@ -77,15 +79,19 @@ private:
         connected = false;  //  connection to ZC_MouseCollisionWindowController
 
     //  Calls if move collision heppens. Must be implimented if uses mouse move collision.
-    virtual void VMouseMoveCollision(float time) {}
+    virtual void VCrusorMoveCollision(float time) {}
     //  Сalls when the cursor leaves the bounds. Must be implimented if uses mouse move collision.
-    virtual void VMouseMoveCollisionEnd(float time) {}
+    virtual void VCursorMoveCollisionEnd(float time) {}
     //  must be implimented if uses mouse left button collision.
-    virtual void VMouseLeftDownCollision(float time) {}
+    virtual void VLeftButtonDownCollision(float time) {}
+    //  must be implimented if uses mouse left button collision.
+    virtual void VLeftButtonUpCollision(float time) {}
     //  must be implimented if uses mouse right button collision.
-    virtual void VMouseRightDownCollision(float time) {}
+    virtual void VRightButtonDownCollision(float time) {}
+    //  must be implimented if uses mouse right button collision.
+    virtual void VRightButtonUpCollision(float time) {}
 
     //  returns true if collision happened.
-    bool MakeCollision(Event event, float cursorX, float cursorY, float time);
+    bool MakeCollision(Event event, bool isButtonDown, float cursorX, float cursorY, float time);
     void CollisionEnd(float time);
 };
