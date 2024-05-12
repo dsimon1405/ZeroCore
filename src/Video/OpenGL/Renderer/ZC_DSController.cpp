@@ -32,6 +32,11 @@ ZC_DSController::ZC_DSController(const ZC_ShProg* _pShProg, const ZC_GLDraw* _pG
     renderSets(std::move(_renderSets))
 {}
 
+ZC_DSController::~ZC_DSController()
+{
+    for (auto& rendSet : renderSets) rendSet.SwitchToDrawLevel(ZC_DL_None, this);
+}
+
 void ZC_DSController::SwitchToDrawLvl(ZC_RenderLevel renderLevel, ZC_DrawerLevel drawerLevel)
 {
     auto pRenderSet = ZC_Find(renderSets, renderLevel);
@@ -98,6 +103,13 @@ bool ZC_DSController::IsDrawing(ZC_RenderLevel renderLevel)
     auto pRenderSet = ZC_Find(renderSets, renderLevel);
     assert(pRenderSet);     //  tries to add on render's level, wich was not add while ZC_DSController created.
     return pRenderSet->drawerLevel != ZC_DL_None;
+}
+
+ZC_RenderLevel ZC_DSController::GetDrawingLevel(ZC_RenderLevel renderLevel)
+{
+    auto pRenderSet = ZC_Find(renderSets, renderLevel);
+    assert(pRenderSet);     //  tries to add on render's level, wich was not add while ZC_DSController created.
+    return pRenderSet->drawerLevel;
 }
 
 void ZC_DSController::AddRender(ZC_RenderLevel renderLevel)

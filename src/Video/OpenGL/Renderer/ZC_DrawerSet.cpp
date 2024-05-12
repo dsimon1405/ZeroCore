@@ -32,12 +32,12 @@ ZC_DSController ZC_DrawerSet::MakeZC_DSController(int texSetId, std::forward_lis
     //  if pBaseUniforms was added make copy
     if (pBaseUniforms) personalData.emplace_front(ZC_RSPDUniforms::Make(pBaseUniforms->GetCopy()));
     //  if no textures sets create without pointer on textures
-    if (texSetId == -1) return ZC_DSController(this->pShP, upGLDraw.Get(), &vao, ZC_TexturesHolder{ nullptr, 0 }, std::move(personalData), renderSets);
+    if (texSetId == -1) return ZC_DSController(pShP, upGLDraw.Get(), &vao, ZC_TexturesHolder{ nullptr, 0 }, std::move(personalData), renderSets);
 
     auto pTexSet = ZC_Find(texSets, texSetId);
     assert(pTexSet);  //  can't find texture set
     
-    return ZC_DSController(this->pShP, upGLDraw.Get(), &vao, ZC_TexturesHolder{ &*(pTexSet->textures.begin()), static_cast<uint>(pTexSet->textures.size()) },
+    return ZC_DSController(pShP, upGLDraw.Get(), &vao, ZC_TexturesHolder{ &*(pTexSet->textures.begin()), static_cast<uint>(pTexSet->textures.size()) },
         std::move(personalData), renderSets);
 }
 
