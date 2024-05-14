@@ -19,6 +19,8 @@ struct ZC_RSPersonalData
     ZC_RSPDCategory category;
 
     virtual ~ZC_RSPersonalData() = default;
+
+    bool operator == (ZC_RSPDCategory _category) const noexcept;
     
     virtual const void* GetPointerOnData() const = 0;
     virtual void SetData(ZC_RSPDStoredData* pData) = 0;
@@ -56,10 +58,12 @@ color - color of stencil border packed in unsigned int. Packing -> unsigned char
 */
 struct ZC_RSPDStencilBorderData : public ZC_RSPDStoredData
 {
-    float scale = 0;
+    float scaleX = 0.f,
+        scaleY = 0.f,
+        scaleZ = 0.f;
     uint color = 0;
 
-    ZC_RSPDStencilBorderData(float _scale, uint _color);
+    ZC_RSPDStencilBorderData(float _scaleX, float _scaleY, float _scale, uint _color);
 };
 
 struct ZC_RSPDStencilBorder : public ZC_RSPersonalData
@@ -69,7 +73,6 @@ struct ZC_RSPDStencilBorder : public ZC_RSPersonalData
     void SetData(ZC_RSPDStoredData* pData) override;
     ZC_uptr<ZC_RSPersonalData> MakeCopy() const override;
 
-private:
     ZC_RSPDStencilBorderData stencilBorderData;
 
     ZC_RSPDStencilBorder(const ZC_RSPDStencilBorderData& _stencilBorderData);

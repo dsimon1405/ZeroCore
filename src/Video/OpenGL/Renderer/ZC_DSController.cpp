@@ -182,8 +182,7 @@ void ZC_RLDData_Uniforms_GLDraw_StencilBorder::Draw()
         static ZC_Uniforms* pUniformsStencilBorder = &(ZC_ShProgs::Get(ShPN_ZCR_StencilBorder)->uniforms);
 
         auto model = *static_cast<const ZC_Mat4<float>*>(pUniforms->Get(ZC_UN_unModel));
-        float scaleValue = pStencilBorderData->scale;
-        model.Scale(scaleValue, scaleValue, scaleValue);
+        model.Scale(pStencilBorderData->scaleX, pStencilBorderData->scaleY, pStencilBorderData->scaleZ);
         pUniformsStencilBorder->Set(ZC_UN_unModel, &model);
         pUniformsStencilBorder->Set(ZC_UN_unColor, &(pStencilBorderData->color));
         pUniformsStencilBorder->Activate();     //  activate stencil uniforms and draw

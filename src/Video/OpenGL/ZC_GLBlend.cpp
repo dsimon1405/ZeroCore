@@ -50,8 +50,7 @@ void ZC_GLBlend::Use()
     }
     else
     {
-        if (pActiveGLBlend)
-         glDisable(GL_BLEND);
+        if (pActiveGLBlend) glDisable(GL_BLEND);
         pActiveGLBlend = nullptr;
     }
 }

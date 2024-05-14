@@ -25,7 +25,7 @@ void main()
 
     if (unUseLight)     //  calculate light, otherwise uses alpha blending, don't use ligh
     {
-        vec3 normal = mat3(unModel) * inNormal.xyz;   //  rotation of normals (wrong way if the model matrix is ​​scaled with different factors for different axes)
+        vec3 normal = normalize(mat3(unModel) * inNormal.xyz);   //  rotate and scale normals (wrong results for scaled object, but tolerable)
         vec3 dirPosToCam = normalize(camPos - position.xyz);
         float cos = dot(dirPosToCam, normal); //  range (-1,1)
 

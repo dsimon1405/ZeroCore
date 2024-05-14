@@ -6,6 +6,11 @@ ZC_RSPersonalData::ZC_RSPersonalData(ZC_RSPDCategory _category)
     : category(_category)
 {}
 
+bool ZC_RSPersonalData::operator == (ZC_RSPDCategory _category) const noexcept
+{
+    return category == _category;
+}
+
 
 //  ZC_RSPDUniformData
 
@@ -45,8 +50,10 @@ ZC_RSPDUniforms::ZC_RSPDUniforms(ZC_Uniforms&& _uniforms)
 
 //  ZC_RSPDStencilBorderData
 
-ZC_RSPDStencilBorderData::ZC_RSPDStencilBorderData(float _scale, uint _color)
-    : scale(_scale),
+ZC_RSPDStencilBorderData::ZC_RSPDStencilBorderData(float _scaleX, float _scaleY, float _scaleZ, uint _color)
+    : scaleX(_scaleX),
+    scaleY(_scaleY),
+    scaleZ(_scaleZ),
     color(_color)
 {}
 

@@ -11,7 +11,7 @@ struct ZC_ShGeometry
     enum Name
     {
         none,
-        lineOrientation3D,  //  draw as POINTS!!!
+        // lineOrientation3D,  //  draw as POINTS!!!
     };
 
     ZC_Shader* GetShader(Name name);

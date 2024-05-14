@@ -17,8 +17,6 @@ enum ZC_ShPName
     ShPN_ZCR_StencilBorder,
     ShPN_ZCR_Texture_Vertex_TexCoord,
     ShPN_ZCR_LineMesh,
-    ShPN_ZCR_LineOrientation3D,
-    ShPN_ZCR_QuadOrientation3D,
     ShPN_ZC_TextWindow,
     ShPN_ZC_TextScene,
     ShPN_ZC_TextWindowIntoScene,

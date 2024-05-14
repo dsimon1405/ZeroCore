@@ -82,6 +82,6 @@ If found, pointer on store data, otherwise - nullptr.
 template<typename TData, typename TAllocator, template<typename, typename> typename TCont, typename TFind>
 TData ZC_FindInPointers(TCont<TData, TAllocator>& container, const TFind& find)
 {
-    for (auto rContData : container) if (*rContData == find) return rContData;
+    for (auto& rContData : container) if (*rContData == find) return rContData;
     return nullptr;
 }

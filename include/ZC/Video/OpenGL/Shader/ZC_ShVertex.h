@@ -16,8 +16,6 @@ struct ZC_ShVertex
         stencilBorder,
         texture_Vertex_TexCoord,
         lineMesh,
-        lineOrientation3D,  //  draw as POINTS!!!
-        quadOrientation3D,
         textWindow,
         textScene,
         textWindowIntoScene,
