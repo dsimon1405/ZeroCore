@@ -1,9 +1,11 @@
 #pragma once
 
-#include <ZC/Video/OpenGL/GL/glcorearb.h>
 #include <ZC/Tools/Math/ZC_Math.h>
 #include <ZC/Tools/ZC_uptr.h>
 #include <ZC/Tools/Container/ZC_DA.h>
+
+#include <glad/glad.h>
+
 /*
 Example => S_3_0_N:
 S - type short

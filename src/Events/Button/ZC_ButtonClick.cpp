@@ -14,7 +14,7 @@ ZC_EC ZC_ButtonClick::Connect(ZC_ButtonID buttonId, ZC_Function<void(ZC_ButtonID
 {
     assert(!pButtonHolder->IsButtonDownConnected(buttonId));    //  down button allready connected some where
     assert(funcDown || funcUp);    //  must be minimum one function
-    return { new ZC_ECTargetPointer<ZC_ButtonClick*, const void*>(this,
+    return { new ZC_ECTargetPointer<ZC_ButtonClick*>(this,
         buttonHolders.emplace_front(ButtonHolder{ buttonId, std::move(funcDown), std::move(funcUp) }).funcDown.GetPointerOnData()) };
 }
 

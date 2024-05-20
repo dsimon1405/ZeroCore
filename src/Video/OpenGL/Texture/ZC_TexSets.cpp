@@ -1,7 +1,6 @@
 #include <ZC/Video/OpenGL/Texture/ZC_TexSets.h>
 
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 
 void ZC_TexSets::Uniformli(ZC_ShProg& shProg)
 {

@@ -1,7 +1,5 @@
 #include <ZC/Video/OpenGL/Texture/ZC_Texture.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
-
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #include <ZC/Tools/Math/ZC_Math.h>
 
@@ -11,9 +9,9 @@
 ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
 {
     int width, height, channels;
-    uchar* data = stbi_load(filePath, &width, &height, &channels, 0);
+    uchar* pData = stbi_load(filePath, &width, &height, &channels, 0);
     
-    // if (!data) return nullptr;
+    // if (!pData) return nullptr;
 
     // auto size = width * height *channels;
     // auto newSize = size + size / 3;
@@ -31,28 +29,28 @@ ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLenum wrapS, GLenum 
     //     {
     //     test[i++] = 1;
     //     }
-    //     // test[i++] = data[dataI] != 128 ? 0 : 255;
+    //     // test[i++] = pData[dataI] != 128 ? 0 : 255;
     // }
     // channels = 4;
 
-    GLenum format = 0;
+    GLenum internalFormat = 0,
+        format = 0;
     switch (channels)
     {
-    case 1: format = GL_RED; break;
-    case 3: format = GL_RGB; break;
-    case 4: format = GL_RGBA; break;
+    case 1: { internalFormat = GL_R8; format = GL_RED; } break;
+    case 3: { internalFormat = GL_RGB8; format = GL_RGB; } break;
+    case 4: { internalFormat = GL_RGBA8; format = GL_RGBA; } break;
     default: assert(false);
     }
 
     ZC_ErrorLogger::Clear();
-    // ZC_Texture texture(GL_TEXTURE_2D, format, width, height, test, wrapS, wrapT, filterMin, filterMag);
-    ZC_Texture texture(GL_TEXTURE_2D, format, width, height, format, GL_UNSIGNED_BYTE, data, wrapS, wrapT, filterMin, filterMag, true);
+    ZC_Texture texture = TextureStorage2DFill(internalFormat, width, height, pData, format, GL_UNSIGNED_BYTE, true, wrapS, wrapT, filterMin, filterMag);
     if (ZC_ErrorLogger::WasError())
     {
-        stbi_image_free(data);
+        stbi_image_free(pData);
     }
 #ifdef ZC_PC
-    stbi_image_free(data);
+    stbi_image_free(pData);
 #endif
     return texture;
 }
@@ -80,29 +78,34 @@ ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLenum wrapS, GLenum 
 //     return &textures.emplace_back(std::move(texture));
 // }
 
-// void CreateMultisampleSet(ZC_Texture& rTexMultisample, ZC_Texture& rTexPostProcessing, int samples, int width, int height, GLenum format)
-// {
-//     rTexMultisample = ZC_Texture(samples, width, height, format);
-//     rTexPostProcessing = ZC_Texture(0, width, height, format);
-// }
-
-ZC_Texture::ZC_Texture(GLenum _target, GLenum internalFormat, int width, int height, GLenum format, GLenum type, void* pData,
-        GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag, bool needMimmap)
-    : target(_target)
+ZC_Texture ZC_Texture::TextureStorage2D(GLenum internalFormat, GLsizei width, GLsizei height, bool mimmap, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
 {
-    CreateAndConfigure(internalFormat, width, height, format, type, pData, wrapS, wrapT, filterMin, filterMag, needMimmap);
+    ZC_Texture tex(GL_TEXTURE_2D);
+    if (wrapS != GL_REPEAT) glTextureParameteri(tex.id, GL_TEXTURE_WRAP_S, wrapS);
+    if (wrapT != GL_REPEAT) glTextureParameteri(tex.id, GL_TEXTURE_WRAP_T, wrapT);
+    if (filterMin != GL_NEAREST) glTextureParameteri(tex.id, GL_TEXTURE_MIN_FILTER, filterMin);
+    if (filterMag != GL_NEAREST) glTextureParameteri(tex.id, GL_TEXTURE_MAG_FILTER, filterMag);
+    glTextureStorage2D(tex.id, 1, internalFormat, width, height);
+    if (mimmap) glGenerateTextureMipmap(tex.id);
+    return tex;
 }
 
-ZC_Texture::ZC_Texture(int samples, int width, int height, GLenum internalFormat)
-    : target(GL_TEXTURE_2D_MULTISAMPLE)
+ZC_Texture ZC_Texture::TextureStorage2DFill(GLenum internalFormat, GLsizei width, GLsizei height, const void* pData, GLenum format, GLenum type, bool mimmap,
+    GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
 {
-    glGenTextures(1, &id);
-    glBindTexture(target, id);
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_TRUE);
-    glBindTexture(target, 0);
+    auto tex = TextureStorage2D(internalFormat, width, height, mimmap, wrapS, wrapT, filterMin, filterMag);
+    tex.GLTextureSubImage2D(0, 0, width, height, format, type, pData);
+    return tex;
 }
 
-// ZC_Texture::ZC_Texture(int width, int height, unsigned char** data)
+ZC_Texture ZC_Texture::TextureStorage2DMultisample(GLsizei samples, GLsizei width, GLsizei height, GLenum internalFormat)
+{
+    ZC_Texture tex(GL_TEXTURE_2D_MULTISAMPLE);
+    glTextureStorage2DMultisample(tex.id, samples, internalFormat, width, height, GL_TRUE);
+    return tex;
+}
+
+// ZC_Texture::ZC_Texture(int width, int height, unsigned char** pData)
 //     : target(GL_TEXTURE_CUBE_MAP)
 // {
 //     glGenTextures(1, &id);
@@ -112,13 +115,12 @@ ZC_Texture::ZC_Texture(int samples, int width, int height, GLenum internalFormat
 //     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 //     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 //     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-//     for (int i = 0; i < 6; ++i) glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[i]);
+//     for (int i = 0; i < 6; ++i) glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pData[i]);
 //     glBindTexture(target, 0);
 // }
 
 ZC_Texture::ZC_Texture(ZC_Texture&& tex) noexcept
-    : id(tex.id),
-    target(tex.target)
+    : id(tex.id)
 {
     tex.id = 0;
 }
@@ -126,7 +128,6 @@ ZC_Texture::ZC_Texture(ZC_Texture&& tex) noexcept
 ZC_Texture& ZC_Texture::operator = (ZC_Texture&& tex)
 {
     id = tex.id;
-    target = tex.target;
     tex.id = 0;
     return *this;
 }
@@ -136,27 +137,9 @@ ZC_Texture::~ZC_Texture()
     if (id != 0) glDeleteTextures(1, &id);
 }
 
-void ZC_Texture::Bind()
+void ZC_Texture::GLBindTextureUnit(GLuint num) const
 {
-    glBindTexture(target, id);
-}
-
-void ZC_Texture::Unbind()
-{
-    glBindTexture(target, 0);
-}
-
-void ZC_Texture::ActiveTexture(GLuint num) const
-{
-    glActiveTexture(GL_TEXTURE0 + num);
-    glBindTexture(target, id);
-}
-
-void ZC_Texture::GenerateMimmap() const
-{
-    glBindTexture(target, id);
-    glGenerateMipmap(target);
-    glBindTexture(target, 0);
+    glBindTextureUnit(num, id);
 }
 
 GLuint ZC_Texture::GetId() const noexcept
@@ -164,16 +147,12 @@ GLuint ZC_Texture::GetId() const noexcept
     return id;
 }
 
-void ZC_Texture::CreateAndConfigure(GLenum internalFormat, int width, int height, GLenum format, GLenum type, void* pData,
-    GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag, bool needMimmap)
+void ZC_Texture::GLTextureSubImage2D(GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void *pData)
 {
-    glGenTextures(1, &id);
-    glBindTexture(target, id);
-    if (wrapS != GL_REPEAT) glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapS);
-    if (wrapT != GL_REPEAT) glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapT);
-    if (filterMin != GL_NEAREST) glTexParameteri(target, GL_TEXTURE_MIN_FILTER, filterMin);
-    if (filterMag != GL_NEAREST) glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filterMag);
-    glTexImage2D(target, 0, internalFormat, width, height, 0, format, type, pData);
-    if (needMimmap) glGenerateMipmap(target);
-    glBindTexture(target, 0);
+    glTextureSubImage2D(id, 0, xoffset, yoffset, width, height, format, type, pData);
+}
+
+ZC_Texture::ZC_Texture(GLenum target)
+{
+    glCreateTextures(target, 1, &id);
 }

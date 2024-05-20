@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glad/glad.h>
+
 struct ZC_GLDraw
 {
     virtual ~ZC_GLDraw() = default;
@@ -11,10 +13,10 @@ private:
 
 struct ZC_DrawElements : public ZC_GLDraw
 {
-    unsigned int mode;
-    int count;
-    unsigned int type;
-    unsigned int startByteOffset;
+    GLenum mode;
+    GLsizei count;
+    GLenum type;
+    GLuint startByteOffset;
 
     /*
     Params:
@@ -23,16 +25,16 @@ struct ZC_DrawElements : public ZC_GLDraw
     - _type - type of values in indices: GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, or GL_UNSIGNED_INT.
     - _startByteOffset - start offset in indices buffer.
     */
-    ZC_DrawElements(unsigned int _mode, int _count, unsigned int _type, unsigned int _startByteOffset);
+    ZC_DrawElements(GLenum _mode, GLsizei _count, GLenum _type, GLuint _startByteOffset);
 
     void VDraw() const override;
 };
 
 struct ZC_DrawArrays : public ZC_GLDraw
 {
-    unsigned int mode;
-    int first;
-    int count;
+    GLenum mode;
+    GLint first;
+    GLsizei count;
 
     /*
     Params:
@@ -40,7 +42,7 @@ struct ZC_DrawArrays : public ZC_GLDraw
     - _first - starting index in the enabled arrays.
     - _count - number of vertices.
     */
-    ZC_DrawArrays(unsigned int _mode, int _first, int _count);
+    ZC_DrawArrays(GLenum _mode, GLint _first, GLsizei _count);
 
     void VDraw() const override;
 };

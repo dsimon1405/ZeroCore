@@ -19,16 +19,16 @@ class ZC_Signal;
 Class for calling any number of ZC_Functions with the same signature. It is not possible to create a signal for a function/method that accepts rvalue
 reference type parameters.
 */
-template<typename TReturn, ZC_cNotRValueRef1... TParams>
-class ZC_Signal<TReturn(TParams...)>
+template<typename TVal, ZC_cNotRValueRef1... TParams>
+class ZC_Signal<TVal(TParams...)>
 {
 public:
     //  Creates a ZC_Signal with the function signature <TReturn(TParams...)>.
     ZC_Signal(bool useThreadSafety);
     // ZC_Signal1(const ZC_sptr<std::mutex>& spMutex) noexcept;
 
-    ZC_Signal(ZC_Signal<TReturn(TParams...)>&& sig);
-    ZC_Signal<TReturn(TParams...)>& operator = (ZC_Signal<TReturn(TParams...)>&& sig);
+    ZC_Signal(ZC_Signal<TVal(TParams...)>&& sig);
+    ZC_Signal<TVal(TParams...)>& operator = (ZC_Signal<TVal(TParams...)>&& sig);
 
     /*
     Connects ZC_Function.
@@ -39,7 +39,7 @@ public:
     Return:
     ZC_SConnection pointer.
     */
-    ZC_SConnection Connect(ZC_Function<TReturn(TParams...)>&& func);
+    ZC_SConnection Connect(ZC_Function<TVal(TParams...)>&& func);
 
     /*
     Calls all connected ZC_Function.
@@ -56,7 +56,7 @@ public:
     container - a reference to a vector that will be filled with the function's return values.
     params - parameters of the functions.
     */
-    void operator()(std::vector<TReturn>& container, TParams... params);
+    void operator()(std::vector<TVal>& container, TParams... params);
 
     //  Return: functions are connected or not.
     bool IsEmpty();
@@ -76,12 +76,12 @@ public:
     container - a reference to a unic pointer that will be filled with the function's return values.
     params - parameters of the functions.
     */
-    void CallLastConnected(ZC_uptr<TReturn>& container, TParams... params);
+    void CallLastConnected(ZC_uptr<TVal>& container, TParams... params);
 
 private:
     struct FuncAndState
     {
-        ZC_Function<TReturn(TParams...)> function;
+        ZC_Function<TVal(TParams...)> function;
         ZC_sptr<bool> spIsConnected = ZC_sptrMake<bool>(true);
     };
 
@@ -92,20 +92,20 @@ private:
     void AddFunctions();
 };
 
-template<typename TReturn, ZC_cNotRValueRef1... TParams>
-ZC_Signal<TReturn(TParams...)>::ZC_Signal(bool useThreadSafety)
+template<typename TVal, ZC_cNotRValueRef1... TParams>
+ZC_Signal<TVal(TParams...)>::ZC_Signal(bool useThreadSafety)
     : upMutexFuncAndStatesToAdd(useThreadSafety ? new std::mutex() : nullptr)
 {}
 
-template<typename TReturn, ZC_cNotRValueRef1... TParams>
-ZC_Signal<TReturn(TParams...)>::ZC_Signal(ZC_Signal<TReturn(TParams...)>&& sig)
+template<typename TVal, ZC_cNotRValueRef1... TParams>
+ZC_Signal<TVal(TParams...)>::ZC_Signal(ZC_Signal<TVal(TParams...)>&& sig)
     : funcAndStates(std::move(sig.funcAndStates)),
     funcAndStatesToAdd(std::move(sig.funcAndStatesToAdd)),
     upMutexFuncAndStatesToAdd(std::move(sig.upMutexFuncAndStatesToAdd))
 {}
 
-template<typename TReturn, ZC_cNotRValueRef1... TParams>
-ZC_Signal<TReturn(TParams...)>& ZC_Signal<TReturn(TParams...)>::operator = (ZC_Signal<TReturn(TParams...)>&& sig)
+template<typename TVal, ZC_cNotRValueRef1... TParams>
+ZC_Signal<TVal(TParams...)>& ZC_Signal<TVal(TParams...)>::operator = (ZC_Signal<TVal(TParams...)>&& sig)
 {   
     funcAndStates = std::move(sig.funcAndStates);
     funcAndStatesToAdd = std::move(sig.funcAndStatesToAdd);
@@ -113,8 +113,8 @@ ZC_Signal<TReturn(TParams...)>& ZC_Signal<TReturn(TParams...)>::operator = (ZC_S
     return *this;
 }
 
-template<typename TReturn, ZC_cNotRValueRef1... TParams>
-ZC_SConnection ZC_Signal<TReturn(TParams...)>::Connect(ZC_Function<TReturn(TParams...)>&& func)
+template<typename TVal, ZC_cNotRValueRef1... TParams>
+ZC_SConnection ZC_Signal<TVal(TParams...)>::Connect(ZC_Function<TVal(TParams...)>&& func)
 {
     if (upMutexFuncAndStatesToAdd)
     {
@@ -124,8 +124,8 @@ ZC_SConnection ZC_Signal<TReturn(TParams...)>::Connect(ZC_Function<TReturn(TPara
     else return { funcAndStatesToAdd.emplace_back(FuncAndState{ std::move(func) }).spIsConnected };
 }
 
-template<typename TReturn, ZC_cNotRValueRef1... TParams>
-void ZC_Signal<TReturn(TParams...)>::operator () (TParams... params)
+template<typename TVal, ZC_cNotRValueRef1... TParams>
+void ZC_Signal<TVal(TParams...)>::operator () (TParams... params)
 {
     AddFunctions();
     for (auto funcAndStatesIter = funcAndStates.begin(); funcAndStatesIter != funcAndStates.end(); )
@@ -139,8 +139,8 @@ void ZC_Signal<TReturn(TParams...)>::operator () (TParams... params)
     }
 }
 
-template<typename TReturn, ZC_cNotRValueRef1... TParams>
-void ZC_Signal<TReturn(TParams...)>::operator () (std::vector<TReturn>& container, TParams... params)
+template<typename TVal, ZC_cNotRValueRef1... TParams>
+void ZC_Signal<TVal(TParams...)>::operator () (std::vector<TVal>& container, TParams... params)
 {
     AddFunctions();
     container.reserve(funcAndStates.size());
@@ -155,16 +155,16 @@ void ZC_Signal<TReturn(TParams...)>::operator () (std::vector<TReturn>& containe
     }
 }
 
-template<typename TReturn, ZC_cNotRValueRef1... TParams>
-bool ZC_Signal<TReturn(TParams...)>::IsEmpty()
+template<typename TVal, ZC_cNotRValueRef1... TParams>
+bool ZC_Signal<TVal(TParams...)>::IsEmpty()
 {
     AddFunctions();
     for (auto& funcAndState : funcAndStates) if (*(funcAndState.spIsConnected)) return false;
     return true;
 }
 
-template<typename TReturn, ZC_cNotRValueRef1... TParams>
-void ZC_Signal<TReturn(TParams...)>::CallLastConnected(TParams... params)
+template<typename TVal, ZC_cNotRValueRef1... TParams>
+void ZC_Signal<TVal(TParams...)>::CallLastConnected(TParams... params)
 {
     AddFunctions();
     auto beforeBeginIter = --funcAndStates.begin();
@@ -184,8 +184,8 @@ void ZC_Signal<TReturn(TParams...)>::CallLastConnected(TParams... params)
     }
 }
 
-template<typename TReturn, ZC_cNotRValueRef1... TParams>
-void ZC_Signal<TReturn(TParams...)>::CallLastConnected(ZC_uptr<TReturn>& container, TParams... params)
+template<typename TVal, ZC_cNotRValueRef1... TParams>
+void ZC_Signal<TVal(TParams...)>::CallLastConnected(ZC_uptr<TVal>& container, TParams... params)
 {
     AddFunctions();
     auto beforeBeginIter = --funcAndStates.begin();
@@ -193,7 +193,7 @@ void ZC_Signal<TReturn(TParams...)>::CallLastConnected(ZC_uptr<TReturn>& contain
     {
         if (*(funcAndStatesIter->spIsConnected))
         {
-            container = ZC_uptrMake<TReturn>(funcAndStatesIter->function(params...));
+            container = ZC_uptrMake<TVal>(funcAndStatesIter->function(params...));
             return;
         }
         else
@@ -205,8 +205,8 @@ void ZC_Signal<TReturn(TParams...)>::CallLastConnected(ZC_uptr<TReturn>& contain
     }
 }
 
-template<typename TReturn, ZC_cNotRValueRef1... TParams>
-void ZC_Signal<TReturn(TParams...)>::AddFunctions()
+template<typename TVal, ZC_cNotRValueRef1... TParams>
+void ZC_Signal<TVal(TParams...)>::AddFunctions()
 {
     if (funcAndStatesToAdd.empty()) return;
     if (upMutexFuncAndStatesToAdd)

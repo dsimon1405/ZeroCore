@@ -28,6 +28,8 @@ public:
     bool operator < (ZC_RenderLevel rl) const noexcept;
     bool operator == (ZC_RenderLevel rl) const noexcept;
 
+    static void GLEnablePointSize();
+
     void Add(ZC_DSController* pRSController, ZC_DrawerLevel drawerLevel);
     void Erase(ZC_DSController* pRSController, ZC_DrawerLevel drawerLevel);
     void SetDrawState(DrawState _drawState);
@@ -37,7 +39,7 @@ public:
     const ZC_Texture* GetColorTexture() const noexcept;
     //  Returns pointer on depthStencil texture if ZC_Render.fbo multisample, with ZC_FBO::ResultTexture one of variants with Depth (Depth/Stencil), otherwise nullptr.
     const ZC_Texture* GetDepthTexture() const noexcept;
-    void SetClearColor(float red, float green, float blue, float alpha);
+    void SetClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
 
 private:
     DrawState drawState = DS_None;

@@ -6,12 +6,12 @@
 #include <forward_list>
 #include <list>
 
-namespace ZC_ImGui { bool Init(void* pWindow, void* pGlContext); }
+// namespace ZC_ImGui { bool Init(void* pWindow, void* pGlContext); }
 class ZC_Renderer;
 
 class ZC_IGWindow : protected ZC_WindowOrthoIndent
 {
-    friend bool ZC_ImGui::Init(void* pWindow, void* pGlContext);
+    // friend bool ZC_ImGui::Init(void* pWindow, void* pGlContext);
     friend class ZC_Renderer;
 public:
     ~ZC_IGWindow();
@@ -97,10 +97,8 @@ private:
     void Update_drawingWindows();
     void UpdateCursorCollisionStateAndDraw();
     void UpdateFocusState(bool _isFocused, bool needUpdate_drawingWindows);
-    void MakeLastIn_drawingWindows();
+    void MakeLastInto_drawingWindows();
 
-    //  refresh for next frame in events handle events end signal
-    static void Make_isCursorInOneOfWindows_false(float time) noexcept;
     //  function for call into ZC_Renderer::Draw();
     static void Draw();
 };

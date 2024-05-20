@@ -1,8 +1,5 @@
 #include <ZC/Video/OpenGL/VAO/ZC_VAOConfig.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
-#include <ZC/ErrorLogger/ZC_ErrorLogger.h>
-
 typename ZC_VAOConfig::ConfigData ZC_VAOConfig::CreateConfig(ZC_VAOLayout layout, uchar* pLayoutUsed, ulong layoutUsedCount)
 {
     LayoutPacker layoutPacker;
@@ -16,7 +13,7 @@ ZC_VAOConfig::ZC_VAOConfig(ConfigData configData)
 {
     uint isUsingArr = configData.usingFormatsPacker.value >> 8;
     uchar useCounter = useCount;
-    for (ulong formatsI = 0; formatsI < formats.size ; ++formatsI)
+    for (ulong formatsI = 0; formatsI < formats.size; ++formatsI)
     {
         formats[formatsI].isUsing = (isUsingArr >> formatsI) & 1;
         if (formats[formatsI].isUsing && --useCounter == 0) break; 

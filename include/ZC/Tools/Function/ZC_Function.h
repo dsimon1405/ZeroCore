@@ -9,8 +9,8 @@ Function/method pointer wrapper.
 */
 template<typename TFunc>
 class ZC_Function;
-template<typename TReturn, typename... TParams>
-class ZC_Function<TReturn(TParams...)>
+template<typename TVal, typename... TParams>
+class ZC_Function<TVal(TParams...)>
 {
 public:
     ZC_Function() = default;
@@ -21,7 +21,7 @@ public:
     Params:
     pFunc - function pointer.
     */
-    ZC_Function(TReturn(* pFunc)(TParams...)) noexcept;
+    ZC_Function(TVal(* pFunc)(TParams...)) noexcept;
     
     /*
     Create method wrapper.
@@ -31,7 +31,7 @@ public:
     pClass - class pointer.
     */
     template<typename TClass>
-    ZC_Function(TReturn(TClass::*pFunc)(TParams...), TClass* pClass) noexcept;
+    ZC_Function(TVal(TClass::*pFunc)(TParams...), TClass* pClass) noexcept;
     
     /*
     Create method wrapper.
@@ -41,7 +41,7 @@ public:
     pClass - class pointer.
     */
     template<typename TClass>
-    ZC_Function(TReturn(TClass::*pFunc)(TParams...) const, TClass* pClass) noexcept;
+    ZC_Function(TVal(TClass::*pFunc)(TParams...) const, TClass* pClass) noexcept;
     
     /*
     Create method wrapper.
@@ -51,10 +51,10 @@ public:
     pClass - class pointer.
     */
     template<typename TClass>
-    ZC_Function(TReturn(TClass::*pFunc)(TParams...) const, const TClass* pClass) noexcept;
+    ZC_Function(TVal(TClass::*pFunc)(TParams...) const, const TClass* pClass) noexcept;
 
-    ZC_Function(ZC_Function<TReturn(TParams...)>&& pFunc) noexcept;
-    ZC_Function<TReturn(TParams...)>& operator = (ZC_Function<TReturn(TParams...)>&& func) noexcept;
+    ZC_Function(ZC_Function<TVal(TParams...)>&& pFunc) noexcept;
+    ZC_Function<TVal(TParams...)>& operator = (ZC_Function<TVal(TParams...)>&& func) noexcept;
 
     /*
     Call function(method). If function is nullptr throw exception.
@@ -65,7 +65,7 @@ public:
     Return:
     TReturn type object.
     */
-    TReturn operator () (TParams... params) const;
+    TVal operator () (TParams... params) const;
     operator bool () noexcept;
     
     /*
@@ -76,69 +76,69 @@ public:
     const void* GetPointerOnData() const noexcept;
 
 private:
-    ZC_uptr<ZC_IFunctionHolder<TReturn(TParams...)>> upFuncHolder = nullptr;
+    ZC_uptr<ZC_IFunctionHolder<TVal(TParams...)>> upFuncHolder = nullptr;
 };
 
-template<typename TReturn, typename... TParams>
-ZC_Function<TReturn(TParams...)>::ZC_Function(TReturn(* pFunc)(TParams...)) noexcept
-    : upFuncHolder(pFunc ? ZC_uptrMakeFromChild<ZC_IFunctionHolder<TReturn(TParams...)>,
-        ZC_FunctionHolder<TReturn(TParams...)>>(pFunc) : nullptr)
+template<typename TVal, typename... TParams>
+ZC_Function<TVal(TParams...)>::ZC_Function(TVal(* pFunc)(TParams...)) noexcept
+    : upFuncHolder(pFunc ? ZC_uptrMakeFromChild<ZC_IFunctionHolder<TVal(TParams...)>,
+        ZC_FunctionHolder<TVal(TParams...)>>(pFunc) : nullptr)
 {}
 
-template<typename TReturn, typename... TParams>
+template<typename TVal, typename... TParams>
 template<typename TClass>
-ZC_Function<TReturn(TParams...)>::ZC_Function(TReturn(TClass::*pFunc)(TParams...), TClass* pClass) noexcept
-    : upFuncHolder(pFunc && pClass ? ZC_uptrMakeFromChild<ZC_IFunctionHolder<TReturn(TParams...)>,
-        ZC_FunctionHolder<TReturn(TParams...), TClass>>(pFunc, pClass) : nullptr)
+ZC_Function<TVal(TParams...)>::ZC_Function(TVal(TClass::*pFunc)(TParams...), TClass* pClass) noexcept
+    : upFuncHolder(pFunc && pClass ? ZC_uptrMakeFromChild<ZC_IFunctionHolder<TVal(TParams...)>,
+        ZC_FunctionHolder<TVal(TParams...), TClass>>(pFunc, pClass) : nullptr)
 {}
 
-template<typename TReturn, typename... TParams>
+template<typename TVal, typename... TParams>
 template<typename TClass>
-ZC_Function<TReturn(TParams...)>::ZC_Function(TReturn(TClass::*pFunc)(TParams...) const, TClass* pClass) noexcept
-    : upFuncHolder(pFunc && pClass ? ZC_uptrMakeFromChild<ZC_IFunctionHolder<TReturn(TParams...)>,
-        ZC_FunctionHolder<TReturn(TParams...), TClass>>(pFunc, pClass) : nullptr)
+ZC_Function<TVal(TParams...)>::ZC_Function(TVal(TClass::*pFunc)(TParams...) const, TClass* pClass) noexcept
+    : upFuncHolder(pFunc && pClass ? ZC_uptrMakeFromChild<ZC_IFunctionHolder<TVal(TParams...)>,
+        ZC_FunctionHolder<TVal(TParams...), TClass>>(pFunc, pClass) : nullptr)
 {}
 
-template<typename TReturn, typename... TParams>
+template<typename TVal, typename... TParams>
 template<typename TClass>
-ZC_Function<TReturn(TParams...)>::ZC_Function(TReturn(TClass::*pFunc)(TParams...) const, const TClass* pClass) noexcept
-    : upFuncHolder(pFunc && pClass ? ZC_uptrMakeFromChild<ZC_IFunctionHolder<TReturn(TParams...)>,
-        ZC_FunctionHolder<TReturn(TParams...), TClass>>(pFunc, pClass) : nullptr)
+ZC_Function<TVal(TParams...)>::ZC_Function(TVal(TClass::*pFunc)(TParams...) const, const TClass* pClass) noexcept
+    : upFuncHolder(pFunc && pClass ? ZC_uptrMakeFromChild<ZC_IFunctionHolder<TVal(TParams...)>,
+        ZC_FunctionHolder<TVal(TParams...), TClass>>(pFunc, pClass) : nullptr)
 {}
 
-template<typename TReturn, typename... TParams>
-ZC_Function<TReturn(TParams...)>::ZC_Function(ZC_Function<TReturn(TParams...)>&& pFunc) noexcept
+template<typename TVal, typename... TParams>
+ZC_Function<TVal(TParams...)>::ZC_Function(ZC_Function<TVal(TParams...)>&& pFunc) noexcept
     : upFuncHolder(std::move(pFunc.upFuncHolder))
 {}
 
-template<typename TReturn, typename... TParams>
-ZC_Function<TReturn(TParams...)>& ZC_Function<TReturn(TParams...)>::operator = (ZC_Function<TReturn(TParams...)>&& func) noexcept
+template<typename TVal, typename... TParams>
+ZC_Function<TVal(TParams...)>& ZC_Function<TVal(TParams...)>::operator = (ZC_Function<TVal(TParams...)>&& func) noexcept
 {
     upFuncHolder = std::move(func.upFuncHolder);
     return *this;
 }
 
-template<typename TReturn, typename... TParams>
-TReturn ZC_Function<TReturn(TParams...)>::operator () (TParams... params) const
+template<typename TVal, typename... TParams>
+TVal ZC_Function<TVal(TParams...)>::operator () (TParams... params) const
 {
     if (!upFuncHolder) throw ZC_Exception(ZC_MakeErrorString("Call ZC_Function() with function pointer = nullptr!", __FILE__, __LINE__));
     return (*upFuncHolder.Get())(std::forward<TParams>(params)...);
 }
 
-template<typename TReturn, typename... TParams>
-ZC_Function<TReturn(TParams...)>::operator bool () noexcept
+template<typename TVal, typename... TParams>
+ZC_Function<TVal(TParams...)>::operator bool () noexcept
 {
     return upFuncHolder != nullptr;
 }
 
-template<typename TReturn, typename... TParams>
-bool ZC_Function<TReturn(TParams...)>::operator == (const void* pData) const
+template<typename TVal, typename... TParams>
+bool ZC_Function<TVal(TParams...)>::operator == (const void* pData) const
 {
-    return upFuncHolder == static_cast<const ZC_IFunctionHolder<TReturn(TParams...)>*>(pData);
+    return upFuncHolder == static_cast<const ZC_IFunctionHolder<TVal(TParams...)>*>(pData);
 }
 
-template<typename TReturn, typename... TParams>
-const void* ZC_Function<TReturn(TParams...)>::GetPointerOnData() const noexcept
+template<typename TVal, typename... TParams>
+const void* ZC_Function<TVal(TParams...)>::GetPointerOnData() const noexcept
 {
     return upFuncHolder.Get();
 }

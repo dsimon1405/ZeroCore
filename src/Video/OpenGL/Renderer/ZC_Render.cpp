@@ -1,6 +1,5 @@
 #include <ZC/Video/OpenGL/Renderer/ZC_Render.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/Video/OpenGL/Renderer/ZC_Renderer.h>
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
@@ -27,6 +26,11 @@ bool ZC_Render::operator < (ZC_RenderLevel rl) const noexcept
 bool ZC_Render::operator == (ZC_RenderLevel rl) const noexcept
 {
     return renderLevel == rl;
+}
+
+void ZC_Render::GLEnablePointSize()
+{
+    glEnable(GL_PROGRAM_POINT_SIZE);
 }
 
 void ZC_Render::Add(ZC_DSController* pRSController, ZC_DrawerLevel drawerLevel)
@@ -57,9 +61,9 @@ void ZC_Render::SetDrawState(DrawState _drawState)
 bool ZC_Render::Draw()
 {
     this->UpdateUBO();
-    fbo.Use();
+    fbo.Activate();
     for (auto& upRendererLevelDrawerPair : renderLevelDrawers) upRendererLevelDrawerPair.second->VDraw();
-    fbo.Finish();
+    fbo.Deactivate();
     
     if (drawState == DS_OneFrame) drawState = DS_None;
     return drawState == DS_Loop;
@@ -80,7 +84,7 @@ ZC_Render::ZC_Render(ZC_RenderLevel _renderLevel, ZC_FBO&& _fbo)
     fbo(std::move(_fbo))
 {}
 
-void ZC_Render::SetClearColor(float red, float green, float blue, float alpha)
+void ZC_Render::SetClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 {
     fbo.SetClearColor(red, green, blue, alpha);
 }

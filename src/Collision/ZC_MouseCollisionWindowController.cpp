@@ -7,7 +7,7 @@
 #include <ZC_IGWindow.h>
 #endif
 #include <ZC/Events/ZC_ButtonID.h>
-#include <ZC/Video/ZC_Window.h>
+#include <ZC/Video/ZC_SWindow.h>
 
 #include <cassert>
 
@@ -125,14 +125,14 @@ void ZC_MouseCollisionWindowController::CrusorMove(float cursorPosX, float curso
 void ZC_MouseCollisionWindowController::ButtonDown(ZC_ButtonID buttonId, float time)
 {
     float cursorPosX, cursorPosY;
-    ZC_Window::GetCursorPosition(cursorPosX, cursorPosY);
+    ZC_SWindow::GetCursorPosition(cursorPosX, cursorPosY);
     MakeCollision(leftButtonCollisions, buttonId == M_LEFT ? MCWEvent::E_Mouse_Button_Left : MCWEvent::E_Mouse_Button_Right, true, cursorPosX, cursorPosY, time);
 }
 
 void ZC_MouseCollisionWindowController::ButtonUp(ZC_ButtonID buttonId, float time)
 {
     float cursorPosX, cursorPosY;
-    ZC_Window::GetCursorPosition(cursorPosX, cursorPosY);
+    ZC_SWindow::GetCursorPosition(cursorPosX, cursorPosY);
     MakeCollision(leftButtonCollisions, buttonId == M_LEFT ? MCWEvent::E_Mouse_Button_Left : MCWEvent::E_Mouse_Button_Right, false, cursorPosX, cursorPosY, time);
 }
 

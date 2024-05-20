@@ -1,10 +1,8 @@
 #include <ZC/Video/OpenGL/VAO/ZC_VAO.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
-
 ZC_VAO::ZC_VAO()
 {
-    glGenVertexArrays(1, &id);
+    glCreateVertexArrays(1, &id);
 }
 
 ZC_VAO::ZC_VAO(ZC_VAO&& vao) noexcept

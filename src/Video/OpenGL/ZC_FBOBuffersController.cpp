@@ -1,7 +1,5 @@
 #include <ZC/Video/OpenGL/ZC_FBOBuffersController.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
-
 #include <cassert>
 
 ZC_FBOBuffersController::ZC_FBOBuffersController(bool useColorBuffer, bool useDepthBuffer, bool useStencilBuffer)
@@ -45,17 +43,19 @@ void ZC_FBOBuffersController::GlDisable(GLenum cap)
     switch (cap)
     {
     case GL_DEPTH_TEST:
+    {
         // assert(pActiveBufferController->haveDepthBuffer);
         if (!pActiveBufferController->isDepthEnable) return;
         glDisable(GL_DEPTH_TEST);
         pActiveBufferController->isDepthEnable = false;
-        break;
+    } break;
     case GL_STENCIL_TEST:
+    {
         // assert(pActiveBufferController->haveStencilBuffer);
         if (!pActiveBufferController->isStecncilEnable) return;
         glDisable(GL_STENCIL_TEST);
         pActiveBufferController->isStecncilEnable = false;
-        break;
+    } break;
     default: assert(false); break;
     }
 }
@@ -84,7 +84,7 @@ void ZC_FBOBuffersController::GlClear()
     glClear(clearMask);
 }
 
-void ZC_FBOBuffersController::GlClear(unsigned int clearMask)
+void ZC_FBOBuffersController::GlClear(GLbitfield clearMask)
 {
     if (clearMask == 0) return;
     assert((clearMask & (~(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT))) == 0);

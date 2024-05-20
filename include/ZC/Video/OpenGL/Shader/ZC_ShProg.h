@@ -1,10 +1,12 @@
 #pragma once
 
+#include <glad/glad.h>
+
 struct ZC_ShProg
 {
-    unsigned int id;
+    GLuint id;
 
-    ZC_ShProg(unsigned int idV, unsigned int idF, unsigned int idG);
+    ZC_ShProg(GLuint idV, GLuint idF, GLuint idG);
 
 	ZC_ShProg(const ZC_ShProg&) = delete;
 	ZC_ShProg& operator = (const ZC_ShProg&) = delete;

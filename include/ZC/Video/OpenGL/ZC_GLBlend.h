@@ -2,6 +2,8 @@
 
 #include <ZC/Tools/Math/ZC_Vec4.h>
 
+#include <glad/glad.h>
+
 struct ZC_GLBlend
 {
     ZC_GLBlend() = default;
@@ -13,7 +15,7 @@ struct ZC_GLBlend
         GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_SRC_ALPHA_SATURATE, GL_SRC1_COLOR, GL_ONE_MINUS_SRC1_COLOR, GL_SRC1_ALPHA, GL_ONE_MINUS_SRC1_ALPHA
     - red, green, blue, alpha - glBlendColor() parama, each must be in range [0, 1]. If don't need, must stay default!
     */
-    ZC_GLBlend(unsigned int _sfactor, unsigned int _dfactor, float red = -1.f, float green = -1.f, float blue = -1.f, float alpha = -1.f);
+    ZC_GLBlend(GLenum _sfactor, GLenum _dfactor, GLfloat red = -1.f, GLfloat green = -1.f, GLfloat blue = -1.f, GLfloat alpha = -1.f);
     ~ZC_GLBlend();
 
     //  Don't calls glDisable, just sets pAcviteBlend = nullptr. Calling in ZC_Renderer::Draw()
@@ -23,9 +25,9 @@ struct ZC_GLBlend
 
 private:
     static inline ZC_GLBlend* pActiveGLBlend = nullptr;
-    static const unsigned int defaultValue = 2;   //  2 not used in blend open gl, make it default
+    static const GLenum defaultValue = 2;   //  2 not used in blend open gl, make it default
 
-    unsigned int sfactor = defaultValue,
+    GLenum sfactor = defaultValue,
         dfactor = defaultValue;
-    ZC_Vec4<float> blendColor;
+    ZC_Vec4<GLfloat> blendColor;
 };

@@ -153,13 +153,13 @@ ZC_DrawElements ZC_TextData::CalculateAndSetTextData(ZC_Buffer& rVBO, ZC_Buffer&
     textHeight = 0;
     auto pointsCoords = pFont->FillCoords(text, fontOrigin, alignment, textWidth, textHeight);
 
-    rVBO.BufferData(static_cast<long>(pointsCoords.size() * sizeof(typename ZC_Font::Point)), &(pointsCoords[0]), GL_STATIC_DRAW);
+    rVBO.GLNamedBufferData(static_cast<long>(pointsCoords.size() * sizeof(typename ZC_Font::Point)), &(pointsCoords[0]), GL_STATIC_DRAW);
 
     ulong elementsCount = 0;
     GLenum elementsType = 0;
     ZC_DA<uchar> elements = ZC_Buffer::GetTriangleElements(elementsCount, elementsType, static_cast<ulong>(pointsCoords.size() / 4), 0);
 
-    rEBO.BufferData(elements.size, elements.Begin(), GL_STATIC_DRAW);
+    rEBO.GLNamedBufferData(elements.size, elements.Begin(), GL_STATIC_DRAW);
     //  creates on stack ZC_DrawElements cause in CreateDrawerSet() will created in heap ZC_uptr<ZC GLDraw>, in other functions updates data created in CreateDrawerSet()
     return { GL_TRIANGLES, static_cast<int>(elementsCount), elementsType, 0 };
 }

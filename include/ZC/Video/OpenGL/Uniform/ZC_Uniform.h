@@ -4,6 +4,8 @@
 #include <ZC/Video/OpenGL/Shader/ZC_ShProg.h>
 #include <ZC/Tools/Math/ZC_Math.h>
 
+#include <glad/glad.h>
+
 #include <vector>
 
 enum ZC_UniformName
@@ -71,11 +73,10 @@ protected:
 
     ZC_Uniform(ZC_UniformName _name, FunctionType _functionType);
 
-    void GLUniform(const void* pData, int count, bool transponse) const;
+    void GLUniform(const void* pData, GLsizei count, GLboolean transponse) const;
 
 private:
-
-    int location = -1;
+    GLint location = -1;
     FunctionType functionType;
 
     static ZC_uptr<ZC_Uniform> GetUpUniform(FunctionType functionType, NameType& nameType);
@@ -98,25 +99,25 @@ protected:
 template<typename T>
 struct ZC_UDCount : public ZC_UniformData<T>
 {
-    ZC_UDCount(ZC_UniformName _name, typename ZC_Uniform::FunctionType _functionType, int _count);
+    ZC_UDCount(ZC_UniformName _name, typename ZC_Uniform::FunctionType _functionType, GLsizei _count);
 
     void Activate() const override;
     ZC_uptr<ZC_Uniform> GetCopy() const override;
 
 protected:
-    int count;
+    GLsizei count;
 };
 
 template<typename T>
 struct ZC_UDCTransponse : public ZC_UDCount<T>
 {
-    ZC_UDCTransponse(ZC_UniformName _name, typename ZC_Uniform::FunctionType _functionType, int _count, bool _transponse);
+    ZC_UDCTransponse(ZC_UniformName _name, typename ZC_Uniform::FunctionType _functionType, GLsizei _count, GLboolean _transponse);
 
     void Activate() const override;
     ZC_uptr<ZC_Uniform> GetCopy() const override;
 
 private:
-    bool transponse;
+    GLboolean transponse;
 };
 
 
@@ -157,7 +158,7 @@ ZC_uptr<ZC_Uniform> ZC_UniformData<T>::GetCopy() const
 //  ZC_UDCount
 
 template<typename T>
-ZC_UDCount<T>::ZC_UDCount(ZC_UniformName _name, typename ZC_Uniform::FunctionType _functionType, int _count)
+ZC_UDCount<T>::ZC_UDCount(ZC_UniformName _name, typename ZC_Uniform::FunctionType _functionType, GLsizei _count)
     : ZC_UniformData<T>(_name, _functionType),
     count(_count)
 {}
@@ -178,7 +179,7 @@ ZC_uptr<ZC_Uniform> ZC_UDCount<T>::GetCopy() const
 //  ZC_UDCTransponse
 
 template<typename T>
-ZC_UDCTransponse<T>::ZC_UDCTransponse(ZC_UniformName _name, typename ZC_Uniform::FunctionType _functionType, int _count, bool _transponse)
+ZC_UDCTransponse<T>::ZC_UDCTransponse(ZC_UniformName _name, typename ZC_Uniform::FunctionType _functionType, GLsizei _count, GLboolean _transponse)
     : ZC_UDCount<T>(_name, _functionType, _count),
     transponse(_transponse)
 {}

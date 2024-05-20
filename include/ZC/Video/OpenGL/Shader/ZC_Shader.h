@@ -1,7 +1,9 @@
 #pragma once
 
-#include <ZC/Video/OpenGL/GL/glcorearb.h>
 #include <ZC/Tools/Container/ZC_DA.h>
+#include <ZC/Tools/ZC_string.h>
+
+#include <glad/glad.h>
 
 struct ZC_Shader
 {
@@ -13,6 +15,6 @@ struct ZC_Shader
     ~ZC_Shader();
 
     static ZC_DA<char> ReadShaderFile(const char* path, GLenum type);
-private:
-    static void FillShaderStart(char* shaderData, const std::string& shaderStart) noexcept;
+// private:
+//     static void FillShaderStart(char* shaderData, const std::string& shaderStart) noexcept;
 };

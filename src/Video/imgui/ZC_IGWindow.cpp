@@ -164,25 +164,21 @@ void ZC_IGWindow::UpdateFocusState(bool _isFocused, bool needUpdate_drawingWindo
 {
     if (_isFocused == isFocused) return;
     //  window came in focus and need update order of drawing windows, and window not last for drawing now, make it last
-    if (needUpdate_drawingWindows && isFocused && *(--(drawingWindows.end())) != this) AddAfterDrawEvent({ &ZC_IGWindow::MakeLastIn_drawingWindows, this });
+    if (needUpdate_drawingWindows && isFocused && *(--(drawingWindows.end())) != this) AddAfterDrawEvent({ &ZC_IGWindow::MakeLastInto_drawingWindows, this });
 
     isFocused = _isFocused;
     VFocusStateChangedIGW(isFocused);
 }
 
-void ZC_IGWindow::MakeLastIn_drawingWindows()
+void ZC_IGWindow::MakeLastInto_drawingWindows()
 {
     std::erase(drawingWindows, this);
     drawingWindows.emplace_back(this);
 }
 
-void ZC_IGWindow::Make_isCursorInOneOfWindows_false(float time) noexcept
-{
-    isCursorInOneOfWindows = false;
-}
-
 void ZC_IGWindow::Draw()
 {
+    isCursorInOneOfWindows = false;
     if (needDrawImGui)
     {
         isDrawingInProcess = true;

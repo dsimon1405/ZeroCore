@@ -1,7 +1,5 @@
 #include <ZC/Video/OpenGL/Buffer/ZC_UBO.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
-
 ZC_UBO::ZC_UBO(BindingPoint _bindingPoint)
 	: buffer(GL_UNIFORM_BUFFER),
 	bindingPoint(static_cast<GLuint>(_bindingPoint))
@@ -19,13 +17,19 @@ ZC_UBO& ZC_UBO::operator = (ZC_UBO&& ubo)
     return *this;
 }
 
-void ZC_UBO::BufferData(long bytesSize, void* pData, GLenum usage)
+void ZC_UBO::GLNamedBufferData(GLsizeiptr bytesSize, const void* pData, GLenum usage)
 {
-	buffer.BufferData(bytesSize, pData, usage);
+	buffer.GLNamedBufferData(bytesSize, pData, usage);
 	glBindBufferRange(GL_UNIFORM_BUFFER, bindingPoint, buffer.id, 0, bytesSize);
 }
 
-void ZC_UBO::BufferSubData(long offset, long bytesSize, void* pData)
+void ZC_UBO::GLNamedBufferStorage(GLsizeiptr bytesSize, const void* pData, GLbitfield flags)
 {
-    buffer.BufferSubData(offset, bytesSize, pData);
+	buffer.GLNamedBufferStorage(bytesSize, pData, flags);
+	glBindBufferRange(GL_UNIFORM_BUFFER, bindingPoint, buffer.id, 0, bytesSize);
+}
+
+void ZC_UBO::GLNamedBufferSubData(GLintptr offset, GLsizeiptr bytesSize, const void* pData)
+{
+    buffer.GLNamedBufferSubData(offset, bytesSize, pData);
 }

@@ -21,7 +21,7 @@ protected:
     ZC_DrawerForwardList<T...> fl;
 
 private:
-    uint clearMask;
+    GLbitfield clearMask;
     bool depthTest,
         stencilTest;
     ZC_GLBlend blend;
@@ -29,7 +29,7 @@ private:
 
 
 template<typename... T>
-ZC_DrawerFL<T...>::ZC_DrawerFL(uint _clearMask, bool _depthTest, bool _stencilTest, ZC_GLBlend _blend)
+ZC_DrawerFL<T...>::ZC_DrawerFL(GLbitfield _clearMask, bool _depthTest, bool _stencilTest, ZC_GLBlend _blend)
     : clearMask(_clearMask),
     depthTest(_depthTest),
     stencilTest(_stencilTest),

@@ -18,7 +18,7 @@ ZC_Camera::ZC_Camera(const ZC_Vec3<float>& _camPos, const ZC_Vec3<float>& _lookO
     {
         first = false;
         upUbo = new ZC_UBO(ZC_UBO::Camera);
-        upUbo->BufferData(sizeof(uboSet), nullptr, GL_DYNAMIC_DRAW);
+        upUbo->GLNamedBufferStorage(sizeof(uboSet), nullptr, GL_DYNAMIC_STORAGE_BIT);
         pActiveUBO = this + 1; // set in current ubo some random data, to set in update this object data and don't have in activeUBO nullptr
     }
 
@@ -78,9 +78,9 @@ void ZC_Camera::UboUpdate()
         pActiveUBO = this;
     }
 
-    if (perspViewNeedUpdate && orthoNeedUpdate) upUbo->BufferSubData(0, sizeof(uboSet), &uboSet);
-    else if (perspViewNeedUpdate) upUbo->BufferSubData(sizeof(uboSet.ortho), sizeof(uboSet.perspView) + sizeof(uboSet.position), &(uboSet.perspView));      //  if need update perspective view hight probability that camPos need too
-    else if (orthoNeedUpdate) upUbo->BufferSubData(0, sizeof(uboSet.ortho), &(uboSet.ortho));
+    if (perspViewNeedUpdate && orthoNeedUpdate) upUbo->GLNamedBufferSubData(0, sizeof(uboSet), &uboSet);
+    else if (perspViewNeedUpdate) upUbo->GLNamedBufferSubData(sizeof(uboSet.ortho), sizeof(uboSet.perspView) + sizeof(uboSet.position), &(uboSet.perspView));      //  if need update perspective view hight probability that camPos need too
+    else if (orthoNeedUpdate) upUbo->GLNamedBufferSubData(0, sizeof(uboSet.ortho), &(uboSet.ortho));
 }
 
 void ZC_Camera::WindowResize(float width, float height)

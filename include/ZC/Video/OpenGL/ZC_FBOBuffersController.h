@@ -2,6 +2,8 @@
 
 #include <ZC/Tools/Math/ZC_Vec4.h>
 
+#include <glad/glad.h>
+
 class ZC_FBOBuffersController
 {
 public:
@@ -20,7 +22,7 @@ public:
     Params:
     cap - GL_DEPTH_TEST or GL_STENCIL_TEST.
     */
-    static void GlEnable(unsigned int cap);
+    static void GlEnable(GLenum cap);
 
     /*
     Call glDisable(cap).
@@ -28,7 +30,7 @@ public:
     Params:
     cap - GL_DEPTH_TEST or GL_STENCIL_TEST.
     */
-    static void GlDisable(unsigned int cap);
+    static void GlDisable(GLenum cap);
 
     //  Calls in ZC_FBO::Use(). Clears all buffers which have.
     void GlClear();
@@ -39,12 +41,12 @@ public:
     Params:
     clearMask - any combination of next caps: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT.
     */
-    static void GlClear(unsigned int clearMask);
+    static void GlClear(GLbitfield clearMask);
 
     //  calls ZC_GLDraw to update which buffers need to be cleared
     static void UsingGLDraw();
 
-    void SetClearColor(const ZC_Vec4<float>& _clearColor);
+    void SetClearColor(const ZC_Vec4<GLfloat>& _clearColor);
 
 private:
     static inline ZC_FBOBuffersController* pActiveBufferController;
@@ -54,7 +56,7 @@ private:
         needClearStencil,
         isDepthEnable = false,
         isStecncilEnable = false;
-    ZC_Vec4<float> clearColor { 0.f, 0.f, 0.f, 1.f };
+    ZC_Vec4<GLfloat> clearColor { 0.f, 0.f, 0.f, 1.f };
 
     void CheckClearColor();
 };

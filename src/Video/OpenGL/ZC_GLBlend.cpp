@@ -1,10 +1,8 @@
 #include <ZC/Video/OpenGL/ZC_GLBlend.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
-
 #include <cassert>
 
-ZC_GLBlend::ZC_GLBlend(unsigned int _sfactor, unsigned int _dfactor, float red, float green, float blue, float alpha)
+ZC_GLBlend::ZC_GLBlend(GLenum _sfactor, GLenum _dfactor, GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
     : sfactor(_sfactor),
     dfactor(_dfactor),
     blendColor(red, green, blue, alpha)

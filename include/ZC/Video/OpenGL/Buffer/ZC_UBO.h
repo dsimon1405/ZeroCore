@@ -15,16 +15,28 @@ struct ZC_UBO
 	ZC_UBO& operator = (ZC_UBO&& vbo);
 
 	/*
-	Saves data to a ubo.
+	Stores data in a buffer or reserves space.
 
 	Params:
-	data - data to save.
-	_usage - style of using stored data (GL_STREAM_DRAW, GL_STREAM_READ, GL_STREAM_COPY, GL_STATIC_DRAW, GL_STATIC_READ, GL_STATIC_COPY, GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY).
+	- bytesSize - data bytes size.
+	- data - data to save (if nullptr, reserve place).
+	- _usage - style of using stored data (GL_STREAM_DRAW, GL_STREAM_READ, GL_STREAM_COPY, GL_STATIC_DRAW, GL_STATIC_READ, GL_STATIC_COPY,
+		GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY).
 	
 	Return:
 	On success true, otherwise false (in second case ZC_ErrorLogger::ErrorMessage() - for more information).
 	*/
-	void BufferData(long bytesSize, void* pData, GLenum usage);
+	void GLNamedBufferData(GLsizeiptr bytesSize, const void* pData, GLenum _usage);
+
+	/*
+	Stores data in a buffer or reserves space. Make buffer no resizable. May be called only once, double call or call GLNamedBufferData(...) returns exception!
+
+	Params:
+	- bytesSize - data bytes size.
+	- data - data to save (if nullptr, reserve place).
+	- flags - 0, GL_DYNAMIC_STORAGE_BIT, GL_MAP_COHERENT_BIT (must include GL_MAP_PERSISTENT_BIT (must include GL_MAP_READ_BIT or GL_MAP_WRITE_BIT)).
+	*/
+	void GLNamedBufferStorage(GLsizeiptr bytesSize, const void* pData, GLbitfield flags);
 
 	/*
 	Save new data in buffer.
@@ -37,7 +49,7 @@ struct ZC_UBO
 	Return:
 	On success true, otherwise false (in second case ZC_ErrorLogger::ErrorMessage() - for more information).
 	*/
-	void BufferSubData(long offset, long bytesSize, void* pData);
+	void GLNamedBufferSubData(GLintptr offset, GLsizeiptr bytesSize, const void* pData);
 
 private:
 	ZC_Buffer buffer;

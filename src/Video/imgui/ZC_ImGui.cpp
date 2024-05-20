@@ -1,7 +1,7 @@
 #include "ZC_ImGui.h"
 
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
+#include <Video/OpenGL/ZC_OpenGLConfig.h>
 #include <ZC/Events/ZC_Events.h>
 #include <ZC_IGWindow.h>
 
@@ -35,8 +35,6 @@ bool ZC_ImGui::Init(void* pWindow, void* pGlContext)
 		ZC_ErrorLogger::Err("ImGui_ImplOpenGL3_Init() fail!", __FILE__, __LINE__);
         return false;
 	}
-
-    ZC_Events::ConnectHandleEventsEnd({ &ZC_IGWindow::Make_isCursorInOneOfWindows_false });
 
     return true;
 }

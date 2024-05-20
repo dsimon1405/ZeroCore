@@ -1,9 +1,10 @@
 #include <ZC/Objects/Text/ZC_Fonts.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 #include <ZC/File/ZC_File.h>
+
+#include <glad/glad.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -65,8 +66,7 @@ ZC_Font ZC_Fonts::MakeFont(void* ft_face)
         texH = 0;
     CalculateTextureSize(texW, texH, ft_face);
 
-    ZC_Texture texture(GL_TEXTURE_2D, GL_RED, texW, texH, GL_RED, GL_UNSIGNED_BYTE, nullptr, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR, false);
-    texture.Bind();
+    ZC_Texture texture = ZC_Texture::TextureStorage2D(GL_R8, texW, texH, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR);
 
     float texX = 0,
         texY = 0;
@@ -88,8 +88,8 @@ ZC_Font ZC_Fonts::MakeFont(void* ft_face)
         }
         
         if (glyph->bitmap.width != 0 && glyph->bitmap.rows != 0)
-            glTexSubImage2D(GL_TEXTURE_2D, 0, static_cast<int>(texX), static_cast<int>(texY), glyph->bitmap.width,
-                glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, glyph->bitmap.buffer);
+            texture.GLTextureSubImage2D(static_cast<int>(texX), static_cast<int>(texY), glyph->bitmap.width, glyph->bitmap.rows,
+                GL_RED, GL_UNSIGNED_BYTE, glyph->bitmap.buffer);
             
         float texX_left = texX / static_cast<float>(texW),
             texY_bottom = texY / static_cast<float>(texH);
@@ -110,7 +110,6 @@ ZC_Font ZC_Fonts::MakeFont(void* ft_face)
         texX += glyph->bitmap.width + pixelPadding;
         rowH = std::max<uint>(glyph->bitmap.rows, rowH);
     }
-    texture.Unbind();
 
     return { std::move(texture), std::move(characters) };
 }

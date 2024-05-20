@@ -1,7 +1,5 @@
 #include <ZC/Video/OpenGL/Buffer/ZC_Buffer.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
-
 ZC_Buffer::ZC_Buffer(GLenum _type)
     : type(_type)
 {
@@ -10,7 +8,8 @@ ZC_Buffer::ZC_Buffer(GLenum _type)
     static ulong buffersIndex = 0;
     if (buffersIndex == 0 || buffersIndex == buffersSize)
     {
-        glGenBuffers(buffersSize, buffers);
+        glCreateBuffers(buffersSize, buffers);
+        // glGenBuffers(buffersSize, buffers);
         buffersIndex = 0;
     }
     id = buffers[buffersIndex++];
@@ -31,11 +30,9 @@ void ZC_Buffer::UnbindBuffer()
     glBindBuffer(type, 0);
 }
 
-void ZC_Buffer::BufferData(long bytesSize, const void* pData, GLenum _usage)
+void ZC_Buffer::GLNamedBufferData(GLsizeiptr bytesSize, const void* pData, GLenum _usage)
 {
-    glBindBuffer(type, id);
-    glBufferData(type, bytesSize, pData, _usage);
-    glBindBuffer(type, 0);
+    glNamedBufferData(id, bytesSize, pData, _usage);
 #ifdef ZC_ANDROID
     usage = _usage;
     ClearDatas();
@@ -44,11 +41,14 @@ void ZC_Buffer::BufferData(long bytesSize, const void* pData, GLenum _usage)
 #endif
 }
 
-void ZC_Buffer::BufferSubData(long offset, long bytesSize, const void* pData)
+void ZC_Buffer::GLNamedBufferStorage(GLsizeiptr bytesSize, const void* pData, GLbitfield flags)
 {
-    glBindBuffer(type, id);
-    glBufferSubData(type, offset, bytesSize, pData);
-    glBindBuffer(type, 0);
+    glNamedBufferStorage(id, bytesSize, pData, flags);
+}
+
+void ZC_Buffer::GLNamedBufferSubData(GLintptr offset, GLsizeiptr bytesSize, const void* pData)
+{
+    glNamedBufferSubData(id, offset, bytesSize, pData);
 #ifdef ZC_ANDROID
     AddData(offset, bytesSize, reinterpret_cast<char *>(pData));
 #endif

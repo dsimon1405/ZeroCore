@@ -1,12 +1,13 @@
 #pragma once
 
 #include <ZC_Config.h>
-#include <ZC/Video/OpenGL/GL/glcorearb.h>
 #include <ZC/Tools/Math/ZC_Math.h>
 #include <ZC/Tools/Container/ZC_DA.h>
 #ifdef ZC_ANDROID
 #include <list>
 #endif
+
+#include <glad/glad.h>
 
 //	Wrapper OpenGL buffer.
 struct ZC_Buffer
@@ -22,31 +23,50 @@ struct ZC_Buffer
 	void UnbindBuffer();
 
 	/*
-	Saves data to a buffer, or reserve place.
+	Stores data in a buffer or reserves space.
 
 	Params:
-	bytesSize - data bytes size.
-	data - data to save (if nullptr, reserve place).
-	_usage - style of using stored data (GL_STREAM_DRAW, GL_STREAM_READ, GL_STREAM_COPY, GL_STATIC_DRAW, GL_STATIC_READ, GL_STATIC_COPY, GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY).
+	- bytesSize - data bytes size.
+	- data - data to save (if nullptr, reserve place).
+	- _usage - style of using stored data (GL_STREAM_DRAW, GL_STREAM_READ, GL_STREAM_COPY, GL_STATIC_DRAW, GL_STATIC_READ, GL_STATIC_COPY,
+		GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY).
 	
 	Return:
 	On success true, otherwise false (in second case ZC_ErrorLogger::ErrorMessage() - for more information).
 	*/
-	void BufferData(long bytesSize, const void* pData, GLenum _usage);
+	void GLNamedBufferData(GLsizeiptr bytesSize, const void* pData, GLenum _usage);
+
+	/*
+	Stores data in a buffer or reserves space. Make buffer no resizable. May be called only once, double call or call GLNamedBufferData(...) returns exception!
+
+	Params:
+	- bytesSize - data bytes size.
+	- data - data to save (if nullptr, reserve place).
+	- flags - 0, GL_DYNAMIC_STORAGE_BIT, GL_MAP_COHERENT_BIT (must include GL_MAP_PERSISTENT_BIT (must include GL_MAP_READ_BIT or GL_MAP_WRITE_BIT)).
+	*/
+	void GLNamedBufferStorage(GLsizeiptr bytesSize, const void* pData, GLbitfield flags);
 
 	/*
 	Save new data in buffer.
 
 	Params:
-	offset - offset in bytes before editing starts.
-	bytesSize - data bytes size.
-	pData - data to save.
+	- offset - offset in bytes before editing starts.
+	- bytesSize - data bytes size.
+	- pData - data to save.
 	
 	Return:
 	On success true, otherwise false (in second case ZC_ErrorLogger::ErrorMessage() - for more information).
 	*/
-	void BufferSubData(long offset, long bytesSize, const void* pData);
+	void GLNamedBufferSubData(GLintptr offset, GLsizeiptr bytesSize, const void* pData);
 
+	/*
+	Determines, from the maximum index of an element, the size of the element's type and the type of that element from open gl enum.
+
+	Params:
+	- maxElementsIndex - maximum index of an element.
+	- storingTypeSize - here places the size of the element's type.
+	- rElementsType - here places the type of that element from open gl enum.
+	*/
     static void GetElementsData(ulong maxElementsIndex, ulong& storingTypeSize, GLenum& rElementsType) noexcept;
 
 	/*
@@ -61,7 +81,7 @@ struct ZC_Buffer
 	Return:
 	Array of element in uchar format. Using:
 		ZC_Buffer ebo(GL_ELEMENT_ARRAY_BUFFER);
-		ebo.BufferData(elements.size, elements.Begin(), ...);
+		ebo.GLNamedBufferData(elements.size, elements.Begin(), ...);
 	*/
 	static ZC_DA<uchar> GetTriangleElements(ulong& rElementsCount, GLenum& rElementsType, ulong quadsCount, ulong trianglesCount);
 

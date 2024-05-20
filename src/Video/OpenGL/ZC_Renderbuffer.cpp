@@ -1,21 +1,19 @@
 #include <ZC/Video/OpenGL/ZC_Renderbuffer.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
-
-ZC_Renderbuffer::ZC_Renderbuffer(int samples, unsigned int internalFormat, int width, int height)
+ZC_Renderbuffer ZC_Renderbuffer::GLNamedRenderbufferStorage(GLenum internalformat, GLsizei width, GLsizei height)
 {
-    glGenRenderbuffers(1, &id);
-    glBindRenderbuffer(GL_RENDERBUFFER, id);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalFormat, width, height);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    ZC_Renderbuffer rb;
+    glCreateRenderbuffers(1, &(rb.id));
+    glNamedRenderbufferStorage(rb.id, internalformat, width, height);
+    return rb;
 }
 
-ZC_Renderbuffer::ZC_Renderbuffer(unsigned int internalFormat, int width, int height)
+ZC_Renderbuffer ZC_Renderbuffer::GLNamedRenderbufferStorageMultisample(GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height)
 {
-    glGenRenderbuffers(1, &id);
-    glBindRenderbuffer(GL_RENDERBUFFER, id);
-    glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, width, height);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    ZC_Renderbuffer rb;
+    glCreateRenderbuffers(1, &(rb.id));
+    glNamedRenderbufferStorageMultisample(rb.id, samples, internalformat, width, height);
+    return rb;
 }
 
 ZC_Renderbuffer::ZC_Renderbuffer(ZC_Renderbuffer&& rb)
@@ -37,7 +35,7 @@ ZC_Renderbuffer::~ZC_Renderbuffer()
     if (id != 0) glDeleteRenderbuffers(1, &id);
 }
 
-unsigned int ZC_Renderbuffer::GetId() const noexcept
+GLuint ZC_Renderbuffer::GetId() const noexcept
 {
     return id;
 }

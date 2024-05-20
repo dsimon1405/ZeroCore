@@ -11,8 +11,8 @@ template<typename TFunction>
 class ZC_ESignal;
 
 //  Light signal for events. Thread unsafe.
-template<typename TReturn, typename... TParams>
-class ZC_ESignal<TReturn(TParams...)>
+template<typename TVal, typename... TParams>
+class ZC_ESignal<TVal(TParams...)>
 {
 public:
     //  Creates a ZC_Signal with the function signature <TReturn(TParams...)>.
@@ -27,7 +27,7 @@ public:
     Return:
     ZC_SConnection pointer.
     */
-    ZC_EC Connect(ZC_Function<TReturn(TParams...)>&& func);
+    ZC_EC Connect(ZC_Function<TVal(TParams...)>&& func);
 
     /*
     Calls all connected ZC_Function.
@@ -51,48 +51,48 @@ public:
     void Disconnect(const void* pFuncData);
 
 private:
-    std::list<ZC_Function<TReturn(TParams...)>> functions;
-    std::list<ZC_Function<TReturn(TParams...)>> connectFuncs;
+    std::list<ZC_Function<TVal(TParams...)>> functions;
+    std::list<ZC_Function<TVal(TParams...)>> connectFuncs;
     std::list<const void*> disconnectPFuncData;
 
     void MakeReconnection();
 };
 
 
-template<typename TReturn, typename... TParams>
-ZC_EC ZC_ESignal<TReturn(TParams...)>::Connect(ZC_Function<TReturn(TParams...)>&& func)
+template<typename TVal, typename... TParams>
+ZC_EC ZC_ESignal<TVal(TParams...)>::Connect(ZC_Function<TVal(TParams...)>&& func)
 {
-    return { new ZC_ECTargetPointer<ZC_ESignal<TReturn(TParams...)>*, const void*>{ this, connectFuncs.emplace_back(std::move(func)).GetPointerOnData() } };
+    return { new ZC_ECTargetPointer<ZC_ESignal<TVal(TParams...)>*>{ this, connectFuncs.emplace_back(std::move(func)).GetPointerOnData() } };
 }
 
-template<typename TReturn, typename... TParams>
-void ZC_ESignal<TReturn(TParams...)>::operator () (TParams... params)
+template<typename TVal, typename... TParams>
+void ZC_ESignal<TVal(TParams...)>::operator () (TParams... params)
 {
     MakeReconnection();
     for (auto& function : functions) function(params...);
 }
 
-template<typename TReturn, typename... TParams>
-bool ZC_ESignal<TReturn(TParams...)>::IsEmpty()
+template<typename TVal, typename... TParams>
+bool ZC_ESignal<TVal(TParams...)>::IsEmpty()
 {
     return functions.empty();
 }
 
-template<typename TReturn, typename... TParams>
-void ZC_ESignal<TReturn(TParams...)>::CallLastConnected(TParams... params)
+template<typename TVal, typename... TParams>
+void ZC_ESignal<TVal(TParams...)>::CallLastConnected(TParams... params)
 {
     MakeReconnection();
     if (!functions.empty()) (*(--(functions.end())))(params...);
 }
 
-template<typename TReturn, typename... TParams>
-void ZC_ESignal<TReturn(TParams...)>::Disconnect(const void* pFuncData)
+template<typename TVal, typename... TParams>
+void ZC_ESignal<TVal(TParams...)>::Disconnect(const void* pFuncData)
 {
     disconnectPFuncData.emplace_back(pFuncData);
 }
 
-template<typename TReturn, typename... TParams>
-void ZC_ESignal<TReturn(TParams...)>::MakeReconnection()
+template<typename TVal, typename... TParams>
+void ZC_ESignal<TVal(TParams...)>::MakeReconnection()
 {
     if (!connectFuncs.empty())
     {

@@ -1,7 +1,7 @@
 #include "ZC_SDL_Window.h"
 
-#include <ZC/Video/ZC_Window.h>
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
+#include <ZC/Video/ZC_SWindow.h>
+#include <Video/OpenGL/ZC_OpenGLConfig.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #ifdef ZC_IMGUI
 #include <Video/imgui/ZC_ImGui.h>
@@ -22,10 +22,10 @@ ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, cons
     	}
 		sdlVideoInited = true;
 	}
-	//	after init but before window creation			check on windows
-    if (SDL_GL_LoadLibrary(NULL) != 0) { ZC_ErrorLogger::Err("SDL_GL_LoadLibrary() faild! " + std::string(SDL_GetError()), __FILE__, __LINE__);}
+	
+    // if (SDL_GL_LoadLibrary(NULL) != 0) { ZC_ErrorLogger::Err("SDL_GL_LoadLibrary() faild! " + std::string(SDL_GetError()), __FILE__, __LINE__);}
 
-    using namespace ZC_Window;
+    using namespace ZC_SWindow;
 	if (!SetOpenGLAttributes(flags & ZC_Window_Multisampling_4 ? 4
 							: flags & ZC_Window_Multisampling_3 ? 3
 							: flags & ZC_Window_Multisampling_2 ? 2
@@ -61,8 +61,8 @@ ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, cons
 		return;
 	}
 
-
-    if (!LoadOpenGLFunctions()) return;
+	if (gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
+    // if (!LoadOpenGLFunctions()) return;
 
 	ZC_OpenGLAssigneErrorCallback();
 	
@@ -174,14 +174,6 @@ bool ZC_SDL_Window::SetOpenGLAttributes(int samplesCount)
 
 	return true;
 }
-
-// void ZC_SDL_Window::Resize()
-// {
-// 	int width = 0, height = 0;
-// 	SDL_GetWindowSize(pWindow, &width,&height);
-// 	glViewport(0, 0, width, height);										//	в ZC_Renderer ????????????????????????
-// 	sigResize(static_cast<float>(width), static_cast<float>(height));
-// }
 
 	// int red = 0;
     // int a999 = SDL_GL_GetAttribute(SDL_GL_RED_SIZE, &red);	//	8

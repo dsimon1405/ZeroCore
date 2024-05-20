@@ -1,6 +1,5 @@
 #include <ZC/Video/OpenGL/ZC_GLDraw.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/Video/OpenGL/ZC_FBOBuffersController.h>
 
 void ZC_GLDraw::Draw() const
@@ -9,7 +8,7 @@ void ZC_GLDraw::Draw() const
     VDraw();
 }
 
-ZC_DrawElements::ZC_DrawElements(GLenum _mode, int _count, GLenum _type, GLuint _startByteOffset)
+ZC_DrawElements::ZC_DrawElements(GLenum _mode, GLsizei _count, GLenum _type, GLuint _startByteOffset)
     : mode(_mode),
     count(_count),
     type(_type),
@@ -24,7 +23,7 @@ void ZC_DrawElements::VDraw() const
 
 //  ZC_DrawArrays
 
-ZC_DrawArrays::ZC_DrawArrays(GLenum _mode, int _first, int _count)
+ZC_DrawArrays::ZC_DrawArrays(GLenum _mode, GLint _first, GLsizei _count)
     : mode(_mode),
     first(_first),
     count(_count)

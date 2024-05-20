@@ -2,34 +2,34 @@
 
 #include <ZC/Events/ZC_EC.h>
 
-template<typename TpTarget, typename TData>
+template<typename TpTarget>
 struct ZC_ECTargetPointer : public ZC_EventConnection
 {
     TpTarget pTarget;
-    TData data;
+    const void* pFuncData;
 
-    ZC_ECTargetPointer(TpTarget _pTarget, TData _data);
+    ZC_ECTargetPointer(TpTarget _pSignal, const void* _pFuncData);
     
     void Disconnect() override;
     bool IsConnected() const noexcept override;
 };
 
 
-template<typename TpTarget, typename TData>
-ZC_ECTargetPointer<TpTarget, TData>::ZC_ECTargetPointer(TpTarget _pTarget, TData _data)
-    : pTarget(_pTarget),
-    data(std::move(_data))
+template<typename TpTarget>
+ZC_ECTargetPointer<TpTarget>::ZC_ECTargetPointer(TpTarget _pSignal, const void* _pFuncData)
+    : pTarget(_pSignal),
+    pFuncData(_pFuncData)
 {}
 
-template<typename TpTarget, typename TData>
-void ZC_ECTargetPointer<TpTarget, TData>::Disconnect()
+template<typename TpTarget>
+void ZC_ECTargetPointer<TpTarget>::Disconnect()
 {
-    pTarget->Disconnect(std::move(data));
+    pTarget->Disconnect(pFuncData);
     pTarget = nullptr;
 }
 
-template<typename TpTarget, typename TData>
-bool ZC_ECTargetPointer<TpTarget, TData>::IsConnected() const noexcept
+template<typename TpTarget>
+bool ZC_ECTargetPointer<TpTarget>::IsConnected() const noexcept
 {
     return pTarget != nullptr;
 }

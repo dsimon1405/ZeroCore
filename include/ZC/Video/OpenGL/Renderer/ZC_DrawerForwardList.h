@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ZC/Tools/Container/ZC_ContFunc.h>
-#include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
 #include <forward_list>
 #include <cassert>
@@ -9,7 +8,7 @@
 template<typename... TArgs>
 struct ZC_DrawerForwardList;
 template<typename TFirst, typename... TTail>
-struct ZC_DrawerForwardList<TFirst, TTail...> : public ZC_DrawerForwardList<TTail...>
+struct ZC_DrawerForwardList<TFirst, TTail...>
 {
     struct Pair
     {
@@ -24,19 +23,19 @@ struct ZC_DrawerForwardList<TFirst, TTail...> : public ZC_DrawerForwardList<TTai
     ZC_DrawerForwardList() = default;
     virtual ~ZC_DrawerForwardList() = default;
     
-    ZC_DrawerForwardList(const TFirst& _first, const TTail&... _tail);
-    void Add(const TFirst& _first, const TTail&... _tail);
+    ZC_DrawerForwardList(TFirst _first, TTail... _tail);
+    void Add(TFirst _first, TTail... _tail);
     //  returns true if empty
     bool Erase(const TFirst& _first, const TTail&... _tail);
     void Draw();
     //  Specifies the need to call ActivateOpenGL() on concrete level or not. All TStart, TEnd must be bool types.
     //  Count of parameters must correspond count of types that realize ActivateOpenGL() function (classes like: ZC_ShProg, ZC_VAO, ZC_TexturesHolder).
     template<typename TStart, typename... TEnd>
-    void Draw(TStart boolHead, TEnd... boolEnd);
+    void Draw(TStart activateOpenGLHead, TEnd... activateOpenGLEnd);
     bool Empty() const noexcept;
 
 // private:
-    void Draw(bool boolEnd);
+    void Draw(bool activateOpenGLEnd);
 };
 
 template<typename TRLData>
@@ -56,20 +55,20 @@ struct ZC_DrawerForwardList<TRLData>
 };
 
 
-//  ZC_RLDFL<TFirst, TTail...>
+//  ZC_DrawerForwardList<TFirst, TTail...>
 
 template<typename TFirst, typename... TTail>
-ZC_DrawerForwardList<TFirst, TTail...>::ZC_DrawerForwardList(const TFirst& _first, const TTail&... _tail)
+ZC_DrawerForwardList<TFirst, TTail...>::ZC_DrawerForwardList(TFirst _first, TTail... _tail)
 {
-    pairs.emplace_front(_first, ZC_DrawerForwardList<TTail...>(_tail...));
+    pairs.emplace_front(std::forward<TFirst>(_first), ZC_DrawerForwardList<TTail...>(std::forward<TTail>(_tail)...));
 }
 
 template<typename TFirst, typename... TTail>
-void ZC_DrawerForwardList<TFirst, TTail...>::Add(const TFirst& _first, const TTail&... _tail)
+void ZC_DrawerForwardList<TFirst, TTail...>::Add(TFirst _first, TTail... _tail)
 {
     auto pPair = ZC_Find(pairs, _first);
     if (pPair) pPair->second.Add(_tail...);
-    else pairs.emplace_front(_first, ZC_DrawerForwardList<TTail...>(_tail...));
+    else pairs.emplace_front(std::forward<TFirst>(_first), ZC_DrawerForwardList<TTail...>(std::forward<TTail>(_tail)...));
 }
 
 template<typename TFirst, typename... TTail>
@@ -100,17 +99,17 @@ void ZC_DrawerForwardList<TFirst, TTail...>::Draw()
 
 template<typename TFirst, typename... TTail>
 template<typename TStart, typename... TEnd>
-void ZC_DrawerForwardList<TFirst, TTail...>::Draw(TStart boolHead, TEnd... boolEnd)
+void ZC_DrawerForwardList<TFirst, TTail...>::Draw(TStart activateOpenGLHead, TEnd... activateOpenGLEnd)
 {
     static_assert(std::same_as<bool, TStart>);
     for (auto& pair : pairs)
     {
-        if (boolHead)
+        if (activateOpenGLHead)
         {
             if constexpr (std::is_pointer<TFirst>()) pair.first->ActivateOpenGL();
             else pair.first.ActivateOpenGL();
         }
-        pair.second.Draw(boolEnd...);
+        pair.second.Draw(activateOpenGLEnd...);
     }
 }
 
@@ -121,11 +120,11 @@ bool ZC_DrawerForwardList<TFirst, TTail...>::Empty() const noexcept
 }
 
 template<typename TFirst, typename... TTail>
-void ZC_DrawerForwardList<TFirst, TTail...>::Draw(bool boolEnd)
+void ZC_DrawerForwardList<TFirst, TTail...>::Draw(bool activateOpenGLEnd)
 {
     for (auto& pair : pairs)
     {
-        if (boolEnd)
+        if (activateOpenGLEnd)
         {
             if constexpr (std::is_pointer<TFirst>()) pair.first->ActivateOpenGL();
             else pair.first.ActivateOpenGL();
@@ -162,7 +161,7 @@ void ZC_DrawerForwardList<TRLData>::Add(const TRLData& data)
 template<typename TRLData>
 bool ZC_DrawerForwardList<TRLData>::Erase(const TRLData& data)
 {
-    if (!ZC_ForwardListErase(datas, data)) ZC_ErrorLogger::Err("ZC_RLDFL<TRLData>::Erase(), Can't find renderer level data for erase!", __FILE__, __LINE__);
+    if (!ZC_ForwardListErase(datas, data)) { assert(false); }   //  an't find renderer level data for erase
     return datas.empty();
 }
 

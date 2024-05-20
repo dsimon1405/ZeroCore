@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Video/ZC_WindowHolder.h>
+#include <Video/ZC_SWindowHolder.h>
 
 #include <SDL3/SDL_video.h>
 
-struct ZC_SDL_Window : public ZC_WindowHolder
+struct ZC_SDL_Window : public ZC_SWindowHolder
 {
     ZC_SDL_Window(int flags, int _width, int _height, const char* name);
     ~ZC_SDL_Window() override;
@@ -21,5 +21,5 @@ private:
     void VUnlimitCursor() override;
 
     bool SetOpenGLAttributes(int samplesCount);
-    bool LoadOpenGLFunctions();
+    // bool LoadOpenGLFunctions();
 };

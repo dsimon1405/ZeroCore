@@ -1,7 +1,6 @@
 #include <ZC/Video/OpenGL/ZC_Viewport.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
-#include "ZC/Video/ZC_Window.h"
+#include "ZC/Video/ZC_SWindow.h"
 
 ZC_Viewport::ZC_Viewport(int _startX, int _startY, int _width, int _height)
     : startX(_startX),
@@ -14,7 +13,7 @@ ZC_Viewport ZC_Viewport::CreateStandardWindowViewport()
 {
     int width,
         height;
-    ZC_Window::GetSize(width, height);
+    ZC_SWindow::GetSize(width, height);
     return { 0, 0, width, height };
 }
 
@@ -26,7 +25,7 @@ void ZC_Viewport::Use()
     glViewport(startX, startY, width, height);
 }
 
-void ZC_Viewport::SetSize(int _width, int _height)
+void ZC_Viewport::SetSize(GLsizei _width, GLsizei _height)
 {
     width = _width;
     height = _height;
@@ -35,18 +34,18 @@ void ZC_Viewport::SetSize(int _width, int _height)
     glViewport(startX, startY, width, height);
 }
 
-void ZC_Viewport::GetSize(int& rWidth, int& rHeight) const noexcept
+void ZC_Viewport::GetSize(GLsizei& rWidth, GLsizei& rHeight) const noexcept
 {
     rWidth = width;
     rHeight = height;
 }
 
-int ZC_Viewport::GetWidth() const noexcept
+GLsizei ZC_Viewport::GetWidth() const noexcept
 {
     return width;
 }
 
-int ZC_Viewport::GetHeight() const noexcept
+GLsizei ZC_Viewport::GetHeight() const noexcept
 {
     return height;
 }

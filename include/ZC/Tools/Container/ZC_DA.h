@@ -1,8 +1,7 @@
 #pragma once
 
-#include <ZC/Tools/Exception/ZC_Exception.h>
-#include <ZC/Tools/Math/ZC_Math.h>
-
+#include <algorithm>
+#include <cassert>
 #include <cstdlib>
 
 //  Wrapper for dynamic array with open data.
@@ -33,6 +32,8 @@ struct ZC_DA
     const T* End() const noexcept;
 
     ZC_DA<T> GetCopy() const;
+
+    void Fill(const T& val);
 };
 
 template<typename T>
@@ -81,14 +82,14 @@ ZC_DA<T>::~ZC_DA()
 template<typename T>
 T& ZC_DA<T>::operator [] (ulong index)
 {
-    if (index >= size) ZC_Exception("Index out of range!");
+    assert(index < size);   //  out of range
     return pHead[index];
 }
 
 template<typename T>
 const T& ZC_DA<T>::operator [] (ulong index) const
 {
-    if (index >= size) ZC_Exception("Index out of range!");
+    assert(index < size);   //  out of range
     return const_cast<T&>(pHead[index]);
 }
 
@@ -128,4 +129,10 @@ ZC_DA<T> ZC_DA<T>::GetCopy() const
     ZC_DA<T> copy(size);
     for (size_t i = 0; i < size; ++i) copy[i] = pHead[i]; 
     return copy;
+}
+
+template<typename T>
+void ZC_DA<T>::Fill(const T& val)
+{
+    if (size != 0) std::fill(pHead, pHead + size, val);
 }

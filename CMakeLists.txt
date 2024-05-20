@@ -89,6 +89,8 @@ if(ZC_PC)
 		set(FT_DISABLE_BROTLI ON)
 		set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)	# sets for including subdirectory, new policy -> option()
 		add_subdirectory(${PROJECT_SOURCE_DIR}/external/freetype)
+		#	sqlite3
+		add_subdirectory(${PROJECT_SOURCE_DIR}/external/sqlite3)
 	endif()
 endif()
 
@@ -121,7 +123,9 @@ elseif(ZC_ANDROID)
 	add_subdirectory(Android)
 endif()
 
-set(ZC_SRC_FILES ${ZC_SRC_FILES}
+#========================= add lib
+add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
+	$<$<NOT:${ZC_MY_DEBUG}>:/external/glad/src/glad.c>
 	$<IF:$<CONFIG:Debug>,
 		${PROJECT_SOURCE_DIR}/src/ErrorLogger/Exception/ZC_ErrorLogger.cpp,
 		${PROJECT_SOURCE_DIR}/src/ErrorLogger/Message/ZC_ErrorLogger.cpp>
@@ -133,12 +137,12 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
 		${PROJECT_SOURCE_DIR}/src/Audio/ZC_SoundData.cpp
 		${PROJECT_SOURCE_DIR}/src/Audio/ZC_Sounds.cpp
 		${PROJECT_SOURCE_DIR}/src/Audio/ZC_StreamSound.cpp>
-    ${PROJECT_SOURCE_DIR}/src/Video/ZC_Window.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/ZC_WindowHolder.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/ZC_SWindow.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/ZC_SWindowHolder.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_FBO.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_FBOBuffersController.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_Framebuffer.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_OpenGL.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_OpenGLConfig.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_Renderbuffer.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_Viewport.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_GLBlend.cpp
@@ -200,26 +204,22 @@ set(ZC_SRC_FILES ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_TextWindowIntoScene.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindow.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindowController.cpp
-    )
-	
-add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES})
+	)
 
 #========================= include dirs
-set(ZC_INCLUDE_DIRS ${ZC_INCLUDE_DIRS}
+target_include_directories(${PROJECT_NAME} ${ZC_INCLUDE_DIRS}
+	PUBLIC ${PROJECT_SOURCE_DIR}/external/glad/include
 	PUBLIC ${PROJECT_SOURCE_DIR}/include
 	PRIVATE ${PROJECT_SOURCE_DIR}/src
 	PUBLIC ${PROJECT_BINARY_DIR}/config
 	PUBLIC $<$<BOOL:${ZC_AUDIO}>:${PROJECT_SOURCE_DIR}/includeVariable/Audio>
 	)
 
-target_include_directories(${PROJECT_NAME} ${ZC_INCLUDE_DIRS})
-
 #========================= link libs
-set(ZC_LINK_LIBS ${ZC_LINK_LIBS}
+target_link_libraries(${PROJECT_NAME} ${ZC_LINK_LIBS}
+	PUBLIC $<$<BOOL:${ZC_MY_DEBUG}>:/home/dmitry/projects/external/glad/lib/libglad.so>
 	)
-
-target_link_libraries(${PROJECT_NAME} ${ZC_LINK_LIBS})
-
+	
 #========================= compiler params
 target_compile_options(${PROJECT_NAME}
 	PRIVATE	$<IF:$<BOOL:${WIN32}>,-W3,-Wall>
@@ -234,7 +234,7 @@ add_dependencies(${PROJECT_NAME} ZC_COPY_ASSETS)
 
 message(STATUS "======================== ZERO CORE CONFIG ========================")
 message(STATUS "ZC_PC: ${ZC_PC}")
-message(STATUS "ZC_ANDROID: ${ZC_ANDROID}")
+# message(STATUS "ZC_ANDROID: ${ZC_ANDROID}")
 message(STATUS "ZC_STATIC: ${ZC_STATIC}")
 message(STATUS "ZC_AUDIO: ${ZC_AUDIO}")
 message(STATUS "========================= ZERO CORE END ==========================")

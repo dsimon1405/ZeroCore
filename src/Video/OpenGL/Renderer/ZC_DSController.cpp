@@ -16,7 +16,7 @@ bool ZC_TexturesHolder::operator == (const ZC_TexturesHolder& th) const noexcept
 
 void ZC_TexturesHolder::ActivateOpenGL() const
 {
-    for (uint i = 0; i < texturesCount; i++) pTexture->ActiveTexture(i);
+    for (uint i = 0; i < texturesCount; i++) pTexture->GLBindTextureUnit(i);
 }
 
 
@@ -158,6 +158,7 @@ void ZC_RLDData_Uniforms_GLDraw::Draw()
     if (pUniforms) pUniforms->Activate();
     pGLDraw->Draw();
 }
+
 
 //  ZC_Uniforms_GLDraw_StencilBorder
 

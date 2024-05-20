@@ -13,7 +13,7 @@ ZC_ButtonPressedDown::ZC_ButtonPressedDown(ZC_ButtonHolder* _pButtonHolder)
 ZC_EC ZC_ButtonPressedDown::Connect(ZC_ButtonID buttonId, ZC_Function<void(ZC_ButtonID, float)>&& function)
 {
     assert(!pButtonHolder->IsButtonDownConnected(buttonId));    //  down button allready connected some where
-    return { new ZC_ECTargetPointer<ZC_ButtonPressedDown*, const void*>(this, connectedButtonDowns.emplace_front(buttonId, std::move(function)).func.GetPointerOnData()) };
+    return { new ZC_ECTargetPointer<ZC_ButtonPressedDown*>(this, connectedButtonDowns.emplace_front(buttonId, std::move(function)).func.GetPointerOnData()) };
 }
 
 void ZC_ButtonPressedDown::Disconnect(const void* pFunc)

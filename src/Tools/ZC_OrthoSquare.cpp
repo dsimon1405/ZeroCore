@@ -12,7 +12,7 @@ void ZC_OrthoSquare::SetSize(float _width, float _height)
         0.f,    _height,     //  tl
     };
                                 //  8 -> is size of bl wich don't change
-    drawerSet.buffers.begin()->BufferSubData(8, sizeof(vertices), vertices);
+    drawerSet.buffers.begin()->GLNamedBufferSubData(8, sizeof(vertices), vertices);
 }
 
 void ZC_OrthoSquare::SetAlpha(float alpha)
@@ -43,7 +43,7 @@ ZC_DrawerSet ZC_OrthoSquare::CreateDrawerSet(float _width, float _height)
         0.f,    _height,     //  tl
     };
 
-    ushort packedOne = ZC_PackTexCoordFloatToUShort(1.f);
+    static ushort packedOne = ZC_PackTexCoordFloatToUShort(1.f);
     ushort texCoords[]
     {
         0, 0,                   //  bl
@@ -53,8 +53,8 @@ ZC_DrawerSet ZC_OrthoSquare::CreateDrawerSet(float _width, float _height)
     };
 
     ZC_Buffer vbo(GL_ARRAY_BUFFER);
-    vbo.BufferData(sizeof(vertices) + sizeof(texCoords), vertices, GL_DYNAMIC_DRAW);
-    vbo.BufferSubData(sizeof(vertices), sizeof(texCoords), texCoords);
+    vbo.GLNamedBufferStorage(sizeof(vertices) + sizeof(texCoords), vertices, GL_DYNAMIC_STORAGE_BIT);
+    vbo.GLNamedBufferSubData(sizeof(vertices), sizeof(texCoords), texCoords);
 
     auto upGLDraw = ZC_uptrMakeFromChild<ZC_GLDraw, ZC_DrawArrays>(GL_TRIANGLE_FAN, 0, 4);
 

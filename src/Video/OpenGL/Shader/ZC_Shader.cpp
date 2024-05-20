@@ -1,6 +1,5 @@
 #include <ZC/Video/OpenGL/Shader/ZC_Shader.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #include <ZC/File/Read/ZC_FileReader.h>
 #include <ZC/Tools/Math/ZC_Math.h>
@@ -15,7 +14,7 @@ ZC_Shader::ZC_Shader(const char* code, GLenum type)
     if (!success)
     {
         char infoLog[1024];
-        glGetProgramInfoLog(id, 1024, NULL, infoLog);
+        glGetShaderInfoLog(id, 1024, NULL, infoLog);
         ZC_ErrorLogger::Err("glCompileShader() fail! => " + std::string(infoLog));
     }
 }

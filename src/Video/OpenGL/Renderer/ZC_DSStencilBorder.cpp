@@ -1,6 +1,5 @@
 #include <ZC/Video/OpenGL/Renderer/ZC_DSStencilBorder.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
 
 ZC_DSStencilBorder::ZC_DSStencilBorder()

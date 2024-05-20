@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ZC/Video/OpenGL/GL/glcorearb.h>
 #include <ZC/Video/OpenGL/Buffer/ZC_Buffer.h>
 #include "ZC_VAOConfig.h"
 

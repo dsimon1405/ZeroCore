@@ -1,6 +1,5 @@
 #include <ZC/Video/OpenGL/Uniform/ZC_Uniform.h>
 
-#include <ZC/Video/OpenGL/ZC_OpenGL.h>
 #include <ZC/Tools/Math/ZC_Mat4.h>
 #include <ZC/Tools/Math/ZC_Vec2.h>
 
@@ -46,34 +45,34 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_Uniform::GetUniformVector(typename ZC_Unifor
     return uniforms;
 }
 
-void ZC_Uniform::GLUniform(const void* pData, int count, bool transponse) const
+void ZC_Uniform::GLUniform(const void* pData, GLsizei count, GLboolean transponse) const
 {
     switch (functionType)
     {
-    case FT_glUniform1f: glUniform1f(location, *static_cast<const float*>(pData)); break;
-    case FT_glUniform1i: glUniform1i(location, *static_cast<const int*>(pData)); break;
-    case FT_glUniform1ui: glUniform1ui(location, *static_cast<const uint*>(pData)); break;
-    case FT_glUniform1fv: glUniform1fv(location, count, static_cast<const float*>(pData)); break;
-    case FT_glUniform2fv: glUniform2fv(location, count, static_cast<const float*>(pData)); break;
-    case FT_glUniform3fv: glUniform3fv(location, count, static_cast<const float*>(pData)); break;
-    case FT_glUniform4fv: glUniform4fv(location, count, static_cast<const float*>(pData)); break;
-    case FT_glUniform1iv: glUniform1iv(location, count, static_cast<const int*>(pData)); break;
-    case FT_glUniform2iv: glUniform2iv(location, count, static_cast<const int*>(pData)); break;
-    case FT_glUniform3iv: glUniform3iv(location, count, static_cast<const int*>(pData)); break;
-    case FT_glUniform4iv: glUniform4iv(location, count, static_cast<const int*>(pData)); break;
-    case FT_glUniform1uiv: glUniform1uiv(location, count, static_cast<const uint*>(pData)); break;
-    case FT_glUniform2uiv: glUniform2uiv(location, count, static_cast<const uint*>(pData)); break;
-    case FT_glUniform3uiv: glUniform3uiv(location, count, static_cast<const uint*>(pData)); break;
-    case FT_glUniform4uiv: glUniform4uiv(location, count, static_cast<const uint*>(pData)); break;
-    case FT_glUniformMatrix2fv: glUniformMatrix2fv(location, count, transponse, static_cast<const float*>(pData)); break;
-    case FT_glUniformMatrix3fv: glUniformMatrix3fv(location, count, transponse, static_cast<const float*>(pData)); break;
-    case FT_glUniformMatrix4fv: glUniformMatrix4fv(location, count, transponse, static_cast<const float*>(pData)); break;
-    case FT_glUniformMatrix2x3fv: glUniformMatrix2x3fv(location, count, transponse, static_cast<const float*>(pData)); break;
-    case FT_glUniformMatrix3x2fv: glUniformMatrix3x2fv(location, count, transponse, static_cast<const float*>(pData)); break;
-    case FT_glUniformMatrix2x4fv: glUniformMatrix2x4fv(location, count, transponse, static_cast<const float*>(pData)); break;
-    case FT_glUniformMatrix4x2fv: glUniformMatrix4x2fv(location, count, transponse, static_cast<const float*>(pData)); break;
-    case FT_glUniformMatrix3x4fv: glUniformMatrix3x4fv(location, count, transponse, static_cast<const float*>(pData)); break;
-    case FT_glUniformMatrix4x3fv: glUniformMatrix4x3fv(location, count, transponse, static_cast<const float*>(pData)); break;
+    case FT_glUniform1f: glUniform1f(location, *static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniform1i: glUniform1i(location, *static_cast<const GLint*>(pData)); break;
+    case FT_glUniform1ui: glUniform1ui(location, *static_cast<const GLuint*>(pData)); break;
+    case FT_glUniform1fv: glUniform1fv(location, count, static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniform2fv: glUniform2fv(location, count, static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniform3fv: glUniform3fv(location, count, static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniform4fv: glUniform4fv(location, count, static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniform1iv: glUniform1iv(location, count, static_cast<const GLint*>(pData)); break;
+    case FT_glUniform2iv: glUniform2iv(location, count, static_cast<const GLint*>(pData)); break;
+    case FT_glUniform3iv: glUniform3iv(location, count, static_cast<const GLint*>(pData)); break;
+    case FT_glUniform4iv: glUniform4iv(location, count, static_cast<const GLint*>(pData)); break;
+    case FT_glUniform1uiv: glUniform1uiv(location, count, static_cast<const GLuint*>(pData)); break;
+    case FT_glUniform2uiv: glUniform2uiv(location, count, static_cast<const GLuint*>(pData)); break;
+    case FT_glUniform3uiv: glUniform3uiv(location, count, static_cast<const GLuint*>(pData)); break;
+    case FT_glUniform4uiv: glUniform4uiv(location, count, static_cast<const GLuint*>(pData)); break;
+    case FT_glUniformMatrix2fv: glUniformMatrix2fv(location, count, transponse, static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniformMatrix3fv: glUniformMatrix3fv(location, count, transponse, static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniformMatrix4fv: glUniformMatrix4fv(location, count, transponse, static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniformMatrix2x3fv: glUniformMatrix2x3fv(location, count, transponse, static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniformMatrix3x2fv: glUniformMatrix3x2fv(location, count, transponse, static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniformMatrix2x4fv: glUniformMatrix2x4fv(location, count, transponse, static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniformMatrix4x2fv: glUniformMatrix4x2fv(location, count, transponse, static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniformMatrix3x4fv: glUniformMatrix3x4fv(location, count, transponse, static_cast<const GLfloat*>(pData)); break;
+    case FT_glUniformMatrix4x3fv: glUniformMatrix4x3fv(location, count, transponse, static_cast<const GLfloat*>(pData)); break;
     }
 }
 

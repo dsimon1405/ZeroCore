@@ -470,7 +470,7 @@ GL3W_API GL3WglProc imgl3wGetProcAddress(const char *proc);
 union ImGL3WProcs {
     GL3WglProc ptr[59];
     struct {
-        PFNGLACTIVETEXTUREPROC            ActiveTexture;
+        PFNGLACTIVETEXTUREPROC            GLBindTextureUnit;
         PFNGLATTACHSHADERPROC             AttachShader;
         PFNGLBINDBUFFERPROC               BindBuffer;
         PFNGLBINDSAMPLERPROC              BindSampler;
@@ -479,8 +479,8 @@ union ImGL3WProcs {
         PFNGLBLENDEQUATIONPROC            BlendEquation;
         PFNGLBLENDEQUATIONSEPARATEPROC    BlendEquationSeparate;
         PFNGLBLENDFUNCSEPARATEPROC        BlendFuncSeparate;
-        PFNGLBUFFERDATAPROC               BufferData;
-        PFNGLBUFFERSUBDATAPROC            BufferSubData;
+        PFNGLBUFFERDATAPROC               GLNamedBufferData;
+        PFNGLBUFFERSUBDATAPROC            GLNamedBufferSubData;
         PFNGLCLEARPROC                    Clear;
         PFNGLCLEARCOLORPROC               ClearColor;
         PFNGLCOMPILESHADERPROC            CompileShader;

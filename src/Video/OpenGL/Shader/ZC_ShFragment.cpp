@@ -1,7 +1,6 @@
 #include <ZC/Video/OpenGL/Shader/ZC_ShFragment.h>
 
 #include <ZC/File/ZC_File.h>
-#include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
 typename ZC_ShFragment::Set ZC_ShFragment::GetSet(Name name)
 {
