@@ -89,8 +89,8 @@ if(ZC_PC)
 		set(FT_DISABLE_BROTLI ON)
 		set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)	# sets for including subdirectory, new policy -> option()
 		add_subdirectory(${PROJECT_SOURCE_DIR}/external/freetype)
-		#	sqlite3
-		add_subdirectory(${PROJECT_SOURCE_DIR}/external/sqlite3)
+		# #	sqlite3
+		# add_subdirectory(${PROJECT_SOURCE_DIR}/external/sqlite3)
 	endif()
 endif()
 
@@ -147,13 +147,20 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_Viewport.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_GLBlend.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_GLDraw.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_Shader.cpp
+
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_Pipeline.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShaderManager.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShaderProgram.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShaderPrograms.cpp
+    
+	${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_Shader.cpp
 	${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShProg.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShProgs.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShVertex.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShFragment.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShGeometry.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_Buffer.cpp
+    
+	${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_Buffer.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_Buffers.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_UBO.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Buffer/ZC_UBOs.cpp

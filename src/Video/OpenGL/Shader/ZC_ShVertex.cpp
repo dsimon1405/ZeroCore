@@ -3,12 +3,12 @@
 #include <ZC/File/ZC_File.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 
-typename ZC_ShVertex::Set ZC_ShVertex::GetSet(Name name)
+typename ZC_ShVertex1::Set ZC_ShVertex1::GetSet(Name name)
 {
     return { GetShader(name), GetUniformData(name) };
 }
 
-ZC_Shader* ZC_ShVertex::GetShader(Name name)    //  add here new
+ZC_Shader* ZC_ShVertex1::GetShader(Name name)    //  add here new
 {
     auto shadersIter = shaders.find(name);
     if (shadersIter != shaders.end()) return &(shadersIter->second);
@@ -31,7 +31,7 @@ ZC_Shader* ZC_ShVertex::GetShader(Name name)    //  add here new
     return &(shaders.emplace(name, ZC_Shader(ZC_Shader::ReadShaderFile(path.c_str(), GL_VERTEX_SHADER).pHead, GL_VERTEX_SHADER)).first->second);
 }
 
-std::vector<ZC_uptr<ZC_Uniform>> ZC_ShVertex::GetUniformData(Name name)    //  add here new
+std::vector<ZC_uptr<ZC_Uniform>> ZC_ShVertex1::GetUniformData(Name name)    //  add here new
 {
     typedef typename ZC_Uniform::NameType UnNT;
     switch (name)

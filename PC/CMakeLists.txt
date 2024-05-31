@@ -29,12 +29,12 @@ set(ZC_INCLUDE_DIRS ${ZC_INCLUDE_DIRS}
     PUBLIC $<$<BOOL:${ZC_IMGUI}>:${PROJECT_SOURCE_DIR}/includeVariable/imgui/include>
     PRIVATE $<$<BOOL:${ZC_IMGUI}AND${ZC_SDL_VIDEO}>:${PROJECT_SOURCE_DIR}/includeVariable/imgui/SDL3>
 	PRIVATE $<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/freetype/include,${PROJECT_SOURCE_DIR}/external/freetype/include>
-    PUBLIC $<$<BOOL:${ZC_MY_DEBUG}>:${PROJECT_SOURCE_DIR}/external/sqlite3/include>
+    # PUBLIC $<$<BOOL:${ZC_MY_DEBUG}>:${PROJECT_SOURCE_DIR}/external/sqlite3/include>
     PARENT_SCOPE)
     
 set(ZC_LINK_LIBS ${ZC_LINK_LIBS}
     PRIVATE $<$<BOOL:${ZC_SDL_VIDEO}>:$<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/SDL3/lib/libSDL3.so,SDL3::SDL3>>
     PRIVATE $<$<AND:$<BOOL:${ZC_IMGUI}>,$<BOOL:${ZC_MY_DEBUG}>>:/home/dmitry/projects/external/imgui/lib/libimgui.a>
 	PRIVATE $<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/freetype/lib/libfreetype.so,freetype>
-	PUBLIC $<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/sqlite3/lib/libsqlite3.so,sqlite3>
+	# PUBLIC $<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/sqlite3/lib/libsqlite3.so,sqlite3>
     PARENT_SCOPE)

@@ -374,3 +374,293 @@ void ZC_OpenGLAssigneErrorCallback();
 
 // // extern PFNGL ;
 // // #define 
+
+
+
+
+//                                                        speed test
+
+// #include <ZC/Tools/Time/ZC_Clock.h>
+// #include <iostream>
+// {
+//     ZCR_ShaderKeeper sm;
+//     auto p = ZC_ShaderManager::GetPipeLine(ZCR_SV_colorFigure, ZCR_STC_None, ZCR_STE_None, ZCR_SG_None, ZCR_SF_color);
+
+//     GLuint buf = 0;
+//     glCreateBuffers(1, &buf);
+//     glNamedBufferStorage(buf, 100, nullptr, 0);
+
+//     ZC_Clock cl;
+//     size_t count = 1000000;
+
+//     GLuint vaoShared;
+//     glCreateVertexArrays(1, &vaoShared);
+
+//     cl.Start();
+//     glBindVertexArray(vaoShared);     //  vao don't uses (bind only on frame start)
+//     for (size_t i = 0; i < count; i++)
+//     {
+//         //  first object
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glBindBufferBase(GL_UNIFORM_BUFFER, 0, buf);    //  next 2 lines comments is now all data in one buffer (VNCVNC)
+//         // glBindBufferBase(GL_UNIFORM_BUFFER, 1, ubo);
+//         // glBindBufferBase(GL_UNIFORM_BUFFER, 2, ubo);
+//         //  draw triangle
+//         //  second object
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glBindBufferBase(GL_UNIFORM_BUFFER, 0, buf);    //  next 2 lines comments is now all data in one buffer (VNCVNC)
+//         // glBindBufferBase(GL_UNIFORM_BUFFER, 1, ubo);
+//         // glBindBufferBase(GL_UNIFORM_BUFFER, 2, ubo);
+//         //  draw triangle
+
+
+//         //  first object
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glBindBufferBase(GL_UNIFORM_BUFFER, 0, buf);    //  next 2 lines comments is now all data in one buffer (VNCVNC)
+//         // glBindBufferBase(GL_UNIFORM_BUFFER, 1, ubo);
+//         // glBindBufferBase(GL_UNIFORM_BUFFER, 2, ubo);
+//         //  draw line
+//         //  second object
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glBindBufferBase(GL_UNIFORM_BUFFER, 0, buf);    //  next 2 lines comments is now all data in one buffer (VNCVNC)
+//         // glBindBufferBase(GL_UNIFORM_BUFFER, 1, ubo);
+//         // glBindBufferBase(GL_UNIFORM_BUFFER, 2, ubo);
+//         //  draw line
+//     }
+//     std::cout<<cl.Time<ZC_Nanoseconds>()<<"             1"<<std::endl;
+
+//     cl.Start();
+//     glBindVertexArray(vaoShared);     //  vao don't uses (bind only on frame start)
+//     for (size_t i = 0; i < count; i++)
+//     {
+//         //  first object
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glBindBufferBase(GL_UNIFORM_BUFFER, 0, buf);    //  next 2 lines comments is now all data in one buffer (VNCVNC)
+//         // glBindBufferBase(GL_UNIFORM_BUFFER, 1, ubo);
+//         // glBindBufferBase(GL_UNIFORM_BUFFER, 2, ubo);
+//         //  draw triangle
+//         glBindProgramPipeline(1);
+//         //  draw line
+
+
+//         //  second object
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glBindBufferBase(GL_UNIFORM_BUFFER, 0, buf);    //  next 2 lines comments is now all data in one buffer (VNCVNC)
+//         // glBindBufferBase(GL_UNIFORM_BUFFER, 1, ubo);
+//         // glBindBufferBase(GL_UNIFORM_BUFFER, 2, ubo);
+//         //  draw triangle
+//         glBindProgramPipeline(1);
+//         //  draw line
+//     }
+//     std::cout<<cl.Time<ZC_Nanoseconds>()<<"             2"<<std::endl;
+
+//     glEnableVertexArrayAttrib(vaoShared, 0);
+//     glVertexArrayAttribFormat(vaoShared, 0, 3, GL_FLOAT, GL_FALSE, 0);
+//     glVertexArrayAttribBinding(vaoShared, 0, 0);
+//     glEnableVertexArrayAttrib(vaoShared, 1);
+//     glVertexArrayAttribFormat(vaoShared, 1, 3, GL_FLOAT, GL_FALSE, 12);
+//     glVertexArrayAttribBinding(vaoShared, 1, 1);
+//     glEnableVertexArrayAttrib(vaoShared, 2);
+//     glVertexArrayAttribFormat(vaoShared, 2, 3, GL_FLOAT, GL_FALSE, 24);
+//     glVertexArrayAttribBinding(vaoShared, 2, 2);
+
+//     GLuint buffers[] {buf, buf, buf};
+//     GLintptr offsets[] {0,0,0};
+//     GLsizei strides[] {0,0,0};
+
+//     cl.Start();
+//     for (size_t i = 0; i < count; i++)
+//     {
+//         glBindVertexArray(vaoShared);     //  each iteration have own vao
+
+//         //  first object
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glVertexArrayVertexBuffer(vaoShared, 0, buf, 0, 36);
+//         glVertexArrayVertexBuffer(vaoShared, 1, buf, 0, 36);
+//         glVertexArrayVertexBuffer(vaoShared, 2, buf, 0, 36);
+//         //  draw triangle
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         //  draw line
+
+
+//         //  second object
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glVertexArrayVertexBuffer(vaoShared, 0, buf, 0, 36);
+//         glVertexArrayVertexBuffer(vaoShared, 1, buf, 0, 36);
+//         glVertexArrayVertexBuffer(vaoShared, 2, buf, 0, 36);
+//         //  draw triangle
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         //  draw line
+//     }
+//     std::cout<<cl.Time<ZC_Nanoseconds>()<<"             3"<<std::endl;
+
+//     cl.Start();
+//     for (size_t i = 0; i < count; i++)
+//     {
+//         glBindVertexArray(vaoShared);     //  each iteration have own vao
+
+//         //  first object
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glVertexArrayVertexBuffers(vaoShared, 0, 3, buffers, offsets, strides);
+//         //  draw triangle
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         //  draw line
+
+
+//         //  second object
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glVertexArrayVertexBuffers(vaoShared, 0, 3, buffers, offsets, strides);
+//         //  draw triangle
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         //  draw line
+//     }
+//     std::cout<<cl.Time<ZC_Nanoseconds>()<<"             3   glVertexArrayVertexBuffers"<<std::endl;
+
+//     cl.Start();
+//     for (size_t i = 0; i < count; i++)
+//     {
+//         glBindVertexArray(vaoShared);     //  each iteration have own vao
+
+//         //  first object
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glVertexArrayVertexBuffer(vaoShared, 0, buf, 0, 36);
+//         glVertexArrayVertexBuffer(vaoShared, 1, buf, 0, 36);
+//         glVertexArrayVertexBuffer(vaoShared, 2, buf, 0, 36);
+//         //  draw triangle
+//         //  second object
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glVertexArrayVertexBuffer(vaoShared, 0, buf, 0, 36);
+//         glVertexArrayVertexBuffer(vaoShared, 1, buf, 0, 36);
+//         glVertexArrayVertexBuffer(vaoShared, 2, buf, 0, 36);
+//         //  draw triangle
+
+
+//         //  first object
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glVertexArrayVertexBuffer(vaoShared, 0, buf, 0, 36);
+//         glVertexArrayVertexBuffer(vaoShared, 1, buf, 0, 36);
+//         glVertexArrayVertexBuffer(vaoShared, 2, buf, 0, 36);
+//         //  draw line
+//         //  second object
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glVertexArrayVertexBuffer(vaoShared, 0, buf, 0, 36);
+//         glVertexArrayVertexBuffer(vaoShared, 1, buf, 0, 36);
+//         glVertexArrayVertexBuffer(vaoShared, 2, buf, 0, 36);
+//         //  draw line
+//     }
+//     std::cout<<cl.Time<ZC_Nanoseconds>()<<"             4"<<std::endl;
+
+//     cl.Start();
+//     for (size_t i = 0; i < count; i++)
+//     {
+//         glBindVertexArray(vaoShared);     //  each iteration have own vao
+
+//         //  first object
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glVertexArrayVertexBuffers(vaoShared, 0, 3, buffers, offsets, strides);
+//         //  draw triangle
+//         //  second object
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glVertexArrayVertexBuffers(vaoShared, 0, 3, buffers, offsets, strides);
+//         //  draw triangle
+
+
+//         //  first object
+//         glBindProgramPipeline(1);
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glVertexArrayVertexBuffers(vaoShared, 0, 3, buffers, offsets, strides);
+//         //  draw line
+//         //  second object
+//         glVertexArrayElementBuffer(vaoShared, buf);
+//         glVertexArrayVertexBuffers(vaoShared, 0, 3, buffers, offsets, strides);
+//         //  draw line
+//     }
+//     std::cout<<cl.Time<ZC_Nanoseconds>()<<"             4   glVertexArrayVertexBuffers"<<std::endl;
+
+
+//     GLuint ebo;
+//     glCreateBuffers(1, &ebo);
+//     glNamedBufferStorage(ebo, 100, nullptr, 0);
+    
+//     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+//     glBindBuffer(GL_ARRAY_BUFFER, buf);
+
+//     GLuint vao1;
+//     glCreateVertexArrays(1, &vao1);
+//     glBindVertexArray(vao1);
+//     glEnableVertexAttribArray(0);
+//     glVertexAttribPointer(0, 3, GL_FLOAT, 0, 36, 0);
+//     glEnableVertexAttribArray(1);
+//     glVertexAttribPointer(1, 3, GL_FLOAT, 0, 36, (void*)12);
+//     glEnableVertexAttribArray(2);
+//     glVertexAttribPointer(2, 3, GL_FLOAT, 0, 36, (void*)24);
+//     GLuint vao2;
+//     glCreateVertexArrays(1, &vao2);
+//     glBindVertexArray(vao2);
+//     glEnableVertexAttribArray(0);
+//     glVertexAttribPointer(0, 3, GL_FLOAT, 0, 36, 0);
+//     glEnableVertexAttribArray(1);
+//     glVertexAttribPointer(1, 3, GL_FLOAT, 0, 36, (void*)12);
+//     glEnableVertexAttribArray(2);
+//     glVertexAttribPointer(2, 3, GL_FLOAT, 0, 36, (void*)24);
+
+//     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+//     glBindBuffer(GL_ARRAY_BUFFER, 0);
+//     glBindVertexArray(0);
+
+
+//     cl.Start();
+//     for (size_t i = 0; i < count; i++)
+//     {
+//         glBindProgramPipeline(1);
+//         //  first object
+//         glBindVertexArray(vao1);
+//         //  draw triangle
+//         //  second object
+//         glBindVertexArray(vao2);
+//         //  draw triangle
+        
+//         glBindProgramPipeline(1);
+//         //  first object
+//         glBindVertexArray(vao1);
+//         //  draw line
+//         //  second object
+//         glBindVertexArray(vao2);
+//         //  draw line
+//     }
+//     std::cout<<cl.Time<ZC_Nanoseconds>()<<"             5"<<std::endl;
+
+//     cl.Start();
+//     for (size_t i = 0; i < count; i++)
+//     {
+//         glBindVertexArray(vao1);
+//         //  first object
+//         glBindProgramPipeline(1);
+//         //  draw triangle
+//         glBindProgramPipeline(1);
+//         //  draw line
+
+//         glBindVertexArray(vao2);
+//         //  second object
+//         glBindProgramPipeline(1);
+//         //  draw triangle
+//         glBindProgramPipeline(1);
+//         //  draw line
+//     }
+//     std::cout<<cl.Time<ZC_Nanoseconds>()<<"             6"<<std::endl;
+// }

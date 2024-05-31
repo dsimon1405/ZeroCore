@@ -50,13 +50,13 @@ public:
 private:
     static inline std::forward_list<ShPInitSet> shProgs;
     
-    ZC_ShVertex shVertex;
-    ZC_ShFragment shFragment;
-    ZC_ShGeometry shGeometry;
+    ZC_ShVertex1 shVertex;
+    ZC_ShFragment1 shFragment;
+    ZC_ShGeometry1 shGeometry;
 
-    typedef typename ZC_ShVertex::Name VName;
-    typedef typename ZC_ShFragment::Name FName;
-    typedef typename ZC_ShGeometry::Name GName;
+    typedef typename ZC_ShVertex1::Name VName;
+    typedef typename ZC_ShFragment1::Name FName;
+    typedef typename ZC_ShGeometry1::Name GName;
     struct ShNames
     {
         VName vName;

@@ -6,7 +6,7 @@
 
 #include <map>
 
-struct ZC_ShFragment
+struct ZC_ShFragment1
 {
     enum Name
     {

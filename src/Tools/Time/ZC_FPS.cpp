@@ -44,8 +44,8 @@ float ZC_FPS::PreviousFrameTime() const noexcept
 
 void ZC_FPS::NeedDraw(bool needDraw)
 {
-    if (!upTextFPS) upTextFPS = CreateText();
-    upTextFPS->NeedDraw(needDraw);
+    if (needDraw && !upTextFPS) upTextFPS = CreateText();
+    if (upTextFPS) upTextFPS->NeedDraw(needDraw);
 }
 
 bool ZC_FPS::IsDrawing()

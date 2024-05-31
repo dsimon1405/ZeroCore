@@ -21,6 +21,10 @@ ZC_ShProg::ZC_ShProg(GLuint idV, GLuint idF, GLuint idG)
     }
     // int uniforms = 0;
     // glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &uniforms);
+
+    glDetachShader(id, idV);
+    glDetachShader(id, idF);
+    if (idG != 0) glDetachShader(id, idG);
 }
    
 ZC_ShProg::ZC_ShProg(ZC_ShProg&& shader) noexcept
@@ -41,7 +45,7 @@ ZC_ShProg::~ZC_ShProg()
 {
     glDeleteProgram(id);
 }
-
+//  add deactivate shader !!!!
 void ZC_ShProg::ActivateOpenGL() const
 {
     static GLuint activeId = 0;

@@ -2,7 +2,7 @@
 
 #include <ZC/File/ZC_File.h>
 
-ZC_Shader* ZC_ShGeometry::GetShader(Name name)    //  add here new
+ZC_Shader* ZC_ShGeometry1::GetShader(Name name)    //  add here new
 {
     auto shadersIter = shaders.find(name);
     if (shadersIter != shaders.end()) return &(shadersIter->second);

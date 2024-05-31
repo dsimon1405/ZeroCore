@@ -6,7 +6,7 @@
 
 #include <map>
 
-struct ZC_ShVertex
+struct ZC_ShVertex1
 {
     enum Name
     {

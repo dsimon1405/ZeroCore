@@ -5,7 +5,7 @@
 
 #include <map>
 
-struct ZC_ShGeometry
+struct ZC_ShGeometry1
 {
     enum Name
     {

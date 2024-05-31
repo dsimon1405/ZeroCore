@@ -2,12 +2,12 @@
 
 #include <ZC/File/ZC_File.h>
 
-typename ZC_ShFragment::Set ZC_ShFragment::GetSet(Name name)
+typename ZC_ShFragment1::Set ZC_ShFragment1::GetSet(Name name)
 {
     return GetVAOAndUniformData(name);
 }
 
-ZC_Shader* ZC_ShFragment::GetShader(Name name)    //  add here new
+ZC_Shader* ZC_ShFragment1::GetShader(Name name)    //  add here new
 {
     auto shadersIter = shaders.find(name);
     if (shadersIter != shaders.end()) return &(shadersIter->second);
@@ -26,7 +26,7 @@ ZC_Shader* ZC_ShFragment::GetShader(Name name)    //  add here new
     return &(shaders.emplace(name, ZC_Shader(ZC_Shader::ReadShaderFile(path.c_str(), GL_FRAGMENT_SHADER).pHead, GL_FRAGMENT_SHADER)).first->second);
 }
 
-typename ZC_ShFragment::Set ZC_ShFragment::GetVAOAndUniformData(Name name)    //  add here new
+typename ZC_ShFragment1::Set ZC_ShFragment1::GetVAOAndUniformData(Name name)    //  add here new
 {
     typedef typename ZC_TexSets::TextureName TName;
     typedef typename ZC_Uniform::NameType UnNT;
