@@ -50,7 +50,7 @@ protected:
     - _blY - bottom left Y coord of quad (window's pixel coords).
     - _width - quad's width (pixels).
     - _height - quad's height (pixels).
-    - needConnect - connects to events after cereaetion, calls ConnectMCW().
+    - needConnect - connects to events after creation, calls ConnectMCW().
     - _border - border it's a quad in wich must be you quad. It's uses for grouping several area's in one zone and minimize count of checking areas if them in other border.
         By default taking too large(more then window dimension, to avoid trecking it's size chenging) border quad same for all.
         Example, you have 10(10 heirs) buttons in 2 different quad areas (5 buttons in each area), to avoid check all 10 buttons on each event, set border,

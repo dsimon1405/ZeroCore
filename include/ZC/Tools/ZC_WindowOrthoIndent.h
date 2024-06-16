@@ -84,3 +84,87 @@ private:
     void ZC_WindowResized(float width, float height);
     void CalculateIndents(float width, float height);
 };
+
+
+
+struct ZC_WOIData
+{
+    float width;    // object's width in pixels.
+    float height;   // object's height in pixels.
+    /*
+    Value of horizontal indent from border of global window. If used IndentFlag:
+    - ZC_WOIF__X_Left_Pixel, ZC_WOIF__X_Right_Pixel -> value must be not negative, otherwise sets 0.f;
+    - ZC_WOIF__X_Left_Percent, ZC_WOIF__X_Right_Percent -> value must be 0.0f - 1.f (where 1.f is 100%);
+    - ZC_WOIF__X_Center -> value no metter.
+    */
+    float indentX;
+    /*
+    Value of vertival indent from border of global window. If used IndentFlag: 
+    - ZC_WOIF__Y_Top_Pixel, ZC_WOIF__Y_Bottom_Pixel -> value must be not negative, otherwise sets 0.f
+    - ZC_WOIF__Y_Top_Percent, ZC_WOIF__Y_Bottom_Percent -> value must be 0.0f - 1.f (where 1.f is 100%);
+    - ZC_WOIF__Y_Center -> value no metter.
+    */
+    float indentY;
+    //  Flags of indent horizontal(X) and vertical(Y) from border of global window to IGWindow. Must be set one flag for X and one flag for Y. Example: X_Left_Pixel | Y_Top_Pixel.
+    ZC_WindowOrthoIndentFlags indentFlags;
+};
+
+class ZC_WindowOrthoIndent1
+{
+public:
+    virtual ~ZC_WindowOrthoIndent1();
+    
+    //  Return objects width and height.
+    void GetSize(float& _width, float& _height);
+    //  Set new indent params and calls CalculateCurrentIndents().
+    void SetNewIndentParams(float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags);
+    //  Return indent params.
+    void GetIndentParams(float& _indentX, float& _indentY, ZC_WindowOrthoIndentFlags& _indentFlags);
+    //  Returns vector of X, Y indents.
+    ZC_Vec2<float> GetPosition();
+
+protected:
+    ZC_WOIData woiData;
+    ZC_Vec2<float> position;
+    
+    /*
+    Params:
+    - is_Y_ZeroPointOnTop - must be true for next Y axis object position into the window shema, if Y axis inverted - false:
+        x_0,  y_0  --------  x_max, y_0
+            |                     |
+            |                     |
+            |                     |
+        x_0, y_max -------- x_max, y_max 
+    - _width - objects width in pixels.
+    - _height - objects height in pixels.
+    - _indentX - value of horizontal indent from border of global window. If used IndentFlag:
+        ZC_WOIF__X_Left_Pixel, ZC_WOIF__X_Right_Pixel -> value must be not negative, otherwise sets 0.f;
+        ZC_WOIF__X_Left_Percent, ZC_WOIF__X_Right_Percent -> value must be 0.0f - 1.f (where 1.f is 100%);
+        ZC_WOIF__X_Center -> value no metter.
+    - _indentY - value of vertival indent from border of global window. If used IndentFlag: 
+        ZC_WOIF__Y_Top_Pixel, ZC_WOIF__Y_Bottom_Pixel -> value must be not negative, otherwise sets 0.f
+        ZC_WOIF__Y_Top_Percent, ZC_WOIF__Y_Bottom_Percent -> value must be 0.0f - 1.f (where 1.f is 100%);
+        ZC_WOIF__Y_Center -> value no metter.
+    - _indentFlags - flags of indent horizontal(X) and vertical(Y) from border of global window to IGWindow. Must be set one flag for X and one flag for Y. Example: X_Left_Pixel | Y_Top_Pixel.
+    */
+    ZC_WindowOrthoIndent1(bool _is_Y_ZeroPointOnTop, const ZC_WOIData& _woiData);
+    //  Makes copy of ZC_WindowOrthoIndent with all params, except ZC_upEC ecZC_WindowResized (connects for new copy).
+    ZC_WindowOrthoIndent1(const ZC_WindowOrthoIndent1& woi);
+    // ZC_WindowOrthoIndent(ZC_WindowOrthoIndent&& woi);
+
+    //  Set new objects width and height. Returns true, if data was changed, otherwise false.
+    bool SetNewSize(float _width, float _height);
+    //  Calculate currentIndentX, currentIndentY. Must be called to calculate indents onstart.
+    void CalculateCurrentIndents();
+
+private:
+    bool is_Y_ZeroPointOnTop;
+    ZC_EC ecZC_WindowResized;
+
+    //  override heirs who need
+    virtual void VCallAfterZC_WindowResizedWOI() {}
+
+    void CheckAndSetIndentData(float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indents);
+    void ZC_WindowResized(float width, float height);
+    void CalculateIndents(float width, float height);
+};

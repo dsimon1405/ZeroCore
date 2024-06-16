@@ -136,3 +136,145 @@ void ZC_WindowOrthoIndent::CalculateIndents(float windowWidth, float windowHeigh
     default: break;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ZC_WindowOrthoIndent1::~ZC_WindowOrthoIndent1()
+{
+    ecZC_WindowResized.Disconnect();
+}
+
+bool ZC_WindowOrthoIndent1::SetNewSize(float _width, float _height)
+{
+    if (woiData.width == _width && woiData.height == _height) return false;
+    woiData.width = _width;
+    woiData.height = _height;
+    CalculateCurrentIndents();
+    return true;
+}
+
+void ZC_WindowOrthoIndent1::GetSize(float& _width, float& _height)
+{
+    _width = woiData.width;
+    _height = woiData.height;
+}
+
+void ZC_WindowOrthoIndent1::SetNewIndentParams(float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags)
+{
+    CheckAndSetIndentData(_indentX, _indentY, _indentFlags);
+    CalculateCurrentIndents();
+}
+
+void ZC_WindowOrthoIndent1::GetIndentParams(float& _indentX, float& _indentY, ZC_WindowOrthoIndentFlags& _indentFlags)
+{
+    _indentX = woiData.indentX;
+    _indentY = woiData.indentY;
+    _indentFlags = _indentFlags;
+}
+
+ZC_Vec2<float> ZC_WindowOrthoIndent1::GetPosition()
+{
+    return position;
+}
+
+ZC_WindowOrthoIndent1::ZC_WindowOrthoIndent1(bool _is_Y_ZeroPointOnTop, const ZC_WOIData& _woiData)
+    : woiData(_woiData),
+    is_Y_ZeroPointOnTop(_is_Y_ZeroPointOnTop),
+    ecZC_WindowResized(ZC_Events::ConnectWindowResize({ &ZC_WindowOrthoIndent1::ZC_WindowResized, this }))
+{
+    CheckAndSetIndentData(woiData.indentX, woiData.indentY, woiData.indentFlags);
+    CalculateCurrentIndents();
+}
+
+ZC_WindowOrthoIndent1::ZC_WindowOrthoIndent1(const ZC_WindowOrthoIndent1& woi)
+    : woiData(woi.woiData),
+    position{ woi.position },
+    is_Y_ZeroPointOnTop(woi.is_Y_ZeroPointOnTop),
+    ecZC_WindowResized(ZC_Events::ConnectWindowResize({ &ZC_WindowOrthoIndent1::ZC_WindowResized, this }))
+{}
+
+// ZC_WindowOrthoIndent::ZC_WindowOrthoIndent(ZC_WindowOrthoIndent&& woi)
+//     : currentIndents{ woi.currentIndents[0], woi.currentIndents[1] },
+//     is_Y_ZeroPointOnTop(woi.is_Y_ZeroPointOnTop),
+//     width(woi.width),
+//     height(woi.height),
+//     indentX(woi.indentX),
+//     indentY(woi.indentY),
+//     indentFlags(woi.indentFlags)
+// {
+//     ecZC_WindowResized.NewConnection(std::move(woi.ecZC_WindowResized));
+// }
+
+void ZC_WindowOrthoIndent1::CalculateCurrentIndents()
+{
+    int windowWidth, windowHeight;
+    ZC_SWindow::GetSize(windowWidth, windowHeight);
+    CalculateIndents(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
+}
+
+void ZC_WindowOrthoIndent1::CheckAndSetIndentData(float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags)
+{
+    int _indentFlagX = 0;   //  find flag for X
+    if (_indentFlags & ZC_WOIF__X_Left_Pixel) _indentFlagX = ZC_WOIF__X_Left_Pixel;
+    else if (_indentFlags & ZC_WOIF__X_Left_Percent) _indentFlagX = _indentX >= 0.f && _indentX <= 1.f ? ZC_WOIF__X_Left_Percent : 0; //  indent for percent must be in diaposon [0,1]
+    else if (_indentFlags & ZC_WOIF__X_Right_Pixel) _indentFlagX = ZC_WOIF__X_Right_Pixel;
+    else if (_indentFlags & ZC_WOIF__X_Right_Percent) _indentFlagX = _indentX >= 0.f && _indentX <= 1.f ? ZC_WOIF__X_Right_Percent : 0; //  indent for percent must be in diaposon [0,1]
+    else if (_indentFlags & ZC_WOIF__X_Center) _indentFlagX = ZC_WOIF__X_Center;
+    assert(_indentFlagX != 0);  //  no valid data
+
+    int _indentFlagY = 0;
+    if (_indentFlags & ZC_WOIF__Y_Top_Pixel) _indentFlagY = ZC_WOIF__Y_Top_Pixel;
+    else if (_indentFlags & ZC_WOIF__Y_Top_Percent) _indentFlagY = _indentY >= 0.f && _indentY <= 1.f ? ZC_WOIF__Y_Top_Percent : 0;
+    else if (_indentFlags & ZC_WOIF__Y_Bottom_Pixel) _indentFlagY = ZC_WOIF__Y_Bottom_Pixel;
+    else if (_indentFlags & ZC_WOIF__Y_Bottom_Percent) _indentFlagY = _indentY >= 0.f && _indentY <= 1.f ? ZC_WOIF__Y_Bottom_Percent : 0;
+    else if (_indentFlags & ZC_WOIF__Y_Center) _indentFlagY = ZC_WOIF__Y_Center;
+    assert(_indentFlagY != 0);
+
+    woiData.indentFlags = static_cast<ZC_WindowOrthoIndentFlags>(_indentFlagX | _indentFlagY);
+
+    assert((_indentFlags - woiData.indentFlags) == 0);    //  flags have more than one X or more than one Y
+    
+    woiData.indentX = _indentX;
+    woiData.indentY = _indentY;
+}
+
+void ZC_WindowOrthoIndent1::ZC_WindowResized(float windowWidth, float windowHeight)
+{
+    CalculateIndents(windowWidth, windowHeight);
+    VCallAfterZC_WindowResizedWOI();
+}
+
+void ZC_WindowOrthoIndent1::CalculateIndents(float windowWidth, float windowHeight)
+{
+    switch (woiData.indentFlags & 0x1F) //  remove Y flag (0x1F -> ...00011111)
+    {   //  x indent
+    case ZC_WOIF__X_Left_Pixel: position[0] = woiData.indentX; break;
+    case ZC_WOIF__X_Left_Percent: position[0] = windowWidth * woiData.indentX; break;
+    case ZC_WOIF__X_Right_Pixel: position[0] = windowWidth - woiData.indentX - woiData.width; break;
+    case ZC_WOIF__X_Right_Percent: position[0] = windowWidth - (windowWidth * woiData.indentX) - woiData.width; break;
+    case ZC_WOIF__X_Center: position[0] = (windowWidth / 2.f) - (woiData.width / 2.f); break;
+    default: break;
+    }
+    switch (woiData.indentFlags >> 5 << 5)   //  remove X flag
+    {   //  y indent
+    case ZC_WOIF__Y_Top_Pixel: position[1] = is_Y_ZeroPointOnTop ? woiData.indentY : windowHeight - woiData.indentY - woiData.height; break;
+    case ZC_WOIF__Y_Top_Percent: position[1] = is_Y_ZeroPointOnTop ? windowHeight * woiData.indentY : windowHeight - (windowHeight * woiData.indentY) - woiData.height; break;
+    case ZC_WOIF__Y_Bottom_Pixel: position[1] = is_Y_ZeroPointOnTop ? windowHeight - woiData.indentY - woiData.height : woiData.indentY; break;
+    case ZC_WOIF__Y_Bottom_Percent: position[1] = is_Y_ZeroPointOnTop ? windowHeight - (windowHeight * woiData.indentY) - woiData.height : windowHeight * woiData.indentY; break;
+    case ZC_WOIF__Y_Center: position[1] = (windowHeight / 2.f) - (woiData.height / 2.f); break;
+    default: break;
+    }
+}

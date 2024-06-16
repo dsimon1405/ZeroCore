@@ -1,18 +1,15 @@
 #pragma once
 
-#include <ZC_Config.h>
 #include <ZC/Tools/Math/ZC_Math.h>
 #include <ZC/Tools/Container/ZC_DA.h>
-#ifdef ZC_ANDROID
-#include <list>
-#endif
 
 #include <glad/glad.h>
 
 //	Wrapper OpenGL buffer.
 struct ZC_Buffer
 {
-	ZC_Buffer(GLenum _type);
+	ZC_Buffer() = default;
+	ZC_Buffer(GLenum _type, GLuint _binding = 0);
 
 	ZC_Buffer(ZC_Buffer&& vbo) noexcept;
 	ZC_Buffer& operator = (ZC_Buffer&& vbo);
@@ -21,6 +18,8 @@ struct ZC_Buffer
 
 	void BindBuffer();
 	void UnbindBuffer();
+
+	static ZC_Buffer CreateAndFillStorage(GLuint _binding, GLsizeiptr bytesSize, const void* pData, GLbitfield flags);
 
 	/*
 	Stores data in a buffer or reserves space.
@@ -59,6 +58,9 @@ struct ZC_Buffer
 	*/
 	void GLNamedBufferSubData(GLintptr offset, GLsizeiptr bytesSize, const void* pData);
 
+	void GLBindBufferBase();
+	bool GLMapNamedBufferRange_Write(GLintptr offset, GLsizeiptr length, void* pData);
+
 	/*
 	Determines, from the maximum index of an element, the size of the element's type and the type of that element from open gl enum.
 
@@ -87,44 +89,11 @@ struct ZC_Buffer
 
 	GLuint id = 0;
 	GLenum type;
+	GLuint binding = 0;
 	
 private:
 	template<typename T>
 	static void FillTriangleElements(T* pElementsHead, ulong elementsSize, ulong quadsElementsCount);
-
-#ifdef ZC_ANDROID
-	struct Data
-	{
-		long offset;
-		char* pData;
-		long size;
-
-		char* pDataHead;
-		Data* pSamePrevious = nullptr;
-		Data* pSameNext = nullptr;
-
-        Data() = delete;
-		Data(long _size, char* _pData, char* _pDataHead,
-				long _offset = 0, Data* _pSamePrevious = nullptr) noexcept;
-
-		Data(const Data&) = delete;
-		ZC_Buffer::Data& operator = (const Data&) = delete;
-
-		Data(Data&& vboData) noexcept;
-		ZC_Buffer::Data& operator = (Data&& vboData) noexcept;
-
-		~Data() noexcept;
-	};
-
-	std::list<Data> datas;
-	GLenum usage = 0;
-
-	void ClearDatas() noexcept;
-    void AddData(long offset, long size, char* pData);
-	long Size() noexcept;
-
-    void Reload(GLuint _id);
-#endif
 };
 
 template<typename T>

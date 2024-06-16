@@ -4,11 +4,11 @@
 
 ZC_Pipeline::ZC_Pipeline(ZC_ShaderProgram* v, ZC_ShaderProgram* tc, ZC_ShaderProgram* te, ZC_ShaderProgram* g, ZC_ShaderProgram* f)
     : 
-    custID_V(v ? v->customID : -1),
-    custID_TC(tc ? tc->customID : -1),
-    custID_TE(te ? te->customID : -1),
-    custID_G(g ? g->customID : -1),
-    custID_F(f ? f->customID : -1)
+    custID_V(v ? v->customID : ZC_Shader_None),
+    custID_TC(tc ? tc->customID : ZC_Shader_None),
+    custID_TE(te ? te->customID : ZC_Shader_None),
+    custID_G(g ? g->customID : ZC_Shader_None),
+    custID_F(f ? f->customID : ZC_Shader_None)
 {
     glCreateProgramPipelines(1, &id);
     assert(id != 0);

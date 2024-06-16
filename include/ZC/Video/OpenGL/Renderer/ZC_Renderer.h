@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ZC_Render.h"
+#include <ZC/GUI/ZC_GUI.h>
 
 class ZC_Renderer : public ZC_UBOs
 {
@@ -12,7 +13,7 @@ public:
     static void EraseUBOs(ZC_UBO* pUbo);
     static void Add(ZC_Render* pRender);
     static void Erase(ZC_Render* pRender);
-    void Draw();
+    void Draw(ZC_GUI& gui);
     
 private:
     static inline ZC_Renderer* pRenderer;

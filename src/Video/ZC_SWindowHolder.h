@@ -4,6 +4,7 @@
 #include <Tools/Time/ZC_FPS.h>
 #include <ZC/Video/OpenGL/Renderer/ZC_Renderer.h>
 #include <Collision/ZC_MouseCollisionWindowController.h>
+#include <ZC/GUI/ZC_GUI.h>
 
 class ZC_SWindowHolder
 {
@@ -34,6 +35,8 @@ private:
     ZC_uptr<ZC_EventsHolder> upEventsHolder;
 	ZC_FPS fps;
     ZC_Renderer renderer;
+    ZC_GUI gui;
+
     ZC_MouseCollisionWindowController mcwc;
 
     void LoadShProgs();

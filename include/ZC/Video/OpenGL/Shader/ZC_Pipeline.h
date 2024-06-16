@@ -2,6 +2,8 @@
 
 #include "ZC_ShaderProgram.h"
 
+#define ZC_Shader_None -1
+
 class ZC_Pipeline
 {
 public:

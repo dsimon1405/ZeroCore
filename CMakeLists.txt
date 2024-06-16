@@ -147,11 +147,12 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_Viewport.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_GLBlend.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_GLDraw.cpp
-
+	
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_Pipeline.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShaderManager.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShaderProgram.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShaderPrograms.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShaderPath.cpp
     
 	${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_Shader.cpp
 	${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShProg.cpp
@@ -211,6 +212,15 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_TextWindowIntoScene.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindow.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindowController.cpp
+	
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_Button.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_EventManager.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_Obj.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ObjBorder.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ObjComposite.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_Window.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_WinMutable.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI.cpp
 	)
 
 #========================= include dirs

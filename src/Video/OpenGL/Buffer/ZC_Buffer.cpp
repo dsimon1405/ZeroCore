@@ -1,7 +1,10 @@
 #include <ZC/Video/OpenGL/Buffer/ZC_Buffer.h>
 
-ZC_Buffer::ZC_Buffer(GLenum _type)
-    : type(_type)
+#include <cstring>
+
+ZC_Buffer::ZC_Buffer(GLenum _type, GLuint _binding)
+    : type(_type),
+    binding(_binding)
 {
     static const ushort buffersSize = 2000;
     static GLuint buffers[buffersSize];
@@ -9,10 +12,28 @@ ZC_Buffer::ZC_Buffer(GLenum _type)
     if (buffersIndex == 0 || buffersIndex == buffersSize)
     {
         glCreateBuffers(buffersSize, buffers);
-        // glGenBuffers(buffersSize, buffers);
         buffersIndex = 0;
     }
     id = buffers[buffersIndex++];
+}
+
+ZC_Buffer::ZC_Buffer(ZC_Buffer&& b) noexcept
+    : id(b.id),
+    type(b.type),
+    binding(b.binding)
+{
+    b.id = 0;
+}
+
+ZC_Buffer& ZC_Buffer::operator = (ZC_Buffer&& b)
+{
+    if (id != 0) glDeleteBuffers(1, &id);
+    id = b.id;
+    type = b.type;
+    binding = b.binding;
+
+    b.id = 0;
+    return *this;
 }
 
 ZC_Buffer::~ZC_Buffer()
@@ -30,15 +51,16 @@ void ZC_Buffer::UnbindBuffer()
     glBindBuffer(type, 0);
 }
 
+ZC_Buffer ZC_Buffer::CreateAndFillStorage(GLuint _binding, GLsizeiptr bytesSize, const void* pData, GLbitfield flags)
+{
+    ZC_Buffer buf(GL_SHADER_STORAGE_BUFFER, _binding);
+    buf.GLNamedBufferStorage(bytesSize, pData, flags);
+    return buf;
+}
+
 void ZC_Buffer::GLNamedBufferData(GLsizeiptr bytesSize, const void* pData, GLenum _usage)
 {
     glNamedBufferData(id, bytesSize, pData, _usage);
-#ifdef ZC_ANDROID
-    usage = _usage;
-    ClearDatas();
-    char* pDataChar = reinterpret_cast<char*>(pData);
-    datas.emplace_back(bytesSize, pDataChar, pDataChar);
-#endif
 }
 
 void ZC_Buffer::GLNamedBufferStorage(GLsizeiptr bytesSize, const void* pData, GLbitfield flags)
@@ -49,9 +71,19 @@ void ZC_Buffer::GLNamedBufferStorage(GLsizeiptr bytesSize, const void* pData, GL
 void ZC_Buffer::GLNamedBufferSubData(GLintptr offset, GLsizeiptr bytesSize, const void* pData)
 {
     glNamedBufferSubData(id, offset, bytesSize, pData);
-#ifdef ZC_ANDROID
-    AddData(offset, bytesSize, reinterpret_cast<char *>(pData));
-#endif
+}
+
+void ZC_Buffer::GLBindBufferBase()
+{
+    glBindBufferBase(type, binding, id);
+}
+
+bool ZC_Buffer::GLMapNamedBufferRange_Write(GLintptr offset, GLsizeiptr length, void* pData)
+{
+    void* pMap = glMapNamedBufferRange(id, offset, length, GL_MAP_WRITE_BIT);
+    if (pData) std::memcpy(pMap, pData, length);
+    glUnmapNamedBuffer(id);
+    return pMap != nullptr;
 }
 
 void ZC_Buffer::GetElementsData(ulong maxElementsIndex, ulong& storingTypeSize, GLenum& rElementsType) noexcept
@@ -90,174 +122,3 @@ ZC_DA<uchar> ZC_Buffer::GetTriangleElements(ulong& rElementsCount, GLenum& rElem
     }
     return elements;
 }
-
-
-#ifdef ZC_PC
-ZC_Buffer::ZC_Buffer(ZC_Buffer&& buf) noexcept
-    : id(buf.id),
-    type(buf.type)
-{
-    buf.id = 0;
-}
-
-ZC_Buffer& ZC_Buffer::operator = (ZC_Buffer&& buf)
-{
-    if (id != 0) glDeleteBuffers(1, &id);
-    id = buf.id;
-    type = buf.type;
-
-    buf.id = 0;
-    return *this;
-}
-#elif defined ZC_ANDROID
-ZC_Buffer::ZC_Buffer(ZC_Buffer&& buf) noexcept
-    : id(buf.id),
-      type(buf.type),
-      datas(std::move(buf.datas)),
-      usage(buf.usage)
-{
-    buf.id = 0;
-}
-
-ZC_Buffer& ZC_Buffer::operator = (ZC_Buffer&& buf)
-{
-    if (id != 0) glDeleteBuffers(1, &id);
-    id = buf.id;
-    type = buf.type;
-    datas = std::move(buf.datas);
-    usage = buf.usage;
-
-    buf.id = 0;
-    return *this;
-}
-
-void ZC_Buffer::ClearDatas() noexcept
-{
-    for (auto& vboData : datas)
-    {
-        vboData.size = 0;
-    }
-    datas.clear();
-}
-
-void ZC_Buffer::AddData(long offset, long size, char* pData)
-{
-    auto emplacePosition = datas.end();
-    long endPos = offset + size;
-    for (auto vboDatasIter = datas.begin()->pData ? datas.begin() : ++datas.begin(); vboDatasIter != datas.end(); ++vboDatasIter)
-    {
-        long endPosIter = vboDatasIter->offset + vboDatasIter->size;
-        if (offset < vboDatasIter->offset && endPos >= endPosIter)
-        {
-            vboDatasIter->size = 0;
-            continue;
-        }
-        if (offset >= vboDatasIter->offset && offset < endPosIter)
-        {
-            vboDatasIter->size = offset - vboDatasIter->offset;
-            if (endPos < endPosIter)
-            {
-                long startPosOffset = size + vboDatasIter->size;
-                vboDatasIter = datas.emplace(++vboDatasIter,
-                                             Data(endPosIter - endPos,
-                                                         vboDatasIter->pData + startPosOffset,
-                                                         vboDatasIter->pDataHead,
-                                                         vboDatasIter->offset + startPosOffset,
-                                                         &*vboDatasIter));
-                emplacePosition = vboDatasIter;
-                (--vboDatasIter)->pSameNext = &*emplacePosition;
-                break;
-            }
-            if (endPos == endPosIter)
-            {
-                emplacePosition = ++vboDatasIter;
-                break;
-            }
-        }
-        if (endPos > vboDatasIter->offset && endPos <= endPosIter)
-        {
-            long startOffset = offset + size - vboDatasIter->offset;
-            vboDatasIter->offset += startOffset;
-            vboDatasIter->size -= startOffset;
-            emplacePosition = vboDatasIter;
-            break;
-        }
-    }
-    datas.emplace(emplacePosition, Data(size, pData, pData, offset));
-    for (auto vboDatasIter = datas.begin()->pData ? datas.begin() : ++datas.begin(); vboDatasIter != datas.end();)
-    {
-        vboDatasIter = vboDatasIter->size == 0 ? datas.erase(vboDatasIter) : ++vboDatasIter;
-    }
-}
-
-long ZC_Buffer::Size() noexcept
-{
-    long result = 0;
-    for (auto& data : datas) result += data.size;
-    return result;
-}
-
-void ZC_Buffer::Reload(GLuint _id)
-{
-    id = _id;
-    if (datas.empty()) return;
-    glBindBuffer(type, id);
-    auto vboDatasIter = datas.begin();
-    glBufferData(type, vboDatasIter->size, vboDatasIter->pData, usage);
-    for (++vboDatasIter; vboDatasIter != datas.end(); ++vboDatasIter)
-    {
-        glBufferSubData(type, vboDatasIter->offset, vboDatasIter->size, vboDatasIter->pData);
-    }
-}
-
-//  Data
-ZC_Buffer::Data::Data(long _size, char* _pData, char* _pDataHead,
-                        long _offset, Data* _pSamePrevious) noexcept
-    : offset(_offset),
-      pData(_pData),
-      size(_size),
-      pDataHead(_pDataHead),
-      pSamePrevious(_pSamePrevious)
-{}
-
-ZC_Buffer::Data::Data(Data&& vboData) noexcept
-    : Data(vboData.size, vboData.pData, vboData.pDataHead, vboData.offset, vboData.pSamePrevious)
-{
-    pSameNext = vboData.pSameNext;
-
-    vboData.pSameNext = nullptr;
-    vboData.pSamePrevious = nullptr;
-    vboData.pDataHead = nullptr;
-}
-
-ZC_Buffer::Data& ZC_Buffer::Data::operator = (Data&& vboData) noexcept
-{
-    size = vboData.size;
-    pData = vboData.pData;
-    pDataHead = vboData.pDataHead;
-    offset = vboData.offset;
-    pSamePrevious = vboData.pSamePrevious;
-    pSameNext = vboData.pSameNext;
-
-    vboData.pSameNext = nullptr;
-    vboData.pSamePrevious = nullptr;
-    vboData.pDataHead = nullptr;
-    return *this;
-}
-
-ZC_Buffer::Data::~Data() noexcept
-{
-    if (pSameNext)
-    {
-        pSameNext->pSamePrevious = pSamePrevious;
-        pDataHead = nullptr;
-    }
-    if (pSamePrevious)
-    {
-        pSamePrevious->pSameNext = pSameNext;
-        pDataHead = nullptr;
-    }
-
-    delete[] pDataHead;
-}
-#endif

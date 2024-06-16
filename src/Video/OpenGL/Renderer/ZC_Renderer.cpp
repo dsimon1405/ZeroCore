@@ -3,9 +3,10 @@
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 #include <ZC/Video/OpenGL/ZC_GLBlend.h>
 #include <ZC_Config.h>
-#ifdef ZC_IMGUI
-#include <ZC_IGWindow.h>
-#endif
+// #ifdef ZC_IMGUI
+// #include <ZC_IGWindow.h>
+// #endif
+#include <ZC/GUI/ZC_GUI.h>
 
 #include <cassert>
 
@@ -79,86 +80,10 @@ void ZC_Renderer::Erase(ZC_Render* pRender)
 //     funcSwapBuffer();
 // }
 
-#include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
-struct Data
-{
-    float width, height;
-    ZC_Vec2<float> uv[4];
-};
 
-ZC_ShProg* pShP;
-GLuint vaoEmpty = 0,
-    bufVertex = 0,  //  with point coords (bl corner of triangle)
-    bufData = 0;    //  buffer for structs Data
-ZC_Texture tex;
 
-struct DrawArraysIndirectCommand
-{
-    GLuint count,
-        instanceCount,
-        first,
-        baseInstance;
-};
-GLuint cmdBuf = 0;
-// GLuint testBuf = 0;
 
-void Create()
-{
-        //  sh prog
-    ZC_Shader vs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/build/assets/ZC/shaders/GUI/gui.vs", GL_VERTEX_SHADER).pHead, GL_VERTEX_SHADER);
-    ZC_Shader gs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/build/assets/ZC/shaders/GUI/gui.gs", GL_GEOMETRY_SHADER).pHead, GL_GEOMETRY_SHADER);
-    ZC_Shader fs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/build/assets/ZC/shaders/GUI/gui.fs", GL_FRAGMENT_SHADER).pHead, GL_FRAGMENT_SHADER);
-    pShP = new ZC_ShProg(vs.id, fs.id, gs.id);
-
-        //  vao empty
-    glCreateVertexArrays(1, &vaoEmpty);
-
-        //  buffers
-            //  vertex
-    float length = 50.f,
-        indent = 100;
-    ZC_Vec2<float> verts[] { {indent, indent}, {indent + length + 5, indent} };
-    glCreateBuffers(1, &bufVertex);
-    glNamedBufferStorage(bufVertex, sizeof(verts), verts, 0);
-            //  data
-    Data data[]
-    {
-        //  first
-        {.width = length, .height = length, .uv{ {0.f, 0.f}, {.5f, 0.f}, {0.f, 1.f}, {.5f, 1.f} }},  //  bl, br, tl, tr  geom -> triangle_strip
-        //  second
-        {.width = length, .height = length, .uv{ {.5f, 0.f}, {1.f, 0.f}, {.5f, 1.f}, {1.f, 1.f} }}
-    };
-    glCreateBuffers(1, &bufData);
-    glNamedBufferStorage(bufData, sizeof(data), data, 0);
-        
-        //  texture
-    tex = ZC_Texture::LoadTexture2D("/home/dmitry/Загрузки/awesomeface.png");
-
-        //  draw indirect buffer
-    DrawArraysIndirectCommand daic[]
-    {
-        {
-            .count = 1,                 //  for (int i = 0; i < instanceCount; ++i) {  
-            .instanceCount = 2,         //      instanceID = i;
-            .first = 0,                 //      glDrawArrays(mode, first, count); }
-            .baseInstance = 0   //  unused
-        },
-        {
-            .count = 1,                 //  for (int i = 0; i < instanceCount; ++i) {  
-            .instanceCount = 1,         //      instanceID = i;
-            .first = 0,                 //      glDrawArrays(mode, first, count); }
-            .baseInstance = 0   //  unused
-        }
-    };
-    glCreateBuffers(1, &cmdBuf);
-    glNamedBufferStorage(cmdBuf, sizeof(daic), daic, GL_DYNAMIC_STORAGE_BIT);
-
-    // int testData[]{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-    // glCreateBuffers(1, &testBuf);
-    // glNamedBufferStorage(testBuf, sizeof(testData), testData, GL_DYNAMIC_STORAGE_BIT);
-};
-
-void ZC_Renderer::Draw()
+void ZC_Renderer::Draw(ZC_GUI& gui)
 {
     this->UpdateUBO();
 
@@ -166,40 +91,311 @@ void ZC_Renderer::Draw()
     for (auto curIter = renders.begin(); curIter != renders.end(); )
         curIter = (*curIter)->Draw() ? ++curIter : renders.erase_after(prevIter);
 
+
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    gui.Draw();
+
     //  my rendering finished, make openGL state default
     ZC_VAO::UnbindVertexArray();
     ZC_GLBlend::Disable();
     ZC_Framebuffer::Unbind();
     
-
-    static bool first = true;
-    if (first)
-    {
-        Create();
-        first = false;
-    }
-
-    glBindVertexArray(vaoEmpty);
-
-        //  geometry
-
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 10, bufVertex);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 11, bufData);
-    // glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 12, testBuf);
-    pShP->ActivateOpenGL();
-    tex.GLBindTextureUnit(0);   //  0 -> binding from GLSL, not location
-
-    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, cmdBuf);
-    glMultiDrawArraysIndirect(GL_POINTS, 0, 2, 0);
-    // glMultiDrawArraysIndirect(GL_POINTS, (const void*)sizeof(DrawArraysIndirectCommand), 1, 0);
-    
-    // int testData[]{ -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2 };
-    // glGetNamedBufferSubData(testBuf, 0, sizeof(testData), &testData);
-
     funcSwapBuffer();
 }
 
 
+
+
+//                         //                      draw arrays indirect
+// #include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
+// struct Data
+// {
+//     float width, height;
+//     ZC_Vec2<float> uv[4];
+// };
+
+// ZC_ShProg* pShP;
+// GLuint vaoEmpty = 0,
+//     bufVertex = 0,  //  with point coords (bl corner of triangle)
+//     bufData = 0;    //  buffer for structs Data
+// ZC_Texture tex;
+
+// struct DrawArraysIndirectCommand
+// {
+//     GLuint count,
+//         instanceCount,
+//         first,
+//         baseInstance;
+// };
+// GLuint cmdBuf = 0;
+// // GLuint testBuf = 0;
+
+//         #include <ZC/Tools/Time/ZC_Clock.h>
+//         #include <iostream>
+
+// void Create()
+// {
+//         //  sh prog
+//     ZC_Shader vs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/build/assets/ZC/shaders/GUI/gui.vs", GL_VERTEX_SHADER).pHead, GL_VERTEX_SHADER);
+//                     //      vert + geon + frag
+//     ZC_Shader gs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/build/assets/ZC/shaders/GUI/gui.gs", GL_GEOMETRY_SHADER).pHead, GL_GEOMETRY_SHADER);
+//     ZC_Shader fs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/build/assets/ZC/shaders/GUI/gui.fs", GL_FRAGMENT_SHADER).pHead, GL_FRAGMENT_SHADER);
+//     pShP = new ZC_ShProg(vs.id, fs.id, gs.id);
+//     // pShP = new ZC_ShProg(vs.id, fs.id, 0);
+
+//         //  vao empty
+//     glCreateVertexArrays(1, &vaoEmpty);
+
+//         //  buffers
+//             //  vertex
+//     float length = 50.f,
+//         indent = 100;
+//     ZC_Vec2<float> verts[]
+//     {
+//         //  first
+//         {indent, indent}, {indent + length + 5, indent},
+//         //  second
+//         {indent, indent + 200}, {indent + length + 5, indent + 200},
+//         //  second
+//         {0, 0}, {length + 5, 0}
+//     };
+//     glCreateBuffers(1, &bufVertex);
+//     glNamedBufferStorage(bufVertex, sizeof(verts), verts, 0);
+//             //  data
+//     Data data[]
+//     {
+//         //  first
+//         {.width = length, .height = length, .uv{ {0.f, 0.f}, {.5f, 0.f}, {0.f, 1.f}, {.5f, 1.f} }},  //  bl, br, tl, tr  geom -> triangle_strip
+//         {.width = length, .height = length, .uv{ {.5f, 0.f}, {1.f, 0.f}, {.5f, 1.f}, {1.f, 1.f} }},
+//         //  second
+//         {.width = length, .height = length, .uv{ {0.f, 0.f}, {.5f, 0.f}, {0.f, 1.f}, {.5f, 1.f} }},  //  bl, br, tl, tr  geom -> triangle_strip
+//         {.width = length, .height = length, .uv{ {.5f, 0.f}, {1.f, 0.f}, {.5f, 1.f}, {1.f, 1.f} }},
+//         //  second
+//         {.width = length, .height = length, .uv{ {0.f, 0.f}, {.5f, 0.f}, {0.f, 1.f}, {.5f, 1.f} }},  //  bl, br, tl, tr  geom -> triangle_strip
+//         {.width = length, .height = length, .uv{ {.5f, 0.f}, {1.f, 0.f}, {.5f, 1.f}, {1.f, 1.f} }},
+//     };
+//     glCreateBuffers(1, &bufData);
+//     glNamedBufferStorage(bufData, sizeof(data), data, 0);
+        
+//         //  texture
+//     tex = ZC_Texture::LoadTexture2D("/home/dmitry/Загрузки/awesomeface.png");
+
+//     DrawArraysIndirectCommand daic[]
+//     {
+//         //     //      vert + frag
+//         // {
+//         //     .count = 4,                 //  for (int i = 0; i < instanceCount; ++i) {  
+//         //     .instanceCount = 2,         //      instanceID = i;
+//         //     .first = 0,                 //      glDrawArrays(mode, first, count); }
+//         //     .baseInstance = 0   //  unused
+//         // },
+//             //      vert + geon + frag
+//         {
+//             //  draw points throught count
+//             .count = 2,                 //  for (int i = 0; i < instanceCount; ++i) {  
+//             .instanceCount = 1,         //      instanceID = i;
+//             .first = 0,                 //      glDrawArrays(mode, first, count); }
+//             .baseInstance = 0   //  use that unused variable to store start index in buffers: data and vertex
+//         },
+//         {
+//             .count = 1,                 //  for (int i = 0; i < instanceCount; ++i) {  
+//             .instanceCount = 0,         //      instanceID = i;
+//             .first = 1,                 //      glDrawArrays(mode, first, count); }
+//             .baseInstance = 2   //  use that unused variable to store start index in buffers: data and vertex
+//         },
+//         {
+//             .count = 2,                 //  for (int i = 0; i < instanceCount; ++i) {  
+//             .instanceCount = 1,         //      instanceID = i;
+//             .first = 0,                 //      glDrawArrays(mode, first, count); }
+//             .baseInstance = 4   //  use that unused variable to store start index in buffers: data and vertex
+//         }
+//     };
+//     glCreateBuffers(1, &cmdBuf);
+//     glNamedBufferStorage(cmdBuf, sizeof(daic), daic, GL_DYNAMIC_STORAGE_BIT);
+// };
+
+// //  geom count:                 1520    920
+// //  geom instanceCount:         1530    910
+// //  non geom count:             900     450
+// //  non geom instanceCount:     1500    900
+
+// void ZC_Renderer::Draw()
+// {
+//     this->UpdateUBO();
+
+//     auto prevIter = renders.before_begin();
+//     for (auto curIter = renders.begin(); curIter != renders.end(); )
+//         curIter = (*curIter)->Draw() ? ++curIter : renders.erase_after(prevIter);
+
+//     //  my rendering finished, make openGL state default
+//     ZC_VAO::UnbindVertexArray();
+//     ZC_GLBlend::Disable();
+//     ZC_Framebuffer::Unbind();
+    
+
+//     static bool first = true;
+//     if (first)
+//     {
+//         Create();
+//         first = false;
+//     }
+
+//     glBindVertexArray(vaoEmpty);
+
+//     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 10, bufVertex);
+//     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 11, bufData);
+//     pShP->ActivateOpenGL();
+//     tex.GLBindTextureUnit(0);   //  0 -> binding from GLSL, not location
+
+//     glBindBuffer(GL_DRAW_INDIRECT_BUFFER, cmdBuf);
+
+//     // glMultiDrawArraysIndirect(GL_TRIANGLE_STRIP, 0, 2, 0);
+//     glMultiDrawArraysIndirect(GL_POINTS, 0, 3, 0);
+
+//     // glMultiDrawArraysIndirect(GL_POINTS, (const void*)sizeof(DrawArraysIndirectCommand), 1, 0);
+    
+
+//     funcSwapBuffer();
+// }
+
+
+
+
+
+
+
+// //                          //      glMultiDrawElementsIndirect
+
+// #include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
+// struct Vertex
+// {
+//     float x, y;
+//     float u, v;
+// };
+// struct Data
+// {
+//     float posX, posY;
+// };
+
+// ZC_ShProg* pShP;
+// GLuint vaoEmpty = 0,
+//     bufVertex = 0,  //  with point coords (bl corner of triangle)
+//     bufData = 0,    //  buffer for structs Data
+//     bufElements = 0;
+// ZC_Texture tex;
+
+// struct DrawElementsIndirectCommand
+// {
+//     GLuint count,
+//         instanceCount,
+//         firstIndex,
+//         baseVertex,
+//         baseInstance;
+// };
+// GLuint cmdBuf = 0;
+
+// void Create()
+// {
+//         //  sh prog
+//     ZC_Shader vs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/ZeroCore/src/Video/OpenGL/Renderer/test.vs", GL_VERTEX_SHADER).pHead, GL_VERTEX_SHADER);
+//     ZC_Shader fs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/ZeroCore/src/Video/OpenGL/Renderer/test.fs", GL_FRAGMENT_SHADER).pHead, GL_FRAGMENT_SHADER);
+//     pShP = new ZC_ShProg(vs.id, fs.id, 0);
+
+//         //  vao empty
+//     glCreateVertexArrays(1, &vaoEmpty);
+    
+//         //  buffers
+//             //  vertex
+//     Vertex verts[]
+//     { 
+//         0.f,      0.f,      0.f, 0.f,            //  bl
+//         100.f,    0.f,      1.f, 0.f,            //  br
+//         100.f,  100.f,      1.f, 1.f,            //  tr
+//         0.f,    100.f,      0.f, 1.f             //  tl
+//     };
+//     glCreateBuffers(1, &bufVertex);
+//     glNamedBufferStorage(bufVertex, sizeof(verts), verts, 0);
+//             //  elements
+//     GLubyte elmts[]
+//     {
+//         0,1,2,
+//         0,2,3
+//     };
+//     glCreateBuffers(1, &bufElements);
+//     glNamedBufferStorage(bufElements, sizeof(elmts), elmts, 0);
+//             //  data
+//     float indent = 100;
+//     Data data[]
+//     {
+//         indent, indent, //  first
+//     };
+//     glCreateBuffers(1, &bufData);
+//     glNamedBufferStorage(bufData, sizeof(data), data, 0);
+        
+//         //  texture
+//     tex = ZC_Texture::LoadTexture2D("/home/dmitry/Загрузки/awesomeface.png");
+
+//     DrawElementsIndirectCommand deic[]
+//     {
+//         {
+//             .count = 6,     //  elements count
+//             .instanceCount = 1,
+//             .firstIndex = 0,
+//             .baseVertex = 0,
+//             .baseInstance = 0
+//         }
+//     };
+//     glCreateBuffers(1, &cmdBuf);
+//     glNamedBufferStorage(cmdBuf, sizeof(deic), deic, 0);
+// };
+
+// void ZC_Renderer::Draw()
+// {
+//     this->UpdateUBO();
+
+//     auto prevIter = renders.before_begin();
+//     for (auto curIter = renders.begin(); curIter != renders.end(); )
+//         curIter = (*curIter)->Draw() ? ++curIter : renders.erase_after(prevIter);
+
+//     //  my rendering finished, make openGL state default
+//     ZC_VAO::UnbindVertexArray();
+//     ZC_GLBlend::Disable();
+//     ZC_Framebuffer::Unbind();
+    
+
+//     static bool first = true;
+//     if (first)
+//     {
+//         Create();
+//         first = false;
+//     }
+
+//     glBindVertexArray(vaoEmpty);
+
+
+//     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, bufVertex);
+//     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, bufData);
+//     pShP->ActivateOpenGL();
+//     tex.GLBindTextureUnit(0);   //  0 -> binding from GLSL, not location
+
+//     glVertexArrayElementBuffer(vaoEmpty, bufElements);
+//     glBindBuffer(GL_DRAW_INDIRECT_BUFFER, cmdBuf);
+
+//     glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_BYTE, 0, 1, 0);
+
+//     funcSwapBuffer();
+// }
+
+
+
+
+
+
+
+
+
+//                                  read pixel storie
 // #include <ZC/Video/ZC_SWindow.h>
 // #include <ZC/Tools/Console/ZC_cout.h>
 // void ZC_Renderer::Draw()
@@ -235,6 +431,9 @@ void ZC_Renderer::Draw()
 
 //     funcSwapBuffer();
 // }
+
+
+
 
 
 

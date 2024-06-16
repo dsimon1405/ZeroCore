@@ -91,21 +91,42 @@
 
 
 
-//                          ssbo withought vao
+// //                          ssbo withought vao
+// #version 460 core
+
+//     //  in
+// layout (location = 0) in In
+// {
+//     vec2 texCoords;
+// };
+
+// layout (location = 0, binding = 0) uniform sampler2D sampTex;
+
+//     //  out
+// out vec4 FragColor;
+
+// void main()
+// {
+//     FragColor = texture(sampTex, texCoords);
+// }
+
+
+
+
+
+//                          //      glMultiDrawElementsIndirect
 #version 460 core
 
-    //  in
-layout (location = 0) in In
+layout (location = 0) in inF
 {
-    vec2 texCoords;
+    vec2 uv;
 };
 
-layout (location = 0, binding = 0) uniform sampler2D sampTex;
+layout (location = 0, binding = 0) uniform sampler2D texColor;
 
-    //  out
 out vec4 FragColor;
 
 void main()
 {
-    FragColor = texture(sampTex, texCoords);
+    FragColor = texture(texColor, uv);
 }

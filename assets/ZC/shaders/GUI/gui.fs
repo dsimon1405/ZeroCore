@@ -1,19 +1,43 @@
 #version 460 core
-
-layout (location = 0) in inData
+//  in
+struct ZC_GUI_Border
 {
-    vec2 uv;
+    vec2 bl;     //  coord of frame border, to avoid drawing objects out of window
+    vec2 tr;
 };
+layout (std430, binding = 0) readonly buffer InBorder { ZC_GUI_Border borders[]; } inBorder;
+
+layout (location = 0) in InF
+{
+    flat int borderIndex;    //  if -1, don't need border check
+    flat uint textureIndex;
+    vec2 uv;
+} inF;
 
 layout (location = 0, binding = 0) uniform sampler2D texColor;
-
-out vec4 FragColor;
+    
+//  out
+layout (location = 0) out vec4 FragColor;
 
 void main()
 {
-    FragColor = texture(texColor, uv);
+    if (inF.borderIndex != -1)   //  gl_FragCoord.x = window's width, gl_FragCoord.y = window's height, in pixels
+    {
+        ZC_GUI_Border border = inBorder.borders[inF.borderIndex];
+        if (border.bl.x > gl_FragCoord.x || border.bl.y > gl_FragCoord.y || border.tr.x < gl_FragCoord.x || border.tr.y < gl_FragCoord.y) discard; 
+    }
+    FragColor = texture(texColor, inF.uv);
+    if (FragColor.a == 0) discard;
 }
 
+
+
+
+
+
+
+
+//      its text shader
 // #version 460 core
 
 // in vec2 vTexCoords;

@@ -5,15 +5,18 @@
 
 #include <vector>
 
+
 class ZC_ShaderManager
 {
 public:
-    ~ZC_ShaderManager();
+    ZC_ShaderManager() = delete;
 
-    bool LoadShaderPrograms(const std::vector<ZC_ShaderInput>& vertex, const std::vector<ZC_ShaderInput>& tessControl,
+    static void Clear();
+    static bool LoadShaderPrograms(const std::vector<ZC_ShaderInput>& vertex, const std::vector<ZC_ShaderInput>& tessControl,
         const std::vector<ZC_ShaderInput>& tessEvaluation, const std::vector<ZC_ShaderInput>& geometry, const std::vector<ZC_ShaderInput>& fragment);
+    static bool LoadShaderProgram(const ZC_ShaderInput& shaderInput, GLenum type);
 
-    //  Params is customID of loaded shader programs.
+    //  Params is customID of loaded shader programs. If no shader in pipeline set ZC_Shader_None.
     static ZC_Pipeline* GetPipeLine(int custID_V, int custID_TC, int custID_TE, int custID_G, int custID_F);
 
 private:

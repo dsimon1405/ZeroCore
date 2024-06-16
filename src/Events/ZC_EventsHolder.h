@@ -2,6 +2,7 @@
 
 #include "Button/ZC_ButtonHolder.h"
 #include "ZC_Mouse.h"
+#include <ZC/GUI/ZC_GUI_EventManager.h>
 
 struct ZC_Events;
 
@@ -13,7 +14,7 @@ public:
     
     virtual ~ZC_EventsHolder();
 
-    virtual bool PollEvents(float previousFrameTime) = 0;
+    virtual bool PollEvents(float previousFrameTime, ZC_GUI_EventManager& gui_eventManager) = 0;
 
     void GetCursorPosition(float& posX, float& posY);
 

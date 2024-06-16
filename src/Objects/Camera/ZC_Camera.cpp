@@ -62,6 +62,12 @@ const ZC_Mat4<float>* ZC_Camera::GetPerspectiveView()
     return &(uboSet.perspView);
 }
 
+const ZC_Mat4<float>* ZC_Camera::GetOrtho()
+{
+    this->OrthoUpdate();
+    return &(uboSet.ortho);
+}
+
 void ZC_Camera::UboUpdate()
 {
     bool perspNeedUpdate = this->PerspectiveUpdate(),

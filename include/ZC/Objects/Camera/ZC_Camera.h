@@ -21,6 +21,7 @@ public:
     //  Returns the camera that last called MakeActive(). Used to get the camera status.
     static ZC_Camera* GetActiveCamera();
     const ZC_Mat4<float>* GetPerspectiveView();
+    const ZC_Mat4<float>* GetOrtho();
 
 private:
     struct UboSet   //  structure for ubo sub data
