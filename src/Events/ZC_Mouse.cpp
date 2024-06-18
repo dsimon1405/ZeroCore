@@ -1,6 +1,7 @@
 #include "ZC_Mouse.h"
 
 #include <ZC/Events/ZC_Events.h>
+#include <ZC/GUI/ZC_GUI.h>
 
 void ZC_Mouse::Init()
 {
@@ -40,8 +41,12 @@ void ZC_Mouse::MouseMove(float _cursorPosX, float _cursorPosY, float _cursorRelX
     cursorPosY = _cursorPosY;
     cursorRelX += _cursorRelX;
     cursorRelY += _cursorRelY;
-    // sigMove.CallLastConnected(cursorPosX, cursorPosY, _cursorRelX, _cursorRelY, time);
-    sigMove(cursorPosX, cursorPosY, _cursorRelX, _cursorRelY, time);
+    if (ZC_GUI::pGUI)
+    {
+        mayCallSigMove = ZC_GUI::pGUI->eventManager.CursoreMove(cursorPosX, cursorPosY, cursorRelX, cursorRelY, time);
+        if (mayCallSigMove) sigMove(cursorPosX, cursorPosY, _cursorRelX, _cursorRelY, time);
+    }
+    else sigMove(cursorPosX, cursorPosY, _cursorRelX, _cursorRelY, time);
 }
 
 void ZC_Mouse::MouseScroll(float horizontal, float vertical, float time)
@@ -56,7 +61,7 @@ void ZC_Mouse::MoveOnceInFrame(float time)
     if (cursorRelX != 0.f || cursorRelY != 0.f)
     {
         // sigMoveOnceInFrame.CallLastConnected(cursorPosX, cursorPosY, cursorRelX, cursorRelY, time);
-        sigMoveOnceInFrame(cursorPosX, cursorPosY, cursorRelX, cursorRelY, time);
+        if (mayCallSigMove) sigMoveOnceInFrame(cursorPosX, cursorPosY, cursorRelX, cursorRelY, time);
         cursorRelX = 0.f;
         cursorRelY = 0.f;
     }

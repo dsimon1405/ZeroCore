@@ -4,21 +4,22 @@ struct ZC_GUI_Window;
 
 struct ZC_GUI_EventObj
 {
-
     virtual ~ZC_GUI_EventObj() = default;
     //  return true on collision
     virtual bool VMakeCursorCollision_EO(float x, float y, ZC_GUI_Window*& rpWindow, ZC_GUI_EventObj*& rpObj)  { return false; }
     //  retrurn true if had collision (if window, collision checks only if background drawing) 
     virtual bool VCheckCursorCollision_EO(float x, float y) { return false; }
 
-    virtual bool VIsMovable_EO() { return false; }
+    // virtual bool VIsMovable_EO() { return false; }
 
     virtual void VCursorCollisionStart_EO(float time) {}
     virtual void VCursorCollisionEnd_EO(float time) {}
     virtual void VCursoreMove_EO(float x, float y, float rel_x, float rel_y, float time) {}
-    virtual void VLeftButtonDown_EO(float time) {}
+        //  must return true, if override
+    virtual bool VLeftButtonDown_EO(float time) { return false; }
     virtual void VLeftButtonUp_EO(float time) {}
-    virtual void VRightButtonDown_EO(float time) {}
+        //  must return true, if override
+    virtual bool VRightButtonDown_EO(float time) { return false; }
     virtual void VRightButtonUp_EO(float time) {}
     virtual void VScroll_EO(float vertical, float time) {}
 

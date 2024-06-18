@@ -4,9 +4,7 @@
 
 ZC_GUI_Button::ZC_GUI_Button(float width, float height)
     : ZC_GUI_Obj(ZC_GUI_ObjData{.width = width, .height = height, .depth = ZC_GUI_Depth::button, .uv = {.bl{0.f, 0.f}, .tr{1.f,1.f}}})
-{
-
-}
+{}
 
 bool ZC_GUI_Button::VMakeCursorCollision_EO(float x, float y, ZC_GUI_Window*& rpWindow, ZC_GUI_EventObj*& rpObj)
 {

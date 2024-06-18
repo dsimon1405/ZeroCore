@@ -1,57 +1,68 @@
 #include <ZC/GUI/ZC_GUI_EventManager.h>
 
-void ZC_GUI_EventManager::AddWindow(bool isStacionar, ZC_GUI_EventObj* pWindow)
+#include <ZC/Video/ZC_SWindow.h>
+
+void ZC_GUI_EventManager::ChangeActivity(bool active)
 {
-    isStacionar ? stacionarWins.emplace_back(pWindow) : openableWins.emplace_back(pWindow);
+    isActive = active;
 }
 
-void ZC_GUI_EventManager::EraseWindow(bool isStacionar, ZC_GUI_EventObj* pWindow)
+void ZC_GUI_EventManager::AddWindow(ZC_GUI_Window* pWindow)
+{   //  choose stacionar window or openable, and if window drawing, add in front of list, otherwise in back
+    if (pWindow->IsStacionar()) pWindow->VIsDrawing_W() ? stacionarWins.emplace_front(pWindow) : stacionarWins.emplace_back(pWindow);
+    else pWindow->VIsDrawing_W() ? openableWins.emplace_front(pWindow) : openableWins.emplace_back(pWindow);
+}
+
+void ZC_GUI_EventManager::EraseWindow(ZC_GUI_Window* pWindow)
 {
-    isStacionar ? std::erase(stacionarWins, pWindow) : std::erase(openableWins, pWindow);
+    std::erase(pWindow->IsStacionar() ? stacionarWins : openableWins, pWindow);
+}
+
+void ZC_GUI_EventManager::UpdateWindowDrawState(ZC_GUI_Window* pWindow)
+{       //    return true, if was changed list
+    auto lambResetWindow = [pWindow](std::list<ZC_GUI_Window*>& rWins, bool empl_front)
+    {
+        if ((empl_front && rWins.front() == pWindow) || (!empl_front && rWins.back() == pWindow)) return false;
+        std::erase(rWins, pWindow);
+        empl_front ? rWins.emplace_front(pWindow) : rWins.emplace_back(pWindow);
+        return true;
+    };
+        //  if window is drawing, set it to the end of list
+    if (!pWindow->VIsDrawing_W())
+    {
+        if (lambResetWindow(pWindow->IsStacionar() ? stacionarWins : openableWins, false)) UpdateCursorCollision();
+    }
+    else
+    {       //  set window to the front of list
+        if (lambResetWindow(pWindow->IsStacionar() ? stacionarWins : openableWins, true)) UpdateCursorCollision();
+        pWindow->SetFocuseDepth();
+    }
+}
+
+void ZC_GUI_EventManager::UpdateCursorCollision()
+{
+    float x = 0.f, y = 0.f;
+    ZC_SWindow::GetCursorPosition(x, y);
+    CursoreMove(x, y, 0.f, 0.f, 1.f);
 }
 
 bool ZC_GUI_EventManager::CursoreMove(float x, float y, float rel_x, float rel_y, float time)
 {
     if (!isActive) return true;
 
-    if (pEO_pressedLBM && pEO_pressedLBM->VIsMovable_EO())  //  move pressed object, or window
+    if (pEO_cursorMove)  //  move pressed object or window
     {
-        pEO_pressedLBM->VCursoreMove_EO(x, y, rel_x, rel_y, time);
+        pEO_cursorMove->VCursoreMove_EO(x, y, rel_x, rel_y, time);
         return false;
     }
-
-    //     //  if the window is first in openable, then the window is on top, can check is cursor still in it's object
-    // if (pWin_underCursor && !pWin_underCursor->IsStacionar() && pWin_underCursor == openableWins.front())
-    // {
-    //     if (pEO_underCursor)
-    //     {
-    //         if (pEO_underCursor->VCheckCursorCollision_EO(x, y)) return false;     //  cursor still in the object
-    //         //  cursor not in the object any more
-    //         pEO_underCursor->VCursorCollisionEnd_EO(time);
-    //     }
-    //     pEO_underCursor = nullptr;
-    //     ZC_GUI_Window* pWin_temp = nullptr;
-    //     if (pWin_underCursor->VMakeCursorCollision_EO(x, y, pWin_temp, pEO_underCursor))     //  try collision for window
-    //     {
-    //         if (pEO_underCursor)
-    //         {
-    //             pEO_underCursor->VCursorCollisionStart_EO(time);    //  new object of the window under cursor
-    //             return false;
-    //         }
-    //     }
-    //     else    //  window don't have collision with cursor
-    //     {
-    //         pWin_underCursor->VCursorCollisionEnd_EO(time);
-    //         pWin_underCursor = nullptr;
-    //     }
-    // }
         //  returns false, if under the cursor
-    auto lambCollisitonWindow = [this, x, y, time](std::list<ZC_GUI_EventObj*>& windows)
+    auto lambCollisitonWindow = [this, x, y, time](std::list<ZC_GUI_Window*>& windows)
     {
         ZC_GUI_Window* pWin_temp = nullptr;
         ZC_GUI_EventObj* pEO_temp = nullptr;
-        for (ZC_GUI_EventObj* pWindow : windows)
-        {
+        for (ZC_GUI_Window* pWindow : windows)
+        {   //  collision only with drawing windows, all drawing window in front of both lists (openableWins, stacionarWins)
+            if (!pWindow->VIsDrawing_W()) break;
             if (pWindow->VMakeCursorCollision_EO(x, y, pWin_temp, pEO_temp))
             {
                 if (pEO_temp != pEO_underCursor)
@@ -69,13 +80,53 @@ bool ZC_GUI_EventManager::CursoreMove(float x, float y, float rel_x, float rel_y
                 return false;
             }
         }
+        if (pEO_underCursor)
+        {
+            pEO_underCursor->VCursorCollisionEnd_EO(time);
+            pEO_underCursor = nullptr;
+        }
+        if (pWin_underCursor)
+        {
+            pWin_underCursor->VCursorCollisionEnd_EO(time);
+            pWin_underCursor = nullptr;
+        }
         return true;
     };
-        //  check window one by one, starting from openable (if one of labmas retuns false, then window had cursor collision, so return false from method)
+        //  check window one by one, starting from openable (if one of labmdas retuns false, then window had cursor collision, so return false from method)
     return lambCollisitonWindow(openableWins) && lambCollisitonWindow(stacionarWins);
 }
 
-void ZC_GUI_EventManager::ChangeActivity(bool active)
+bool ZC_GUI_EventManager::ButtonDown(ZC_ButtonID buttonID, float time)
 {
-    isActive = active;
+    if (!isActive) return true;
+    return mbLeft.ButtonDown(buttonID, pWin_underCursor, pEO_underCursor, time) && mbRight.ButtonDown(buttonID, pWin_underCursor, pEO_underCursor, time);
+}
+ 
+bool ZC_GUI_EventManager::ButtonUp(ZC_ButtonID buttonID, float time)
+{
+    if (!isActive) return true;
+    return mbLeft.ButtonUp(buttonID, time) && mbRight.ButtonUp(buttonID, time);
+}
+
+
+//  MouseButton
+
+bool ZC_GUI_EventManager::MouseButton::ButtonDown(ZC_ButtonID _buttonID, ZC_GUI_EventObj* pWin, ZC_GUI_EventObj* pEO, float time)
+{
+    if (buttonID != _buttonID) return true;     //  wrong button
+    if (buttonPressed) return false;    //  button already pressed
+    buttonPressed = true;
+    if (pEO && (buttonID == ZC_ButtonID::M_LEFT ? pEO->VLeftButtonDown_EO(time) : pEO->VRightButtonDown_EO(time))) pPressed = pEO;
+    else if (pWin && (buttonID == ZC_ButtonID::M_LEFT ? pWin->VLeftButtonDown_EO(time) : pWin->VRightButtonDown_EO(time))) pPressed = pWin;
+    return pPressed == nullptr;     //  one of objectes override button event, and may became pressed
+}
+
+bool ZC_GUI_EventManager::MouseButton::ButtonUp(ZC_ButtonID _buttonID, float time)
+{
+    if (buttonID != _buttonID) return true;    //  wrong button
+    buttonPressed = false;
+    if (!pPressed) return true;     //  haven't pressed object
+    buttonID == ZC_ButtonID::M_LEFT ? pPressed->VLeftButtonUp_EO(time) : pPressed->VRightButtonUp_EO(time);
+    pPressed = nullptr;
+    return false;
 }

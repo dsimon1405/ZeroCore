@@ -4,23 +4,29 @@
 #include <ZC/GUI/ZC_GUI_Depth.h>
 
 ZC_GUI_WinMutable::ZC_GUI_WinMutable(const ZC_WOIData& woiData, const ZC_UV& uv, ZC_GUI_WinFlags winFlags)
-    : ZC_GUI_Window(woiData, winFlags & ZC_GUI_WF__Stacionar ? ZC_GUI_Depth::windowStacionar : 0.f, uv,
-        winFlags & ZC_GUI_WF__Stacionar && winFlags & ZC_GUI_WF__NeedDraw, !(winFlags & ZC_GUI_WF__NoBackground)),
+    : ZC_GUI_Window(woiData, winFlags & ZC_GUI_WF__Stacionar ? ZC_GUI_Depth::windowStacionar : 0.f, uv),
+    isDrawing(winFlags & ZC_GUI_WF__NeedDraw),
     drawArrays(GL_POINTS,
-        winFlags & ZC_GUI_WF__NoBackground,    //  if there is no background, return 1 and start drawing at index 1
+        winFlags & ZC_GUI_WF__NoBackground ? 1 : 0,    //  if there is no background, return 1 and start drawing at index 1
         1),     //  minimum 1 element (background)
     bufBorders(GL_SHADER_STORAGE_BUFFER, bind_Border),
     bufBLs(GL_SHADER_STORAGE_BUFFER, bind_BL),
     bufObjDatas(GL_SHADER_STORAGE_BUFFER, bind_ObjData)
 {
+    if (isDrawing) SetFocuseDepth();
     ZC_GUI::AddWindow(this);
 }
 
-bool ZC_GUI_WinMutable::VIsMutable_W()
+ZC_GUI_WinMutable::~ZC_GUI_WinMutable()
+{
+    ZC_GUI::EraseWindow(this);
+}
+
+bool ZC_GUI_WinMutable::VIsMutable_W() const noexcept
 {
     return true;
 }
-bool ZC_GUI_WinMutable::VIsConfigured_W()
+bool ZC_GUI_WinMutable::VIsConfigured_W() const noexcept
 {
     return !bls.empty();     //  not best desigion
 }
@@ -63,6 +69,23 @@ void ZC_GUI_WinMutable::VConfigureWindow_W()
     bufBorders.GLNamedBufferData(sizeof(ZC_GUI_Border) * borders.size(), &borders.front(), GL_DYNAMIC_DRAW);
     bufBLs.GLNamedBufferData(sizeof(ZC_Vec2<float>) * bls.size(), &bls.front(), GL_DYNAMIC_DRAW);
     bufObjDatas.GLNamedBufferData(sizeof(ZC_GUI_ObjData) * objDatas.size(), &objDatas.front(), GL_DYNAMIC_DRAW);
+}
+
+bool ZC_GUI_WinMutable::VIsDrawing_W() const noexcept
+{
+    return isDrawing;
+}
+
+bool ZC_GUI_WinMutable::VIsBackground() const noexcept
+{
+    return drawArrays.first == 0;   //  frist drawing element (index 0) is background
+}
+
+void ZC_GUI_WinMutable::VSetDrawState(bool needDraw)
+{
+    if (VIsDrawing_W() == needDraw) return;
+    isDrawing = needDraw;
+    ZC_GUI::UpdateWindowDrawState(this);
 }
 
 void ZC_GUI_WinMutable::VDrawMutable_W()
