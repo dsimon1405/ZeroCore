@@ -41,12 +41,9 @@ void ZC_Mouse::MouseMove(float _cursorPosX, float _cursorPosY, float _cursorRelX
     cursorPosY = _cursorPosY;
     cursorRelX += _cursorRelX;
     cursorRelY += _cursorRelY;
-    if (ZC_GUI::pGUI)
-    {
-        mayCallSigMove = ZC_GUI::pGUI->eventManager.CursoreMove(cursorPosX, cursorPosY, cursorRelX, cursorRelY, time);
-        if (mayCallSigMove) sigMove(cursorPosX, cursorPosY, _cursorRelX, _cursorRelY, time);
-    }
-    else sigMove(cursorPosX, cursorPosY, _cursorRelX, _cursorRelY, time);
+    if (!ZC_GUI::pGUI) sigMove(cursorPosX, cursorPosY, _cursorRelX, _cursorRelY, time);     //  no gui, call signal
+    else if (ZC_GUI::pGUI->eventManager.CursoreMove(cursorPosX, cursorPosY, cursorRelX, cursorRelY, time))  //  gui calls cursor move
+            sigMove(cursorPosX, cursorPosY, _cursorRelX, _cursorRelY, time);
 }
 
 void ZC_Mouse::MouseScroll(float horizontal, float vertical, float time)
@@ -60,8 +57,9 @@ void ZC_Mouse::MoveOnceInFrame(float time)
 {
     if (cursorRelX != 0.f || cursorRelY != 0.f)
     {
-        // sigMoveOnceInFrame.CallLastConnected(cursorPosX, cursorPosY, cursorRelX, cursorRelY, time);
-        if (mayCallSigMove) sigMoveOnceInFrame(cursorPosX, cursorPosY, cursorRelX, cursorRelY, time);
+        if (!ZC_GUI::pGUI) sigMoveOnceInFrame(cursorPosX, cursorPosY, cursorRelX, cursorRelY, time);     //  no gui, call signal
+        else if (ZC_GUI::pGUI->eventManager.CursoreMoveOnceInFrame(cursorPosX, cursorPosY, cursorRelX, cursorRelY, time))  //  gui calls cursor move
+                sigMoveOnceInFrame(cursorPosX, cursorPosY, cursorRelX, cursorRelY, time);
         cursorRelX = 0.f;
         cursorRelY = 0.f;
     }

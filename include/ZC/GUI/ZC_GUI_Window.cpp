@@ -5,14 +5,19 @@
 
 #include <cassert>
 
-void ZC_GUI_Window::SetFocuseDepth()
-{
-    winDepth.SetNextDepth(this);
-}
-
 bool ZC_GUI_Window::IsStacionar() const noexcept
 {
-    return pObjData->depth == ZC_GUI_Depth::windowStacionar;
+    return winFlags & ZC_GUI_WF__Stacionar;
+}
+
+bool ZC_GUI_Window::IsBackground() const noexcept
+{
+    return !(winFlags & ZC_GUI_WF__NoBackground);
+}
+
+bool ZC_GUI_Window::IsMovable() const noexcept
+{
+    return winFlags & ZC_GUI_WF__Movable;
 }
 
 void ZC_GUI_Window::AddRow(ZC_GUI_RowParams rowParams)
@@ -27,7 +32,7 @@ void ZC_GUI_Window::AddRow(ZC_GUI_RowParams rowParams)
     rows.emplace_back(ZC_GUI_WinRow{ rowParams, {} });
 }
 
-bool ZC_GUI_Window::VAddObj(ZC_GUI_Obj* pObj)
+bool ZC_GUI_Window::AddObj(ZC_GUI_Obj* pObj)
 {
     if (VIsConfigured_W())
     {
@@ -63,16 +68,23 @@ void ZC_GUI_Window::MakeForcused()
     ZC_GUI::MakeWindowFocused(this);
 }
 
+void ZC_GUI_Window::SetFocuseDepth()
+{
+    winDepth.SetNextDepth(this);
+}
+
 ZC_GUI_Border ZC_GUI_Window::GetBorder() const noexcept
 {
     return *pBorder;
 }
 
-ZC_GUI_Window::ZC_GUI_Window(const ZC_WOIData& woiData, float depth, const ZC_UV& uv)
+ZC_GUI_Window::ZC_GUI_Window(const ZC_WOIData& woiData, const ZC_UV& uv, ZC_GUI_WinFlags _winFlags)
     : ZC_WindowOrthoIndent1(false, woiData),
+    winFlags(_winFlags),
     pBorder{ new ZC_GUI_Border{ .bl = this->position, .tr = { this->position[0] + this->woiData.width, this->position[1] + this->woiData.height } } },
     pBL( new ZC_Vec2<float>(pBorder->bl)),
-    pObjData{ new ZC_GUI_ObjData{ .width = this->woiData.width, .height = this->woiData.height, .depth = depth, .uv = uv } }
+    pObjData{ new ZC_GUI_ObjData{ .width = this->woiData.width, .height = this->woiData.height,
+        .depth = winFlags & ZC_GUI_WF__Stacionar ? ZC_GUI_Depth::windowStacionar : 0.f, .uv = uv } }
 {}
 
 
@@ -96,14 +108,14 @@ bool ZC_GUI_Window::VMakeCursorCollision_EO(float x, float y, ZC_GUI_Window*& rp
             }
         }
     }
-    if (!VIsBackground()) return false;    //  there's no object under cursor in window, check is windowdrawable, if not, don't set window to ref pointer, just out
+    if (!IsBackground()) return false;    //  there's no object under cursor in window, check is windowdrawable, if not, don't set window to ref pointer, just out
     rpWindow = this;    //  only the window is in collision
     return true;
 }
 
 bool ZC_GUI_Window::VCheckCursorCollision_EO(float x, float y)
 {   //  retrurn true only if background is drawing and had collision 
-    return VIsBackground() && Collision(x, y, (*this->pBL)[0], (*this->pBL)[1], (*this->pBL)[0] + this->pObjData->width, (*this->pBL)[1] + this->pObjData->height);
+    return IsBackground() && Collision(x, y, (*this->pBL)[0], (*this->pBL)[1], (*this->pBL)[0] + this->pObjData->width, (*this->pBL)[1] + this->pObjData->height);
 }
 // bool ZC_GUI_Window::VIsMovable_EO() override { return false; }
 // void ZC_GUI_Window::VCursorCollisionStart_EO(float time) override {}

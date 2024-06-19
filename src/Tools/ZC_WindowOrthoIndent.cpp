@@ -254,7 +254,7 @@ void ZC_WindowOrthoIndent1::CheckAndSetIndentData(float _indentX, float _indentY
 void ZC_WindowOrthoIndent1::ZC_WindowResized(float windowWidth, float windowHeight)
 {
     CalculateIndents(windowWidth, windowHeight);
-    VCallAfterZC_WindowResizedWOI();
+    VCallAfterZC_WindowResized_WOI();
 }
 
 void ZC_WindowOrthoIndent1::CalculateIndents(float windowWidth, float windowHeight)

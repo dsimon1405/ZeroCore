@@ -7,15 +7,6 @@
 
 #include <vector>
 
-typedef int ZC_GUI_WinFlags;
-enum ZC_GUI_WinFlag
-{
-    ZC_GUI_WF__Stacionar        = 1,        //  The window is always under open windows (if the window is in focus and not stationary windows overlap it, the stationary window is still drawn under those windows)
-    ZC_GUI_WF__NeedDraw         = 1 << 1,   //  Need draw on start
-    ZC_GUI_WF__NoBackground     = 1 << 2,   //  Don't draw background (window backgground don't make collisioin with mouse cursor, objects of the window still make collision)
-    ZC_GUI_WF__Scrable          = 1 << 3,   //  Can be used scrall (can't be used with ZC_GUI_WF__NoBackground)
-};
-
 struct ZC_GUI_WinMutable : public ZC_GUI_Window
 {
     bool isDrawing;
@@ -29,20 +20,25 @@ struct ZC_GUI_WinMutable : public ZC_GUI_Window
     ZC_Buffer bufBLs;   //  bottom left corners (positions)
     ZC_Buffer bufObjDatas;
 
-    ZC_GUI_WinMutable(const ZC_WOIData& woiData, const ZC_UV& uv, ZC_GUI_WinFlags winFlags);
+    ZC_GUI_WinMutable(const ZC_WOIData& woiData, const ZC_UV& uv, ZC_GUI_WinFlags _winFlags);
 
     ~ZC_GUI_WinMutable();
     
     bool VIsMutable_W() const noexcept override;
     bool VIsConfigured_W() const noexcept override;
-    void VConfigureWindow_W() override;
+    void VConfigureWindow_W(std::list<ZC_GUI_Window*>* pWindows = nullptr) override;
     bool VIsDrawing_W() const noexcept override;
-    bool VIsBackground() const noexcept override;
-    void VSetDrawState(bool needDraw) override;
-
+    void VSetDrawState_W(bool needDraw) override;
     void VDrawMutable_W() override;
-
     void VMapObjData_W(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData) override;
+    void VSubDataBL_W(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end) override;
+
+    void VCursoreMove_EO(float x, float y, float rel_x, float rel_y, float time) override;
+    void VCallAfterZC_WindowResized_WOI() override
+    {
+        //  make system window resize in event manager. ortho indent will calculate fesh (this->position), if it's differ from current (bl), update all bl list += difference
+    }
+
 };
 
 

@@ -13,9 +13,9 @@ struct ZC_GUI_Button : public ZC_GUI_Obj
     void VCursorCollisionStart_EO(float time) override {}
     void VCursorCollisionEnd_EO(float time) override {}
     void VCursoreMove_EO(float x, float y, float rel_x, float rel_y, float time) override {}
-    bool VLeftButtonDown_EO(float time) override { return true; }
+    bool VLeftButtonDown_EO(float time, bool& cursorMoveWhilePressed) override { return true; }
     void VLeftButtonUp_EO(float time) override {}
-    bool VRightButtonDown_EO(float time) override { return true; }
+    bool VRightButtonDown_EO(float time, bool& cursorMoveWhilePressedorMove) override { return true; }
     void VRightButtonUp_EO(float time) override {}
     void VScroll_EO(float vertical, float time) override {}
 };

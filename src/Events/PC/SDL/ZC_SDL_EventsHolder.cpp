@@ -43,6 +43,8 @@
 //     return true;
 // }
 
+// #include <iostream>
+// std::cout<<"x = "<<event.motion.x<<"; y = "<<static_cast<float>(height) - event.motion.y<<"; rel_x = "<<event.motion.xrel<<"; rel_y = "<<(event.motion.yrel * -1.f)<<std::endl;
 bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime, ZC_GUI_EventManager& gui_eventManager)
 {
     static SDL_Event event;

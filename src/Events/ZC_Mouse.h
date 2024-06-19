@@ -27,7 +27,6 @@ private:
         cursorRelY = 0,
         scrolledHorizontal = 0,
         scrolledVertical = 0;
-    bool mayCallSigMove= true;
 
     void MoveOnceInFrame(float time);
     void ScrollOnceInFrame(float time);

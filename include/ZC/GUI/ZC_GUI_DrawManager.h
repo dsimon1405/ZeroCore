@@ -18,12 +18,10 @@ struct ZC_GUI_DrawManager
     ZC_Texture texture;
 
     bool Init();
-
+    void AddWindow(ZC_GUI_Window* pWindow);
+    void EraseWindow(ZC_GUI_Window* pWindow);
     void Configure();
 
     void Draw();
-
-    void AddWindow(ZC_GUI_Window* pWindow);
-    void EraseWindow(ZC_GUI_Window* pWindow);
     void UpdateWindowDrawState(ZC_GUI_Window* pWindow);
 };

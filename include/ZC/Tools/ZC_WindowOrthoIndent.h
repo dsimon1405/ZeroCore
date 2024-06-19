@@ -162,7 +162,7 @@ private:
     ZC_EC ecZC_WindowResized;
 
     //  override heirs who need
-    virtual void VCallAfterZC_WindowResizedWOI() {}
+    virtual void VCallAfterZC_WindowResized_WOI() {}
 
     void CheckAndSetIndentData(float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indents);
     void ZC_WindowResized(float width, float height);

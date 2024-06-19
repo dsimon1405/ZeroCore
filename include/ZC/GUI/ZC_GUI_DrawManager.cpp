@@ -31,6 +31,18 @@ bool ZC_GUI_DrawManager::Init()
     return true;
 }
 
+void ZC_GUI_DrawManager::AddWindow(ZC_GUI_Window* pWindow)
+{
+    pWindow->VIsMutable_W() ?
+        pWindow->VIsDrawing_W() ? mutableWins.emplace_front(pWindow) : mutableWins.emplace_back(pWindow)
+        : immutableWins.emplace_back(pWindow);
+}
+
+void ZC_GUI_DrawManager::EraseWindow(ZC_GUI_Window* pWindow)
+{
+    std::erase(pWindow->VIsMutable_W() ? mutableWins : immutableWins, pWindow);
+}
+
 void ZC_GUI_DrawManager::Configure()
 {
     for (auto pWinObj : mutableWins) pWinObj->VConfigureWindow_W();   //  in ZC_GUI_WinMutable create window, in ZC_GUI_WinImmutable only will total buffer
@@ -49,18 +61,6 @@ void ZC_GUI_DrawManager::Draw()
         pWinObj->VDrawMutable_W();
     }
     // ZC_GUI_Window::DrawImmutable();
-}
-
-void ZC_GUI_DrawManager::AddWindow(ZC_GUI_Window* pWindow)
-{
-    pWindow->VIsMutable_W() ?
-        pWindow->VIsDrawing_W() ? mutableWins.emplace_front(pWindow) : mutableWins.emplace_back(pWindow)
-        : immutableWins.emplace_back(pWindow);
-}
-
-void ZC_GUI_DrawManager::EraseWindow(ZC_GUI_Window* pWindow)
-{
-    std::erase(pWindow->VIsMutable_W() ? mutableWins : immutableWins, pWindow);
 }
 
 void ZC_GUI_DrawManager::UpdateWindowDrawState(ZC_GUI_Window* pWindow)
