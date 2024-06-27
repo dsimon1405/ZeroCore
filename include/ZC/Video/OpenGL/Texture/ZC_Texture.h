@@ -11,7 +11,10 @@ public:
     - filterMin - GL_NEAREST, GL_LINEAR (default GL_NEAREST).
     - filterMag - GL_NEAREST, GL_LINEAR (default GL_NEAREST).
     */
-    static ZC_Texture LoadTexture2D(const char* filePath, GLenum wrapS = GL_CLAMP_TO_EDGE,   // wrapS = wrapT = GL_REPEAT
+    static ZC_Texture LoadTexture2D(const char* filePath, GLuint _binding,
+    //  GLenum wrapS,   // wrapS = wrapT = GL_REPEAT
+    //     GLenum wrapT, GLenum filterMin, GLenum filterMag);
+     GLenum wrapS = GL_CLAMP_TO_EDGE,   // wrapS = wrapT = GL_REPEAT
         GLenum wrapT = GL_CLAMP_TO_EDGE, GLenum filterMin = GL_LINEAR_MIPMAP_LINEAR, GLenum filterMag = GL_LINEAR);
     // static ZC_Texture* LoadCubeMap(const char** filePaths);
     
@@ -28,7 +31,7 @@ public:
     filterMag - GL_NEAREST, GL_LINEAR (default GL_NEAREST).
     mimmap - need to create mipmap or not.
     */
-    static ZC_Texture TextureStorage2D(GLenum internalFormat, GLsizei width, GLsizei height, bool mimmap, GLenum wrapS = GL_REPEAT, GLenum wrapT = GL_REPEAT,
+    static ZC_Texture TextureStorage2D(GLenum internalFormat, GLuint _binding, GLsizei width, GLsizei height, bool mimmap, GLenum wrapS = GL_REPEAT, GLenum wrapT = GL_REPEAT,
         GLenum filterMin = GL_NEAREST, GLenum filterMag = GL_NEAREST);
 
     /*
@@ -47,7 +50,7 @@ public:
     filterMag - GL_NEAREST, GL_LINEAR (default GL_NEAREST).
     mimmap - need to create mipmap or not.
     */
-    static ZC_Texture TextureStorage2DFill(GLenum internalFormat, GLsizei width, GLsizei height, const void* pData, GLenum format, GLenum type, bool mimmap,
+    static ZC_Texture TextureStorage2DFill(GLenum internalFormat, GLuint _binding, GLsizei width, GLsizei height, const void* pData, GLenum format, GLenum type, bool mimmap,
         GLenum wrapS = GL_REPEAT, GLenum wrapT = GL_REPEAT, GLenum filterMin = GL_NEAREST, GLenum filterMag = GL_NEAREST);
 
     /*
@@ -71,8 +74,8 @@ public:
 
     ~ZC_Texture();
 
-    //  activates texture
-    void GLBindTextureUnit(GLuint num) const;
+        //  activates texture
+    void GLBindTextureUnit(GLuint DELTE_BINDING = 1000000) const;
     GLuint GetId() const noexcept;
 
     /*
@@ -88,8 +91,15 @@ public:
     */
     void GLTextureSubImage2D(GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pData);
 
+    int GetWidth() const noexcept;
+    int GetHeight() const noexcept;
+
 private:
     GLuint id = 0;
+    GLuint binding = 0;
+    int width = 0;
+    int height = 0;
 
-    ZC_Texture(GLenum target);
+    ZC_Texture(GLenum target, GLuint _binding, int width, int height);
+    static GLenum GetFormat(GLenum internalFormat);     //  unused now
 };

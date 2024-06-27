@@ -60,9 +60,11 @@ ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, cons
 		ZC_ErrorLogger::Err("SDL_GL_SetSwapInterval(0) fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
 		return;
 	}
-
+	
 	if (gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
     // if (!LoadOpenGLFunctions()) return;
+	
+	// SDL_StopTextInput();
 
 	ZC_OpenGLAssigneErrorCallback();
 	

@@ -222,6 +222,10 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_WinMutable.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_DrawManager.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_WinImmutable.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_Font.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_FontLoader.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ObjData.cpp
 	)
 
 #========================= include dirs

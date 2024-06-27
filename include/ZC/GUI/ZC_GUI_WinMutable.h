@@ -20,24 +20,22 @@ struct ZC_GUI_WinMutable : public ZC_GUI_Window
     ZC_Buffer bufBLs;   //  bottom left corners (positions)
     ZC_Buffer bufObjDatas;
 
-    ZC_GUI_WinMutable(const ZC_WOIData& woiData, const ZC_UV& uv, ZC_GUI_WinFlags _winFlags);
+    ZC_GUI_WinMutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags);
+    ZC_GUI_WinMutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags);
 
     ~ZC_GUI_WinMutable();
+
+    bool VIsDrawing_Obj() const noexcept override;
+    void VConfigure_Obj() override;
+    bool VIsConfigured_Obj() const noexcept override;
     
     bool VIsMutable_W() const noexcept override;
-    bool VIsConfigured_W() const noexcept override;
-    void VConfigureWindow_W(std::list<ZC_GUI_Window*>* pWindows = nullptr) override;
-    bool VIsDrawing_W() const noexcept override;
     void VSetDrawState_W(bool needDraw) override;
-    void VDrawMutable_W() override;
-    void VMapObjData_W(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData) override;
-    void VSubDataBL_W(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end) override;
+    void VDraw_W() override;
+    void VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData) override;
+    void VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end) override;
 
-    void VCursoreMove_EO(float x, float y, float rel_x, float rel_y, float time) override;
-    void VCallAfterZC_WindowResized_WOI() override
-    {
-        //  make system window resize in event manager. ortho indent will calculate fesh (this->position), if it's differ from current (bl), update all bl list += difference
-    }
+    void VCursoreMove_EO(float rel_x, float rel_y) override;
 
 };
 

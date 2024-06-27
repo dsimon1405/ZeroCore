@@ -9,7 +9,7 @@
 struct ZC_GUI_DrawManager
 {
     std::list<ZC_GUI_Window*> mutableWins;
-    std::list<ZC_GUI_Window*> immutableWins;
+    ZC_GUI_Window* pImmutableWin = nullptr;   //  no metter wich of immutable wins, uses only for call virtual methods that work with static buffers
 
         //  DELETE
     uint vao;

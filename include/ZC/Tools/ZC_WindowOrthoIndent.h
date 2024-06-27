@@ -9,16 +9,16 @@ typedef int ZC_WindowOrthoIndentFlags;  //  look ZC_WindowOrthoIndentFlag
 //  must be only one X and only one Y
 enum ZC_WindowOrthoIndentFlag
 {
-    ZC_WOIF__X_Left_Pixel              = 1,
-    ZC_WOIF__X_Left_Percent            = 1 << 1,
-    ZC_WOIF__X_Right_Pixel             = 1 << 2,
-    ZC_WOIF__X_Right_Percent           = 1 << 3,
-    ZC_WOIF__X_Center                  = 1 << 4,
-    ZC_WOIF__Y_Top_Pixel               = 1 << 5,
-    ZC_WOIF__Y_Top_Percent             = 1 << 6,
-    ZC_WOIF__Y_Bottom_Pixel            = 1 << 7,
-    ZC_WOIF__Y_Bottom_Percent          = 1 << 8,
-    ZC_WOIF__Y_Center                  = 1 << 9,
+    ZC_WOIF__X_Left_Pixel       = 1,
+    ZC_WOIF__X_Left_Percent     = 1 << 1,
+    ZC_WOIF__X_Right_Pixel      = 1 << 2,
+    ZC_WOIF__X_Right_Percent    = 1 << 3,
+    ZC_WOIF__X_Center           = 1 << 4,
+    ZC_WOIF__Y_Top_Pixel        = 1 << 5,
+    ZC_WOIF__Y_Top_Percent      = 1 << 6,
+    ZC_WOIF__Y_Bottom_Pixel     = 1 << 7,
+    ZC_WOIF__Y_Bottom_Percent   = 1 << 8,
+    ZC_WOIF__Y_Center           = 1 << 9,
 };
 
 class ZC_WindowOrthoIndent
@@ -105,7 +105,10 @@ struct ZC_WOIData
     - ZC_WOIF__Y_Center -> value no metter.
     */
     float indentY;
-    //  Flags of indent horizontal(X) and vertical(Y) from border of global window to IGWindow. Must be set one flag for X and one flag for Y. Example: X_Left_Pixel | Y_Top_Pixel.
+    /*
+    Flags of indent horizontal(X) and vertical(Y) from border of ZC_SWindow to gui window. Must be set one flag for X and one flag for Y.
+    Example: ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Top_Pixel.
+    */
     ZC_WindowOrthoIndentFlags indentFlags;
 };
 
@@ -125,7 +128,7 @@ public:
 
 protected:
     ZC_WOIData woiData;
-    ZC_Vec2<float> position;
+    ZC_Vec2<float> bl_WOI;
     
     /*
     Params:
@@ -162,7 +165,7 @@ private:
     ZC_EC ecZC_WindowResized;
 
     //  override heirs who need
-    virtual void VCallAfterZC_WindowResized_WOI() {}
+    virtual void VChanged_bl_WOI() {}
 
     void CheckAndSetIndentData(float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indents);
     void ZC_WindowResized(float width, float height);

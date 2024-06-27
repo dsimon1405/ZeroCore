@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <Tools/stb_image.h>
 
-ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
+ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLuint _binding, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
 {
     int width, height, channels;
 
@@ -47,7 +47,7 @@ ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLenum wrapS, GLenum 
     }
 
     ZC_ErrorLogger::Clear();
-    ZC_Texture texture = TextureStorage2DFill(internalFormat, width, height, pData, format, GL_UNSIGNED_BYTE, true, wrapS, wrapT, filterMin, filterMag);
+    ZC_Texture texture = TextureStorage2DFill(internalFormat, _binding, width, height, pData, format, GL_UNSIGNED_BYTE, true, wrapS, wrapT, filterMin, filterMag);
     if (ZC_ErrorLogger::WasError())
     {
         stbi_image_free(pData);
@@ -81,9 +81,9 @@ ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLenum wrapS, GLenum 
 //     return &textures.emplace_back(std::move(texture));
 // }
 
-ZC_Texture ZC_Texture::TextureStorage2D(GLenum internalFormat, GLsizei width, GLsizei height, bool mimmap, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
+ZC_Texture ZC_Texture::TextureStorage2D(GLenum internalFormat, GLuint _binding, GLsizei width, GLsizei height, bool mimmap, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
 {
-    ZC_Texture tex(GL_TEXTURE_2D);
+    ZC_Texture tex(GL_TEXTURE_2D, _binding, width, height);
     if (wrapS != GL_REPEAT) glTextureParameteri(tex.id, GL_TEXTURE_WRAP_S, wrapS);
     if (wrapT != GL_REPEAT) glTextureParameteri(tex.id, GL_TEXTURE_WRAP_T, wrapT);
     if (filterMin != GL_NEAREST) glTextureParameteri(tex.id, GL_TEXTURE_MIN_FILTER, filterMin);
@@ -93,17 +93,17 @@ ZC_Texture ZC_Texture::TextureStorage2D(GLenum internalFormat, GLsizei width, GL
     return tex;
 }
 
-ZC_Texture ZC_Texture::TextureStorage2DFill(GLenum internalFormat, GLsizei width, GLsizei height, const void* pData, GLenum format, GLenum type, bool mimmap,
+ZC_Texture ZC_Texture::TextureStorage2DFill(GLenum internalFormat, GLuint _binding, GLsizei width, GLsizei height, const void* pData, GLenum format, GLenum type, bool mimmap,
     GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
 {
-    auto tex = TextureStorage2D(internalFormat, width, height, mimmap, wrapS, wrapT, filterMin, filterMag);
+    auto tex = TextureStorage2D(internalFormat, _binding, width, height, mimmap, wrapS, wrapT, filterMin, filterMag);
     tex.GLTextureSubImage2D(0, 0, width, height, format, type, pData);
     return tex;
 }
 
 ZC_Texture ZC_Texture::TextureStorage2DMultisample(GLsizei samples, GLsizei width, GLsizei height, GLenum internalFormat)
 {
-    ZC_Texture tex(GL_TEXTURE_2D_MULTISAMPLE);
+    ZC_Texture tex(GL_TEXTURE_2D_MULTISAMPLE, 0, width, height);
     glTextureStorage2DMultisample(tex.id, samples, internalFormat, width, height, GL_TRUE);
     return tex;
 }
@@ -123,7 +123,10 @@ ZC_Texture ZC_Texture::TextureStorage2DMultisample(GLsizei samples, GLsizei widt
 // }
 
 ZC_Texture::ZC_Texture(ZC_Texture&& tex) noexcept
-    : id(tex.id)
+    : id(tex.id),
+    binding(tex.binding),
+    width(tex.width),
+    height(tex.height)
 {
     tex.id = 0;
 }
@@ -131,7 +134,12 @@ ZC_Texture::ZC_Texture(ZC_Texture&& tex) noexcept
 ZC_Texture& ZC_Texture::operator = (ZC_Texture&& tex)
 {
     id = tex.id;
+    binding = tex.binding;
+    width = tex.width;
+    height = tex.height;
+    
     tex.id = 0;
+    tex.binding = 0;
     return *this;
 }
 
@@ -140,9 +148,10 @@ ZC_Texture::~ZC_Texture()
     if (id != 0) glDeleteTextures(1, &id);
 }
 
-void ZC_Texture::GLBindTextureUnit(GLuint num) const
+void ZC_Texture::GLBindTextureUnit(GLuint DELTE_BINDING) const
 {
-    glBindTextureUnit(num, id);
+    if (DELTE_BINDING == 1000000) glBindTextureUnit(binding, id);
+    else glBindTextureUnit(DELTE_BINDING, id);
 }
 
 GLuint ZC_Texture::GetId() const noexcept
@@ -155,7 +164,89 @@ void ZC_Texture::GLTextureSubImage2D(GLint xoffset, GLint yoffset, GLsizei width
     glTextureSubImage2D(id, 0, xoffset, yoffset, width, height, format, type, pData);
 }
 
-ZC_Texture::ZC_Texture(GLenum target)
+int ZC_Texture::GetWidth() const noexcept
+{
+    return width;
+}
+
+int ZC_Texture::GetHeight() const noexcept
+{
+    return height;
+}
+
+ZC_Texture::ZC_Texture(GLenum target, GLuint _binding, int width, int height)
+    : binding(_binding),
+    width(width),
+    height(height)
 {
     glCreateTextures(target, 1, &id);
+}
+
+GLenum GetFormat(GLenum internalFormat)
+{
+    switch (internalFormat)
+    {
+    case GL_R8: return GL_RED;
+    case GL_R8_SNORM: return GL_RED;
+    case GL_R16: return GL_RED;
+    case GL_R16_SNORM: return GL_RED;
+    case GL_RG8: return GL_RG;
+    case GL_RG8_SNORM: return GL_RG;
+    case GL_RG16: return GL_RG;
+    case GL_RG16_SNORM: return GL_RG;
+    case GL_R3_G3_B2: return GL_RGB;
+    case GL_RGB4: return GL_RGB;
+    case GL_RGB5: return GL_RGB;
+    case GL_RGB8: return GL_RGB;
+    case GL_RGB8_SNORM: return GL_RGB;
+    case GL_RGB10: return GL_RGB;
+    case GL_RGB12: return GL_RGB;
+    case GL_RGB16_SNORM: return GL_RGB;
+    case GL_RGBA2: return GL_RGB;
+    case GL_RGBA4: return GL_RGB;
+    case GL_RGB5_A1: return GL_RGBA;
+    case GL_RGBA8: return GL_RGBA;
+    case GL_RGBA8_SNORM: return GL_RGBA;
+    case GL_RGB10_A2: return GL_RGBA;
+    case GL_RGB10_A2UI: return GL_RGBA;
+    case GL_RGBA12: return GL_RGBA;
+    case GL_RGBA16: return GL_RGBA;
+    case GL_SRGB8: return GL_RGB;
+    case GL_SRGB8_ALPHA8: return GL_RGBA;
+    case GL_R16F: return GL_RED;
+    case GL_RG16F: return GL_RG;
+    case GL_RGB16F: return GL_RGB;
+    case GL_RGBA16F: return GL_RGBA;
+    case GL_R32F: return GL_RED;
+    case GL_RG32F: return GL_RG;
+    case GL_RGB32F: return GL_RGB;
+    case GL_RGBA32F: return GL_RGBA;
+    case GL_R11F_G11F_B10F: return GL_RGB;
+    case GL_RGB9_E5: return GL_RGB;
+    case GL_R8I: return GL_RED;
+    case GL_R8UI: return GL_RED;
+    case GL_R16I: return GL_RED;
+    case GL_R16UI: return GL_RED;
+    case GL_R32I: return GL_RED;
+    case GL_R32UI: return GL_RED;
+    case GL_RG8I: return GL_RG;
+    case GL_RG8UI: return GL_RG;
+    case GL_RG16I: return GL_RG;
+    case GL_RG16UI: return GL_RG;
+    case GL_RG32I: return GL_RG;
+    case GL_RG32UI: return GL_RG;
+    case GL_RGB8I: return GL_RGB;
+    case GL_RGB8UI: return GL_RGB;
+    case GL_RGB16I: return GL_RGB;
+    case GL_RGB16UI: return GL_RGB;
+    case GL_RGB32I: return GL_RGB;
+    case GL_RGB32UI: return GL_RGB;
+    case GL_RGBA8I: return GL_RGBA;
+    case GL_RGBA8UI: return GL_RGBA;
+    case GL_RGBA16I: return GL_RGBA;
+    case GL_RGBA16UI: return GL_RGBA;
+    case GL_RGBA32I: return GL_RGBA;
+    case GL_RGBA32UI: return GL_RGBA; 
+    default: assert(false); return 0;
+    }
 }

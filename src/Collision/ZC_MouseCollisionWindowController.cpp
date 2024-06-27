@@ -13,7 +13,7 @@
 
 ZC_MouseCollisionWindowController::ZC_MouseCollisionWindowController()
 {
-    pMCWC = this;
+    // pMCWC = this;
 }
 
 ZC_MouseCollisionWindowController::~ZC_MouseCollisionWindowController()

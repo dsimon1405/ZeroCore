@@ -39,6 +39,7 @@ void ZC_Fonts::Load(ZC_FontData* pFontData, ulong fontDataCount)
     }
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    FT_Done_FreeType(ft);
 }
 
 ZC_Font* ZC_Fonts::GetFont(const ZC_FontData& fontData)
@@ -66,7 +67,7 @@ ZC_Font ZC_Fonts::MakeFont(void* ft_face)
         texH = 0;
     CalculateTextureSize(texW, texH, ft_face);
 
-    ZC_Texture texture = ZC_Texture::TextureStorage2D(GL_R8, texW, texH, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR);
+    ZC_Texture texture = ZC_Texture::TextureStorage2D(GL_R8, 0, texW, texH, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR);
 
     float texX = 0,
         texY = 0;

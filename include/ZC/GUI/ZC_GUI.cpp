@@ -38,8 +38,3 @@ void ZC_GUI::UpdateWindowDrawState(ZC_GUI_Window* pWindow)
     pGUI->drawManager.UpdateWindowDrawState(pWindow);
     pGUI->eventManager.UpdateWindowState(pWindow);
 }
-
-void ZC_GUI::MakeWindowFocused(ZC_GUI_Window* pWindow)
-{
-    if (pGUI) pGUI->eventManager.UpdateWindowState(pWindow);
-}

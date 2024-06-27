@@ -12,6 +12,7 @@ struct ZC_GUI_EventManager
     ZC_GUI_Window* pWin_underCursor = nullptr;  //  under cursor now
     ZC_GUI_EventObj* pEO_underCursor = nullptr; //  under cursor now
 
+    ZC_GUI_EventObj* pEO_scroll = nullptr;      //  object used on scroll
     ZC_GUI_EventObj* pEO_cursorMove = nullptr;  //  object pressed by left button mouse (uses for objects that wish to save pressed state until unpress in same area, and if unpress in othe area then discard event)
 
     std::list<ZC_GUI_Window*> stacionarWins;

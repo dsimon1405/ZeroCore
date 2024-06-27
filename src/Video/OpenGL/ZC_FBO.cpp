@@ -127,13 +127,13 @@ ZC_Renderbuffer ZC_FBO::CreateDepthStencilRenderbuffer()
 ZC_Texture ZC_FBO::CreateColorTexture()
 {
     return cif == CIF_None || cif == CIF_Default ? ZC_Texture()
-        : ZC_Texture::TextureStorage2D(cif, viewport.GetWidth(), viewport.GetHeight(), false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR);
+        : ZC_Texture::TextureStorage2D(cif, 0, viewport.GetWidth(), viewport.GetHeight(), false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR);
 }
 
 ZC_Texture ZC_FBO::CreateDepthStencilTexture()
 {
     return dsif == DSIF_None || dsif == DSIF_Default ? ZC_Texture()
-        : ZC_Texture::TextureStorage2D(dsif, viewport.GetWidth(), viewport.GetHeight(), false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        : ZC_Texture::TextureStorage2D(dsif, 0, viewport.GetWidth(), viewport.GetHeight(), false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
 }
 
 ZC_Framebuffer ZC_FBO::CreateFrameBuffer()

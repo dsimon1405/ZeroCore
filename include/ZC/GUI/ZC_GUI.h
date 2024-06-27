@@ -19,6 +19,4 @@ struct ZC_GUI
     static void EraseWindow(ZC_GUI_Window* pWindow);
     //  Updates draw state of the window in the gui draw and event systems. pWindow->VIsDraw() -> MUST return actual state! Also if necessary calls pWindow->SetFocuseDepth().
     static void UpdateWindowDrawState(ZC_GUI_Window* pWindow);
-    //  Updates gui event system and call pWindow->SetFocuseDepth(). 
-    static void MakeWindowFocused(ZC_GUI_Window* pWindow);
 };

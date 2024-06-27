@@ -28,7 +28,7 @@ set(ZC_INCLUDE_DIRS ${ZC_INCLUDE_DIRS}
     PRIVATE $<$<BOOL:${ZC_SDL_VIDEO}>:$<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/SDL3/include,${PROJECT_SOURCE_DIR}/external/SDL3/include>>
     PUBLIC $<$<BOOL:${ZC_IMGUI}>:${PROJECT_SOURCE_DIR}/includeVariable/imgui/include>
     PRIVATE $<$<BOOL:${ZC_IMGUI}AND${ZC_SDL_VIDEO}>:${PROJECT_SOURCE_DIR}/includeVariable/imgui/SDL3>
-	PRIVATE $<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/freetype/include,${PROJECT_SOURCE_DIR}/external/freetype/include>
+	PUBLIC $<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/freetype/include,${PROJECT_SOURCE_DIR}/external/freetype/include>
     # PUBLIC $<$<BOOL:${ZC_MY_DEBUG}>:${PROJECT_SOURCE_DIR}/external/sqlite3/include>
     PARENT_SCOPE)
     
