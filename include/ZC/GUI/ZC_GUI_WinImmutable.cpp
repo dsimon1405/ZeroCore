@@ -1,7 +1,6 @@
 #include <ZC/GUI/ZC_GUI_WinImmutable.h>
 
 #include <ZC/GUI/ZC_GUI.h>
-#include <ZC/GUI/ZC_GUI_Depth.h>
 #include <ZC/GUI/ZC_GUI_Bindings.h>
 
 ZC_GUI_WinImmutable::ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags)
@@ -12,7 +11,7 @@ ZC_GUI_WinImmutable::ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, ZC_GUI_WinF
         .first = static_cast<GLuint>(_winFlags & ZC_GUI_WF__NoBackground ? 1 : 0),    //  if there is no background, return 1 and start drawing at index 1
         }
 {
-    if (_winFlags & ZC_GUI_WF__NeedDraw) SetFocuseDepth();
+    if (_winFlags & ZC_GUI_WF__NeedDraw) SetFocuseDepthAndColor();
     ZC_GUI::AddWindow(this);
     winImmutables.emplace_back(this);
 }
@@ -25,7 +24,7 @@ ZC_GUI_WinImmutable::ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, const ZC_GU
         .first = static_cast<GLuint>(_winFlags & ZC_GUI_WF__NoBackground ? 1 : 0),    //  if there is no background, return 1 and start drawing at index 1
         }
 {
-    if (_winFlags & ZC_GUI_WF__NeedDraw) SetFocuseDepth();
+    if (_winFlags & ZC_GUI_WF__NeedDraw) SetFocuseDepthAndColor();
     ZC_GUI::AddWindow(this);
     winImmutables.emplace_back(this);
 }
@@ -99,7 +98,7 @@ bool ZC_GUI_WinImmutable::VIsMutable_W() const noexcept
 void ZC_GUI_WinImmutable::VSetDrawState_W(bool needDraw)
 {
     if (VIsDrawing_Obj() == needDraw) return;
-    if (needDraw && IsMovable() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
+    if (needDraw && this->IsUseCursorMoveEventOnMBLetfDown() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
         SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
     daic.instanceCount = needDraw ? 1 : 0;
     bufDAICs.GLMapNamedBufferRange_Write(daicOffset + offsetof(ZC_DrawArraysIndirectCommand, instanceCount),
@@ -129,7 +128,7 @@ void ZC_GUI_WinImmutable::VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<floa
     bufBLs.GLNamedBufferSubData((pBL_start - bls.data()) * sizeof(ZC_Vec2<float>), (pBL_end - pBL_start + 1) * sizeof(ZC_Vec2<float>), pBL_start);
 }
 
-void ZC_GUI_WinImmutable::VCursoreMove_EO(float rel_x, float rel_y)
+void ZC_GUI_WinImmutable::VCursorMove_Obj(float rel_x, float rel_y)
 {
     ZC_Vec2<float> rel(rel_x, rel_y);
     for (GLuint i = 0; i < daic.count; ++i) *(pBL + i) += rel;

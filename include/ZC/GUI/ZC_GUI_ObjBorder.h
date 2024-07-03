@@ -65,8 +65,8 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
 
     bool VIsUseScrollEvent_Obj() const noexcept override;
 
-    bool VMakeCursorCollision_EO(float x, float y, ZC_GUI_EventObj*& rpWindow, ZC_GUI_EventObj*& rpObj, ZC_GUI_EventObj*& rpScroll) override;
-    bool VCheckCursorCollision_EO(float x, float y) override;
+    bool VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpWindow, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll) override;
+    bool VCheckCursorCollision_Obj(float x, float y) override;
 };
 
 typedef typename ZC_GUI_ObjBorder::Row::RowParams ZC_GUI_RowParams;

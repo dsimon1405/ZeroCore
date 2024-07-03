@@ -52,7 +52,7 @@ bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime, ZC_GUI_EventManage
     sigHandleEventsStart(previousFrameTime);
 
     ZC_ButtonID butID;  //  save scancode in SDL_EVENT_KEY_DOWN (calls frist) for SDL_EVENT_MOUSE_MOTION
-
+SDL_StartTextInput();
     while (SDL_PollEvent(&event) != 0)
     {
         switch (event.type)
@@ -63,7 +63,7 @@ bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime, ZC_GUI_EventManage
         {
             butID = static_cast<ZC_ButtonID>(event.key.keysym.scancode);
             buttonHolder.ButtonDown(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime);
-        }  break;
+        } break;
         case SDL_EVENT_KEY_UP: buttonHolder.ButtonUp(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
         {

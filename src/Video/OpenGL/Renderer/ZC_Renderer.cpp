@@ -81,7 +81,23 @@ void ZC_Renderer::Erase(ZC_Render* pRender)
 // }
 
 
+// #include <ZC/GUI/ZC_GUI_TextManager.h>
+// #include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
+// #include <ZC/Video/ZC_SWindow.h>
+// ZC_GUI_TextManager tm;
 
+// ZC_ShProg* pShP;
+// void Create()
+// {
+//     tm.Init();
+//     tm.GetText(L"jk");
+//     tm.Configure();
+
+//     ZC_Shader vs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/build/assets/ZC/shaders/GUI/gui_text_test.vs", GL_VERTEX_SHADER).pHead, GL_VERTEX_SHADER);
+//     ZC_Shader gs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/build/assets/ZC/shaders/GUI/gui_text_test.gs", GL_GEOMETRY_SHADER).pHead, GL_GEOMETRY_SHADER);
+//     ZC_Shader fs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/build/assets/ZC/shaders/GUI/gui_text_test.fs", GL_FRAGMENT_SHADER).pHead, GL_FRAGMENT_SHADER);
+//     pShP = new ZC_ShProg(vs.id, fs.id, gs.id);
+// }
 
 void ZC_Renderer::Draw(ZC_GUI& gui)
 {
@@ -91,9 +107,23 @@ void ZC_Renderer::Draw(ZC_GUI& gui)
     for (auto curIter = renders.begin(); curIter != renders.end(); )
         curIter = (*curIter)->Draw() ? ++curIter : renders.erase_after(prevIter);
 
+    // static bool isFirst = true;
+    // if (isFirst)
+    // {
+    //     Create();
+    //     isFirst = false;
+    // }
 
+    // tm.texture.GLBindTextureUnit();
+    // pShP->ActivateOpenGL();
+    // glDrawArrays(GL_POINTS, 0, 1);
+
+    // int w,h;
+    // ZC_SWindow::GetSize(w,h);
+// glDisable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
     gui.Draw();
 
     //  my rendering finished, make openGL state default

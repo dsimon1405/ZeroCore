@@ -19,10 +19,11 @@ struct ZC_GUI_Border
 
 struct ZC_GUI_ObjData //  gui.vs -> struct Data
 {
-    float width;
-    float height;
-    float depth;
+    float width = 0.f;
+    float height = 0.f;
+    float depth = 0.f;
+    unsigned int color = 0; //  must be after depth! (look ZC_GUI_Window::SetFocuseDepthAndColor()) color will be added to texture color, default 0, must be pack with ZC_PackColorUCharToUInt() or ZC_PackColorFloatToUInt() from ZC_Math.h
     ZC_GUI_UV uv;
     int borderIndex = 0;
-    unsigned int textureIndex = 0;
+    unsigned int tex_binding = 0;
 };

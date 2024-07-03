@@ -26,6 +26,7 @@ struct ZC_GUI_FontLoader
     static std::string GetPath(FontName name);
 
 private:
+        //  range of the symbols in unicode
     struct ElementsRange
     {
         struct Range
@@ -36,8 +37,8 @@ private:
         std::vector<Range> ranges;
 
         unsigned long GetCount();
-        void FillCharactersParams(void* ft_face, std::vector<ZC_GUI_Character>& rChrs, int& rMax_top, int& rMax_tail);
-        void FillCharactersData(void* ft_face, std::vector<ZC_GUI_Character>& rChrs, size_t& rChrsIndex, int& max_top, int max_tail, int total_height);
+        void FillCharactersParams(void* ft_face, std::vector<ZC_GUI_Character>& rChrs, int& rMax_top, int& rMax_tail, int& rMin_left_offset);
+        void FillCharactersData(void* ft_face, std::vector<ZC_GUI_Character>& rChrs, size_t& rChrsIndex, int& max_top, int max_tail, int total_height, int min_left_offset);
     };
 
     static ZC_GUI_Font CreateFont(void* ft_face, std::forward_list<ElementsRange>&& el_ranges);

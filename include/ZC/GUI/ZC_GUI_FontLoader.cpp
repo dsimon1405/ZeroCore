@@ -3,6 +3,7 @@
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 #include <ZC/File/ZC_File.h>
+#include <ZC/Tools/Math/ZC_Math.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -63,13 +64,14 @@ ZC_GUI_Font ZC_GUI_FontLoader::CreateFont(void* ft_face, std::forward_list<Eleme
     for (ElementsRange& el_r : el_ranges) chrs_count += el_r.GetCount();
     chrs.reserve(chrs_count);
 
-    int max_top = 0.f;    //  highest top (pixel)
-    int max_tail = 0.f;   //  lowest tail (pixel)
-    for (ElementsRange& el_r : el_ranges) el_r.FillCharactersParams(ft_face, chrs, max_top, max_tail);
+    int max_top = 0;    //  highest top (pixel)
+    int max_tail = 0;   //  lowest tail (pixel)
+    int min_left_offset = ZC_INT_MAX;
+    for (ElementsRange& el_r : el_ranges) el_r.FillCharactersParams(ft_face, chrs, max_top, max_tail, min_left_offset);
 
     int total_height = max_top + max_tail;    //  heigth for each symbol (pixel)
     size_t chrsIndex = 0;   //  index for iteretion in chrs
-    for (ElementsRange& el_r : el_ranges) el_r.FillCharactersData(ft_face, chrs, chrsIndex, max_top, max_tail, total_height);
+    for (ElementsRange& el_r : el_ranges) el_r.FillCharactersData(ft_face, chrs, chrsIndex, max_top, max_tail, total_height, min_left_offset);
 
     return { std::move(chrs) };
 }
@@ -116,10 +118,10 @@ unsigned long ZC_GUI_FontLoader::ElementsRange::GetCount()
     return count;
 }
 
-void ZC_GUI_FontLoader::ElementsRange::FillCharactersParams(void* ft_face, std::vector<ZC_GUI_Character>& rChrs, int& rMax_top, int& rMax_tail)
+void ZC_GUI_FontLoader::ElementsRange::FillCharactersParams(void* ft_face, std::vector<ZC_GUI_Character>& rChrs, int& rMax_top, int& rMax_tail, int& rMin_left_offset)
 {
     FT_Face face = static_cast<FT_Face>(ft_face);
-    auto lambFillChars = [face, &rChrs, &rMax_top, &rMax_tail](ulong start_index, ulong end)
+    auto lambFillChars = [face, &rChrs, &rMax_top, &rMax_tail, &rMin_left_offset](ulong start_index, ulong end)
     {
         //  end = end_index + 1
         for (ulong symbol = start_index; symbol < end; ++symbol)   //  cycle for getting max_top and max_tail
@@ -132,11 +134,12 @@ void ZC_GUI_FontLoader::ElementsRange::FillCharactersParams(void* ft_face, std::
             ZC_GUI_Character& curChar = rChrs.emplace_back(ZC_GUI_Character
             {
                 .symbol = static_cast<wchar_t>(symbol),
-                .left_offset = face->glyph->bitmap_left,
+                .left_offset = face->glyph->bitmap_left >= 0 ? face->glyph->bitmap_left : - face->glyph->bitmap_left,
                 .width =  static_cast<int>(symbol == ulong(' ') ? face->glyph->advance.x >> 6 : face->glyph->bitmap.width),     //  white space haven't bitmap, so take its distance from origin to next symbol 
                 .height = static_cast<int>(face->glyph->bitmap.rows),
                 .start_row = face->glyph->bitmap_top      //  set top (distance from origin to top) (pixels)
             });
+            if (curChar.left_offset != 0 && curChar.left_offset < rMin_left_offset) rMin_left_offset = curChar.left_offset; //  don't want have left_offset = 0, so those who have 0, will get minimum leeft_offset in FillCharactersData()
             if (curChar.start_row > 0 && curChar.start_row > rMax_top) rMax_top = curChar.start_row;   //  set highest top
             if (curChar.height > curChar.start_row)
             {
@@ -151,11 +154,11 @@ void ZC_GUI_FontLoader::ElementsRange::FillCharactersParams(void* ft_face, std::
 }
 
 void ZC_GUI_FontLoader::ElementsRange::FillCharactersData(void* ft_face, std::vector<ZC_GUI_Character>& rChrs, size_t& rChrsIndex,
-    int& max_top, int max_tail, int total_height)
+    int& max_top, int max_tail, int total_height, int min_left_offset)
 {
     FT_Face face = static_cast<FT_Face>(ft_face);
 
-    auto lambFillData = [face, &rChrs, &rChrsIndex, max_top, max_tail, total_height](ulong startIndex, ulong end)
+    auto lambFillData = [face, &rChrs, &rChrsIndex, max_top, max_tail, total_height, min_left_offset](ulong startIndex, ulong end)
     {
         //  end = last_index + 1
         for (ulong symbol = startIndex; symbol < end; ++symbol)   //  cycle for filling chararacters data
@@ -167,6 +170,7 @@ void ZC_GUI_FontLoader::ElementsRange::FillCharactersData(void* ft_face, std::ve
             }
             if (FT_Load_Char(face, symbol, FT_LOAD_RENDER)) continue;
             ZC_GUI_Character& ch = rChrs[rChrsIndex++];
+            if (ch.left_offset == 0) ch.left_offset = min_left_offset;  //  avoid zero left offset
             ch.data = std::vector<unsigned char>(total_height * ch.width);     //  on gpu it's be 2d array, on cpu is 1d array (that alpha channel (not color))
             //  freetype stores data origin in tl corner, in openGL textures origin in bl corner, so the rows need to be take in the reverse order (the data in the rows must keep the sequence!)
             int ch_startRevRow = ch.start_row > 0 ? total_height - (max_top - ch.start_row) - 1     //  start row (takes from the end) to fill in the ch data 

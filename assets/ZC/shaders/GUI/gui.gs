@@ -24,9 +24,10 @@ struct ZC_GUI_ObjData
     float width;
     float height;
     float depth;    //  first element is window and it's start window depth, each other object must calculate own depth from that depth
+    uint color;
     float uv[4];    //  bl, tr
     int borderIndex;
-    uint textureIndex;
+    uint tex_binding;
 };
 layout (std430, binding = 2) readonly buffer InObjData { ZC_GUI_ObjData objDatas[]; } inObjData;
 
@@ -41,8 +42,9 @@ layout (std140, binding = 0) uniform Camera
 layout (location = 0) out OutG
 {
     int borderIndex;    //  if -1, don't need border check
-    uint textureIndex;
+    uint tex_binding;
     vec2 uv;
+    uint color;
 } outG;
 
 
@@ -113,7 +115,8 @@ void main()
     if (vertexID != 0) depth += inObjData.objDatas[baseInstance].depth;  //  object not window border, need add window's border depth
     
         //  texture index
-    outG.textureIndex = objData.textureIndex;
+    outG.tex_binding = objData.tex_binding;
+    outG.color = objData.color;
 
         //  vertices
     SetVertex(objData.uv[0], objData.uv[1], bl, depth);

@@ -2,11 +2,13 @@
 
 #include <ZC/GUI/ZC_GUI_DrawManager.h>
 #include <ZC/GUI/ZC_GUI_EventManager.h>
+#include <ZC/GUI/ZC_GUI_TextManager.h>
 
 struct ZC_GUI
 {
     static inline ZC_GUI* pGUI = nullptr;
 
+    ZC_GUI_TextManager textManager;
     ZC_GUI_DrawManager drawManager;
     ZC_GUI_EventManager eventManager;
 

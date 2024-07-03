@@ -213,7 +213,7 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindow.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindowController.cpp
 	
-	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_Button.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ButtonMouse.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_EventManager.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_Obj.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ObjBorder.cpp

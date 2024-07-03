@@ -2,7 +2,7 @@
 
 #include <ZC/Tools/ZC_WindowOrthoIndent.h>
 #include <ZC/GUI/ZC_GUI_ObjBorder.h>
-#include <ZC/GUI/ZC_GUI_Depth.h>
+#include <ZC/Tools/Math/ZC_Math.h>
 
 #include <list>
 
@@ -18,12 +18,20 @@ enum ZC_GUI_WinFlag
 
 struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
 {
+    static inline const float depth_step             = 0.000001f;
+    static inline const float depth_stacionarStart   = 0.9999999f;
+    static inline const float depth_openableStart    = 0.9999f;
+    static inline const float depth_openableEnd      = 0.f;
+
+    static inline const uint color_unfocused = 0;
+    static inline const uint color_focused = ZC_PackColorUCharToUInt(5,5,5);
 
     bool VIsStacionar_Obj() const noexcept override;
 
     bool IsBackground() const noexcept;
-    bool IsMovable() const noexcept;
     void MakeForcused();
+    void MakeUnfocused();
+    bool IsUseCursorMoveEventOnMBLetfDown() const noexcept;
 
         //  returns true if vectors and GPU buffers allready created
     virtual bool VIsMutable_W() const noexcept = 0;
@@ -42,25 +50,25 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
     void VChanged_bl_WOI() override;    //  callback ZC_WindowOrthoIndent recalculated bl
 
     float GetStacionarDepth();
-    void SetFocuseDepth();
+    void SetFocuseDepthAndColor();
 
 
 
 
     
-    void VCursorCollisionStart_EO(float time) override {}
-    void VCursorCollisionEnd_EO(float time) override {}
+    void VCursorCollisionStart_Obj(float time) override {}
+    void VCursorCollisionEnd_Obj(float time) override {}
 
-    // void VCursoreMove_EO(float x, float y, float rel_x, float rel_y, float time) override {}
-    bool VLeftButtonDown_EO(float time, bool& cursorMoveWhilePressed) override
+    // void VCursorMove_Obj(float x, float y, float rel_x, float rel_y, float time) override {}
+    bool VLeftButtonDown_Obj(float time, bool& cursorMoveWhilePressed) override
     {
-        cursorMoveWhilePressed = IsMovable();
+        cursorMoveWhilePressed = IsUseCursorMoveEventOnMBLetfDown();
         MakeForcused();
         return true;
     }
-    void VLeftButtonUp_EO(float time) override {}
-    bool VRightButtonDown_EO(float time, bool& cursorMoveWhilePressed) override { return true; }
-    void VRightButtonUp_EO(float time) override {}
-    void VScroll_EO(float vertical, float time) override {}
+    void VLeftButtonUp_Obj(float time) override {}
+    bool VRightButtonDown_Obj(float time, bool& cursorMoveWhilePressed) override { return true; }
+    void VRightButtonUp_Obj(float time) override {}
+    void VScroll_Obj(float vertical, float time) override {}
 };
 

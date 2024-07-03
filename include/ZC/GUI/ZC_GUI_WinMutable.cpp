@@ -1,7 +1,6 @@
 #include <ZC/GUI/ZC_GUI_WinMutable.h>
 
 #include <ZC/GUI/ZC_GUI.h>
-#include <ZC/GUI/ZC_GUI_Depth.h>
 #include <ZC/GUI/ZC_GUI_Bindings.h>
 
 using namespace ZC_GUI_Bindings;
@@ -16,7 +15,7 @@ ZC_GUI_WinMutable::ZC_GUI_WinMutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags
     bufBLs(GL_SHADER_STORAGE_BUFFER, bind_BL),
     bufObjDatas(GL_SHADER_STORAGE_BUFFER, bind_ObjData)
 {
-    if (isDrawing) SetFocuseDepth();
+    if (isDrawing) SetFocuseDepthAndColor();
     ZC_GUI::AddWindow(this);
 }
 
@@ -30,7 +29,7 @@ ZC_GUI_WinMutable::ZC_GUI_WinMutable(const ZC_WOIData& _woiData, const ZC_GUI_UV
     bufBLs(GL_SHADER_STORAGE_BUFFER, bind_BL),
     bufObjDatas(GL_SHADER_STORAGE_BUFFER, bind_ObjData)
 {
-    if (isDrawing) SetFocuseDepth();
+    if (isDrawing) SetFocuseDepthAndColor();
     ZC_GUI::AddWindow(this);
 }
 
@@ -81,7 +80,7 @@ bool ZC_GUI_WinMutable::VIsMutable_W() const noexcept
 void ZC_GUI_WinMutable::VSetDrawState_W(bool needDraw)
 {
     if (VIsDrawing_Obj() == needDraw) return;
-    if (needDraw && IsMovable() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
+    if (needDraw && this->IsUseCursorMoveEventOnMBLetfDown() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
         SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
     isDrawing = needDraw;
     ZC_GUI::UpdateWindowDrawState(this);
@@ -111,7 +110,7 @@ void ZC_GUI_WinMutable::VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>
     bufBLs.GLNamedBufferSubData(offset, byteSize, pBL_start);
 }
 
-void ZC_GUI_WinMutable::VCursoreMove_EO(float rel_x, float rel_y)
+void ZC_GUI_WinMutable::VCursorMove_Obj(float rel_x, float rel_y)
 {
     ZC_Vec2<float> rel(rel_x, rel_y);
     for (ZC_Vec2<float>& rBL : bls) rBL += rel;

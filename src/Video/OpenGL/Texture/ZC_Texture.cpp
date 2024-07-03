@@ -8,7 +8,9 @@
 
 ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLuint _binding, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
 {
-    int width, height, channels;
+    int width = 0,
+        height = 0,
+        channels = 0;
 
     stbi_set_flip_vertically_on_load(true);
     

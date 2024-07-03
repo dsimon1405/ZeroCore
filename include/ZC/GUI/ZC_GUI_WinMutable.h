@@ -35,7 +35,7 @@ struct ZC_GUI_WinMutable : public ZC_GUI_Window
     void VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData) override;
     void VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end) override;
 
-    void VCursoreMove_EO(float rel_x, float rel_y) override;
+    void VCursorMove_Obj(float rel_x, float rel_y) override;
 
 };
 

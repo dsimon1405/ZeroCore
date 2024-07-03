@@ -1,6 +1,7 @@
 #include <ZC/GUI/ZC_GUI_Obj.h>
 
 #include <ZC/GUI/ZC_GUI_Window.h>
+#include <ZC/Video/ZC_SWindow.h>
 
 #include <cassert>
 
@@ -72,6 +73,7 @@ void ZC_GUI_Obj::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vec
 {
     pObjData->borderIndex = borderIndex;
     ZC_Vec2<float>* pBL_temp = &rBLs.emplace_back(*pBL);
+    VConf_SetTextUV();
     ZC_GUI_ObjData* pObjData_temp = &rObjDatas.emplace_back(*pObjData);
 
     if (this->isFirstGetDataCall)
@@ -95,15 +97,28 @@ void ZC_GUI_Obj::VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_e
     if (pObjHolder) return pObjHolder->VSubDataBL_Obj(pBL_start, pBL_end);
 }
 
-bool ZC_GUI_Obj::MakeCursorCollision_Obj(float x, float y, ZC_GUI_EventObj*& rpWindow, ZC_GUI_EventObj*& rpObj, ZC_GUI_EventObj*& rpScroll)
+bool ZC_GUI_Obj::MakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpWindow, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll)
 {
-    if (!VCheckCursorCollision_EO(x, y)) return false;
+    if (!VCheckCursorCollision_Obj(x, y)) return false;
     rpObj = this;
     if (VIsUseScrollEvent_Obj()) rpScroll = this;
     return true;
 }
 
-bool ZC_GUI_Obj::VCheckCursorCollision_EO(float x, float y)
+bool ZC_GUI_Obj::CheckCursorCollision_Obj()
+{
+    float x = 0.f;
+    float y = 0.f;
+    ZC_SWindow::GetCursorPosition(x, y);
+    return VCheckCursorCollision_Obj(x, y);
+}
+
+bool ZC_GUI_Obj::Collision(float x, float y, float bl_x, float bl_y, float tr_x, float tr_y)
+{
+    return bl_x <= x && bl_y <= y && x <= tr_x && y <= tr_y;
+}
+
+bool ZC_GUI_Obj::VCheckCursorCollision_Obj(float x, float y)
 {
     return VIsDrawing_Obj() && this->Collision(x, y, (*pBL)[0], (*pBL)[1], (*pBL)[0] + pObjData->width, (*pBL)[1] + pObjData->height);
 }

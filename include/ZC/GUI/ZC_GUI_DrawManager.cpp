@@ -3,12 +3,13 @@
 #include <ZC/Video/OpenGL/Shader/ZC_ShaderManager.h>
 #include <ZC/Video/OpenGL/Shader/ZC_ShaderPath.h>
 #include <ZC/GUI/ZC_GUI_Bindings.h>
+#include <ZC/File/ZC_File.h>
 
 #include <cassert>
 
 bool ZC_GUI_DrawManager::Init()
 {
-    texture = ZC_Texture::LoadTexture2D("/home/dmitry/Загрузки/icons/icons.png", ZC_GUI_Bindings::bind_Texture);
+    texture = ZC_Texture::LoadTexture2D(ZC_FSPath(ZC_ZCDirPath).append("textures/gui/icons.png").c_str(), ZC_GUI_Bindings::bind_tex_Icons);
     
     assert(ZC_ShaderPrograms::CompilationTest(ZC_ShaderPath::GetPath_Vertex(ZC_SV_gui).c_str(), nullptr, nullptr, ZC_ShaderPath::GetPath_Geometry(ZC_SG_gui).c_str(),
         ZC_ShaderPath::GetPath_Fragment(ZC_SF_gui).c_str()));

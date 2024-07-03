@@ -27,19 +27,19 @@ struct ZC_GUI_Font
         //  All font chars data have same height (rows count in 2d interpritation of array ZC_GUI_Font::Character::data).
     int GetHeight();
 
-    /*
-    Fills 1d array (interpreted as 2d array) of alpha channel datas of symbols from wstr.
+    // /*
+    // Fills 1d array (interpreted as 2d array) of alpha channel datas of symbols from wstr.
 
-    Params:
-    - wstr - source unicode string.
-    - rWidth - reference on preferred width. If width longer then wstr pixels length, wstr data will be centered. The actual line width will appear here.
-    - rStart_row - the actual ndex of the first not empty row in source will appear here.
-    - rHeight - the actual count of not empty(white space) rows will appear here.
+    // Params:
+    // - wstr - source unicode string.
+    // - rWidth - reference on preferred width. If width longer then wstr pixels length, wstr data will be centered. The actual line width will appear here.
+    // - rStart_row - the actual ndex of the first not empty row in source will appear here.
+    // - rHeight - the actual count of not empty(white space) rows will appear here.
 
-    Return:
-    Alpha chennels vector. 
-    */
-    std::vector<unsigned char> FillWStrData(const std::wstring& wstr, int& rWidth, int& rStart_row, int& rHeight);
+    // Return:
+    // Alpha chennels vector. 
+    // */
+    // std::vector<unsigned char> FillWStrData(const std::wstring& wstr, int& rWidth, int& rStart_row, int& rHeight);
 
     /*
     Fills concrete quad part part of 2d array, with some add data. Both data and add are in 1d arrays, but interprete as 2d arrays.
@@ -53,8 +53,7 @@ struct ZC_GUI_Font
     - add_height - count of not empty rows in source (add) (count of 1d arrays in 2d array).
     - add_startRow - index of the first not empty row in source (add).
     */
-    static void FillQuad2D(std::vector<unsigned char>& data, int& rData_index, int data_width,
-        const std::vector<unsigned char>& add, int add_width, int add_height, int add_startRow);
+    void AddSymbolData(std::vector<unsigned char>& data, int& rData_index, int data_width, const Character* pCh);
 };
 typedef typename ZC_GUI_Font::Character ZC_GUI_Character;
 
