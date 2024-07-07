@@ -151,16 +151,16 @@ bool ZC_GUI_ObjBorder::VIsUseScrollEvent_Obj() const noexcept
     return isScrollable;
 }
 
-bool ZC_GUI_ObjBorder::VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpWindow, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll)
+bool ZC_GUI_ObjBorder::VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll)
 {
     if (!VCheckCursorCollision_Obj(x, y)) return false;
     
-    if (!(this->pObjHolder)) rpWindow = this;     //  top level, it's window
+    if (!(this->pObjHolder)) rpObj = this;     //  top level, it's window
     if (VIsUseScrollEvent_Obj()) rpScroll = this;
 
     for (Row& row : rows)    //  window collision
         for (ZC_GUI_Obj* pObj : row.objs)
-            if (pObj->VMakeCursorCollision_Obj(x, y, rpWindow, rpObj, rpScroll)) return true;
+            if (pObj->VMakeCursorCollision_Obj(x, y, rpObj, rpScroll)) return true;
     return true;
 }
 

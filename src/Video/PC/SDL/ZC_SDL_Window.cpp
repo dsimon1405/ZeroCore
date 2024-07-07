@@ -26,13 +26,13 @@ ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, cons
     // if (SDL_GL_LoadLibrary(NULL) != 0) { ZC_ErrorLogger::Err("SDL_GL_LoadLibrary() faild! " + std::string(SDL_GetError()), __FILE__, __LINE__);}
 
     using namespace ZC_SWindow;
-	if (!SetOpenGLAttributes(flags & ZC_Window_Multisampling_4 ? 4
-							: flags & ZC_Window_Multisampling_3 ? 3
-							: flags & ZC_Window_Multisampling_2 ? 2
-							: flags & ZC_Window_Multisampling_1 ? 1
+	if (!SetOpenGLAttributes(flags & ZC_SW__Multisampling_4 ? 4
+							: flags & ZC_SW__Multisampling_3 ? 3
+							: flags & ZC_SW__Multisampling_2 ? 2
+							: flags & ZC_SW__Multisampling_1 ? 1
 							: 0)) return;
 
-	pWindow = !(flags & ZC_Window_Border) ? SDL_CreateWindow(name, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN)
+	pWindow = !(flags & ZC_SW__Border) ? SDL_CreateWindow(name, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN)
 		: _width <= 0 || _height <= 0 ? SDL_CreateWindow(name, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED)
 			: SDL_CreateWindow(name, _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		

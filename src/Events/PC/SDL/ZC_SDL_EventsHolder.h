@@ -4,5 +4,5 @@
 
 struct ZC_SDL_EventsHolder : public ZC_EventsHolder
 {
-    bool PollEvents(float previousFrameTime, ZC_GUI_EventManager& gui_eventManager) override;
+    bool PollEvents(float previousFrameTime) override;
 };

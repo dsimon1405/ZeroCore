@@ -7,7 +7,7 @@
 
 #include <cassert>
 
-bool ZC_GUI_DrawManager::Init()
+ZC_GUI_DrawManager::ZC_GUI_DrawManager()
 {
     texture = ZC_Texture::LoadTexture2D(ZC_FSPath(ZC_ZCDirPath).append("textures/gui/icons.png").c_str(), ZC_GUI_Bindings::bind_tex_Icons);
     
@@ -18,19 +18,17 @@ bool ZC_GUI_DrawManager::Init()
         && ZC_ShaderManager::LoadShaderProgram({ .path = ZC_ShaderPath::GetPath_Fragment(ZC_SF_gui), .customID = ZC_SF_gui }, GL_FRAGMENT_SHADER)))
     {
         assert(false);
-        return false;
+        return;
     }
 
     pPipeline = ZC_ShaderManager::GetPipeLine(ZC_SV_gui, ZC_Shader_None, ZC_Shader_None, ZC_SG_gui, ZC_SF_gui);
     if (pPipeline == nullptr)
     {
         assert(false);   //  create pipeline fail
-        return false;
+        return;
     }
 
     glCreateVertexArrays(1, &vao);
-
-    return true;
 }
 
 void ZC_GUI_DrawManager::AddWindow(ZC_GUI_Window* pWindow)

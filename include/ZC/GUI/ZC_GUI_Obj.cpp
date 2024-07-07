@@ -1,7 +1,7 @@
 #include <ZC/GUI/ZC_GUI_Obj.h>
 
-#include <ZC/GUI/ZC_GUI_Window.h>
 #include <ZC/Video/ZC_SWindow.h>
+#include <ZC/GUI/ZC_GUI.h>
 
 #include <cassert>
 
@@ -37,6 +37,21 @@ float ZC_GUI_Obj::GetHeight()
 void ZC_GUI_Obj::SetObjHolder(ZC_GUI_Obj* _pObjHolder)
 {
     pObjHolder = _pObjHolder;
+}
+
+bool ZC_GUI_Obj::IsWindowFocused()
+{
+    return pObjHolder ? pObjHolder->IsWindowFocused() : ZC_GUI::pGUI->eventManager.IsWindowFocused(this);
+}
+
+void ZC_GUI_Obj::MakeWindowFocused()
+{
+    if (pObjHolder) pObjHolder->MakeWindowFocused();
+    else
+    {
+        if (!VIsDrawing_Obj()) return;
+        ZC_GUI::UpdateWindowDrawState(this);
+    }
 }
 
 bool ZC_GUI_Obj::VIsStacionar_Obj() const noexcept
@@ -97,7 +112,7 @@ void ZC_GUI_Obj::VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_e
     if (pObjHolder) return pObjHolder->VSubDataBL_Obj(pBL_start, pBL_end);
 }
 
-bool ZC_GUI_Obj::MakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpWindow, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll)
+bool ZC_GUI_Obj::MakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll)
 {
     if (!VCheckCursorCollision_Obj(x, y)) return false;
     rpObj = this;
@@ -121,4 +136,41 @@ bool ZC_GUI_Obj::Collision(float x, float y, float bl_x, float bl_y, float tr_x,
 bool ZC_GUI_Obj::VCheckCursorCollision_Obj(float x, float y)
 {
     return VIsDrawing_Obj() && this->Collision(x, y, (*pBL)[0], (*pBL)[1], (*pBL)[0] + pObjData->width, (*pBL)[1] + pObjData->height);
+}
+
+bool ZC_GUI_Obj::ButtonDown(ZC_ButtonID buttonID, float time)
+{
+    if (!(ZC_GUI::pGUI->eventManager.IsActiveEventManager()) || !IsWindowDrawing_Obj() || !VIsDrawing_Obj()) return true;   //  window or object don't drawing, event coud be used not gui
+    switch (buttonID)
+    {
+    case ZC_ButtonID::M_LEFT:
+    {
+        if (!VMouseButtonLeftDown_Obj(time)) return false;
+        if (VIsUseCursorMoveEventOnMBLetfDown_Obj()) ZC_GUI::pGUI->eventManager.SetCursorMoveObj(this);     //  left button down objects may be added for mouse cursor move event
+        if (!IsWindowFocused()) MakeWindowFocused();    //  if LMB is pressed, regardless of the object or window, the window should focus if it can
+    } break;
+    case ZC_ButtonID::M_RIGHT:
+    {
+        VRightButtonDown_Obj(time);
+        if (!IsWindowFocused()) MakeWindowFocused();    //  if RMB is pressed, regardless of the object or window, the window should focus if it can
+    } break;
+    default: VKeyboardButtonDown_Obj(time); break;
+    }
+    ZC_GUI::pGUI->eventManager.SetPressedObj(this);
+    return true;   //  event now belongs to gui, can't be used on other systems
+}
+
+void ZC_GUI_Obj::ButtonUp(ZC_ButtonID buttonID, float time)
+{
+    if (!(ZC_GUI::pGUI->eventManager.IsActiveEventManager()) || !IsWindowDrawing_Obj() || !VIsDrawing_Obj()) return;   //  window or object don't drawing, event coud be used not gui
+    switch (buttonID)
+    {
+    case ZC_ButtonID::M_LEFT:
+    {
+        VMouseButtonLeftUp_Obj(time);
+        ZC_GUI::pGUI->eventManager.MouseButtonUp();
+    } break;
+    case ZC_ButtonID::M_RIGHT: VRightButtonUp_Obj(time); break;
+    default: VKeyboardButtonUp_Obj(time); break;
+    }
 }

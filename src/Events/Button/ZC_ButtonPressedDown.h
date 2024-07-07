@@ -13,6 +13,8 @@ class ZC_ButtonHolder;
 class ZC_ButtonPressedDown
 {
 public:
+    static inline ZC_ButtonPressedDown* pBPD = nullptr;
+
     ZC_ButtonPressedDown(ZC_ButtonHolder* _pButtonHolder);
 
     ZC_EC Connect(ZC_ButtonID buttonId, ZC_Function<void(ZC_ButtonID, float)>&& function);
@@ -20,10 +22,11 @@ public:
     //  returns true if button was allready pressed, otherwise false and cheks connetion state and set in isConnected
     bool AddActiveDownButton(ZC_ButtonID buttonId, bool& isConnected);
     //  returns true if button connected, calls on button up
-    bool EraseActiveDownButton(ZC_ButtonID buttonId);
+    bool EraseActiveDownButton(ZC_ButtonID buttonId, float time);
     //  calls active buttons wich have valid pointer on forward_list of down buttons
     void CallPressedButtons(float time);
     bool IsButtonDownConnected(ZC_ButtonID buttonId);
+    static void DisablePressedButton(void* pGUI_Obj);
 
 private:
     ZC_ButtonHolder* pButtonHolder;

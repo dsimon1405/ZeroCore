@@ -17,7 +17,8 @@ struct ZC_GUI_DrawManager
     ZC_Pipeline* pPipeline = nullptr;
     ZC_Texture texture;
 
-    bool Init();
+    ZC_GUI_DrawManager();
+
     void AddWindow(ZC_GUI_Window* pWindow);
     void EraseWindow(ZC_GUI_Window* pWindow);
     void Configure();

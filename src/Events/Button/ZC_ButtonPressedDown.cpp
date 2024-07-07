@@ -3,12 +3,15 @@
 #include "ZC_ButtonHolder.h"
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 #include <ZC/Events/ZC_ECTargetPointer.h>
+#include <ZC/GUI/ZC_GUI.h>
 
 #include <cassert>
 
 ZC_ButtonPressedDown::ZC_ButtonPressedDown(ZC_ButtonHolder* _pButtonHolder)
     : pButtonHolder(_pButtonHolder)
-{}
+{
+    pBPD = this;
+}
 
 ZC_EC ZC_ButtonPressedDown::Connect(ZC_ButtonID buttonId, ZC_Function<void(ZC_ButtonID, float)>&& function)
 {
@@ -19,31 +22,43 @@ ZC_EC ZC_ButtonPressedDown::Connect(ZC_ButtonID buttonId, ZC_Function<void(ZC_Bu
 void ZC_ButtonPressedDown::Disconnect(const void* pFunc)
 {
     ZC_ForwardListErase(connectedButtonDowns, pFunc);
-    //  if disconnected button active, make pointer on active function = nullptr
+        //  if disconnected button active, make pointer on active function = nullptr
     auto pActiveButtonDown = ZC_Find(pressedButtonDowns, pFunc);
     if (pActiveButtonDown) pActiveButtonDown->func = nullptr;
 }
 
 bool ZC_ButtonPressedDown::AddActiveDownButton(ZC_ButtonID buttonId, bool& isConnected)
 {
-    if (ZC_Find(pressedButtonDowns, buttonId)) return true;     //  button allready pressed
+    if (ZC_Find(pressedButtonDowns, buttonId)) return false;     //  button allready pressed
+    if ((buttonId == ZC_ButtonID::M_LEFT && ZC_Find(pressedButtonDowns, ZC_ButtonID::M_RIGHT))
+        || (buttonId == ZC_ButtonID::M_RIGHT && ZC_Find(pressedButtonDowns, ZC_ButtonID::M_LEFT)))   //  mbl pressed, avoid start mbr press, till mbl release
+    {
+        pressedButtonDowns.emplace_back(ZC_ConnectedButton<ZC_Function<void(ZC_ButtonID, float)>*>{ buttonId, nullptr});
+        return false;
+    }
     
-    auto pConnectedButtonDown = ZC_Find(connectedButtonDowns, buttonId);
-    //  if button connected create ActiveDownButton with pointer on that function, otherwise with nullptr
-    pressedButtonDowns.emplace_back(ZC_ConnectedButton<ZC_Function<void(ZC_ButtonID, float)>*>{ buttonId, pConnectedButtonDown ? &pConnectedButtonDown->func : nullptr });
-    isConnected = pConnectedButtonDown;
+    ZC_GUI_Obj* pGuiObj = ZC_GUI::pGUI ? ZC_GUI::pGUI->eventManager.GetButtonDownObject(buttonId) : nullptr;    //  find button in gui objects
+    if (pGuiObj) isConnected = pressedButtonDowns.emplace_back(ZC_ConnectedButton<ZC_Function<void(ZC_ButtonID, float)>*>{ buttonId, nullptr, pGuiObj}).pGuiObj;
+    else
+    {
+        auto pConnectedButtonDown = ZC_Find(connectedButtonDowns, buttonId);    //  find button function in connected events
+            //  if button connected create ActiveDownButton with pointer on that function, otherwise with nullptr
+        isConnected = pressedButtonDowns.emplace_back(ZC_ConnectedButton<ZC_Function<void(ZC_ButtonID, float)>*>
+            { buttonId, pConnectedButtonDown ? &(pConnectedButtonDown->func) : nullptr}).func;
+    
+    }
     return false;
 }
 
-bool ZC_ButtonPressedDown::EraseActiveDownButton(ZC_ButtonID buttonId)
+bool ZC_ButtonPressedDown::EraseActiveDownButton(ZC_ButtonID buttonId, float time)
 {
     for (auto curIter = pressedButtonDowns.begin(); curIter != pressedButtonDowns.end(); ++curIter)
     {
         if (*curIter == buttonId)
         {
-            bool isConnected = curIter->func;   //  if active button have not nullptr, in calling function (func), then button down connected
+            bool isEventUsed = curIter->ButtonUp_GUIObj(buttonId, time);
             pressedButtonDowns.erase(curIter);
-            return isConnected;
+            return isEventUsed;
         }
     }
     return false;
@@ -57,4 +72,9 @@ void ZC_ButtonPressedDown::CallPressedButtons(float time)
 bool ZC_ButtonPressedDown::IsButtonDownConnected(ZC_ButtonID buttonId)
 {
     return ZC_Find(connectedButtonDowns, buttonId) != nullptr;
+}
+
+void ZC_ButtonPressedDown::DisablePressedButton(void* pGUI_Obj)
+{
+    ZC_Find(pBPD->pressedButtonDowns, static_cast<ZC_GUI_Obj*>(pGUI_Obj))->pGuiObj = nullptr;
 }

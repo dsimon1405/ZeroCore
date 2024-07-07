@@ -3,6 +3,7 @@
 #include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #include <ZC/Video/OpenGL/Shader/ZC_ShaderManager.h>
+#include <ZC/Video/ZC_SWindow.h>
 
 #ifdef ZC_SDL_VIDEO
 #include "PC/SDL/ZC_SDL_Window.h"
@@ -12,7 +13,7 @@ bool ZC_SWindowHolder::MakeWindowHolder(int flags, int width, int height, const 
     if (!upWindowHolder) return false;
     upWindowHolder->LoadShProgs();
     upWindowHolder->AddZC_Render();
-    upWindowHolder->gui.Init();
+    if (flags & ZC_SWindow::ZC_SW__GUI) upWindowHolder->upGUI = new ZC_GUI();
     return true;
 }
 // #elif defined(ZC_ANDROID_NATIVE_APP_GLUE)
@@ -32,11 +33,11 @@ ZC_SWindowHolder::~ZC_SWindowHolder()
 
 void ZC_SWindowHolder::RunMainCycle()
 {
-    gui.Configure();
+    if (upGUI) upGUI->Configure();
     while (true)
     {
-        if (!(upEventsHolder->PollEvents(fps.StartNewFrame(), gui.eventManager))) break;
-        renderer.Draw(gui);
+        if (!(upEventsHolder->PollEvents(fps.StartNewFrame()))) break;
+        renderer.Draw(*(upGUI.Get()));
     }
 }
 
@@ -67,8 +68,7 @@ void ZC_SWindowHolder::GetCursorPosition(float& posX, float& posY)
 
 ZC_SWindowHolder::ZC_SWindowHolder()
     : upEventsHolder(ZC_EventsHolder::MakeEventsHolder()),
-	fps(ZC_FPS::Seconds)
-,
+	fps(ZC_FPS::Seconds),
     renderer({ &ZC_SWindowHolder::SwapBuffer, this })
 {}
 

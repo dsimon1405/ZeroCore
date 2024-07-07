@@ -35,7 +35,7 @@ private:
     ZC_uptr<ZC_EventsHolder> upEventsHolder;
 	ZC_FPS fps;
     ZC_Renderer renderer;
-    ZC_GUI gui;
+    ZC_uptr<ZC_GUI> upGUI;
 
     ZC_MouseCollisionWindowController mcwc;
 

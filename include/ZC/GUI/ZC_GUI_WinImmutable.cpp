@@ -98,7 +98,7 @@ bool ZC_GUI_WinImmutable::VIsMutable_W() const noexcept
 void ZC_GUI_WinImmutable::VSetDrawState_W(bool needDraw)
 {
     if (VIsDrawing_Obj() == needDraw) return;
-    if (needDraw && this->IsUseCursorMoveEventOnMBLetfDown() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
+    if (needDraw && this->VIsUseCursorMoveEventOnMBLetfDown_Obj() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
         SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
     daic.instanceCount = needDraw ? 1 : 0;
     bufDAICs.GLMapNamedBufferRange_Write(daicOffset + offsetof(ZC_DrawArraysIndirectCommand, instanceCount),

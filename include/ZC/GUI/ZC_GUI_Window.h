@@ -29,9 +29,9 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
     bool VIsStacionar_Obj() const noexcept override;
 
     bool IsBackground() const noexcept;
-    void MakeForcused();
+        //  make window unfocused (calls in ZC_EventManager::UpdateWindowState())
     void MakeUnfocused();
-    bool IsUseCursorMoveEventOnMBLetfDown() const noexcept;
+    bool VIsUseCursorMoveEventOnMBLetfDown_Obj() const noexcept override;
 
         //  returns true if vectors and GPU buffers allready created
     virtual bool VIsMutable_W() const noexcept = 0;
@@ -60,14 +60,9 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
     void VCursorCollisionEnd_Obj(float time) override {}
 
     // void VCursorMove_Obj(float x, float y, float rel_x, float rel_y, float time) override {}
-    bool VLeftButtonDown_Obj(float time, bool& cursorMoveWhilePressed) override
-    {
-        cursorMoveWhilePressed = IsUseCursorMoveEventOnMBLetfDown();
-        MakeForcused();
-        return true;
-    }
-    void VLeftButtonUp_Obj(float time) override {}
-    bool VRightButtonDown_Obj(float time, bool& cursorMoveWhilePressed) override { return true; }
+    bool VMouseButtonLeftDown_Obj(float time) override { return true; }
+    void VMouseButtonLeftUp_Obj(float time) override {}
+    bool VRightButtonDown_Obj(float time) override { return true; }
     void VRightButtonUp_Obj(float time) override {}
     void VScroll_Obj(float vertical, float time) override {}
 };

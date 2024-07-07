@@ -1,12 +1,8 @@
 #include <ZC/GUI/ZC_GUI.h>
 
-bool ZC_GUI::Init()
+ZC_GUI::ZC_GUI()
 {
-    if (!textManager.Init()) return false;
-    if (!drawManager.Init()) return false;
-    eventManager.ChangeActivity(true);
     pGUI = this;
-    return true;
 }
 
 void ZC_GUI::Configure()
@@ -36,9 +32,9 @@ void ZC_GUI::EraseWindow(ZC_GUI_Window* pWindow)
     pGUI->eventManager.EraseWindow(pWindow);
 }
 
-void ZC_GUI::UpdateWindowDrawState(ZC_GUI_Window* pWindow)
+void ZC_GUI::UpdateWindowDrawState(ZC_GUI_Obj* pWindow)
 {
     if (!pGUI) return;
-    pGUI->drawManager.UpdateWindowDrawState(pWindow);
-    pGUI->eventManager.UpdateWindowState(pWindow);
+    pGUI->drawManager.UpdateWindowDrawState(dynamic_cast<ZC_GUI_Window*>(pWindow));
+    pGUI->eventManager.UpdateWindowState(dynamic_cast<ZC_GUI_Window*>(pWindow));
 }

@@ -48,11 +48,11 @@ struct ZC_GUI_TextManager
         fontParams = _fontParams;
     }
 
-    bool Init()
+    ZC_GUI_TextManager()
     {
         if (fontParams.fontPath.empty()) fontParams.fontPath = ZC_GUI_FontLoader::GetPath(ZC_GUI_FontLoader::FontName::Arial);
         font = ZC_GUI_FontLoader::LoadFont(fontParams.fontPath.c_str(), fontParams.pix_height, fontParams.fontElements);
-        if (font.characters.empty()) return false;
+        if (font.characters.empty()) return;
             //  add loaded symbols in static_texts
         for (auto ch : font.characters) texts.emplace_back(Text
             {
@@ -60,7 +60,6 @@ struct ZC_GUI_TextManager
                 .width = ch.width,
             });
         pTM = this;
-        return true;
     }
 
     void Configure()
