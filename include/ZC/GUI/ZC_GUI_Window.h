@@ -32,6 +32,8 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
         //  make window unfocused (calls in ZC_EventManager::UpdateWindowState())
     void MakeUnfocused();
     bool VIsUseCursorMoveEventOnMBLetfDown_Obj() const noexcept override;
+        //  find keyboard event (calls from ZC_GUI_EventManager::GetButtonDownObject())
+    ZC_GUI_Obj* GetButtonKeyboard(ZC_ButtonID buttonId);
 
         //  returns true if vectors and GPU buffers allready created
     virtual bool VIsMutable_W() const noexcept = 0;
@@ -42,6 +44,7 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
     ZC_GUI_WinFlags winFlags;
     GLsizeiptr bordersCount = 0,    //  future size of vector (and buffer for that vectors) of borders of heir or static window
         objsCount = 0;          //  future size of vectors (and buffers for that vectors) of bls, depths of heir or static window
+    std::forward_list<ZC_GUI_Obj*> buttonKeyboard_objs;     //  ZC_ButtonKeyboard(s) and it's heirs
 
     ZC_GUI_Window(const ZC_WOIData& _woiData, ZC_GUI_WinFlags winFlags);
     ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags winFlags);
@@ -49,21 +52,9 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
 
     void VChanged_bl_WOI() override;    //  callback ZC_WindowOrthoIndent recalculated bl
 
+    void VEraseFrom__buttonKeyboard_objs_B(ZC_GUI_Obj* pDelete) override;
+
     float GetStacionarDepth();
     void SetFocuseDepthAndColor();
-
-
-
-
-    
-    void VCursorCollisionStart_Obj(float time) override {}
-    void VCursorCollisionEnd_Obj(float time) override {}
-
-    // void VCursorMove_Obj(float x, float y, float rel_x, float rel_y, float time) override {}
-    bool VMouseButtonLeftDown_Obj(float time) override { return true; }
-    void VMouseButtonLeftUp_Obj(float time) override {}
-    bool VRightButtonDown_Obj(float time) override { return true; }
-    void VRightButtonUp_Obj(float time) override {}
-    void VScroll_Obj(float vertical, float time) override {}
 };
 

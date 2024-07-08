@@ -114,7 +114,7 @@ std::forward_list<typename ZC_GUI_FontLoader::ElementsRange> ZC_GUI_FontLoader::
 unsigned long ZC_GUI_FontLoader::ElementsRange::GetCount()
 {
     unsigned long count = 0;
-    for (Range& range : ranges) count += range.end_index - range.start_index + 1;     //  + 1 caurse index difference
+    for (UnicodeRange& range : ranges) count += range.end_index - range.start_index + 1;     //  + 1 caurse index difference
     return count;
 }
 
@@ -150,7 +150,7 @@ void ZC_GUI_FontLoader::ElementsRange::FillCharactersParams(void* ft_face, std::
         }
     };
 
-    for (Range& range : ranges) lambFillChars(range.start_index, range.end_index + 1);  //  + 1 for more easy looping in for(;;)
+    for (UnicodeRange& range : ranges) lambFillChars(range.start_index, range.end_index + 1);  //  + 1 for more easy looping in for(;;)
 }
 
 void ZC_GUI_FontLoader::ElementsRange::FillCharactersData(void* ft_face, std::vector<ZC_GUI_Character>& rChrs, size_t& rChrsIndex,
@@ -185,5 +185,5 @@ void ZC_GUI_FontLoader::ElementsRange::FillCharactersData(void* ft_face, std::ve
         }
     };
     
-    for (Range& range : ranges) lambFillData(range.start_index, range.end_index + 1);  //  + 1 for more easy looping in for(;;)
+    for (UnicodeRange& range : ranges) lambFillData(range.start_index, range.end_index + 1);  //  + 1 for more easy looping in for(;;)
 }

@@ -26,6 +26,7 @@ struct ZC_GUI_Font
     const Character* FindCharacter(wchar_t ch);
         //  All font chars data have same height (rows count in 2d interpritation of array ZC_GUI_Font::Character::data).
     int GetHeight();
+    wchar_t GetLongestChararcter() const noexcept;
 
     // /*
     // Fills 1d array (interpreted as 2d array) of alpha channel datas of symbols from wstr.

@@ -60,7 +60,7 @@ void ZC_GUI_WinMutable::VConfigure_Obj()
 
     drawArrays.count = this->objsCount - drawArrays.first;    //  count drawing elements (GL_POINTS) in window; daic.first shows is border drown or not
 
-    VConf_GetData_Obj(borders, bls, objDatas, 0);
+    VConf_GetData_Obj(borders, bls, objDatas, 0, this->buttonKeyboard_objs);
 
     bufBorders.GLNamedBufferData(sizeof(ZC_GUI_Border) * borders.size(), borders.data(), GL_DYNAMIC_DRAW);
     bufBLs.GLNamedBufferData(sizeof(ZC_Vec2<float>) * bls.size(), bls.data(), GL_DYNAMIC_DRAW);

@@ -23,8 +23,9 @@ struct ZC_GUI_TextManager
     struct Text
     {
         std::wstring wstr;
-        int width = 0;                      //  text width in pixels
+        int width = 0;          //  text width in pixels
         ZC_GUI_UV uv;
+        int start_pixel = 0;    //  start index on the bottom line on the texture (start from bl, end is br)
 
         bool operator == (const std::wstring& _wstr) const noexcept
         {
@@ -54,7 +55,7 @@ struct ZC_GUI_TextManager
         font = ZC_GUI_FontLoader::LoadFont(fontParams.fontPath.c_str(), fontParams.pix_height, fontParams.fontElements);
         if (font.characters.empty()) return;
             //  add loaded symbols in static_texts
-        for (auto ch : font.characters) texts.emplace_back(Text
+        for (auto ch : font.characters) stacionar_texts.emplace_back(Text
             {
                 .wstr = std::wstring(1, ch.symbol),
                 .width = ch.width,
@@ -66,15 +67,16 @@ struct ZC_GUI_TextManager
     {
         if (!pTM) return;
 
-        const int distance_pixel = 0;  //  2 pixels between texts in texture 
-        int total_width = texts.size() * distance_pixel;  //  add distances in width
-        for (Text& text : texts) total_width += text.width;
+        const int distance_pixel = 0;  //  2 pixels between stacionar_texts in texture 
+        int total_width = stacionar_texts.size() * distance_pixel;  //  add distances in width
+        for (Text& text : stacionar_texts) total_width += text.width;
         
         int font_height = pTM->font.GetHeight();
         std::vector<unsigned char> data(total_width * font_height);
         int data_index = 0;
-        for (Text& text : texts)
+        for (Text& text : stacionar_texts)
         {
+            text.start_pixel = data_index;
             text.uv = ZC_GUI_UV{ .bl{ (float)data_index / (float)total_width, 0.f}, .tr{ (float)(data_index + text.width) / (float)total_width, 1.f } };
             for (const wchar_t& wch : text.wstr)
             {
@@ -92,13 +94,16 @@ struct ZC_GUI_TextManager
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
     }
 
-    static Text* GetText(const std::wstring& wstr)
+    static Text* GetText(const std::wstring& wstr, bool isStacionar)
     {
         if (!pTM) return nullptr;
 
-        Text* pExisting_text = ZC_Find(pTM->texts, wstr);
-        if (pExisting_text) return pExisting_text;
-        else if (pTM->IsConfigured()) return nullptr;   //  no adds after configuration
+        if (isStacionar)
+        {
+            Text* pExisting_text = ZC_Find(pTM->stacionar_texts, wstr);
+            if (pExisting_text) return pExisting_text;
+            else if (pTM->IsConfigured()) return nullptr;   //  no adds after configuration
+        }
 
         int wstr_width = 0;
         for (const wchar_t& wch : wstr)
@@ -108,11 +113,13 @@ struct ZC_GUI_TextManager
             wstr_width += pCh->width;
             if (&wch != wstr.data()) wstr_width += pCh->left_offset;   // if this is not the first wch of the wstr, adds left_offset
         }
-        return &(pTM->texts.emplace_back(Text
-            {
-                .wstr = wstr,
-                .width = wstr_width,
-            }));
+        
+        Text* pText = isStacionar ? &(pTM->stacionar_texts.emplace_back(Text{ .wstr = wstr, .width = wstr_width, }))
+            : &(pTM->stacionar_texts.emplace_back(Text{ .wstr = wstr, .width = wstr_width, }));
+        
+        if (!pTM->IsConfigured()) return pText;
+
+                                            //  add deletable text in teture and get uv
     }
 
     bool IsConfigured() const noexcept
@@ -125,11 +132,17 @@ struct ZC_GUI_TextManager
         texture.GLBindTextureUnit();
     }
 
+    int GetFontHeight()
+    {
+        font.GetHeight();
+    }
+
 private:
     static inline Params fontParams { .pix_height = 18, .fontElements = ZC_GUI_FE_Symbols | ZC_GUI_FE_English | ZC_GUI_FE_Russian };
     static inline ZC_GUI_TextManager* pTM;
 
     ZC_GUI_Font font;
-    std::list<Text> texts;
+    std::list<Text> stacionar_texts;
+    std::list<Text> deletable_texts;
     ZC_Texture texture;
 };

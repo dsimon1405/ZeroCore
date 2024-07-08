@@ -40,6 +40,12 @@ bool ZC_ButtonClick::IsButtonDownConnected(ZC_ButtonID buttonId)
     return ZC_Find(buttonHolders, buttonId) != nullptr;
 }
 
+void ZC_ButtonClick::ButtonWasReleased(ZC_ButtonID buttonId)
+{
+    ButtonHolder* pButtonHolder = ZC_Find(buttonHolders, buttonId);
+    if (pButtonHolder) pButtonHolder->callDown = true;
+}
+
 
 //  ButtonHolder
 

@@ -16,6 +16,22 @@ int ZC_GUI_Font::GetHeight()
     return characters.empty() ? 0 : characters.back().data.size() / characters.back().width;  //  width individual for character but all data have same height, so get it
 }
 
+wchar_t ZC_GUI_Font::GetLongestChararcter() const noexcept
+{
+    wchar_t longestCh = 0;
+    int longestLength = 0;
+    for (auto& ch : characters)
+    {
+        int length = ch.width + ch.left_offset;
+        if (length > longestLength)
+        {
+            longestCh = ch.symbol;
+            longestLength = length;
+        }
+    }
+    return longestCh;
+}
+
 // std::vector<unsigned char> ZC_GUI_Font::FillWStrData(const std::wstring& wstr, int& rWidth, int& rStart_row, int& rHeight)
 // {
 //     std::vector<const Character*> chs;

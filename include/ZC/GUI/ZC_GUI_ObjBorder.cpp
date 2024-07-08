@@ -67,7 +67,14 @@ void ZC_GUI_ObjBorder::VEraseObj_Obj(ZC_GUI_Obj* pObj)
 {
     if (VIsStacionar_Obj() && VIsConfigured_Obj()) return;  //  window is stacionar and allready configured
     for (Row& row : rows)
-        if (std::erase(row.objs, pObj) != 0 && VIsConfigured_Obj()) VConfigure_Obj();
+    {
+        if (std::erase(row.objs, pObj) != 0)
+        {
+            if (VIsConfigured_Obj()) VConfigure_Obj();
+            else VEraseFrom__buttonKeyboard_objs_B(pObj);
+            break;
+        }
+    }
 }
 
 const ZC_GUI_Border& ZC_GUI_ObjBorder::VGetBorder_Obj()
@@ -124,7 +131,8 @@ void ZC_GUI_ObjBorder::VConf_GetBordersAndObjsCount_Obj(GLsizeiptr& rBordersCoun
             pObj->VConf_GetBordersAndObjsCount_Obj(rBordersCount, rObjsCount);
 }
 
-void ZC_GUI_ObjBorder::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex)
+void ZC_GUI_ObjBorder::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas,
+    int borderIndex, std::forward_list<ZC_GUI_Obj*>& rButtonKeyboard_objs)
 {
     this->pObjData->borderIndex = static_cast<int>(rBorder.size());    //  minus one is not needed because we get the size before adding border
 
@@ -142,8 +150,10 @@ void ZC_GUI_ObjBorder::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, st
     this->pBL = pBL_temp;
     this->pObjData = pObjData_temp;
 
+    if (VIsButtonKeyboard_Obj()) rButtonKeyboard_objs.emplace_front(this);
+
     for (Row& row: rows)
-        for (ZC_GUI_Obj* pObj : row.objs) pObj->VConf_GetData_Obj(rBorder, rBLs, rObjDatas, this->pObjData->borderIndex);
+        for (ZC_GUI_Obj* pObj : row.objs) pObj->VConf_GetData_Obj(rBorder, rBLs, rObjDatas, this->pObjData->borderIndex, rButtonKeyboard_objs);
 }
 
 bool ZC_GUI_ObjBorder::VIsUseScrollEvent_Obj() const noexcept
@@ -167,6 +177,11 @@ bool ZC_GUI_ObjBorder::VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& r
 bool ZC_GUI_ObjBorder::VCheckCursorCollision_Obj(float x, float y)
 {    //  collision makes with with border, not with drawing elemnt
     return VIsDrawing_Obj() && pBorder->CursorCollision(x, y);
+}
+
+void ZC_GUI_ObjBorder::VEraseFrom__buttonKeyboard_objs_B(ZC_GUI_Obj* pDelete)
+{
+    dynamic_cast<ZC_GUI_ObjBorder*>(GetWindow())->VEraseFrom__buttonKeyboard_objs_B(pDelete);
 }
 
 

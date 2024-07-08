@@ -15,11 +15,13 @@ public:
 
     ZC_EC Connect(ZC_ButtonID buttonId, ZC_Function<void(ZC_ButtonID, float)>&& funcDown, ZC_Function<void(ZC_ButtonID, float)>&& funcUp);
     void Disconnect(const void* pFuncDownData);
-    //  returns true if button was used
+        //  returns true if button was used
     bool CallButtonDown(ZC_ButtonID buttonId, float time);
-    //  returns true if button was used
+        //  returns true if button was used
     bool CallButtonUp(ZC_ButtonID buttonId, float time);
     bool IsButtonDownConnected(ZC_ButtonID buttonId);
+        //  release button if it in pressed state (withought call events)
+    void ButtonWasReleased(ZC_ButtonID buttonId);
 
 private:
     struct ButtonHolder

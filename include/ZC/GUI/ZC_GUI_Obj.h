@@ -4,16 +4,11 @@
 #include <glad/glad.h>
 #include <ZC/Events/ZC_ButtonID.h>
 
+#include <forward_list>
 #include <vector>
-
 
 struct ZC_GUI_Obj
 {
-    enum ButtonState
-    {
-        BS_Pressed,
-        BS_Released
-    };
 
     ZC_GUI_Obj* pObjHolder = nullptr;
         //  put here unsafe RAM pointers in ctr with params, then change them on pointers from vectors in VGetData()
@@ -26,20 +21,16 @@ struct ZC_GUI_Obj
 
     virtual ~ZC_GUI_Obj();
 
+    virtual bool operator == (ZC_ButtonID _buttonId) const noexcept { return false; }
+
     ZC_Vec2<float> GetPosition_bl_Obj();
     float GetWidth();
     float GetHeight();
     void SetObjHolder(ZC_GUI_Obj* _pObjHolder);
         //  returns true if window of the object is drawing, otherwise false
-    bool IsWindowDrawing_Obj() const noexcept
-    {
-        return pObjHolder ? pObjHolder->IsWindowDrawing_Obj() : VIsDrawing_Obj();
-    };
+    bool IsWindowDrawing_Obj() const noexcept;
         //  returns pointer on the highest object holder (must be window)
-    ZC_GUI_Obj* GetWindow()
-    {
-        return pObjHolder ? pObjHolder->GetWindow() : this;
-    }
+    ZC_GUI_Obj* GetWindow();
     bool IsWindowFocused();
     void MakeWindowFocused();
     
@@ -59,13 +50,12 @@ struct ZC_GUI_Obj
     virtual bool VIsConfigured_Obj() const noexcept;    //  override in ZC_GUI_Win...
     virtual void VConf_Set_bl_Obj(const ZC_Vec2<float>& _bl);
     virtual void VConf_GetBordersAndObjsCount_Obj(GLsizeiptr& rBordersCount, GLsizeiptr& rObjsCount);
-    virtual void VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex);
+    virtual void VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex,
+        std::forward_list<ZC_GUI_Obj*>& rButtonKeyboard_objs);
     virtual void VConf_SetTextUV() {};     //  for text functions, configuration of the text texture done, all text heirs must update object uv from text uv
 
     virtual void VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData);
     virtual void VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end);
-
-
 
             //  EVENT SYSTEM
         //  may be called from overrided VMakeCursorCollision_Obj(), for heirs who want have cursor collision
@@ -94,18 +84,18 @@ struct ZC_GUI_Obj
         //  Called after calls VMouseButtonLeftDown_Obj(...) or VRightButtonDown_Obj(...) with cursorMoveWhilePressed = true;
         //  Called once per frame (parrams: x, y - have last position; rel_x, rel_y - have sum of all changes in frame).
     virtual void VCursorMove_Obj(float rel_x, float rel_y) {}
-        //  return false if button must be disable in event system
+        //  return false if event is holds while relese
     virtual bool VMouseButtonLeftDown_Obj(float time) { return true; }
     virtual void VMouseButtonLeftUp_Obj(float time) {}
-        //  return false if button must be disable in event system
+        //  return false if event is holds while relese
     virtual bool VRightButtonDown_Obj(float time) { return true; }
     virtual void VRightButtonUp_Obj(float time) {}
 
-        //  return false if button must be disable in event system
+        //  return false if event is holds while relese
     virtual bool VKeyboardButtonDown_Obj(float time) { return true; }
     virtual void VKeyboardButtonUp_Obj(float time) {}
-        //  return false if button must be disables
-    bool ButtonDown(ZC_ButtonID buttonID, float time);
+
+    void ButtonDown(ZC_ButtonID buttonID, float time);
     void ButtonUp(ZC_ButtonID buttonID, float time);
 
     virtual void VScroll_Obj(float vertical, float time) {}

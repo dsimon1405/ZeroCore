@@ -29,11 +29,16 @@ void ZC_ButtonPressedDown::Disconnect(const void* pFunc)
 
 bool ZC_ButtonPressedDown::AddActiveDownButton(ZC_ButtonID buttonId, bool& isConnected)
 {
-    if (ZC_Find(pressedButtonDowns, buttonId)) return false;     //  button allready pressed
+    auto pPressedButton = ZC_Find(pressedButtonDowns, buttonId);
+    if (pPressedButton)     //  button allready pressed
+    {
+        isConnected = pPressedButton->pGuiObj || pPressedButton->func;
+        return true;
+    }
     if ((buttonId == ZC_ButtonID::M_LEFT && ZC_Find(pressedButtonDowns, ZC_ButtonID::M_RIGHT))
         || (buttonId == ZC_ButtonID::M_RIGHT && ZC_Find(pressedButtonDowns, ZC_ButtonID::M_LEFT)))   //  mbl pressed, avoid start mbr press, till mbl release
     {
-        pressedButtonDowns.emplace_back(ZC_ConnectedButton<ZC_Function<void(ZC_ButtonID, float)>*>{ buttonId, nullptr});
+        pressedButtonDowns.emplace_back(ZC_ConnectedButton<ZC_Function<void(ZC_ButtonID, float)>*>{ buttonId, nullptr, nullptr});
         return false;
     }
     

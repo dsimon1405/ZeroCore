@@ -17,20 +17,6 @@ struct ZC_GUI_EventManager
     std::list<ZC_GUI_Window*> stacionarWins;
     std::list<ZC_GUI_Window*> openableWins;
 
-    // struct MouseButton
-    // {
-    //     ZC_ButtonID buttonID;
-    //     bool buttonPressed = false;
-    //     ZC_GUI_Obj* pPressed = nullptr;
-    //         //  Return true if button may be used in other events. Last param (ref) must be set pointer on object to call on move cursor events.
-    //         //  That pointer will be active, while button pressed. 
-    //     bool ButtonDown(ZC_ButtonID _buttonID, ZC_GUI_Window* pWin, ZC_GUI_Obj* pEO, float time, ZC_GUI_Obj*& rpObj_cursorMove);
-    //         //  return true if button may be used in other events
-    //     bool ButtonUp(ZC_ButtonID _buttonID, float time, ZC_GUI_Obj*& rpObj_cursorMove);
-    // };
-    // MouseButton mbLeft { .buttonID = ZC_ButtonID::M_LEFT };
-    // MouseButton mbRight { .buttonID = ZC_ButtonID::M_RIGHT };
-
     void Configure();
     void ChangeActivity(bool active);
     bool IsActiveEventManager();

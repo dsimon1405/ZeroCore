@@ -36,7 +36,7 @@ struct ZC_ConnectedButton
     {
         if (pGuiObj)      //  if have gui obj pointer, calls his button down event
         {
-            if (!(pGuiObj->ButtonDown(buttonId, time))) pGuiObj = nullptr;  //  if returns false, object must be disabled
+            pGuiObj->ButtonDown(buttonId, time);
             return;
         }
         if constexpr (std::same_as<TFunc, ZC_Function<void(ZC_ButtonID, float)>*>)    //  ZC_Function<void(ZC_ButtonID,float)>*

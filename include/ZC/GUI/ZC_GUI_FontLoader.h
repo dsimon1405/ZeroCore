@@ -29,12 +29,12 @@ private:
         //  range of the symbols in unicode
     struct ElementsRange
     {
-        struct Range
+        struct UnicodeRange
         {
             unsigned long start_index;      //  first index (unicode)
             unsigned long end_index;        //  last index (unicode)
         };
-        std::vector<Range> ranges;
+        std::vector<UnicodeRange> ranges;
 
         unsigned long GetCount();
         void FillCharactersParams(void* ft_face, std::vector<ZC_GUI_Character>& rChrs, int& rMax_top, int& rMax_tail, int& rMin_left_offset);

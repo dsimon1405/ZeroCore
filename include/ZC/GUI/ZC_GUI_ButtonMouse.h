@@ -12,8 +12,9 @@ enum ZC_GUI_MB__Flag
 };
 typedef int ZC_GUI_MB__Flags;
 
+
 #include <iostream>
-struct ZC_GUI_ButtonMouse : public ZC_GUI_ButtonState
+struct ZC_GUI_ButtonMouse : public virtual ZC_GUI_ButtonState
 {
     const ZC_GUI_MB__Flags mb_flags;
 
@@ -21,98 +22,39 @@ struct ZC_GUI_ButtonMouse : public ZC_GUI_ButtonState
 
         //  may be override
     void VScroll_Obj(float vertical, float time) override
-    {
-        std::cout<<"scroll "<<vertical<<std::endl;
-    }
+    // {}
+    {std::cout<<"mouse scroll"<<std::endl;}
     void VCursorMove_Obj(float rel_x, float rel_y) override
-    {
-        std::cout<<"cursor move event: x = "<<rel_x<<"; y = "<<rel_y<<std::endl;
-    }
-    virtual void VLeftButtonDown_BM(float time) {
-            std::cout<<"down"<<std::endl;}
-    virtual void VLeftButtonDoubleClick_BM(float time) {
-            std::cout<<"double click"<<std::endl;}
-    virtual void VLeftButtonPressed_BM(float time) {
-            std::cout<<"pressed"<<std::endl;}
-    virtual void VLeftButtonUp_BM(float time) {
-            std::cout<<"up"<<std::endl;}
-
-
+    // {}
+    {std::cout<<"mouse move"<<std::endl;}
+    virtual void VLeftButtonDown_BM(float time)
+    // {}
+    {std::cout<<"mouse left down"<<std::endl;}
+    virtual void VLeftButtonDoubleClick_BM(float time)
+    // {}
+    {std::cout<<"mouse double click"<<std::endl;}
+    virtual void VLeftButtonPressed_BM(float time)
+    // {}
+    {std::cout<<"mouse pressed"<<std::endl;}
+    virtual void VLeftButtonUp_BM(float time)
+    // {}
+    {std::cout<<"mouse left up"<<std::endl;}
 
     ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_MB__Flags _mb_flags);
     ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_MB__Flags _mb_flags, const ZC_GUI_UV& uv);
 
-    bool VIsDrawing_Obj() const noexcept override
-    {
-        return true;
-    }
-    
-    bool VIsUseCursorMoveEventOnMBLetfDown_Obj() const noexcept override
-    {
-        return this->mb_flags & ZC_GUI_MB__CursorMoveOnMBLPress;
-    }
+    bool VIsDrawing_Obj() const noexcept override;
 
-    bool VIsUseScrollEvent_Obj() const noexcept override
-    {
-        return this->mb_flags & ZC_GUI_MB__Scroll;
-    }
+    bool VIsUseCursorMoveEventOnMBLetfDown_Obj() const noexcept override;
+    bool VIsUseScrollEvent_Obj() const noexcept override;
 
-    void VStopEventActivity_Obj() override
-    {
-        this->StopEventActivity_BS();   //  same in ZC_GUI_ButtonKeyboard
-    }
-    
+    void VStopEventActivity_Obj() override;
+
     bool VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll) override;
-
-    void VCursorCollisionStart_Obj(float time) override
-    {
-        if (this->pObjData->color == color_pressed) return;     //  button pressed, wait while up
-        this->pObjData->color = color_under_cursor;
-        VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
-    }
-
-    void VCursorCollisionEnd_Obj(float time) override
-    {
-        if (this->pObjData->color == color_pressed) return;     //  button pressed, wait while up
-        this->pObjData->color = color_default;
-        VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
-    }
-
-    bool VMouseButtonLeftDown_Obj(float time) override
-    {
-        if (this->bs_keyboardButton == BS_Pressed) return false;  //  don't do anything while uses another button down event
-        if (this->bs_mouseButton == BS_Released)
-        {
-            this->pObjData->color = color_pressed;
-            VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
-            this->bs_mouseButton = BS_Pressed;
-            
-            if (this->mb_flags & ZC_GUI_MB__DoubleCLick)  //  call double click if in limit and restart double time in each case
-            {
-                this->clock.Time<ZC_Nanoseconds>() <= nanosecondLimit ? VLeftButtonDoubleClick_BM(time) : VLeftButtonDown_BM(time);
-                this->clock.Start();
-            }
-            else
-            {
-                VLeftButtonDown_BM(time);   //  call event in each case on released button
-                if (this->mb_flags & ZC_GUI_MB__MBLPress) this->clock.Start();    //  if uses bml press event start (restart) time
-            }
-        }
-        else if (this->mb_flags & ZC_GUI_MB__MBLPress && this->clock.Time<ZC_Nanoseconds>() >= nanosecondLimit) VLeftButtonPressed_BM(time);  //  if uses mbl press event and it's time, call them
-        return true;
-    }
-
-    void VMouseButtonLeftUp_Obj(float time) override
-    {
-        this->pObjData->color = color_default;
-        VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
-        if (CheckCursorCollision_Obj()) VLeftButtonUp_BM(time);
-        this->bs_mouseButton = BS_Released;
-    }
+    
+    void VCursorCollisionStart_Obj(float time) override;
+    void VCursorCollisionEnd_Obj(float time) override;
+    
+    bool VMouseButtonLeftDown_Obj(float time) override;
+    void VMouseButtonLeftUp_Obj(float time) override;
 };
-
-// #include <iostream>
-    // static inline int counter = 0;
-    // int myID;
-// std::cout<<"pressed but "<<myID<<std::endl;
-// {myID = counter++;}

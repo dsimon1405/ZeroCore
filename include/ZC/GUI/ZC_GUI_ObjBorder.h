@@ -61,12 +61,16 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
 
     void VConf_Set_bl_Obj(const ZC_Vec2<float>& pos) override;
     void VConf_GetBordersAndObjsCount_Obj(GLsizeiptr& rBordersCount, GLsizeiptr& rObjsCount) override;
-    void VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex) override;
+    void VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex,
+        std::forward_list<ZC_GUI_Obj*>& rButtonKeyboard_objs) override;
 
     bool VIsUseScrollEvent_Obj() const noexcept override;
 
     bool VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll) override;
     bool VCheckCursorCollision_Obj(float x, float y) override;
+
+        //  uses to erase added ZC_ButtonKeyboard object before configuration, overrides in ZC_GUI_Window
+    virtual void VEraseFrom__buttonKeyboard_objs_B(ZC_GUI_Obj* pDelete);
 };
 
 typedef typename ZC_GUI_ObjBorder::Row::RowParams ZC_GUI_RowParams;

@@ -217,7 +217,6 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_EventManager.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_Obj.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ObjBorder.cpp
-	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ObjComposite.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_Window.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_WinMutable.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI.cpp
@@ -226,6 +225,9 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_Font.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_FontLoader.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ObjData.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ButtonKeyboard.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ButtonMouseAndKeyboard.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ButtonState.cpp
 	)
 
 #========================= include dirs

@@ -69,7 +69,7 @@ void ZC_GUI_WinImmutable::VConfigure_Obj()
 
         pWin->daic.baseInstance = bls.size();      //  base instance is index in bufBLs and bufObjDatas (for gpu use)
         daics.emplace_back(pWin->daic);
-        pWin->VConf_GetData_Obj(borders, bls, objDatas, 0);
+        pWin->VConf_GetData_Obj(borders, bls, objDatas, 0, pWin->buttonKeyboard_objs);
     }
 
     drawCount = daics.size();

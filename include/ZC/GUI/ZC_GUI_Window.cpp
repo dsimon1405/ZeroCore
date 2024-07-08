@@ -3,6 +3,7 @@
 #include <ZC/GUI/ZC_GUI.h>
 #include <ZC/GUI/ZC_GUI_ObjData.h>
 #include "ZC_GUI_IconUV.h"
+#include <ZC/Tools/Container/ZC_ContFunc.h>
 
 #include <cassert>
 
@@ -14,6 +15,14 @@ bool ZC_GUI_Window::VIsStacionar_Obj() const noexcept
 bool ZC_GUI_Window::VIsUseCursorMoveEventOnMBLetfDown_Obj() const noexcept
 {
     return IsBackground() && winFlags & ZC_GUI_WF__Movable;
+}
+
+ZC_GUI_Obj* ZC_GUI_Window::GetButtonKeyboard(ZC_ButtonID buttonId)
+{
+    for (ZC_GUI_Obj* pObj : buttonKeyboard_objs)
+        if (*pObj == buttonId) return pObj;
+    
+    return nullptr;
 }
 
 bool ZC_GUI_Window::IsBackground() const noexcept
@@ -68,6 +77,11 @@ void ZC_GUI_Window::VChanged_bl_WOI()
     VCursorMove_Obj(rel_bl[0], rel_bl[1]);
 }
 
+void ZC_GUI_Window::VEraseFrom__buttonKeyboard_objs_B(ZC_GUI_Obj* pDelete)
+{
+    ZC_ForwardListErase(buttonKeyboard_objs, pDelete);
+}
+
 float ZC_GUI_Window::GetStacionarDepth()
 {
     static float stacionarDepth = depth_stacionarStart;
@@ -102,12 +116,3 @@ void ZC_GUI_Window::SetFocuseDepthAndColor()
     if (VIsConfigured_Obj())    //  color goes after depth in struct so lecal change them both
         VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, depth), sizeof(ZC_GUI_ObjData::depth) + sizeof(ZC_GUI_ObjData::color), &(pObjData->depth));
 }
-// bool ZC_GUI_Window::VIsMovable_EO() override { return false; }
-// void ZC_GUI_Window::VCursorCollisionStart_Obj(float time) override {}
-// void ZC_GUI_Window::VCursorCollisionEnd_Obj(float time) override {}
-// void ZC_GUI_Window::VCursorMove_Obj(float x, float y, float rel_x, float rel_y, float time) override {}
-// void ZC_GUI_Window::VMouseButtonLeftDown_Obj(float time) override {}
-// void ZC_GUI_Window::VMouseButtonLeftUp_Obj(float time) override {}
-// void ZC_GUI_Window::VRightButtonDown_Obj(float time) override {}
-// void ZC_GUI_Window::VRightButtonUp_Obj(float time) override {}
-// void ZC_GUI_Window::VScroll_Obj(float vertical, float time) override {}

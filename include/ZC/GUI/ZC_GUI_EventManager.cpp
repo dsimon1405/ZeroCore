@@ -62,7 +62,7 @@ void ZC_GUI_EventManager::UpdateWindowState(ZC_GUI_Window* pWindow)
 {       //    return true, if was changed list
     auto lambResetWindow = [pWindow](std::list<ZC_GUI_Window*>& rWins, bool empl_front)
     {
-        if (empl_front ? rWins.front() == pWindow : rWins.back() == pWindow) return false;
+        if (empl_front ? rWins.front() == pWindow : rWins.back() == pWindow) return;
         std::erase(rWins, pWindow);
         if (empl_front)
         {
@@ -70,18 +70,17 @@ void ZC_GUI_EventManager::UpdateWindowState(ZC_GUI_Window* pWindow)
             rWins.emplace_front(pWindow);   //  set new window in list's front
         }
         else rWins.emplace_back(pWindow);
-        return true;
     };
     
     if (pWindow->VIsDrawing_Obj())    //  window is drawing, set it to the begin of list
     {
         if (!(pWindow->VIsStacionar_Obj()) && pObj_pressed)   //  opens openable window, stop all activity of previous window
         {
-            ZC_ButtonPressedDown::DisablePressedButton(pObj_pressed);
             StopObjEventActivity(pObj_pressed);
             pObj_cursorMove = nullptr;    //  must be before UpdateCursorCollision()
         }
-        if (lambResetWindow(pWindow->VIsStacionar_Obj() ? stacionarWins : openableWins, true)) UpdateCursorCollision();     //  set window to the front of list, and update cursor position
+        lambResetWindow(pWindow->VIsStacionar_Obj() ? stacionarWins : openableWins, true);     //  set window to the front of list
+        UpdateCursorCollision();    //  and update cursor position
         pWindow->SetFocuseDepthAndColor();
     }
     else    //  window is non-drawing, set it to the end of list
@@ -91,12 +90,12 @@ void ZC_GUI_EventManager::UpdateWindowState(ZC_GUI_Window* pWindow)
             ZC_GUI_Obj* pFocusedWindow = pObj_pressed->GetWindow();
             if (pWindow == pFocusedWindow)  //  objects belong to the closing window
             {   //  pObj_pressed and pObj_cursorMove if not null then same pointers
-                ZC_ButtonPressedDown::DisablePressedButton(pObj_pressed);
                 StopObjEventActivity(pObj_pressed);
                 pObj_cursorMove = nullptr;    //  must be before UpdateCursorCollision()
             }
         }
-        if (lambResetWindow(pWindow->VIsStacionar_Obj() ? stacionarWins : openableWins, false)) UpdateCursorCollision();    //  set window to the back of list, and update cursor position
+        lambResetWindow(pWindow->VIsStacionar_Obj() ? stacionarWins : openableWins, false);    //  set window to the back of list
+        UpdateCursorCollision();    //  and update cursor position
         pWindow->SetFocuseDepthAndColor();
     }
 }
@@ -160,7 +159,6 @@ bool ZC_GUI_EventManager::ScrollWheel()
 {
     if (!isActive) return true;
     else if (pObj_underCursor) return false;    //  some object under cursor, so and window under cursor, hold scroll event (no metter will it be used or not)
-    // else if (pWin_underCursor) return !(pWin_underCursor->IsBackground());  //  if have background hold scroll event
     return true;
 }
 
@@ -175,7 +173,18 @@ ZC_GUI_Obj* ZC_GUI_EventManager::GetButtonDownObject(ZC_ButtonID buttonID)
 {
     if (!isActive) return nullptr;
     if (buttonID == ZC_ButtonID::M_LEFT || buttonID == ZC_ButtonID::M_RIGHT) return pObj_underCursor;
-                                                //  create list for all object with keyboard buttom event, and find in it
+    if (!(openableWins.empty()))    //  try find event button in focused (first in list) openable windows
+    {
+        ZC_GUI_Window* pWin = openableWins.front();
+        if (pWin->IsWindowDrawing_Obj()) return pWin->GetButtonKeyboard(buttonID);
+    }
+    
+    for (ZC_GUI_Window* pStW : stacionarWins)    //  try find event button in stacionar windows
+    {
+        if (!pStW->IsWindowDrawing_Obj()) return nullptr;   //  reached not drawing windows
+        ZC_GUI_Obj* pObj = pStW->GetButtonKeyboard(buttonID);
+        if (pObj) return pObj;
+    }
     return nullptr;
 }
  
@@ -186,44 +195,3 @@ void ZC_GUI_EventManager::MouseButtonUp()
     pObj_cursorMove = nullptr;  //  free pointer, must be before UpdateCursorCollision()
     UpdateCursorCollision();    //  update cursor collision after left mouse button release
 }
-
-
-// //  ZC_GUI_EventManager::MouseButton
-
-// bool ZC_GUI_EventManager::MouseButton::ButtonDown(ZC_ButtonID _buttonID, ZC_GUI_Window* pWin, ZC_GUI_Obj* pObj, float time, ZC_GUI_Obj*& rpObj_cursorMove)
-// {
-//     if (buttonID != _buttonID) return true;     //  wrong button
-//     if (buttonPressed) return false;    //  button already pressed
-//     buttonPressed = true;
-//         //  returns false if object was not collisioned
-//     auto lambCallButtonDown = [this, time, &rpObj_cursorMove](ZC_GUI_Obj* pEventObj)
-//     {
-//         if (!pEventObj) return false; //  no object
-//         bool cursorMoveWhilePressed = false;    //  call button down
-//         if (buttonID == ZC_ButtonID::M_LEFT ? pEventObj->VMouseButtonLeftDown_Obj(time, cursorMoveWhilePressed) : pEventObj->VRightButtonDown_Obj(time, cursorMoveWhilePressed))
-//         {
-//             pPressed = pEventObj;
-//             if (cursorMoveWhilePressed)
-//             {
-//                 assert(!rpObj_cursorMove);   //  reset of active rpEO_cursorMove
-//                 rpObj_cursorMove = pPressed;    //  set cursor move object
-//             }
-//             return true;
-//         }
-//         return false;
-//     };
-//     if (lambCallButtonDown(pObj)) pWin->MakeWindowFocused();      //  call object's button down, if object use that button (object exists), and window may only be focused,
-//     else lambCallButtonDown(pWin);                          //  if object don't use button (or not exists at all), try window's button down
-//     return pPressed == nullptr;
-// }
-
-// bool ZC_GUI_EventManager::MouseButton::ButtonUp(ZC_ButtonID _buttonID, float time, ZC_GUI_Obj*& rpObj_cursorMove)
-// {
-//     if (buttonID != _buttonID) return true;    //  wrong button
-//     buttonPressed = false;
-//     if (!pPressed) return true;     //  haven't pressed object
-//     buttonID == ZC_ButtonID::M_LEFT ? pPressed->VMouseButtonLeftUp_Obj(time) : pPressed->VRightButtonUp_Obj(time);
-//     if (rpObj_cursorMove == pPressed) rpObj_cursorMove = nullptr;     //  if move object is current button, unset cursor move object
-//     pPressed = nullptr;
-//     return false;
-// }

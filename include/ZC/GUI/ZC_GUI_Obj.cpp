@@ -39,6 +39,16 @@ void ZC_GUI_Obj::SetObjHolder(ZC_GUI_Obj* _pObjHolder)
     pObjHolder = _pObjHolder;
 }
 
+bool ZC_GUI_Obj::IsWindowDrawing_Obj() const noexcept
+{
+    return pObjHolder ? pObjHolder->IsWindowDrawing_Obj() : VIsDrawing_Obj();
+};
+
+ZC_GUI_Obj* ZC_GUI_Obj::GetWindow()
+{
+    return pObjHolder ? pObjHolder->GetWindow() : this;
+}
+
 bool ZC_GUI_Obj::IsWindowFocused()
 {
     return pObjHolder ? pObjHolder->IsWindowFocused() : ZC_GUI::pGUI->eventManager.IsWindowFocused(this);
@@ -46,6 +56,7 @@ bool ZC_GUI_Obj::IsWindowFocused()
 
 void ZC_GUI_Obj::MakeWindowFocused()
 {
+    if (IsWindowFocused()) return;
     if (pObjHolder) pObjHolder->MakeWindowFocused();
     else
     {
@@ -84,11 +95,12 @@ bool ZC_GUI_Obj::VIsConfigured_Obj() const noexcept
     return pObjHolder->VIsConfigured_Obj();
 }
 
-void ZC_GUI_Obj::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex)
+void ZC_GUI_Obj::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex,
+        std::forward_list<ZC_GUI_Obj*>& rButtonKeyboard_objs)
 {
     pObjData->borderIndex = borderIndex;
     ZC_Vec2<float>* pBL_temp = &rBLs.emplace_back(*pBL);
-    VConf_SetTextUV();
+    VConf_SetTextUV();  //  update uv, uses text heirs 
     ZC_GUI_ObjData* pObjData_temp = &rObjDatas.emplace_back(*pObjData);
 
     if (this->isFirstGetDataCall)
@@ -97,9 +109,10 @@ void ZC_GUI_Obj::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vec
         delete pObjData;
         isFirstGetDataCall = false;
     }
-
     pBL = pBL_temp;
     pObjData = pObjData_temp;
+
+    if (VIsButtonKeyboard_Obj()) rButtonKeyboard_objs.emplace_front(this);
 }
 
 void ZC_GUI_Obj::VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData)
@@ -138,31 +151,30 @@ bool ZC_GUI_Obj::VCheckCursorCollision_Obj(float x, float y)
     return VIsDrawing_Obj() && this->Collision(x, y, (*pBL)[0], (*pBL)[1], (*pBL)[0] + pObjData->width, (*pBL)[1] + pObjData->height);
 }
 
-bool ZC_GUI_Obj::ButtonDown(ZC_ButtonID buttonID, float time)
+void ZC_GUI_Obj::ButtonDown(ZC_ButtonID buttonID, float time)
 {
-    if (!(ZC_GUI::pGUI->eventManager.IsActiveEventManager()) || !IsWindowDrawing_Obj() || !VIsDrawing_Obj()) return true;   //  window or object don't drawing, event coud be used not gui
+    if (!(ZC_GUI::pGUI->eventManager.IsActiveEventManager()) || !IsWindowDrawing_Obj() || !VIsDrawing_Obj()) return;   //  window or object don't drawing, event coud be used not gui
     switch (buttonID)
     {
     case ZC_ButtonID::M_LEFT:
     {
-        if (!VMouseButtonLeftDown_Obj(time)) return false;
+        if (!VMouseButtonLeftDown_Obj(time)) return;
         if (VIsUseCursorMoveEventOnMBLetfDown_Obj()) ZC_GUI::pGUI->eventManager.SetCursorMoveObj(this);     //  left button down objects may be added for mouse cursor move event
-        if (!IsWindowFocused()) MakeWindowFocused();    //  if LMB is pressed, regardless of the object or window, the window should focus if it can
+        MakeWindowFocused();    //  if LMB is pressed, regardless of the object or window, the window should focus if it can
     } break;
     case ZC_ButtonID::M_RIGHT:
     {
-        VRightButtonDown_Obj(time);
-        if (!IsWindowFocused()) MakeWindowFocused();    //  if RMB is pressed, regardless of the object or window, the window should focus if it can
+        if (!VRightButtonDown_Obj(time)) return;
+        MakeWindowFocused();    //  if RMB is pressed, regardless of the object or window, the window should focus if it can
     } break;
-    default: VKeyboardButtonDown_Obj(time); break;
+    default: if (!VKeyboardButtonDown_Obj(time)) return;
+        break;
     }
     ZC_GUI::pGUI->eventManager.SetPressedObj(this);
-    return true;   //  event now belongs to gui, can't be used on other systems
 }
 
 void ZC_GUI_Obj::ButtonUp(ZC_ButtonID buttonID, float time)
 {
-    if (!(ZC_GUI::pGUI->eventManager.IsActiveEventManager()) || !IsWindowDrawing_Obj() || !VIsDrawing_Obj()) return;   //  window or object don't drawing, event coud be used not gui
     switch (buttonID)
     {
     case ZC_ButtonID::M_LEFT:
@@ -173,4 +185,5 @@ void ZC_GUI_Obj::ButtonUp(ZC_ButtonID buttonID, float time)
     case ZC_ButtonID::M_RIGHT: VRightButtonUp_Obj(time); break;
     default: VKeyboardButtonUp_Obj(time); break;
     }
+    ZC_GUI::pGUI->eventManager.SetPressedObj(nullptr);
 }
