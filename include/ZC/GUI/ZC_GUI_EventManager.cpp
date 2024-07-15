@@ -43,8 +43,10 @@ void ZC_GUI_EventManager::SetCursorMoveObj(ZC_GUI_Obj* _pObj_cursorMove)
 }
 
 void ZC_GUI_EventManager::AddWindow(ZC_GUI_Window* pWindow)
-{   //  choose stacionar window or openable, and if window drawing, add in front of list, otherwise in back
-    if (pWindow->VIsStacionar_Obj()) pWindow->VIsDrawing_Obj() ? stacionarWins.emplace_front(pWindow) : stacionarWins.emplace_back(pWindow);
+{
+    if (pWindow->VIsInputWindow_W()) pTextInputWindow = pWindow;
+       //  choose stacionar window or openable, and if window drawing, add in front of list, otherwise in back
+    else if (pWindow->VIsStacionar_Obj()) pWindow->VIsDrawing_Obj() ? stacionarWins.emplace_front(pWindow) : stacionarWins.emplace_back(pWindow);
     else pWindow->VIsDrawing_Obj() ? openableWins.emplace_front(pWindow) : openableWins.emplace_back(pWindow);
 }
 
@@ -172,17 +174,22 @@ bool ZC_GUI_EventManager::ScrollWheelOnceInFrame(float verticalScroll, float tim
 ZC_GUI_Obj* ZC_GUI_EventManager::GetButtonDownObject(ZC_ButtonID buttonID)
 {
     if (!isActive) return nullptr;
+    
+    ZC_GUI_Obj* pObj_inputText = pTextInputWindow->VGetButtonKeyboard_W(buttonID);
+    if (pObj_inputText) return pObj_inputText;    //  uses input text event system
+    
     if (buttonID == ZC_ButtonID::M_LEFT || buttonID == ZC_ButtonID::M_RIGHT) return pObj_underCursor;
+    
     if (!(openableWins.empty()))    //  try find event button in focused (first in list) openable windows
     {
         ZC_GUI_Window* pWin = openableWins.front();
-        if (pWin->IsWindowDrawing_Obj()) return pWin->GetButtonKeyboard(buttonID);
+        if (pWin->IsWindowDrawing_Obj()) return pWin->VGetButtonKeyboard_W(buttonID);
     }
     
     for (ZC_GUI_Window* pStW : stacionarWins)    //  try find event button in stacionar windows
     {
         if (!pStW->IsWindowDrawing_Obj()) return nullptr;   //  reached not drawing windows
-        ZC_GUI_Obj* pObj = pStW->GetButtonKeyboard(buttonID);
+        ZC_GUI_Obj* pObj = pStW->VGetButtonKeyboard_W(buttonID);
         if (pObj) return pObj;
     }
     return nullptr;

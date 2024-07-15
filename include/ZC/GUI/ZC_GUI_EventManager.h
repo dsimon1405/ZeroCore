@@ -17,6 +17,8 @@ struct ZC_GUI_EventManager
     std::list<ZC_GUI_Window*> stacionarWins;
     std::list<ZC_GUI_Window*> openableWins;
 
+    ZC_GUI_Window* pTextInputWindow = nullptr;
+
     void Configure();
     void ChangeActivity(bool active);
     bool IsActiveEventManager();

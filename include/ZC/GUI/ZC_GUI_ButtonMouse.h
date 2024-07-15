@@ -43,7 +43,7 @@ struct ZC_GUI_ButtonMouse : public virtual ZC_GUI_ButtonState
     ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_MB__Flags _mb_flags);
     ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_MB__Flags _mb_flags, const ZC_GUI_UV& uv);
 
-    bool VIsDrawing_Obj() const noexcept override;
+    // bool VIsDrawing_Obj() const noexcept override;
 
     bool VIsUseCursorMoveEventOnMBLetfDown_Obj() const noexcept override;
     bool VIsUseScrollEvent_Obj() const noexcept override;

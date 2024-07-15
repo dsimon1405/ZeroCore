@@ -68,7 +68,7 @@ void ZC_SWindowHolder::GetCursorPosition(float& posX, float& posY)
 
 ZC_SWindowHolder::ZC_SWindowHolder()
     : upEventsHolder(ZC_EventsHolder::MakeEventsHolder()),
-	fps(ZC_FPS::Seconds),
+	fps(ZC_FPS::Nanoseconds),
     renderer({ &ZC_SWindowHolder::SwapBuffer, this })
 {}
 

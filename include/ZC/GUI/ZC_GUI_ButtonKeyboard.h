@@ -26,8 +26,6 @@ struct ZC_GUI_ButtonKeyboard : public virtual ZC_GUI_ButtonState
 
     bool operator == (ZC_ButtonID _buttonId) const noexcept override;
 
-    bool VIsDrawing_Obj() const noexcept override;
-
         //  _waitPressNanoseconds - how long wait to start use VKeyboardButtonPressed_BK(), instead VKeyboardButtonDown_BK(), default 300000000 nanoseconds (uses for all object ZC_GUI_ButtonKeyboard)
     static void SetWaitPressTime(long _waitPressNanoseconds);
 

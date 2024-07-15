@@ -43,59 +43,24 @@
 //     return true;
 // }
 
-#include <ZC/Events/ZC_Events.h>
-bool stopEvent = false;
-void StopEvent(ZC_ButtonID,float)
-{
-    stopEvent = true;
-}
 // #include <iostream>
 // std::cout<<"x = "<<event.motion.x<<"; y = "<<static_cast<float>(height) - event.motion.y<<"; rel_x = "<<event.motion.xrel<<"; rel_y = "<<(event.motion.yrel * -1.f)<<std::endl;
 bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
 {
-    static bool init = true;
-    if (init)
-    {
-        ZC_Events::ConnectButtonClick(ZC_ButtonID::K_Y, StopEvent, nullptr);
-        init = false;
-    }
-
     static SDL_Event event;
 
     sigHandleEventsStart(previousFrameTime);
 
-    ZC_ButtonID butID;  //  save scancode in SDL_EVENT_KEY_DOWN (calls frist) for SDL_EVENT_MOUSE_MOTION
-SDL_StartTextInput();
     while (SDL_PollEvent(&event) != 0)
     {
         switch (event.type)
         {
         case SDL_EVENT_QUIT: return false;
         case SDL_EVENT_WINDOW_RESIZED: sigWindowResize(static_cast<float>(event.window.data1), static_cast<float>(event.window.data2)); break;
-        case SDL_EVENT_KEY_DOWN:
-        {
-            butID = static_cast<ZC_ButtonID>(event.key.keysym.scancode);
-            buttonHolder.ButtonDown(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime);
-        } break;
+        case SDL_EVENT_KEY_DOWN: buttonHolder.ButtonDown(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
         case SDL_EVENT_KEY_UP: buttonHolder.ButtonUp(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
-        case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        {
-        if (stopEvent)
-        {
-            int a = 3;
-            stopEvent = false;
-        }
-        buttonHolder.ButtonDown(static_cast<ZC_ButtonID>(event.button.button + 512), previousFrameTime); 
-        } break;
-        case SDL_EVENT_MOUSE_BUTTON_UP:
-        {
-        if (stopEvent)
-        {
-            int a = 3;
-            stopEvent = false;
-        }
-        buttonHolder.ButtonUp(static_cast<ZC_ButtonID>(event.button.button + 512), previousFrameTime); 
-        } break;
+        case SDL_EVENT_MOUSE_BUTTON_DOWN: buttonHolder.ButtonDown(static_cast<ZC_ButtonID>(event.button.button + 512), previousFrameTime); break;
+        case SDL_EVENT_MOUSE_BUTTON_UP: buttonHolder.ButtonUp(static_cast<ZC_ButtonID>(event.button.button + 512), previousFrameTime); break;
         case SDL_EVENT_MOUSE_MOTION:
         {
             int widht, height;
@@ -104,11 +69,7 @@ SDL_StartTextInput();
             mouse.MouseMove(event.motion.x, static_cast<float>(height) - event.motion.y, event.motion.xrel, event.motion.yrel * -1.f, previousFrameTime);
         } break;
         case SDL_EVENT_MOUSE_WHEEL: mouse.MouseScroll(event.wheel.x, event.wheel.y, previousFrameTime); break;
-        case SDL_EVENT_TEXT_INPUT:
-        {
-            unsigned char ch = *event.text.text;
-            //  use butID
-        } break;
+        case SDL_EVENT_TEXT_INPUT: buttonHolder.buttonPressedDown.TextButtonDown(*event.text.text); break;
         }
     }
     buttonHolder.buttonPressedDown.CallPressedButtons(previousFrameTime);

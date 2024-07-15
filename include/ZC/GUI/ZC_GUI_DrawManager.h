@@ -22,6 +22,8 @@ struct ZC_GUI_DrawManager
     void AddWindow(ZC_GUI_Window* pWindow);
     void EraseWindow(ZC_GUI_Window* pWindow);
     void Configure();
+        //  reset uv in text objs (calls from ZC_GUI_TextManager::Configure())
+    void Reconf_UpdateTextUV();
 
     void Draw();
     void UpdateWindowDrawState(ZC_GUI_Window* pWindow);

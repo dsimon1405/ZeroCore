@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <list>
 
 //  class for storing charecters
 struct ZC_GUI_Font
@@ -18,29 +19,12 @@ struct ZC_GUI_Font
         bool operator == (wchar_t ch) const noexcept;
     };
 
-    std::vector<Character> characters;
-
     ZC_GUI_Font() = default;
     ZC_GUI_Font(std::vector<Character>&& _characters);
 
-    const Character* FindCharacter(wchar_t ch);
-        //  All font chars data have same height (rows count in 2d interpritation of array ZC_GUI_Font::Character::data).
+    const Character* GetCharacter(wchar_t ch);
     int GetHeight();
-    wchar_t GetLongestChararcter() const noexcept;
-
-    // /*
-    // Fills 1d array (interpreted as 2d array) of alpha channel datas of symbols from wstr.
-
-    // Params:
-    // - wstr - source unicode string.
-    // - rWidth - reference on preferred width. If width longer then wstr pixels length, wstr data will be centered. The actual line width will appear here.
-    // - rStart_row - the actual ndex of the first not empty row in source will appear here.
-    // - rHeight - the actual count of not empty(white space) rows will appear here.
-
-    // Return:
-    // Alpha chennels vector. 
-    // */
-    // std::vector<unsigned char> FillWStrData(const std::wstring& wstr, int& rWidth, int& rStart_row, int& rHeight);
+    int GetLongestCharacterLength() const noexcept;
 
     /*
     Fills concrete quad part part of 2d array, with some add data. Both data and add are in 1d arrays, but interprete as 2d arrays.
@@ -55,6 +39,10 @@ struct ZC_GUI_Font
     - add_startRow - index of the first not empty row in source (add).
     */
     void AddSymbolData(std::vector<unsigned char>& data, int& rData_index, int data_width, const Character* pCh);
+    
+private:
+    std::vector<Character> characters;
+    int height = 0;
 };
 typedef typename ZC_GUI_Font::Character ZC_GUI_Character;
 

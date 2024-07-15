@@ -1,4 +1,4 @@
-#include <ZC/GUI/ZC_GUI_FontLoader.h>
+#include <ZC/GUI/Text/ZC_GUI_FontLoader.h>
 
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #include <ZC/Tools/Container/ZC_ContFunc.h>
@@ -79,7 +79,7 @@ ZC_GUI_Font ZC_GUI_FontLoader::CreateFont(void* ft_face, std::forward_list<Eleme
 std::forward_list<typename ZC_GUI_FontLoader::ElementsRange> ZC_GUI_FontLoader::GetCategories(ZC_GUI_FontElements elements)
 {
     std::forward_list<ElementsRange> ctgs;
-    if (elements & ZC_GUI_FE_Symbols)
+    if (elements & ZC_GUI_FE__Symbols)
     {
         ctgs.emplace_front(ElementsRange{.ranges
             {
@@ -88,7 +88,7 @@ std::forward_list<typename ZC_GUI_FontLoader::ElementsRange> ZC_GUI_FontLoader::
                 { .start_index = 123, .end_index = 126 }
             }});
     }
-    if (elements & ZC_GUI_FE_English)
+    if (elements & ZC_GUI_FE__English)
     {
         ctgs.emplace_front(ElementsRange{.ranges
             {
@@ -96,7 +96,7 @@ std::forward_list<typename ZC_GUI_FontLoader::ElementsRange> ZC_GUI_FontLoader::
                 { .start_index = 97, .end_index = 122 }
             }});
     }
-    if (elements & ZC_GUI_FE_Russian)
+    if (elements & ZC_GUI_FE__Russian)
     {
         ctgs.emplace_front(ElementsRange{.ranges
             {
@@ -181,7 +181,7 @@ void ZC_GUI_FontLoader::ElementsRange::FillCharactersData(void* ft_face, std::ve
                     ch.data[ch_RowIndex + i] = face->glyph->bitmap.buffer[ft_index++];
             //  in freetype start at bl corner (top of the symbol), but we need now start from the bottom of the symbol (openGL start draw from bl) (to avoid in future copying empty lines from top and bottom)
             ch.start_row = ch.start_row > 0 ? total_height - ((max_top - ch.start_row) + ch.height)   //  (+) calculate from the top
-                : max_tail + ch.start_row - 1;    //  (-) calculate from the tail
+                : max_tail + ch.start_row;    //  (-) calculate from the tail
         }
     };
     

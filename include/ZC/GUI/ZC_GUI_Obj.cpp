@@ -7,7 +7,8 @@
 
 ZC_GUI_Obj::ZC_GUI_Obj(const ZC_GUI_ObjData& _objData)
     : pBL(new ZC_Vec2<float>()),
-    pObjData(new ZC_GUI_ObjData(_objData))
+    pObjData(new ZC_GUI_ObjData(_objData)),
+    actual_height(_objData.height)
 {}
 
 ZC_GUI_Obj::~ZC_GUI_Obj()
@@ -31,7 +32,7 @@ float ZC_GUI_Obj::GetWidth()
 
 float ZC_GUI_Obj::GetHeight()
 {
-    return pObjData->height;
+    return actual_height;   //  allways actual, pObjData->height may be 0 if obj not drawing
 }
 
 void ZC_GUI_Obj::SetObjHolder(ZC_GUI_Obj* _pObjHolder)
@@ -92,7 +93,7 @@ void ZC_GUI_Obj::VConfigure_Obj()
 
 bool ZC_GUI_Obj::VIsConfigured_Obj() const noexcept
 {
-    return pObjHolder->VIsConfigured_Obj();
+    return pObjHolder ? pObjHolder->VIsConfigured_Obj() : false;
 }
 
 void ZC_GUI_Obj::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex,
@@ -115,14 +116,38 @@ void ZC_GUI_Obj::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vec
     if (VIsButtonKeyboard_Obj()) rButtonKeyboard_objs.emplace_front(this);
 }
 
+void ZC_GUI_Obj::ChangeObjsDrawState(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end)
+{
+    bool unused = false;
+    if (pObjHolder) pObjHolder->ChangeObjsDrawState(needDraw, pObj_start, pObj_end);
+    else VChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, unused);
+}
+
+bool ZC_GUI_Obj::VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged)
+{
+    if (!mustBeChanged && pObj_start == this) mustBeChanged = true;     //  if pObj_start not found yet, chek current obj
+    if (mustBeChanged) pObjData->height = needDraw ? actual_height : 0;     //  if pObj_start where found, make changes
+    return this != pObj_end;
+}
+
 void ZC_GUI_Obj::VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData)
 {
-    if (pObjHolder) return pObjHolder->VMapObjData_Obj(pObjData, offsetIn_objData, byteSize, pData);
+    if (pObjHolder) pObjHolder->VMapObjData_Obj(pObjData, offsetIn_objData, byteSize, pData);
 }
 
 void ZC_GUI_Obj::VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end)
 {
-    if (pObjHolder) return pObjHolder->VSubDataBL_Obj(pBL_start, pBL_end);
+    if (pObjHolder) pObjHolder->VSubDataBL_Obj(pBL_start, pBL_end);
+}
+
+void ZC_GUI_Obj::VSubDataBorder_Obj(ZC_GUI_Border* pBorder_start, ZC_GUI_Border* pBorder_end)
+{
+    if (pObjHolder) pObjHolder->VSubDataBorder_Obj(pBorder_start, pBorder_end);
+}
+
+void ZC_GUI_Obj::VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC_GUI_ObjData* pObjData_end)
+{
+    if (pObjHolder) pObjHolder->VSubDataObjData_Obj(pObjData_start, pObjData_end);
 }
 
 bool ZC_GUI_Obj::MakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll)
@@ -151,7 +176,7 @@ bool ZC_GUI_Obj::VCheckCursorCollision_Obj(float x, float y)
     return VIsDrawing_Obj() && this->Collision(x, y, (*pBL)[0], (*pBL)[1], (*pBL)[0] + pObjData->width, (*pBL)[1] + pObjData->height);
 }
 
-void ZC_GUI_Obj::ButtonDown(ZC_ButtonID buttonID, float time)
+void ZC_GUI_Obj::VButtonDown_Obj(ZC_ButtonID buttonID, float time)
 {
     if (!(ZC_GUI::pGUI->eventManager.IsActiveEventManager()) || !IsWindowDrawing_Obj() || !VIsDrawing_Obj()) return;   //  window or object don't drawing, event coud be used not gui
     switch (buttonID)
@@ -173,7 +198,7 @@ void ZC_GUI_Obj::ButtonDown(ZC_ButtonID buttonID, float time)
     ZC_GUI::pGUI->eventManager.SetPressedObj(this);
 }
 
-void ZC_GUI_Obj::ButtonUp(ZC_ButtonID buttonID, float time)
+void ZC_GUI_Obj::VButtonUp_Obj(ZC_ButtonID buttonID, float time)
 {
     switch (buttonID)
     {

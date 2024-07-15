@@ -58,7 +58,7 @@ void ZC_GUI_WinMutable::VConfigure_Obj()
     bls.reserve(this->objsCount);
     objDatas.reserve(this->objsCount);
 
-    drawArrays.count = this->objsCount - drawArrays.first;    //  count drawing elements (GL_POINTS) in window; daic.first shows is border drown or not
+    drawArrays.count = this->objsCount - drawArrays.first;    //  count drawing elements (GL_POINTS) in window; daic.first shows is border drawn or not
 
     VConf_GetData_Obj(borders, bls, objDatas, 0, this->buttonKeyboard_objs);
 
@@ -99,15 +99,22 @@ void ZC_GUI_WinMutable::VDraw_W()
 
 void ZC_GUI_WinMutable::VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData)
 {
-    GLintptr offset = (pObjData - objDatas.data()) * sizeof(ZC_GUI_ObjData) + offsetIn_objData;
-    bufObjDatas.GLMapNamedBufferRange_Write(offset, byteSize, pData);
+    bufObjDatas.GLMapNamedBufferRange_Write(((pObjData - objDatas.data()) * sizeof(ZC_GUI_ObjData)) + offsetIn_objData, byteSize, pData);
 }
 
 void ZC_GUI_WinMutable::VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end)
 {
-    GLintptr offset = (pBL_start - bls.data()) * sizeof(ZC_Vec2<float>);
-    GLsizeiptr byteSize = (pBL_end - pBL_start + 1) * sizeof(ZC_Vec2<float>);
-    bufBLs.GLNamedBufferSubData(offset, byteSize, pBL_start);
+    bufBLs.GLNamedBufferSubData((pBL_start - bls.data()) * sizeof(ZC_Vec2<float>), (pBL_end - pBL_start + 1) * sizeof(ZC_Vec2<float>), pBL_start);
+}
+
+void ZC_GUI_WinImmutable::VSubDataBorder_Obj(ZC_GUI_Border* pBorder_start, ZC_GUI_Border* pBorder_end)
+{
+    bufBorders.GLNamedBufferSubData((pBorder_start - borders.data()) * sizeof(ZC_GUI_Border), (pBorder_end - pBorder_start + 1) * sizeof(ZC_GUI_Border), pBorder_start);
+}
+
+void ZC_GUI_WinImmutable::VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC_GUI_ObjData* pObjData_end)
+{
+    bufObjDatas.GLNamedBufferSubData((pObjData_start - objDatas.data()) * sizeof(ZC_GUI_ObjData), (pObjData_end - pObjData_start + 1) * sizeof(ZC_GUI_ObjData), pObjData_start);
 }
 
 void ZC_GUI_WinMutable::VCursorMove_Obj(float rel_x, float rel_y)

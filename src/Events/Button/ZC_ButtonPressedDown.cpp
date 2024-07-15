@@ -55,6 +55,11 @@ bool ZC_ButtonPressedDown::AddActiveDownButton(ZC_ButtonID buttonId, bool& isCon
     return false;
 }
 
+void ZC_ButtonPressedDown::TextButtonDown(unsigned char ch)
+{
+    if (ZC_GUI::pGUI) ZC_GUI::pGUI->textInputWindow.TextButtonDown(ch);
+}
+
 bool ZC_ButtonPressedDown::EraseActiveDownButton(ZC_ButtonID buttonId, float time)
 {
     for (auto curIter = pressedButtonDowns.begin(); curIter != pressedButtonDowns.end(); ++curIter)
@@ -82,4 +87,9 @@ bool ZC_ButtonPressedDown::IsButtonDownConnected(ZC_ButtonID buttonId)
 void ZC_ButtonPressedDown::DisablePressedButton(void* pGUI_Obj)
 {
     ZC_Find(pBPD->pressedButtonDowns, static_cast<ZC_GUI_Obj*>(pGUI_Obj))->pGuiObj = nullptr;
+}
+
+bool ZC_ButtonPressedDown::IsButtonPressed(ZC_ButtonID buttonId)
+{
+    return ZC_Find(pressedButtonDowns, buttonId);
 }

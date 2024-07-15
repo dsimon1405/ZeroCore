@@ -1,6 +1,7 @@
 #include <ZC/GUI/ZC_GUI_ObjBorder.h>
 
 #include <ZC/Tools/Container/ZC_ContFunc.h>
+#include <ZC/GUI/ZC_GUI.h>
 
 ZC_GUI_ObjBorder::ZC_GUI_ObjBorder(const ZC_GUI_ObjData& _objData, bool _isScrollable)
     : ZC_GUI_Obj(_objData),
@@ -17,7 +18,7 @@ ZC_GUI_ObjBorder::~ZC_GUI_ObjBorder()
 
 bool ZC_GUI_ObjBorder::VIsDrawing_Obj() const noexcept
 {
-    return pBorder->IsDrawing();
+    return this->pObjData->height == this->actual_height && pBorder->IsDrawing();
 }
 
 const ZC_GUI_Row* ZC_GUI_ObjBorder::AddRow(const ZC_GUI_Row& row, const ZC_GUI_Row* pRow_prev)
@@ -70,8 +71,7 @@ void ZC_GUI_ObjBorder::VEraseObj_Obj(ZC_GUI_Obj* pObj)
     {
         if (std::erase(row.objs, pObj) != 0)
         {
-            if (VIsConfigured_Obj()) VConfigure_Obj();
-            else VEraseFrom__buttonKeyboard_objs_B(pObj);
+            VIsConfigured_Obj() ? VConfigure_Obj() : VEraseFrom__buttonKeyboard_objs_B(pObj);
             break;
         }
     }
@@ -156,6 +156,37 @@ void ZC_GUI_ObjBorder::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, st
         for (ZC_GUI_Obj* pObj : row.objs) pObj->VConf_GetData_Obj(rBorder, rBLs, rObjDatas, this->pObjData->borderIndex, rButtonKeyboard_objs);
 }
 
+bool ZC_GUI_ObjBorder::VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged)
+{
+    if (!pObjHolder) mustBeChanged = false;     //  we on the top, set mustBeChange must be false for search
+    
+    if (pObj_start == pObj_end)     //  only one object
+    {
+        pObj_start->VChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged);
+        VMapObjData_Obj(pObj_start->pObjData, offsetof(ZC_GUI_ObjData, height), sizeof(ZC_GUI_ObjData::height), &(pObj_start->pObjData->height));
+        ZC_GUI::pGUI->eventManager.UpdateCursorCollision();
+        return false;
+    }
+
+    for (Row& row : rows)
+    {
+        for (ZC_GUI_Obj* pObj : row.objs)
+        {
+            if (!(pObj->VChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged)))
+            {
+                if (!pObjHolder)    //  we on the top, may make subData, and update mouse cursor position
+                {
+                    VSubDataObjData_Obj(pObj_start->pObjData, pObj_end->pObjData);
+                    ZC_GUI::pGUI->eventManager.UpdateCursorCollision();
+                }
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 bool ZC_GUI_ObjBorder::VIsUseScrollEvent_Obj() const noexcept
 {
     return isScrollable;
@@ -184,8 +215,6 @@ void ZC_GUI_ObjBorder::VEraseFrom__buttonKeyboard_objs_B(ZC_GUI_Obj* pDelete)
     dynamic_cast<ZC_GUI_ObjBorder*>(GetWindow())->VEraseFrom__buttonKeyboard_objs_B(pDelete);
 }
 
-
-
 //  ZC_GUI_ObjBorder::Row ZC_GUI_Row
 
 ZC_GUI_Row::Row(const RowParams& _rowParams, std::list<ZC_GUI_Obj*> _objs)
@@ -210,9 +239,9 @@ bool ZC_GUI_Row::AddObj(ZC_GUI_Obj* pObj, ZC_GUI_Obj* pObj_prev)
     return true;
 }
 
-void ZC_GUI_Row::SetObjHolder(ZC_GUI_Obj* pObj)
+void ZC_GUI_Row::SetObjHolder(ZC_GUI_Obj* pObjHolder)
 {
-    for (ZC_GUI_Obj* pObj : objs) pObj->SetObjHolder(pObj);
+    for (ZC_GUI_Obj* pObj : objs) pObj->SetObjHolder(pObjHolder);
 }
 
 void ZC_GUI_Row::CalculateObjs_bl(ZC_Vec2<float>& border_tl, float border_width)

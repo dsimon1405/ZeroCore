@@ -64,7 +64,7 @@ ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, cons
 	if (gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
     // if (!LoadOpenGLFunctions()) return;
 	
-	// SDL_StopTextInput();
+	SDL_StopTextInput();
 
 	ZC_OpenGLAssigneErrorCallback();
 	
@@ -111,6 +111,16 @@ void ZC_SDL_Window::VLimitCursor()
 void ZC_SDL_Window::VUnlimitCursor()
 {
 	SDL_SetWindowMouseGrab(pWindow, SDL_FALSE);
+}
+
+void ZC_SDL_Window::VStartInputText()
+{
+	SDL_StartTextInput();
+}
+
+void ZC_SDL_Window::VStopInputText()
+{
+	SDL_StopTextInput();
 }
 
 bool ZC_SDL_Window::SetOpenGLAttributes(int samplesCount)

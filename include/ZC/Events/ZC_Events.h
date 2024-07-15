@@ -185,4 +185,7 @@ struct ZC_Events
     Connection to event.
     */
     static ZC_EC ConnectHandeEventsStart(ZC_Function<void(float)>&& func);
+
+    //  Returns true if button pressed, otherwise false.
+    static bool IsButtonPressed(ZC_ButtonID buttonId);
 };

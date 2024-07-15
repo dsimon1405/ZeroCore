@@ -21,12 +21,14 @@ public:
     void Disconnect(const void* pFunc);
     //  returns true if button was allready pressed, otherwise false and cheks connetion state and set in isConnected
     bool AddActiveDownButton(ZC_ButtonID buttonId, bool& isConnected);
+    void TextButtonDown(unsigned char ch);
     //  returns true if button connected, calls on button up
     bool EraseActiveDownButton(ZC_ButtonID buttonId, float time);
     //  calls active buttons wich have valid pointer on forward_list of down buttons
     void CallPressedButtons(float time);
     bool IsButtonDownConnected(ZC_ButtonID buttonId);
     static void DisablePressedButton(void* pGUI_Obj);
+    bool IsButtonPressed(ZC_ButtonID buttonId);
 
 private:
     ZC_ButtonHolder* pButtonHolder;

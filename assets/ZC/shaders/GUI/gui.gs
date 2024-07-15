@@ -75,7 +75,7 @@ bool ConfigureBorder(int borderIndex, vec2 bl, vec2 br, vec2 tl, vec2 tr)
     if (border.bl.x <= tl.x && border.bl.y <= tl.y && border.tr.x >= tl.x && border.tr.y >= tl.y) corner3 = true;
     if (border.bl.x <= tr.x && border.bl.y <= tr.y && border.tr.x >= tr.x && border.tr.y >= tr.y) corner4 = true;
 
-    if (!corner1 && !corner2 && !corner3 && !corner4) return false;     //  out of border (discard)
+    // if (!corner1 && !corner2 && !corner3 && !corner4) return false;     //  out of border (discard)
         //  if all object's corners in border, don't need border check in fragment shader, set -1. Otherwise set border index
     outG.borderIndex = corner1 && corner2 && corner3 && corner4 ? -1 : borderIndex;
     return true;
@@ -100,6 +100,7 @@ void main()
     int vertIndex = baseInstance + vertexID;
 
     ZC_GUI_ObjData objData = inObjData.objDatas[vertIndex];
+    if (objData.height == 0 && Discard()) return;   //  object not drawing
         //  border
     ZC_GUI_Border border = inBorder.borders[objData.borderIndex];
     if (border.bl.x == border.tr.x && Discard()) return;      //  not valid border (border in the window, but now outside the window border) discard element

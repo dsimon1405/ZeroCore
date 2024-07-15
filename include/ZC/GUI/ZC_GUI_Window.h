@@ -32,13 +32,15 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
         //  make window unfocused (calls in ZC_EventManager::UpdateWindowState())
     void MakeUnfocused();
     bool VIsUseCursorMoveEventOnMBLetfDown_Obj() const noexcept override;
-        //  find keyboard event (calls from ZC_GUI_EventManager::GetButtonDownObject())
-    ZC_GUI_Obj* GetButtonKeyboard(ZC_ButtonID buttonId);
 
+        //  find keyboard event (calls from ZC_GUI_EventManager::GetButtonDownObject()). Overrides in ZC_GUI_TextInputWindow.
+    virtual ZC_GUI_Obj* VGetButtonKeyboard_W(ZC_ButtonID buttonId);
         //  returns true if vectors and GPU buffers allready created
     virtual bool VIsMutable_W() const noexcept = 0;
     virtual void VSetDrawState_W(bool needDraw) = 0;
     virtual void VDraw_W() = 0;
+    virtual void VReconf_UpdateTextUV_W() {} //  updates uv in text objs (colling from ZC_GUI_DrawManager::Reconf_UpdateTextUV())
+    virtual bool VIsInputWindow_W() const noexcept { return false; }
 
 // protected:
     ZC_GUI_WinFlags winFlags;

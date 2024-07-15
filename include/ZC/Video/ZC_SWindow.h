@@ -79,6 +79,12 @@ namespace ZC_SWindow
     //  Mouses cursor can break out window (have effect only in ZC_PC build mode).
     void UnlimitCursor();
 
+    //  Start processing press keyboard keys in unicode (that function start heavy proccesing of each pressed key and used by ZC_GUI). Don't call it without necessarily!
+    void StartInputText();
+
+    //  Stop processing press keyboard keys in unicode (that function used by ZC_GUI). Don't call it without necessarily!
+    void StopInputText();
+
     //  Run cycle (handle events => OpenGL draw).
     void RuntMainCycle();
 

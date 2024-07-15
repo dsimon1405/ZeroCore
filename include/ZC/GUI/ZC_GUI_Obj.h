@@ -9,11 +9,11 @@
 
 struct ZC_GUI_Obj
 {
-
     ZC_GUI_Obj* pObjHolder = nullptr;
         //  put here unsafe RAM pointers in ctr with params, then change them on pointers from vectors in VGetData()
     ZC_Vec2<float>* pBL = nullptr;
     ZC_GUI_ObjData* pObjData = nullptr;
+    float actual_height = 0.f;  //  uses to store actual height for restoration when drawing starts
 
     bool isFirstGetDataCall = true;
 
@@ -33,9 +33,17 @@ struct ZC_GUI_Obj
     ZC_GUI_Obj* GetWindow();
     bool IsWindowFocused();
     void MakeWindowFocused();
-    
+        //  Uses to set height. Objs for changing draw state, changes height, so all height changings must be realize with that method! That method don't call gpu changing methods.
+    void SetHeight_Obj(float height)
+    {
+        actual_height = height;
+        if (!VIsConfigured_Obj() || VIsDrawing_Obj()) pObjData->height = height;
+    }
     virtual bool VIsStacionar_Obj() const noexcept;    //  override in ZC_GUI_Win...
-    virtual bool VIsDrawing_Obj() const noexcept = 0;
+    virtual bool VIsDrawing_Obj() const noexcept
+    {
+        return pObjData->height == actual_height;
+    }
 
     virtual bool VAddObj_Obj(ZC_GUI_Obj* pObj, ZC_GUI_Obj* pPrevObj) { return false; }
     virtual void VEraseObj_Obj(ZC_GUI_Obj* pObj) {}
@@ -53,9 +61,15 @@ struct ZC_GUI_Obj
     virtual void VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex,
         std::forward_list<ZC_GUI_Obj*>& rButtonKeyboard_objs);
     virtual void VConf_SetTextUV() {};     //  for text functions, configuration of the text texture done, all text heirs must update object uv from text uv
+        //  Change drawing state of some object in the window. Must be used. Must be used insted VChangeObjsDrawState_Obj();
+    void ChangeObjsDrawState(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end);
+        //  return false when found pObj_end, to stop changind draw state. Must be used ChangeObjsDrawState() insted of this method
+    virtual bool VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged);
 
     virtual void VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData);
     virtual void VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end);
+    virtual void VSubDataBorder_Obj(ZC_GUI_Border* pBorder_start, ZC_GUI_Border* pBorder_end);
+    virtual void VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC_GUI_ObjData* pObjData_end);
 
             //  EVENT SYSTEM
         //  may be called from overrided VMakeCursorCollision_Obj(), for heirs who want have cursor collision
@@ -84,21 +98,20 @@ struct ZC_GUI_Obj
         //  Called after calls VMouseButtonLeftDown_Obj(...) or VRightButtonDown_Obj(...) with cursorMoveWhilePressed = true;
         //  Called once per frame (parrams: x, y - have last position; rel_x, rel_y - have sum of all changes in frame).
     virtual void VCursorMove_Obj(float rel_x, float rel_y) {}
+    virtual void VScroll_Obj(float vertical, float time) {}
+
+        //  process all button down events, and call VMouseButtonLeftDown_Obj(), VRightButtonDown_Obj(), VKeyboardButtonDown_Obj(). That method overrides only in ZC_GUI_TextInputWindow!
+    virtual void VButtonDown_Obj(ZC_ButtonID buttonID, float time);
+        //  process all button up events, and call VMouseButtonLeftUp_Obj(), VRightButtonUp_Obj(), VKeyboardButtonUp_Obj(). That method overrides only in ZC_GUI_TextInputWindow!
+    virtual void VButtonUp_Obj(ZC_ButtonID buttonID, float time);
         //  return false if event is holds while relese
     virtual bool VMouseButtonLeftDown_Obj(float time) { return true; }
     virtual void VMouseButtonLeftUp_Obj(float time) {}
         //  return false if event is holds while relese
     virtual bool VRightButtonDown_Obj(float time) { return true; }
     virtual void VRightButtonUp_Obj(float time) {}
-
         //  return false if event is holds while relese
     virtual bool VKeyboardButtonDown_Obj(float time) { return true; }
     virtual void VKeyboardButtonUp_Obj(float time) {}
-
-    void ButtonDown(ZC_ButtonID buttonID, float time);
-    void ButtonUp(ZC_ButtonID buttonID, float time);
-
-    virtual void VScroll_Obj(float vertical, float time) {}
-
     virtual bool VIsButtonKeyboard_Obj() { return false; }
 };

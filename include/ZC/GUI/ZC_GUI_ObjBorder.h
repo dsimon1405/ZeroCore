@@ -63,6 +63,8 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
     void VConf_GetBordersAndObjsCount_Obj(GLsizeiptr& rBordersCount, GLsizeiptr& rObjsCount) override;
     void VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex,
         std::forward_list<ZC_GUI_Obj*>& rButtonKeyboard_objs) override;
+        
+    bool VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged) override;
 
     bool VIsUseScrollEvent_Obj() const noexcept override;
 

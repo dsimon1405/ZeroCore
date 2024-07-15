@@ -83,7 +83,8 @@ ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLuint _binding, GLen
 //     return &textures.emplace_back(std::move(texture));
 // }
 
-ZC_Texture ZC_Texture::TextureStorage2D(GLenum internalFormat, GLuint _binding, GLsizei width, GLsizei height, bool mimmap, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
+ZC_Texture ZC_Texture::TextureStorage2D(GLenum internalFormat, GLuint _binding, GLsizei width, GLsizei height, bool mimmap, GLenum wrapS, GLenum wrapT,
+    GLenum filterMin, GLenum filterMag)
 {
     ZC_Texture tex(GL_TEXTURE_2D, _binding, width, height);
     if (wrapS != GL_REPEAT) glTextureParameteri(tex.id, GL_TEXTURE_WRAP_S, wrapS);
@@ -95,8 +96,8 @@ ZC_Texture ZC_Texture::TextureStorage2D(GLenum internalFormat, GLuint _binding, 
     return tex;
 }
 
-ZC_Texture ZC_Texture::TextureStorage2DFill(GLenum internalFormat, GLuint _binding, GLsizei width, GLsizei height, const void* pData, GLenum format, GLenum type, bool mimmap,
-    GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
+ZC_Texture ZC_Texture::TextureStorage2DFill(GLenum internalFormat, GLuint _binding, GLsizei width, GLsizei height, const void* pData,
+    GLenum format, GLenum type, bool mimmap, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
 {
     auto tex = TextureStorage2D(internalFormat, _binding, width, height, mimmap, wrapS, wrapT, filterMin, filterMag);
     tex.GLTextureSubImage2D(0, 0, width, height, format, type, pData);
@@ -135,6 +136,7 @@ ZC_Texture::ZC_Texture(ZC_Texture&& tex) noexcept
 
 ZC_Texture& ZC_Texture::operator = (ZC_Texture&& tex)
 {
+    if (id != 0) glDeleteTextures(1, &id);
     id = tex.id;
     binding = tex.binding;
     width = tex.width;

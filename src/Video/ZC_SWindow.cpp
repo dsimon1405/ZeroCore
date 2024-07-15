@@ -53,6 +53,16 @@ void ZC_SWindow::UnlimitCursor()
     if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->VUnlimitCursor();
 }
 
+void ZC_SWindow::StartInputText()
+{
+    if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->VStartInputText();
+}
+
+void ZC_SWindow::StopInputText()
+{
+    if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->VStopInputText();
+}
+
 void ZC_SWindow::RuntMainCycle()
 {
     if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->RunMainCycle();

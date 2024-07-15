@@ -4,6 +4,7 @@
 #include <ZC/GUI/ZC_GUI_ObjData.h>
 #include "ZC_GUI_IconUV.h"
 #include <ZC/Tools/Container/ZC_ContFunc.h>
+#include <ZC/GUI/ZC_GUI_Bindings.h>
 
 #include <cassert>
 
@@ -17,7 +18,7 @@ bool ZC_GUI_Window::VIsUseCursorMoveEventOnMBLetfDown_Obj() const noexcept
     return IsBackground() && winFlags & ZC_GUI_WF__Movable;
 }
 
-ZC_GUI_Obj* ZC_GUI_Window::GetButtonKeyboard(ZC_ButtonID buttonId)
+ZC_GUI_Obj* ZC_GUI_Window::VGetButtonKeyboard_W(ZC_ButtonID buttonId)
 {
     for (ZC_GUI_Obj* pObj : buttonKeyboard_objs)
         if (*pObj == buttonId) return pObj;
@@ -59,7 +60,8 @@ ZC_GUI_Window::ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC
                 .height = _woiData.height,
                 .depth = _winFlags & ZC_GUI_WF__Stacionar ? GetStacionarDepth() : 0.f,
                 .color = color_unfocused,
-                .uv = uv
+                .uv = uv,
+                .tex_binding = ZC_GUI_Bindings::bind_tex_Icons
             },
         _winFlags & ZC_GUI_WF__Scrollable),
     winFlags(_winFlags)

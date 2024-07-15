@@ -48,6 +48,12 @@ void ZC_GUI_DrawManager::Configure()
     if (pImmutableWin) pImmutableWin->VConfigure_Obj();
 }
 
+void ZC_GUI_DrawManager::Reconf_UpdateTextUV()
+{
+    for (auto pWinObj : mutableWins) pWinObj->VReconf_UpdateTextUV_W();
+    if (pImmutableWin) pImmutableWin->VReconf_UpdateTextUV_W();
+}
+
 void ZC_GUI_DrawManager::Draw()
 {
     glUseProgram(0);

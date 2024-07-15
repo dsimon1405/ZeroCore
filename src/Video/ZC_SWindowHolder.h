@@ -20,6 +20,8 @@ public:
     virtual void VShowCursor() {}
     virtual void VLimitCursor() {}
     virtual void VUnlimitCursor() {}
+    virtual void VStartInputText() {}
+    virtual void VStopInputText() {}
 
     void RunMainCycle();
     void SetFPS(long limit);

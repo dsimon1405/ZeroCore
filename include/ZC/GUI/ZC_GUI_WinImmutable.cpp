@@ -128,6 +128,16 @@ void ZC_GUI_WinImmutable::VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<floa
     bufBLs.GLNamedBufferSubData((pBL_start - bls.data()) * sizeof(ZC_Vec2<float>), (pBL_end - pBL_start + 1) * sizeof(ZC_Vec2<float>), pBL_start);
 }
 
+void ZC_GUI_WinImmutable::VSubDataBorder_Obj(ZC_GUI_Border* pBorder_start, ZC_GUI_Border* pBorder_end)
+{
+    bufBorders.GLNamedBufferSubData((pBorder_start - borders.data()) * sizeof(ZC_GUI_Border), (pBorder_end - pBorder_start + 1) * sizeof(ZC_GUI_Border), pBorder_start);
+}
+
+void ZC_GUI_WinImmutable::VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC_GUI_ObjData* pObjData_end)
+{
+    bufObjDatas.GLNamedBufferSubData((pObjData_start - objDatas.data()) * sizeof(ZC_GUI_ObjData), (pObjData_end - pObjData_start + 1) * sizeof(ZC_GUI_ObjData), pObjData_start);
+}
+
 void ZC_GUI_WinImmutable::VCursorMove_Obj(float rel_x, float rel_y)
 {
     ZC_Vec2<float> rel(rel_x, rel_y);

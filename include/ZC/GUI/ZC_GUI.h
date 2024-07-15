@@ -2,7 +2,8 @@
 
 #include <ZC/GUI/ZC_GUI_DrawManager.h>
 #include <ZC/GUI/ZC_GUI_EventManager.h>
-#include <ZC/GUI/ZC_GUI_TextManager.h>
+#include <ZC/GUI/Text/ZC_GUI_TextManager.h>
+#include <ZC/GUI/Text/ZC_GUI_TextInputWindow.h>
 
 struct ZC_GUI
 {
@@ -11,6 +12,8 @@ struct ZC_GUI
     ZC_GUI_TextManager textManager;
     ZC_GUI_DrawManager drawManager;
     ZC_GUI_EventManager eventManager;
+
+    ZC_GUI_TextInputWindow textInputWindow{ float(textManager.font.GetHeight()) };
 
     ZC_GUI();
 

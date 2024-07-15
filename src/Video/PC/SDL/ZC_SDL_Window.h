@@ -19,6 +19,8 @@ private:
     void VShowCursor() override;
     void VLimitCursor() override;
     void VUnlimitCursor() override;
+    void VStartInputText() override;
+    void VStopInputText() override;
 
     bool SetOpenGLAttributes(int samplesCount);
     // bool LoadOpenGLFunctions();

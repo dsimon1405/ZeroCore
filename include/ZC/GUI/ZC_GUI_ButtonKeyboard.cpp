@@ -1,13 +1,14 @@
 #include <ZC/GUI/ZC_GUI_ButtonKeyboard.h>
 
 #include "ZC_GUI_IconUV.h"
+#include <ZC/GUI/ZC_GUI_Bindings.h>
 
 ZC_GUI_ButtonKeyboard::ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, bool _pressOnDown)
     : ZC_GUI_ButtonKeyboard(_buttonId, width, height, _pressOnDown, ZC_GUI_IconUV::button)
 {}
 
 ZC_GUI_ButtonKeyboard::ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, bool _pressOnDown, const ZC_GUI_UV &uv)
-    : ZC_GUI_ButtonState(ZC_GUI_ObjData{ .width = width, .height = height, .uv = uv }),
+    : ZC_GUI_ButtonState(ZC_GUI_ObjData{ .width = width, .height = height, .uv = uv, .tex_binding = ZC_GUI_Bindings::bind_tex_Icons }),
     buttonId(_buttonId),
     usePress(_pressOnDown)
 {}
@@ -15,11 +16,6 @@ ZC_GUI_ButtonKeyboard::ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width,
 bool ZC_GUI_ButtonKeyboard::operator == (ZC_ButtonID _buttonId) const noexcept
 {
     return buttonId == _buttonId;
-}
-
-bool ZC_GUI_ButtonKeyboard::VIsDrawing_Obj() const noexcept
-{
-    return true;
 }
 
 void ZC_GUI_ButtonKeyboard::SetWaitPressTime(long _waitPressNanoseconds)
