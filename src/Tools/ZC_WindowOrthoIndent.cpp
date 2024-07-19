@@ -147,8 +147,13 @@ void ZC_WindowOrthoIndent::CalculateIndents(float windowWidth, float windowHeigh
 
 
 
-
-
+ZC_WOIData::ZC_WOIData(float _width, float _height, float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags)
+    : width(_width),
+    height(_height),
+    indentX(_indentX),
+    indentY(_indentY),
+    indentFlags(_indentFlags)
+{}
 
 
 

@@ -1,10 +1,10 @@
 #pragma once
 
 #include <ZC/Events/ZC_ButtonID.h>
-#include <ZC/GUI/ZC_GUI_ButtonState.h>
+#include <ZC/GUI/ZC_GUI_ButtonBase.h>
 
 #include <iostream>
-struct ZC_GUI_ButtonKeyboard : public virtual ZC_GUI_ButtonState
+struct ZC_GUI_ButtonKeyboard : public virtual ZC_GUI_ButtonBase
 {
     ZC_ButtonID buttonId;
     const bool usePress;

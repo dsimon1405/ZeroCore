@@ -2,19 +2,11 @@
 
 #include <ZC/GUI/ZC_GUI.h>
 #include <ZC/GUI/ZC_GUI_Bindings.h>
+#include "ZC_GUI_IconUV.h"
 
 ZC_GUI_WinImmutable::ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags)
-    : ZC_GUI_Window(_woiData, _winFlags),
-    daic{
-        .count = static_cast<GLuint>(_winFlags & ZC_GUI_WF__NoBackground ? 0 : 1),    //  if there is no background, return 0 and draw count became 0
-        .instanceCount = static_cast<GLuint>(_winFlags & ZC_GUI_WF__NeedDraw ? 1 : 0),   //  make instanceCount 1 for drawing, otherwise 0
-        .first = static_cast<GLuint>(_winFlags & ZC_GUI_WF__NoBackground ? 1 : 0),    //  if there is no background, return 1 and start drawing at index 1
-        }
-{
-    if (_winFlags & ZC_GUI_WF__NeedDraw) SetFocuseDepthAndColor();
-    ZC_GUI::AddWindow(this);
-    winImmutables.emplace_back(this);
-}
+    : ZC_GUI_WinImmutable(_woiData, ZC_GUI_IconUV::window, _winFlags)
+{}
 
 ZC_GUI_WinImmutable::ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags)
     : ZC_GUI_Window(_woiData, uv, _winFlags),
@@ -34,6 +26,17 @@ ZC_GUI_WinImmutable::~ZC_GUI_WinImmutable()
     ZC_GUI::EraseWindow(this);
 }
 
+void ZC_GUI_WinImmutable::VSetDrawState_W(bool needDraw)
+{
+    if (VIsDrawing_Obj() == needDraw) return;
+    if (needDraw && this->VIsUseCursorMoveEventOnMBLetfDown_Obj() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
+        SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
+    daic.instanceCount = needDraw ? 1 : 0;
+    bufDAICs.GLMapNamedBufferRange_Write(daicOffset + offsetof(ZC_DrawArraysIndirectCommand, instanceCount),
+        sizeof(ZC_DrawArraysIndirectCommand::instanceCount), &(daic.instanceCount));
+    ZC_GUI::UpdateWindowDrawState(this);
+}
+
 bool ZC_GUI_WinImmutable::VIsDrawing_Obj() const noexcept
 {
     return daic.instanceCount == 1;  //  1 for drawing, otherwise 0
@@ -44,13 +47,13 @@ void ZC_GUI_WinImmutable::VConfigure_Obj()
     if (winImmutables.empty()) return;
 
     for (ZC_GUI_WinImmutable* pWin : winImmutables)
-        pWin->VConf_Set_bl_Obj(pWin->GetPosition_bl_Obj());     //  calculate bl for all window's objects
+        pWin->VSet_pBL_Obj(pWin->Get_bl_Obj());     //  calculate bl for all window's objects
 
     GLsizeiptr totalBorders = 0,
         totalObjs = 0;
     for (ZC_GUI_WinImmutable* pWin : winImmutables)
     {
-        pWin->VConf_GetBordersAndObjsCount_Obj(pWin->bordersCount, pWin->objsCount);
+         pWin->VConf_GetBordersAndObjsCount_Obj(pWin->bordersCount, pWin->objsCount);
 
         pWin->daic.count = pWin->objsCount - pWin->daic.first;    //  count drawing elements (GL_POINTS) in window; daic.first shows is border drown or not
         totalBorders += pWin->bordersCount;
@@ -95,17 +98,6 @@ bool ZC_GUI_WinImmutable::VIsMutable_W() const noexcept
     return false;
 }
 
-void ZC_GUI_WinImmutable::VSetDrawState_W(bool needDraw)
-{
-    if (VIsDrawing_Obj() == needDraw) return;
-    if (needDraw && this->VIsUseCursorMoveEventOnMBLetfDown_Obj() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
-        SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
-    daic.instanceCount = needDraw ? 1 : 0;
-    bufDAICs.GLMapNamedBufferRange_Write(daicOffset + offsetof(ZC_DrawArraysIndirectCommand, instanceCount),
-        sizeof(ZC_DrawArraysIndirectCommand::instanceCount), &(daic.instanceCount));
-    ZC_GUI::UpdateWindowDrawState(this);
-}
-
 void ZC_GUI_WinImmutable::VDraw_W()
 {
     if (bls.empty()) return;    //  no data
@@ -118,24 +110,33 @@ void ZC_GUI_WinImmutable::VDraw_W()
     glMultiDrawArraysIndirect(GL_POINTS, 0, drawCount, 0);
 }
 
+void ZC_GUI_WinImmutable::VReconf_UpdateTextUV_W()
+{       //  update uv in text objs
+    for (ZC_GUI_WinImmutable* pWin : winImmutables)
+        for (Row& row : pWin->rows)
+            for (ZC_GUI_Obj* pObj : row.objs) pObj->VConf_SetTextUV_Obj();
+        //  update all the data (more productive than map many UVs one at a time)
+    bufObjDatas.GLNamedBufferSubData(0, sizeof(ZC_GUI_ObjData) * objDatas.size(), objDatas.data());
+}
+
 void ZC_GUI_WinImmutable::VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData)
 {
-    bufObjDatas.GLMapNamedBufferRange_Write((pObjData - objDatas.data()) * sizeof(ZC_GUI_ObjData) + offsetIn_objData, byteSize, pData);
+    if (VIsConfigured_Obj()) bufObjDatas.GLMapNamedBufferRange_Write((pObjData - objDatas.data()) * sizeof(ZC_GUI_ObjData) + offsetIn_objData, byteSize, pData);
 }
 
 void ZC_GUI_WinImmutable::VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end)
 {
-    bufBLs.GLNamedBufferSubData((pBL_start - bls.data()) * sizeof(ZC_Vec2<float>), (pBL_end - pBL_start + 1) * sizeof(ZC_Vec2<float>), pBL_start);
+    if (VIsConfigured_Obj()) bufBLs.GLNamedBufferSubData((pBL_start - bls.data()) * sizeof(ZC_Vec2<float>), (pBL_end - pBL_start + 1) * sizeof(ZC_Vec2<float>), pBL_start);
 }
 
 void ZC_GUI_WinImmutable::VSubDataBorder_Obj(ZC_GUI_Border* pBorder_start, ZC_GUI_Border* pBorder_end)
 {
-    bufBorders.GLNamedBufferSubData((pBorder_start - borders.data()) * sizeof(ZC_GUI_Border), (pBorder_end - pBorder_start + 1) * sizeof(ZC_GUI_Border), pBorder_start);
+    if (VIsConfigured_Obj()) bufBorders.GLNamedBufferSubData((pBorder_start - borders.data()) * sizeof(ZC_GUI_Border), (pBorder_end - pBorder_start + 1) * sizeof(ZC_GUI_Border), pBorder_start);
 }
 
 void ZC_GUI_WinImmutable::VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC_GUI_ObjData* pObjData_end)
 {
-    bufObjDatas.GLNamedBufferSubData((pObjData_start - objDatas.data()) * sizeof(ZC_GUI_ObjData), (pObjData_end - pObjData_start + 1) * sizeof(ZC_GUI_ObjData), pObjData_start);
+    if (VIsConfigured_Obj()) bufObjDatas.GLNamedBufferSubData((pObjData_start - objDatas.data()) * sizeof(ZC_GUI_ObjData), (pObjData_end - pObjData_start + 1) * sizeof(ZC_GUI_ObjData), pObjData_start);
 }
 
 void ZC_GUI_WinImmutable::VCursorMove_Obj(float rel_x, float rel_y)

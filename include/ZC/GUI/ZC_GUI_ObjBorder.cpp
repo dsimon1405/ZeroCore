@@ -16,6 +16,21 @@ ZC_GUI_ObjBorder::~ZC_GUI_ObjBorder()
     if (this->isFirstGetDataCall) if(pBorder) delete pBorder;
 }
 
+ZC_Vec2<float>* ZC_GUI_ObjBorder::VGet_pBL_end()
+{
+    return rows.empty() ? Get_pBL_start() : rows.back().objs.back()->VGet_pBL_end();
+}
+
+ZC_GUI_ObjData* ZC_GUI_ObjBorder::VGet_pObjData_end()
+{
+    return rows.empty() ? Get_pObjData_start() : rows.back().objs.back()->VGet_pObjData_end();
+}
+
+ZC_GUI_Obj* ZC_GUI_ObjBorder::VGet_pObj_end()
+{
+    return rows.empty() ? this : rows.back().objs.back()->VGet_pObj_end();
+}
+
 bool ZC_GUI_ObjBorder::VIsDrawing_Obj() const noexcept
 {
     return this->pObjData->height == this->actual_height && pBorder->IsDrawing();
@@ -71,7 +86,7 @@ void ZC_GUI_ObjBorder::VEraseObj_Obj(ZC_GUI_Obj* pObj)
     {
         if (std::erase(row.objs, pObj) != 0)
         {
-            VIsConfigured_Obj() ? VConfigure_Obj() : VEraseFrom__buttonKeyboard_objs_B(pObj);
+            VIsConfigured_Obj() ? VConfigure_Obj() : VEraseFrom__buttonKeyboard_objs_Obj(pObj);
             break;
         }
     }
@@ -80,6 +95,11 @@ void ZC_GUI_ObjBorder::VEraseObj_Obj(ZC_GUI_Obj* pObj)
 const ZC_GUI_Border& ZC_GUI_ObjBorder::VGetBorder_Obj()
 {
     return *pBorder;
+}
+
+ZC_GUI_Obj* ZC_GUI_ObjBorder::VGetObjBorder_Obj()
+{
+    return this;
 }
 
 void ZC_GUI_ObjBorder::VRecalculateBorder_Obj(const ZC_GUI_Border& outer_border)
@@ -96,12 +116,13 @@ void ZC_GUI_ObjBorder::CalculateInternalBorder(const ZC_GUI_Border& outer_border
         pBorder->tr = pBorder->bl;
         return;
     }
+    ZC_Vec2<float> bl = Get_bl_Obj();
         //  set bl and check with window border bl
-    ZC_Vec2<float> border_bl = *(this->pBL);
+    ZC_Vec2<float> border_bl = bl;
     if (border_bl[0] < outer_border.bl[0]) border_bl[0] = outer_border.bl[0];
     if (border_bl[1] < outer_border.bl[1]) border_bl[1] = outer_border.bl[1];
         //  set tr and check with window border tr
-    ZC_Vec2<float> border_tr((*(this->pBL))[0] + this->pObjData->width, (*(this->pBL))[1] + this->pObjData->height);   //  calculate tr from new position
+    ZC_Vec2<float> border_tr(bl[0] + this->pObjData->width, bl[1] + this->pObjData->height);   //  calculate tr from new position
     if (outer_border.tr[0] < border_tr[0]) border_tr[0] = outer_border.tr[0];
     if (outer_border.tr[1] < border_tr[1]) border_tr[1] = outer_border.tr[1];
 
@@ -111,15 +132,15 @@ void ZC_GUI_ObjBorder::CalculateInternalBorder(const ZC_GUI_Border& outer_border
     pBorder->tr = border_tr[0] < border_bl[0] || border_tr[1] < border_bl[1] ? border_bl : border_tr;
 }
 
-void ZC_GUI_ObjBorder::VConf_Set_bl_Obj(const ZC_Vec2<float>& _bl)
+void ZC_GUI_ObjBorder::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
 {
     *(this->pBL) = _bl;
         //  calculate border
     if (this->pObjHolder) CalculateInternalBorder(this->pObjHolder->VGetBorder_Obj());    //  if not window, just a border in window, so calculate border for drawing object
     else *pBorder = ZC_GUI_Border{ .bl = _bl, .tr{ _bl[0] + this->pObjData->width, _bl[1] + this->pObjData->height } };
         //  calculate objs in rows
-    ZC_Vec2<float> tl(_bl[0], _bl[1] + this->pObjData->height + scroll_y);
-    for (Row& row : rows) row.CalculateObjs_bl(tl, this->pObjData->width);
+    ZC_Vec2<float> tl(_bl[0], _bl[1] + this->GetHeight() + scroll_y);
+    for (Row& row : rows) row.CalculateObjs_bl(tl, this->GetWidth());
 }
 
 void ZC_GUI_ObjBorder::VConf_GetBordersAndObjsCount_Obj(GLsizeiptr& rBordersCount, GLsizeiptr& rObjsCount)
@@ -158,29 +179,35 @@ void ZC_GUI_ObjBorder::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, st
 
 bool ZC_GUI_ObjBorder::VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged)
 {
-    if (!pObjHolder) mustBeChanged = false;     //  we on the top, set mustBeChange must be false for search
-    
-    if (pObj_start == pObj_end)     //  only one object
-    {
-        pObj_start->VChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged);
-        VMapObjData_Obj(pObj_start->pObjData, offsetof(ZC_GUI_ObjData, height), sizeof(ZC_GUI_ObjData::height), &(pObj_start->pObjData->height));
-        ZC_GUI::pGUI->eventManager.UpdateCursorCollision();
-        return false;
-    }
-
+    bool isEnd = false;
+    float offset_y = 0.f;
     for (Row& row : rows)
     {
+        if (isEnd)
+        {
+            if (offset_y != 0.f)
+            {       //  all pBL is pointers from the large ZC_GUI_Win*** array (after configuration), so we can itarate with them
+                ZC_Vec2<float>* pBL_start_index = row.objs.front()->Get_pBL_start();    //  get pBL of the first element in the border
+                ZC_Vec2<float>* pBL_end_index = rows.back().objs.back()->VGet_pBL_end();   //  get pBL of the last element in the border
+                ++pBL_end_index;    // and incriment to the next (like .end() in stl containers)
+                for (ZC_Vec2<float>* i = pBL_start_index; i != pBL_end_index; ++i)
+                    (*i)[1] += needDraw ? - offset_y : offset_y;
+                VSubDataBL_Obj(pBL_start_index, --pBL_end_index);   //  --pBL_end_index -> to return in borders array range
+                ZC_GUI::pGUI->eventManager.UpdateCursorCollision();
+            }
+            return false;
+        }
         for (ZC_GUI_Obj* pObj : row.objs)
         {
             if (!(pObj->VChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged)))
             {
-                if (!pObjHolder)    //  we on the top, may make subData, and update mouse cursor position
-                {
-                    VSubDataObjData_Obj(pObj_start->pObjData, pObj_end->pObjData);
-                    ZC_GUI::pGUI->eventManager.UpdateCursorCollision();
-                }
-                return false;
+                isEnd = true;
+                if (offset_y != 0.f && pObj != row.objs.back())
+                    offset_y -= row.rowParams.height + row.rowParams.indent_y;    //  end object not reached end of the row, exclude height of that row from offset_y if height was inluded
+                VSubDataObjData_Obj(pObj_start->Get_pObjData_start(), pObj_end->VGet_pObjData_end());
             }
+            if (mustBeChanged && pObj == row.objs.front()) offset_y += row.rowParams.height + row.rowParams.indent_y;   //  change draw state from first element of the row, need include rows height in offset_y
+            if (isEnd) break;
         }
     }
 
@@ -210,12 +237,8 @@ bool ZC_GUI_ObjBorder::VCheckCursorCollision_Obj(float x, float y)
     return VIsDrawing_Obj() && pBorder->CursorCollision(x, y);
 }
 
-void ZC_GUI_ObjBorder::VEraseFrom__buttonKeyboard_objs_B(ZC_GUI_Obj* pDelete)
-{
-    dynamic_cast<ZC_GUI_ObjBorder*>(GetWindow())->VEraseFrom__buttonKeyboard_objs_B(pDelete);
-}
 
-//  ZC_GUI_ObjBorder::Row ZC_GUI_Row
+    //  ZC_GUI_ObjBorder::Row ZC_GUI_Row
 
 ZC_GUI_Row::Row(const RowParams& _rowParams, std::list<ZC_GUI_Obj*> _objs)
     : rowParams(_rowParams),
@@ -247,15 +270,14 @@ void ZC_GUI_Row::SetObjHolder(ZC_GUI_Obj* pObjHolder)
 void ZC_GUI_Row::CalculateObjs_bl(ZC_Vec2<float>& border_tl, float border_width)
 {
     border_tl[1] -= rowParams.indent_y;
-    float row_height = 0.f;
         //  calculates bl for objects going from left to right
-    auto lambCalc_bl_fromLeft = [this, &row_height, border_tl](float cur_x)
+    auto lambCalc_bl_fromLeft = [this, border_tl](float cur_x)
     {
         for (ZC_GUI_Obj* pObj : objs)
         {
             cur_x += pObj == objs.front() ? rowParams.indent_x : rowParams.distance_x;
-            if (pObj->GetHeight() > row_height) row_height = pObj->GetHeight(); //  update the row height to a higher one
-            pObj->VConf_Set_bl_Obj({ cur_x, border_tl[1] - pObj->GetHeight() });
+            if (pObj->GetHeight() > rowParams.height) rowParams.height = pObj->GetHeight(); //  update the row height to a higher one
+            pObj->VSet_pBL_Obj({ cur_x, border_tl[1] - pObj->GetHeight() });
             cur_x += pObj->GetWidth();
         }
     };
@@ -269,8 +291,8 @@ void ZC_GUI_Row::CalculateObjs_bl(ZC_Vec2<float>& border_tl, float border_width)
         for (ZC_GUI_Obj* pObj : objs)
         {
             cur_x -= pObj == objs.front() ? rowParams.indent_x : rowParams.distance_x;
-            if (pObj->GetHeight() > row_height) row_height = pObj->GetHeight(); //  update the row height to a higher one
-            pObj->VConf_Set_bl_Obj({ cur_x, border_tl[1] - pObj->GetHeight() });
+            if (pObj->GetHeight() > rowParams.height) rowParams.height = pObj->GetHeight(); //  update the row height to a higher one
+            pObj->VSet_pBL_Obj({ cur_x, border_tl[1] - pObj->GetHeight() });
             cur_x -= pObj->GetWidth();
         }
     } break;
@@ -283,12 +305,12 @@ void ZC_GUI_Row::CalculateObjs_bl(ZC_Vec2<float>& border_tl, float border_width)
         lambCalc_bl_fromLeft(border_tl[0] + indent_x);
     } break;
     }
-    border_tl[1] -= row_height;
+    border_tl[1] -= rowParams.height;
 }
 
 
 
-//  ZC_GUI_ObjBorder::Row ZC_GUI_Row::RowParams
+    //  ZC_GUI_ObjBorder::Row ZC_GUI_Row::RowParams
 
 ZC_GUI_RowParams::RowParams(float _indent_x, Indent_X _indentFlag_X, float _indent_y, float _distance_x)
     : indent_x(_indent_x),

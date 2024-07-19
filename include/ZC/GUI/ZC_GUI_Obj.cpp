@@ -11,6 +11,21 @@ ZC_GUI_Obj::ZC_GUI_Obj(const ZC_GUI_ObjData& _objData)
     actual_height(_objData.height)
 {}
 
+ZC_GUI_Obj::ZC_GUI_Obj(float width, float height, float depth, unsigned int color, const ZC_GUI_UV& uv, int borderIndex, unsigned int tex_binding)
+    : ZC_GUI_Obj(ZC_GUI_ObjData{width, height, depth, color, uv, borderIndex, tex_binding})
+{}
+
+ZC_GUI_Obj::ZC_GUI_Obj(ZC_GUI_Obj&& o)
+    : pBL(o.pBL),
+    pObjData(o.pObjData),
+    actual_height(o.actual_height),
+    isFirstGetDataCall(o.isFirstGetDataCall)
+{
+    o.pBL = nullptr;
+    o.pObjData = nullptr;
+    o.isFirstGetDataCall = false;
+}
+
 ZC_GUI_Obj::~ZC_GUI_Obj()
 {
     if (isFirstGetDataCall)
@@ -20,7 +35,7 @@ ZC_GUI_Obj::~ZC_GUI_Obj()
     }
 }
 
-ZC_Vec2<float> ZC_GUI_Obj::GetPosition_bl_Obj()
+ZC_Vec2<float> ZC_GUI_Obj::Get_bl_Obj()
 {
     return *pBL;
 }
@@ -66,9 +81,50 @@ void ZC_GUI_Obj::MakeWindowFocused()
     }
 }
 
+void ZC_GUI_Obj::SetHeight_Obj(float height)
+{
+    actual_height = height;
+    if (!VIsConfigured_Obj() || VIsDrawing_Obj()) pObjData->height = height;
+}
+
+ZC_Vec2<float>* ZC_GUI_Obj::Get_pBL_start()
+{
+    return pBL;
+}
+
+ZC_Vec2<float>* ZC_GUI_Obj::VGet_pBL_end()
+{
+    return pBL;
+}
+
+ZC_GUI_ObjData* ZC_GUI_Obj::Get_pObjData_start()
+{
+    return pObjData;
+}
+
+ZC_GUI_ObjData* ZC_GUI_Obj::VGet_pObjData_end()
+{
+    return pObjData;
+}
+
+ZC_GUI_Obj* ZC_GUI_Obj::VGet_pObj_end()
+{
+    return this;
+}
+
+void ZC_GUI_Obj::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
+{
+    *pBL = _bl;
+}
+
 bool ZC_GUI_Obj::VIsStacionar_Obj() const noexcept
 {
     return pObjHolder->VIsStacionar_Obj();
+}
+
+bool ZC_GUI_Obj::VIsDrawing_Obj() const noexcept
+{
+    return pObjData->height == actual_height;
 }
 
 const ZC_GUI_Border& ZC_GUI_Obj::VGetBorder_Obj()
@@ -76,14 +132,9 @@ const ZC_GUI_Border& ZC_GUI_Obj::VGetBorder_Obj()
     return pObjHolder->VGetBorder_Obj();
 }
 
-void ZC_GUI_Obj::VConf_Set_bl_Obj(const ZC_Vec2<float>& _bl)
+ZC_GUI_Obj* ZC_GUI_Obj::VGetObjBorder_Obj()
 {
-    *pBL = _bl;
-}
-
-void ZC_GUI_Obj::VConf_GetBordersAndObjsCount_Obj(GLsizeiptr& rBordersCount, GLsizeiptr& rObjsCount)
-{
-    ++rObjsCount;
+    return pObjHolder->VGetObjBorder_Obj();
 }
 
 void ZC_GUI_Obj::VConfigure_Obj()
@@ -96,12 +147,23 @@ bool ZC_GUI_Obj::VIsConfigured_Obj() const noexcept
     return pObjHolder ? pObjHolder->VIsConfigured_Obj() : false;
 }
 
+void ZC_GUI_Obj::VConf_GetBordersAndObjsCount_Obj(GLsizeiptr& rBordersCount, GLsizeiptr& rObjsCount)
+{
+    ++rObjsCount;
+}
+
 void ZC_GUI_Obj::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex,
+        std::forward_list<ZC_GUI_Obj*>& rButtonKeyboard_objs)
+{
+    Conf_GetData_Obj(rBorder, rBLs, rObjDatas, borderIndex, rButtonKeyboard_objs);
+}
+
+void ZC_GUI_Obj::Conf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex,
         std::forward_list<ZC_GUI_Obj*>& rButtonKeyboard_objs)
 {
     pObjData->borderIndex = borderIndex;
     ZC_Vec2<float>* pBL_temp = &rBLs.emplace_back(*pBL);
-    VConf_SetTextUV();  //  update uv, uses text heirs 
+    VConf_SetTextUV_Obj();  //  update uv, uses text heirs 
     ZC_GUI_ObjData* pObjData_temp = &rObjDatas.emplace_back(*pObjData);
 
     if (this->isFirstGetDataCall)
@@ -118,12 +180,18 @@ void ZC_GUI_Obj::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vec
 
 void ZC_GUI_Obj::ChangeObjsDrawState(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end)
 {
+    ZC_GUI_Obj* pObjBorder_start = pObj_start->VGetObjBorder_Obj();
+    if (pObjBorder_start != pObj_end->VGetObjBorder_Obj() || !VIsConfigured_Obj()) return; //  must be in one border, in configured window
     bool unused = false;
-    if (pObjHolder) pObjHolder->ChangeObjsDrawState(needDraw, pObj_start, pObj_end);
-    else VChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, unused);
+    pObjBorder_start->VChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end->VGet_pObj_end(), unused);
 }
 
 bool ZC_GUI_Obj::VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged)
+{
+    return ChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged);
+}
+
+bool ZC_GUI_Obj::ChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged)
 {
     if (!mustBeChanged && pObj_start == this) mustBeChanged = true;     //  if pObj_start not found yet, chek current obj
     if (mustBeChanged) pObjData->height = needDraw ? actual_height : 0;     //  if pObj_start where found, make changes
@@ -211,4 +279,9 @@ void ZC_GUI_Obj::VButtonUp_Obj(ZC_ButtonID buttonID, float time)
     default: VKeyboardButtonUp_Obj(time); break;
     }
     ZC_GUI::pGUI->eventManager.SetPressedObj(nullptr);
+}
+
+void ZC_GUI_Obj::VEraseFrom__buttonKeyboard_objs_Obj(ZC_GUI_Obj* pDelete)
+{
+    GetWindow()->VEraseFrom__buttonKeyboard_objs_Obj(pDelete);
 }

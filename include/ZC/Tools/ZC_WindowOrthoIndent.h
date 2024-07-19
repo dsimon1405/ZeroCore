@@ -110,6 +110,8 @@ struct ZC_WOIData
     Example: ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Top_Pixel.
     */
     ZC_WindowOrthoIndentFlags indentFlags;
+
+    ZC_WOIData(float _width, float _height, float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags);
 };
 
 class ZC_WindowOrthoIndent1

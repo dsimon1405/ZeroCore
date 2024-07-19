@@ -25,27 +25,22 @@ struct ZC_GUI_WinMutable : public ZC_GUI_Window
 
     ~ZC_GUI_WinMutable();
 
+    void VSetDrawState_W(bool needDraw) override;
+
+
     bool VIsDrawing_Obj() const noexcept override;
     void VConfigure_Obj() override;
     bool VIsConfigured_Obj() const noexcept override;
     
     bool VIsMutable_W() const noexcept override;
-    void VSetDrawState_W(bool needDraw) override;
     void VDraw_W() override;
-    void VReconf_UpdateTextUV_W() override
-    {       //  update uv in text objs
-        for (Row& row : this->rows)
-            for (ZC_GUI_Obj* pObj : row.objs) pObj->VConf_SetTextUV();
-            //  update all the data (more productive than map many UVs one at a time)
-        bufObjDatas.GLNamedBufferSubData(0, sizeof(ZC_GUI_ObjData) * objDatas.size(), objDatas.data());
-    }
+    void VReconf_UpdateTextUV_W() override;
     void VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData) override;
     void VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end) override;
     void VSubDataBorder_Obj(ZC_GUI_Border* pBorder_start, ZC_GUI_Border* pBorder_end) override;
     void VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC_GUI_ObjData* pObjData_end) override;
 
     void VCursorMove_Obj(float rel_x, float rel_y) override;
-
 };
 
 

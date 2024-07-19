@@ -13,6 +13,7 @@ struct ZC_GUI_EventManager
     ZC_GUI_Obj* pObj_pressed = nullptr;     //  object pressed now (uses to end object's events, if window close)  
     ZC_GUI_Obj* pObj_scroll = nullptr;      //  object used on scroll
     ZC_GUI_Obj* pObj_cursorMove = nullptr;  //  object pressed by left button mouse (uses for objects that wish to save pressed state until unpress in same area, and if unpress in othe area then discard event)
+    ZC_GUI_Obj* pObj_mouseButtonDown_watcher = nullptr;     //  object wich need to know about down left/right mouse buttons
 
     std::list<ZC_GUI_Window*> stacionarWins;
     std::list<ZC_GUI_Window*> openableWins;
@@ -24,6 +25,7 @@ struct ZC_GUI_EventManager
     bool IsActiveEventManager();
     void SetPressedObj(ZC_GUI_Obj* _pObj_pressed);
     void SetCursorMoveObj(ZC_GUI_Obj* _pObj_cursorMove);
+    void SetMouseButtonDownWatcherObj(ZC_GUI_Obj* _pObj_mouseButtonDown_watcher);
     void AddWindow(ZC_GUI_Window* pWindow);
     void EraseWindow(ZC_GUI_Window* pWindow);
     bool IsWindowFocused(ZC_GUI_Obj* pWindow);

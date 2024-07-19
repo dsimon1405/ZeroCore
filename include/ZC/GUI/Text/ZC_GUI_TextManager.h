@@ -17,11 +17,9 @@ struct ZC_GUI_ChData
     const typename ZC_GUI_Font::Character* pCh;
     int start_index;
 
-    bool operator == (const ZC_GUI_ChData* pChData) const noexcept
-    {
-        return pChData == this;
-    }
+    bool operator == (const ZC_GUI_ChData* pChData) const noexcept;
 };
+
 
 struct ZC_GUI_TextManager
 {
@@ -58,8 +56,9 @@ struct ZC_GUI_TextManager
 
     bool IsConfigured() const noexcept;
     void BindTextureUnit();
-    int GetFontHeight();
     void Configure(bool doubleWidth);
+
+    static int GetFontHeight();
 
         //  Change default FontParams. Must be called before ZC_SWindow create.
     static void SetParams(Params&& _fontParams);
@@ -69,7 +68,7 @@ struct ZC_GUI_TextManager
         //  erase only deletable text (not stacionar), to free space in texture
     static void EraseText(Text* pText);
         //  update texture with new wstr
-    static bool UpdateText(Text* pText, const std::wstring& wstr);
+    static bool UpdateText(Text*& pText, int total_width, bool brootForceUpdate, const std::wstring& wstr);
         //  update texture with new wstr
     static bool UpdateText(Text* pText, const std::list<ZC_GUI_ChData>& chDatas);
         //  calculates wstr width

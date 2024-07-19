@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ZC/GUI/ZC_GUI_WinImmutable.h>
-#include <ZC/GUI/Text/ZC_GUI_TextMutable.h>
+#include <ZC/GUI/Text/ZC_GUI_Text.h>
 #include <ZC/Events/ZC_EC.h>
 #include <ZC/Tools/Time/ZC_Clock.h>
 
@@ -19,12 +19,7 @@ struct ZC_GUI_TextInputWindow : protected ZC_GUI_WinImmutable
     void TextButtonDown(unsigned char ch);
 
 private:
-    struct QuadObj : public ZC_GUI_Obj
-    {
-        QuadObj(float width, float height, unsigned int color);
-    };
-
-    struct Highlight : public QuadObj
+    struct Highlight : public ZC_GUI_Obj
     {
         enum Direction
         {
@@ -82,7 +77,7 @@ private:
         wchar_t GetUnicode(unsigned char ch, ZC_ButtonID butID);
     };
 
-    struct Caret : public QuadObj
+    struct Caret : public ZC_GUI_Obj
     {
         enum DrawState
         {
@@ -118,7 +113,7 @@ private:
     EventHandler eventHandler;
 
     Highlight highlight;
-    ZC_GUI_TextMutable textMut;
+    ZC_GUI_Text textMut;
     Caret caret;
     ZC_Function<void(const std::wstring&)> funcChangedWstr;
 
@@ -134,4 +129,5 @@ private:
 
         //  call user's callback
     void WstrChanged();
+    void WindowResize(float,float);
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ZC/GUI/ZC_GUI_ButtonState.h>
+#include <ZC/GUI/ZC_GUI_ButtonBase.h>
 
 enum ZC_GUI_MB__Flag
 {
@@ -14,7 +14,7 @@ typedef int ZC_GUI_MB__Flags;
 
 
 #include <iostream>
-struct ZC_GUI_ButtonMouse : public virtual ZC_GUI_ButtonState
+struct ZC_GUI_ButtonMouse : public virtual ZC_GUI_ButtonBase
 {
     const ZC_GUI_MB__Flags mb_flags;
 

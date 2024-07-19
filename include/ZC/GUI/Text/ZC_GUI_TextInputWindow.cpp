@@ -2,13 +2,13 @@
 
 #include <ZC/GUI/ZC_GUI.h>
 #include <ZC/GUI/ZC_GUI_Bindings.h>
-#include <ZC/GUI/ZC_GUI_IconUV.h>
 #include <ZC/Video/ZC_SWindow.h>
 #include <ZC/Events/ZC_Events.h>
+#include <ZC/GUI/ZC_GUI_IconUV.h>
 
 bool ZC_GUI_TextInputWindow::StartInputWindow(float bl_x, float bl_y, int width, const std::wstring& wstr, ZC_Function<void(const std::wstring&)> _callBack)
 {
-    if (pTIW->VIsDrawing_Obj() || !(pTIW->textMut.UpdateText(wstr))) return false;     //  allready drawing or wstr have too wide (in pixels)
+    if (pTIW->VIsDrawing_Obj() || !(pTIW->textMut.UpdateText(wstr, true))) return false;     //  allready drawing or wstr have too wide (in pixels)
 
     pTIW->funcChangedWstr = std::move(_callBack);
     pTIW->chDatasOffset = 0;
@@ -36,7 +36,7 @@ bool ZC_GUI_TextInputWindow::StartInputWindow(float bl_x, float bl_y, int width,
         if (&wch != wstr.data()) bl_x += chPos.pCh->left_offset;    //   not first element add offset
     }
     pTIW->caret.SetPositionOfChData(pTIW->chDatas.empty() ? nullptr : &(pTIW->chDatas.back()), false, Caret::Blinking);  //  set caret position, must be before pTIW->VSubDataBL_Obj()
-    pTIW->VSubDataBL_Obj(pTIW->pBL, pTIW->caret.pBL);     //  make subdata for all edited bls
+    pTIW->VSubDataBL_Obj(pTIW->Get_pBL_start(), pTIW->caret.VGet_pBL_end());     //  make subdata for all edited bls
 
     pTIW->VSetDrawState_W(true);
 
@@ -71,9 +71,9 @@ void ZC_GUI_TextInputWindow::TextButtonDown(unsigned char ch)
 }
 
 ZC_GUI_TextInputWindow::ZC_GUI_TextInputWindow(float fontHeight)
-    : ZC_GUI_WinImmutable(ZC_WOIData{ .width = 0.f, .height = 0.f, .indentX = 0.f, .indentY = 0.f, .indentFlags = ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel }, 0),
+    : ZC_GUI_WinImmutable(ZC_WOIData(0.f, 0.f, 0.f, 0.f, ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel), 0),
     highlight(fontHeight),
-    textMut(L"", ZC_GUI_TextManager::pTM->font.GetLongestCharacterLength() * 200),     //  reserve place for 200 longest symbols (may be more if symbols are smaller)
+    textMut(L"", false, ZC_GUI_TextManager::pTM->font.GetLongestCharacterLength() * 200),     //  reserve place for 200 longest symbols (may be more if symbols are smaller)
     caret(fontHeight)
 {
     this->pObjData->color = ZC_PackColorUCharToUInt(20, 20, 20);
@@ -83,6 +83,8 @@ ZC_GUI_TextInputWindow::ZC_GUI_TextInputWindow(float fontHeight)
     AddRow(Row({}, { &highlight, &textMut, &caret }));  //  must be correct order: highlight, textMut, caret
 
     pTIW = this;
+
+    ZC_Events::ConnectWindowResize({ &ZC_GUI_TextInputWindow::WindowResize, this });
 }
 
 void ZC_GUI_TextInputWindow::VSetDrawState_W(bool needDraw)
@@ -111,18 +113,16 @@ void ZC_GUI_TextInputWindow::WstrChanged()
     funcChangedWstr(std::wstring(da_wch.Begin()));      //  create wstr and call callback
 }
 
-
-    //  QuadObj
-
-ZC_GUI_TextInputWindow::QuadObj::QuadObj(float width, float height, unsigned int color)
-    : ZC_GUI_Obj(ZC_GUI_ObjData{ .width = width, .height = height, .color = color, .uv = ZC_GUI_IconUV::window, .tex_binding = ZC_GUI_Bindings::bind_tex_Icons })
-{}
+void ZC_GUI_TextInputWindow::WindowResize(float,float)
+{
+    VSetDrawState_W(false);
+}
 
 
     //  Highlight
 
 ZC_GUI_TextInputWindow::Highlight::Highlight(float fontHeight)
-    : QuadObj(0, fontHeight, ZC_PackColorUCharToUInt(0,0,0))
+    : ZC_GUI_Obj(0.f, fontHeight, 0.f, ZC_PackColorUCharToUInt(0,0,0), ZC_GUI_IconUV::window, 0, ZC_GUI_Bindings::bind_tex_Icons)
 {}
 
 void ZC_GUI_TextInputWindow::Highlight::MBL_DoubleClick()
@@ -130,8 +130,7 @@ void ZC_GUI_TextInputWindow::Highlight::MBL_DoubleClick()
     if (pTIW->chDatas.empty()) return;
 
     auto lamb_findEnd_UpdateData = [this](typename std::list<ZC_GUI_ChData>::iterator iter, typename std::list<ZC_GUI_ChData>::iterator start_iter)
-    {
-            //  find end
+    {    //  find end
         bool find_whiteSpace = iter->pCh->symbol != L' ';   //  if caret on white space need find symbol, if on symbol need find white space
         auto end_iter = iter;
         for (++end_iter; ; ++end_iter)
@@ -143,9 +142,24 @@ void ZC_GUI_TextInputWindow::Highlight::MBL_DoubleClick()
             }
         }
         if (end_iter != iter) pTIW->caret.SetPositionOfChData(&*end_iter, false, ZC_GUI_TextInputWindow::Caret::Display);   //  new position for caret
+            //  if highlight_start more left then window start, try correct offset
+        float highlight_start = start_iter->start_index + pTIW->chDatasOffset;
+        float highlight_end = pTIW->caret.Get_bl_Obj()[0] + pTIW->caret.GetWidth();
+        float win_start = pTIW->Get_bl_Obj()[0];
+        float win_end = win_start + pTIW->GetWidth();
+        if (highlight_start < win_start && highlight_end < win_end)
+        {
+            float need_on_start = win_start - highlight_start;     //  need place at the start
+            float reserve_on_end = win_end - highlight_end;    //  have place at the end
+            float offset = need_on_start < reserve_on_end ? need_on_start : reserve_on_end;
+            pTIW->chDatasOffset += offset;
+            (*(pTIW->caret.pBL))[0] += offset;
+            (*(pTIW->textMut.pBL))[0] += offset;
+        }
+
             //  set highlight
         start_x = start_iter->start_index + pTIW->chDatasOffset;
-        end_x = (*(pTIW->caret.pBL))[0];
+        end_x = pTIW->caret.Get_bl_Obj()[0];
         UpdateData();
     };
 
@@ -181,7 +195,7 @@ void ZC_GUI_TextInputWindow::Highlight::MBL_TripleClick()
     direction = Right;  //  double click and triple click is Right direction highlight
     pTIW->caret.SetPositionOfChData(&(pTIW->chDatas.back()), false, ZC_GUI_TextInputWindow::Caret::Display);    //  caret to end
     start_x = pTIW->chDatas.front().start_index + pTIW->chDatasOffset;
-    end_x = (*(pTIW->caret.pBL))[0];
+    end_x = pTIW->caret.Get_bl_Obj()[0];
     UpdateData();
 }
 
@@ -194,11 +208,11 @@ void ZC_GUI_TextInputWindow::Highlight::KeyboardButtonLeftDown()
         {
         case None:
         {
-            end_x = (*(pTIW->caret.pBL))[0];    //  end_x equal carets bl.x
+            end_x = pTIW->caret.Get_bl_Obj()[0];
             int temp_offset_x = pTIW->chDatasOffset;
             pTIW->caret.KeyboardButtonLeftDown(false);     //  all calculations with pTIW->chDatasOffset must be after caret move
             if (temp_offset_x != pTIW->chDatasOffset) end_x += - temp_offset_x + pTIW->chDatasOffset;
-            start_x = (*(pTIW->caret.pBL))[0];    //  start_x equal carets bl.x
+            start_x = pTIW->caret.Get_bl_Obj()[0];    //  start_x equal carets bl.x
             UpdateData();
             direction = Left;
         } break;
@@ -207,7 +221,7 @@ void ZC_GUI_TextInputWindow::Highlight::KeyboardButtonLeftDown()
             int temp_offset_x = pTIW->chDatasOffset;
             pTIW->caret.KeyboardButtonLeftDown(false);     //  all calculations with pTIW->chDatasOffset must be after caret move
             if (temp_offset_x != pTIW->chDatasOffset) end_x += - temp_offset_x + pTIW->chDatasOffset;
-            start_x = (*(pTIW->caret.pBL))[0];    //  start_x equal carets bl.x
+            start_x = pTIW->caret.Get_bl_Obj()[0];    //  start_x equal carets bl.x
             UpdateData();
         } break;
         case Right:
@@ -215,7 +229,7 @@ void ZC_GUI_TextInputWindow::Highlight::KeyboardButtonLeftDown()
             int temp_offset_x = pTIW->chDatasOffset;
             pTIW->caret.KeyboardButtonLeftDown(true);     //  all calculations with pTIW->chDatasOffset must be after caret move
             if (temp_offset_x != pTIW->chDatasOffset) start_x += - temp_offset_x + pTIW->chDatasOffset;  //  correct start_x if offset changed
-            float caret_pos_x = (*(pTIW->caret.pBL))[0];    //  start_x equal carets bl.x
+            float caret_pos_x = pTIW->caret.Get_bl_Obj()[0];    //  start_x equal carets bl.x
             if (caret_pos_x > start_x)    //  direction still Right
             {
                 end_x = caret_pos_x;
@@ -249,11 +263,11 @@ void ZC_GUI_TextInputWindow::Highlight::KeyboardButtonRightDown()
         {
         case None:
         {
-            start_x = (*(pTIW->caret.pBL))[0];    //  start_x equal carets bl.x
+            start_x = pTIW->caret.Get_bl_Obj()[0];    //  start_x equal carets bl.x
             int temp_offset_x = pTIW->chDatasOffset;
             pTIW->caret.KeyboardButtonRightDown(false);     //  all calculations with pTIW->chDatasOffset must be after caret move
             if (temp_offset_x != pTIW->chDatasOffset) start_x += - temp_offset_x + pTIW->chDatasOffset;
-            end_x = (*(pTIW->caret.pBL))[0];    //  end_x equal carets bl.x
+            end_x = pTIW->caret.Get_bl_Obj()[0];    //  end_x equal carets bl.x
             UpdateData();
             direction = Right;
         } break;
@@ -262,7 +276,7 @@ void ZC_GUI_TextInputWindow::Highlight::KeyboardButtonRightDown()
             int temp_offset_x = pTIW->chDatasOffset;
             pTIW->caret.KeyboardButtonRightDown(false);     //  all calculations with pTIW->chDatasOffset must be after caret move
             if (temp_offset_x != pTIW->chDatasOffset) end_x += - temp_offset_x + pTIW->chDatasOffset;
-            float caret_pos_x = (*(pTIW->caret.pBL))[0];    //  start_x equal carets bl.x
+            float caret_pos_x = pTIW->caret.Get_bl_Obj()[0];    //  equal carets bl.x
             if (caret_pos_x < end_x)    //  direction still Left
             {
                 start_x = caret_pos_x;
@@ -282,7 +296,7 @@ void ZC_GUI_TextInputWindow::Highlight::KeyboardButtonRightDown()
             int temp_offset_x = pTIW->chDatasOffset;
             pTIW->caret.KeyboardButtonRightDown(false);     //  all calculations with pTIW->chDatasOffset must be after caret move
             if (temp_offset_x != pTIW->chDatasOffset) start_x += - temp_offset_x + pTIW->chDatasOffset;
-            end_x = (*(pTIW->caret.pBL))[0];    //  end_x equal carets bl.x
+            end_x = pTIW->caret.Get_bl_Obj()[0];    //  end_x equal carets bl.x
             UpdateData();
         } break;
         }
@@ -333,7 +347,7 @@ void ZC_GUI_TextInputWindow::Highlight::UpdateData()
 {
         //  update bls
     (*this->pBL)[0] = start_x;
-    VSubDataBL_Obj(this->pBL, pTIW->caret.pBL);     //  update bls: hilight, textMut, caret
+    VSubDataBL_Obj(Get_pBL_start(), pTIW->caret.VGet_pBL_end());     //  update bls: hilight, textMut, caret
         //  update width
     this->pObjData->width = end_x - start_x;
     VMapObjData_Obj(this->pObjData, offsetof(ZC_GUI_ObjData, width), sizeof(ZC_GUI_ObjData::width), &(this->pObjData->width));
@@ -378,7 +392,7 @@ void ZC_GUI_TextInputWindow::Highlight::DeleteHighlight(bool needSubData)
     //  Caret
 
 ZC_GUI_TextInputWindow::Caret::Caret(float fontHeight)
-    : QuadObj(1, fontHeight, ZC_PackColorUCharToUInt(150,150,150))
+    : ZC_GUI_Obj(1.f, fontHeight, 0.f, ZC_PackColorUCharToUInt(150,150,150), ZC_GUI_IconUV::window, 0, ZC_GUI_Bindings::bind_tex_Icons)
 {}
 
 void ZC_GUI_TextInputWindow::Caret::SetDrawState(DrawState _drawState)
@@ -417,16 +431,16 @@ void ZC_GUI_TextInputWindow::Caret::SetPositionOfChData(ZC_GUI_ChData* _pChData_
         if (caretPos_end > pTIW->winEnd)     //  caret_start after window end, need move left texture
         {
             pTIW->chDatasOffset += pTIW->winEnd - caretPos_end;     //  move offset to left
-            (*(pTIW->textMut.pBL))[0] = (*(pTIW->pBL))[0] + pTIW->chDatasOffset;   //  move texture X left
+            (*(pTIW->textMut.pBL))[0] = pTIW->Get_bl_Obj()[0] + pTIW->chDatasOffset;   //  move texture X left
             texturePosChanged = true;
             (*(pBL))[0] = pTIW->winEnd - this->pObjData->width;  //  caret before win end
         }
-        else if (caretPos_start < int((*(pTIW->pBL))[0]))   //  caret start before window start, need move right texture
+        else if (caretPos_start < int(pTIW->Get_bl_Obj()[0]))   //  caret start before window start, need move right texture
         {
-            pTIW->chDatasOffset += int((*(pTIW->pBL))[0]) - caretPos_start;     //  move offset to right
-            (*(pTIW->textMut.pBL))[0] = (*(pTIW->pBL))[0] + pTIW->chDatasOffset;   //  move texture X left
+            pTIW->chDatasOffset += int(pTIW->Get_bl_Obj()[0]) - caretPos_start;     //  move offset to right
+            (*(pTIW->textMut.pBL))[0] = pTIW->Get_bl_Obj()[0] + pTIW->chDatasOffset;   //  move texture X left
             texturePosChanged = true;
-            (*(pBL))[0] = (*(pTIW->pBL))[0];     //  caret on win start
+            (*(pBL))[0] = pTIW->Get_bl_Obj()[0];     //  caret on win start
         }
         else (*(pBL))[0] = caretPos_start;  //  caret in the window space, set start pos after pChData_pos
     }
@@ -442,7 +456,7 @@ void ZC_GUI_TextInputWindow::Caret::SetPositionOfChData(ZC_GUI_ChData* _pChData_
         }
     }
 
-    if (needSubData) VSubDataBL_Obj(texturePosChanged ? pTIW->textMut.pBL : pBL, pBL);   //  if texture pos was changed, start subData from texture, otherwise only Caret (pBL)
+    if (needSubData) VSubDataBL_Obj(texturePosChanged ? pTIW->textMut.Get_pBL_start() : Get_pBL_start(), VGet_pBL_end());   //  if texture pos was changed, start subData from texture, otherwise only Caret (pBL)
     SetDrawState(_drawState);
 }
 
@@ -636,7 +650,7 @@ void ZC_GUI_TextInputWindow::Caret::TextButtonDown(const typename ZC_GUI_Font::C
     else    //  caret on texts start
     {
         auto iter = pTIW->chDatas.begin();
-        ZC_GUI_ChData chData{ .pCh = pCh, .start_index = int(pTIW->GetPosition_bl_Obj()[0]) };
+        ZC_GUI_ChData chData{ .pCh = pCh, .start_index = int(pTIW->Get_bl_Obj()[0]) };
         iter = pTIW->chDatas.emplace(iter, chData);
         ZC_GUI_ChData* pCaret_pos = &*iter;
         for (++iter; iter != pTIW->chDatas.end(); ++iter) iter->start_index += add_width;

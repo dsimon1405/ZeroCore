@@ -26,7 +26,7 @@ void ZC_GUI_TextManager::BindTextureUnit()
 
 int ZC_GUI_TextManager::GetFontHeight()
 {
-    return font.GetHeight();
+    return pTM ? pTM->font.GetHeight() : 0;
 }
 
 void ZC_GUI_TextManager::Configure(bool doubleWidth)
@@ -84,15 +84,13 @@ typename ZC_GUI_TextManager::Text* ZC_GUI_TextManager::GetText(const std::wstrin
 {
     if (!pTM) return nullptr;
 
-    if (isImmutable)
-    {
-        Text* pExisting_text = ZC_Find(pTM->immutable_texts, wstr);
-        if (pExisting_text) return pExisting_text;
-        else if (pTM->IsConfigured()) return nullptr;   //  no adds after configuration
-    }
+    Text* pExisting_text = ZC_Find(pTM->immutable_texts, wstr);
+    if (pExisting_text) return pExisting_text;
+    
+    if (isImmutable && pTM->IsConfigured()) return nullptr;   //  no adds after configuration (for immutable text)
 
     int wstr_width = CalculateWstrWidth(wstr);
-    if (reserveWidth > wstr_width) wstr_width = reserveWidth;   //  reserved more width then in wstr
+    if (!isImmutable && reserveWidth > wstr_width) wstr_width = reserveWidth;   //  reserveWidth more then wstr width (only for mutable texts)
     
     Text* pText = isImmutable ? &(pTM->immutable_texts.emplace_back(Text{ .isImmutable = isImmutable, .wstr = wstr, .width = wstr_width, }))
         : &(pTM->mutable_texts.emplace_back(Text{ .isImmutable = isImmutable, .wstr = wstr, .width = wstr_width, }));
@@ -124,7 +122,7 @@ void ZC_GUI_TextManager::ProcessDeletableText(int wstr_width, Text* pText)
     int fontHeight = pTM->font.GetHeight();
     auto lambFillTextureAndpTextData = [&pText, fontHeight, &freeSpaceIter]()
     {
-        std::vector<unsigned char> data = CreateWstrData(pText->wstr, pText->width);    //  prepare tuxture data
+        std::vector<unsigned char> data = CreateWstrData(pText->wstr, pText->width);    //  prepare texture data
         MapTexture(freeSpaceIter->start_index, pText->width, data.data());    //  fill texture
             //  add start index
         pText->start_index = freeSpaceIter->start_index;
@@ -183,10 +181,16 @@ void ZC_GUI_TextManager::EraseText(Text* pText)
     else pTM->freeSpaces.emplace(nextIter, FreeSpace{ .start_index = pText->start_index, .width = pText->width });
 }
 
-bool ZC_GUI_TextManager::UpdateText(Text* pText, const std::wstring& wstr)
+bool ZC_GUI_TextManager::UpdateText(Text*& pText, int total_width, bool brootForceUpdate, const std::wstring& wstr)
 {
-    if (pText->width < CalculateWstrWidth(wstr)) return false;   //  new length can't be longer then current
-    MapTexture(pText->start_index, pText->width, CreateWstrData(wstr, pText->width).data());
+    if (total_width < CalculateWstrWidth(wstr)) return false;   //  new length can't be longer then current
+    if (pText->isImmutable) pText = GetText(wstr, false, total_width);     //  pText is immutable. Get new text
+    else if (!brootForceUpdate) //  pText mutable and don't need broot force map
+    {
+        EraseText(pText);   //  delete existing mutable (free space in texture)
+        pText = GetText(wstr, false, total_width);  //  Get new text
+    }
+    else MapTexture(pText->start_index, pText->width, CreateWstrData(wstr, pText->width).data());   //  pText is mutable and need brootForceUpdate. Map part of existing texture
     return true;
 }
 
@@ -249,13 +253,14 @@ std::vector<unsigned char> ZC_GUI_TextManager::CreateChDataData(const std::list<
 
 void ZC_GUI_TextManager::MapTexture(int start_index, int width, const unsigned char* data)
 {
+    if (!pTM->IsConfigured()) return;
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     pTM->texture.GLTextureSubImage2D(start_index, 0, width, pTM->font.GetHeight(), GL_RED,  GL_UNSIGNED_BYTE, data);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
 
 
-//  ZC_GUI_TextManager::Text
+    //  ZC_GUI_TextManager::Text
 
 bool ZC_GUI_TextManager::Text::operator == (const std::wstring& _wstr) const noexcept
 {
@@ -265,4 +270,12 @@ bool ZC_GUI_TextManager::Text::operator == (const std::wstring& _wstr) const noe
 int ZC_GUI_TextManager::Text::GetHeight()
 {
     return pTM->font.GetHeight();
+}
+
+
+    //  ZC_GUI_ChData
+
+bool ZC_GUI_ChData::operator == (const ZC_GUI_ChData* pChData) const noexcept
+{
+    return pChData == this;
 }

@@ -42,6 +42,11 @@ void ZC_GUI_EventManager::SetCursorMoveObj(ZC_GUI_Obj* _pObj_cursorMove)
     pObj_cursorMove = _pObj_cursorMove;
 }
 
+void ZC_GUI_EventManager::SetMouseButtonDownWatcherObj(ZC_GUI_Obj* _pObj_mouseButtonDown_watcher)
+{
+    pObj_mouseButtonDown_watcher = _pObj_mouseButtonDown_watcher;
+}
+
 void ZC_GUI_EventManager::AddWindow(ZC_GUI_Window* pWindow)
 {
     if (pWindow->VIsInputWindow_W()) pTextInputWindow = pWindow;
@@ -178,8 +183,12 @@ ZC_GUI_Obj* ZC_GUI_EventManager::GetButtonDownObject(ZC_ButtonID buttonID)
     ZC_GUI_Obj* pObj_inputText = pTextInputWindow->VGetButtonKeyboard_W(buttonID);
     if (pObj_inputText) return pObj_inputText;    //  uses input text event system
     
-    if (buttonID == ZC_ButtonID::M_LEFT || buttonID == ZC_ButtonID::M_RIGHT) return pObj_underCursor;
-    
+    if (buttonID == ZC_ButtonID::M_LEFT || buttonID == ZC_ButtonID::M_RIGHT)
+    {
+        if (pObj_mouseButtonDown_watcher) pObj_mouseButtonDown_watcher->VMouseButtonLeftOrRightDown_Obj();
+        return pObj_underCursor;
+    }
+
     if (!(openableWins.empty()))    //  try find event button in focused (first in list) openable windows
     {
         ZC_GUI_Window* pWin = openableWins.front();

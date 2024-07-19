@@ -1,10 +1,10 @@
-#include <ZC/GUI/ZC_GUI_ButtonState.h>
+#include <ZC/GUI/ZC_GUI_ButtonBase.h>
 
-ZC_GUI_ButtonState::ZC_GUI_ButtonState(const ZC_GUI_ObjData& od)
-    : ZC_GUI_Obj(od)
+ZC_GUI_ButtonBase::ZC_GUI_ButtonBase(const ZC_GUI_ObjData& od)
+    : ZC_GUI_ObjComposite(od)
 {}
 
-void ZC_GUI_ButtonState::StopEventActivity_BS()
+void ZC_GUI_ButtonBase::StopEventActivity_BS()
 {
     if (bs_mouseButton == BS_Pressed) bs_mouseButton = BS_HoldUntilRelease;
     if (bs_keyboardButton == BS_Pressed) bs_keyboardButton = BS_HoldUntilRelease;

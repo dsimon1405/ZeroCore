@@ -9,6 +9,7 @@
 typedef int ZC_GUI_WinFlags;
 enum ZC_GUI_WinFlag
 {
+    ZC_GUI_WF__None             = 0,
     ZC_GUI_WF__Stacionar        = 1,        //  The window is always under non-stacionar windows (if the window is in focus and not stationary windows overlap it, the stationary window is still drawn under those windows). Each new created stationary window will always display above the previous created stationary windows (avoid intersecting stationary windows, think of it as a desktop interface).
     ZC_GUI_WF__NeedDraw         = 1 << 1,   //  Need draw on start
     ZC_GUI_WF__NoBackground     = 1 << 2,   //  Don't draw background (window background don't make collisioin with mouse cursor, objects of the window still make collision)
@@ -26,6 +27,15 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
     static inline const uint color_unfocused = 0;
     static inline const uint color_focused = ZC_PackColorUCharToUInt(5,5,5);
 
+    ZC_GUI_WinFlags winFlags;
+    GLsizeiptr bordersCount = 0,    //  future size of vector (and buffer for that vectors) of borders of heir or static window
+        objsCount = 0;          //  future size of vectors (and buffers for that vectors) of bls, depths of heir or static window
+    std::forward_list<ZC_GUI_Obj*> buttonKeyboard_objs;     //  ZC_ButtonKeyboard(s) and it's heirs
+
+    ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags winFlags);
+
+    virtual void VSetDrawState_W(bool needDraw) = 0;
+
     bool VIsStacionar_Obj() const noexcept override;
 
     bool IsBackground() const noexcept;
@@ -35,28 +45,15 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
 
         //  find keyboard event (calls from ZC_GUI_EventManager::GetButtonDownObject()). Overrides in ZC_GUI_TextInputWindow.
     virtual ZC_GUI_Obj* VGetButtonKeyboard_W(ZC_ButtonID buttonId);
-        //  returns true if vectors and GPU buffers allready created
     virtual bool VIsMutable_W() const noexcept = 0;
-    virtual void VSetDrawState_W(bool needDraw) = 0;
     virtual void VDraw_W() = 0;
     virtual void VReconf_UpdateTextUV_W() {} //  updates uv in text objs (colling from ZC_GUI_DrawManager::Reconf_UpdateTextUV())
     virtual bool VIsInputWindow_W() const noexcept { return false; }
 
-// protected:
-    ZC_GUI_WinFlags winFlags;
-    GLsizeiptr bordersCount = 0,    //  future size of vector (and buffer for that vectors) of borders of heir or static window
-        objsCount = 0;          //  future size of vectors (and buffers for that vectors) of bls, depths of heir or static window
-    std::forward_list<ZC_GUI_Obj*> buttonKeyboard_objs;     //  ZC_ButtonKeyboard(s) and it's heirs
-
-    ZC_GUI_Window(const ZC_WOIData& _woiData, ZC_GUI_WinFlags winFlags);
-    ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags winFlags);
-
-
     void VChanged_bl_WOI() override;    //  callback ZC_WindowOrthoIndent recalculated bl
 
-    void VEraseFrom__buttonKeyboard_objs_B(ZC_GUI_Obj* pDelete) override;
+    void VEraseFrom__buttonKeyboard_objs_Obj(ZC_GUI_Obj* pDelete) override;
 
     float GetStacionarDepth();
     void SetFocuseDepthAndColor();
 };
-

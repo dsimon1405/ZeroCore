@@ -225,7 +225,7 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ObjData.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ButtonKeyboard.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ButtonMouseAndKeyboard.cpp
-	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ButtonState.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ButtonBase.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Text/ZC_GUI_Font.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Text/ZC_GUI_FontLoader.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Text/ZC_GUI_TextManager.cpp

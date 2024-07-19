@@ -1,10 +1,10 @@
 #pragma once
 
 #include <ZC/Tools/Math/ZC_Math.h>
-#include <ZC/GUI/ZC_GUI_Obj.h>
+#include <ZC/GUI/ZC_GUI_ObjComposite.h>
 #include <ZC/Tools/Time/ZC_Clock.h>
 
-struct ZC_GUI_ButtonState : public ZC_GUI_Obj
+struct ZC_GUI_ButtonBase : public ZC_GUI_ObjComposite
 {
     static inline uint color_default = 0;
     static inline uint color_under_cursor = ZC_PackColorUCharToUInt(30, 30, 30);
@@ -21,7 +21,7 @@ struct ZC_GUI_ButtonState : public ZC_GUI_Obj
 
     ZC_Clock clock; //  uses for ZC_GUI_MB__DoubleCLick, ZC_GUI_MB__MBLPress events
 
-    ZC_GUI_ButtonState(const ZC_GUI_ObjData& od);
+    ZC_GUI_ButtonBase(const ZC_GUI_ObjData& od);
 
         //  uses in method VStopEventActivity_Obj() from ZC_GUI_ButtonMouse and ZC_GUI_ButtonKeyboard
     void StopEventActivity_BS();

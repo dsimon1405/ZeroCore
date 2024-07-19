@@ -7,7 +7,7 @@ ZC_GUI_ButtonMouseAndKeyboard::ZC_GUI_ButtonMouseAndKeyboard(float width, float 
 {}
 
 ZC_GUI_ButtonMouseAndKeyboard::ZC_GUI_ButtonMouseAndKeyboard(float width, float height, ZC_GUI_MB__Flags _mb_flags, ZC_ButtonID _buttonId, bool useKeyboardButtonPress, const ZC_GUI_UV &uv)
-    : ZC_GUI_ButtonState(ZC_GUI_ObjData{ .width = width, .height = height, .uv = uv }),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData{ .width = width, .height = height, .uv = uv }),
     ZC_GUI_ButtonMouse(width, height, _mb_flags, uv),
     ZC_GUI_ButtonKeyboard(_buttonId, width, height, useKeyboardButtonPress, uv)
 {}

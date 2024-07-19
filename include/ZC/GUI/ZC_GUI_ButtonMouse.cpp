@@ -8,7 +8,7 @@ ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_MB__Fla
 {}
 
 ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_MB__Flags _mb_flags, const ZC_GUI_UV& uv)
-    : ZC_GUI_ButtonState(ZC_GUI_ObjData{ .width = width, .height = height, .uv = uv, .tex_binding = ZC_GUI_Bindings::bind_tex_Icons }),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData{ .width = width, .height = height, .uv = uv, .tex_binding = ZC_GUI_Bindings::bind_tex_Icons }),
     mb_flags(_mb_flags)
 {}
 

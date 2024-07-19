@@ -8,7 +8,7 @@ ZC_GUI_ButtonKeyboard::ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width,
 {}
 
 ZC_GUI_ButtonKeyboard::ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, bool _pressOnDown, const ZC_GUI_UV &uv)
-    : ZC_GUI_ButtonState(ZC_GUI_ObjData{ .width = width, .height = height, .uv = uv, .tex_binding = ZC_GUI_Bindings::bind_tex_Icons }),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData{ .width = width, .height = height, .uv = uv, .tex_binding = ZC_GUI_Bindings::bind_tex_Icons }),
     buttonId(_buttonId),
     usePress(_pressOnDown)
 {}

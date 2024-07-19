@@ -2,22 +2,13 @@
 
 #include <ZC/GUI/ZC_GUI.h>
 #include <ZC/GUI/ZC_GUI_Bindings.h>
+#include "ZC_GUI_IconUV.h"
 
 using namespace ZC_GUI_Bindings;
 
 ZC_GUI_WinMutable::ZC_GUI_WinMutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags)
-    : ZC_GUI_Window(_woiData, _winFlags),
-    isDrawing(_winFlags & ZC_GUI_WF__NeedDraw),
-    drawArrays(GL_POINTS,
-        _winFlags & ZC_GUI_WF__NoBackground ? 1 : 0,    //  if there is no background, return 1 and start drawing at index 1
-        _winFlags & ZC_GUI_WF__NoBackground ? 0 : 1),
-    bufBorders(GL_SHADER_STORAGE_BUFFER, bind_Border),
-    bufBLs(GL_SHADER_STORAGE_BUFFER, bind_BL),
-    bufObjDatas(GL_SHADER_STORAGE_BUFFER, bind_ObjData)
-{
-    if (isDrawing) SetFocuseDepthAndColor();
-    ZC_GUI::AddWindow(this);
-}
+    : ZC_GUI_WinMutable(_woiData, ZC_GUI_IconUV::window, _winFlags)
+{}
 
 ZC_GUI_WinMutable::ZC_GUI_WinMutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags)
     : ZC_GUI_Window(_woiData, uv, _winFlags),
@@ -38,6 +29,15 @@ ZC_GUI_WinMutable::~ZC_GUI_WinMutable()
     ZC_GUI::EraseWindow(this);
 }
 
+void ZC_GUI_WinMutable::VSetDrawState_W(bool needDraw)
+{
+    if (VIsDrawing_Obj() == needDraw) return;
+    if (needDraw && this->VIsUseCursorMoveEventOnMBLetfDown_Obj() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
+        SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
+    isDrawing = needDraw;
+    ZC_GUI::UpdateWindowDrawState(this);
+}
+
 bool ZC_GUI_WinMutable::VIsDrawing_Obj() const noexcept
 {
     return isDrawing;
@@ -45,8 +45,8 @@ bool ZC_GUI_WinMutable::VIsDrawing_Obj() const noexcept
 
 void ZC_GUI_WinMutable::VConfigure_Obj()
 {
-    VConf_Set_bl_Obj(*(this->pBL));     //  calculate bl for all window's objects
-    VConf_GetBordersAndObjsCount_Obj(this->bordersCount, this->objsCount);
+    this->VSet_pBL_Obj(this->Get_bl_Obj());     //  calculate bl for all window's objects
+    this->VConf_GetBordersAndObjsCount_Obj(this->bordersCount, this->objsCount);
 
     if (VIsConfigured_Obj())    //  buffers allready filled (reconfigureation)
     {
@@ -77,15 +77,6 @@ bool ZC_GUI_WinMutable::VIsMutable_W() const noexcept
     return true;
 }
 
-void ZC_GUI_WinMutable::VSetDrawState_W(bool needDraw)
-{
-    if (VIsDrawing_Obj() == needDraw) return;
-    if (needDraw && this->VIsUseCursorMoveEventOnMBLetfDown_Obj() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
-        SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
-    isDrawing = needDraw;
-    ZC_GUI::UpdateWindowDrawState(this);
-}
-
 void ZC_GUI_WinMutable::VDraw_W()
 {
     if (!isDrawing) return;
@@ -97,24 +88,32 @@ void ZC_GUI_WinMutable::VDraw_W()
     drawArrays.Draw();
 }
 
+void ZC_GUI_WinMutable::VReconf_UpdateTextUV_W()
+{       //  update uv in text objs
+    for (Row& row : this->rows)
+        for (ZC_GUI_Obj* pObj : row.objs) pObj->VConf_SetTextUV_Obj();
+        //  update all the data (more productive than map many UVs one at a time)
+    bufObjDatas.GLNamedBufferSubData(0, sizeof(ZC_GUI_ObjData) * objDatas.size(), objDatas.data());
+}
+
 void ZC_GUI_WinMutable::VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData)
 {
-    bufObjDatas.GLMapNamedBufferRange_Write(((pObjData - objDatas.data()) * sizeof(ZC_GUI_ObjData)) + offsetIn_objData, byteSize, pData);
+    if (VIsConfigured_Obj()) bufObjDatas.GLMapNamedBufferRange_Write(((pObjData - objDatas.data()) * sizeof(ZC_GUI_ObjData)) + offsetIn_objData, byteSize, pData);
 }
 
 void ZC_GUI_WinMutable::VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end)
 {
-    bufBLs.GLNamedBufferSubData((pBL_start - bls.data()) * sizeof(ZC_Vec2<float>), (pBL_end - pBL_start + 1) * sizeof(ZC_Vec2<float>), pBL_start);
+    if (VIsConfigured_Obj()) bufBLs.GLNamedBufferSubData((pBL_start - bls.data()) * sizeof(ZC_Vec2<float>), (pBL_end - pBL_start + 1) * sizeof(ZC_Vec2<float>), pBL_start);
 }
 
 void ZC_GUI_WinImmutable::VSubDataBorder_Obj(ZC_GUI_Border* pBorder_start, ZC_GUI_Border* pBorder_end)
 {
-    bufBorders.GLNamedBufferSubData((pBorder_start - borders.data()) * sizeof(ZC_GUI_Border), (pBorder_end - pBorder_start + 1) * sizeof(ZC_GUI_Border), pBorder_start);
+    if (VIsConfigured_Obj()) bufBorders.GLNamedBufferSubData((pBorder_start - borders.data()) * sizeof(ZC_GUI_Border), (pBorder_end - pBorder_start + 1) * sizeof(ZC_GUI_Border), pBorder_start);
 }
 
 void ZC_GUI_WinImmutable::VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC_GUI_ObjData* pObjData_end)
 {
-    bufObjDatas.GLNamedBufferSubData((pObjData_start - objDatas.data()) * sizeof(ZC_GUI_ObjData), (pObjData_end - pObjData_start + 1) * sizeof(ZC_GUI_ObjData), pObjData_start);
+    if (VIsConfigured_Obj()) bufObjDatas.GLNamedBufferSubData((pObjData_start - objDatas.data()) * sizeof(ZC_GUI_ObjData), (pObjData_end - pObjData_start + 1) * sizeof(ZC_GUI_ObjData), pObjData_start);
 }
 
 void ZC_GUI_WinMutable::VCursorMove_Obj(float rel_x, float rel_y)

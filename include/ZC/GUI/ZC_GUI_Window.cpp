@@ -2,11 +2,32 @@
 
 #include <ZC/GUI/ZC_GUI.h>
 #include <ZC/GUI/ZC_GUI_ObjData.h>
-#include "ZC_GUI_IconUV.h"
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 #include <ZC/GUI/ZC_GUI_Bindings.h>
 
 #include <cassert>
+
+ZC_GUI_Window::ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags)
+    : ZC_WindowOrthoIndent1(false, _winFlags & ZC_GUI_WF__Movable ?
+        ZC_WOIData(_woiData.width, _woiData.height, 0.f, 0.f, ZC_WOIF__X_Center | ZC_WOIF__Y_Center)
+        : _woiData),
+    ZC_GUI_ObjBorder(ZC_GUI_ObjData
+            {
+                .width = _woiData.width,
+                .height = _woiData.height,
+                .depth = _winFlags & ZC_GUI_WF__Stacionar ? GetStacionarDepth() : 0.f,
+                .color = color_unfocused,
+                .uv = uv,
+                .tex_binding = ZC_GUI_Bindings::bind_tex_Icons
+            },
+        _winFlags & ZC_GUI_WF__Scrollable),
+    winFlags(_winFlags)
+{
+    *(this->pBL) = this->bl_WOI;
+       //  if movable window drawing (on start in that case), center position allready calculated in ZC_WindowOrthoIndent, set indent flags bl (unbind movable window from ZC_SWindow resize event in ZC_WindowOrthoIndent)
+    if (winFlags & ZC_GUI_WF__Movable && winFlags & ZC_GUI_WF__NeedDraw)
+        SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
+}
 
 bool ZC_GUI_Window::VIsStacionar_Obj() const noexcept
 {
@@ -39,47 +60,14 @@ void ZC_GUI_Window::MakeUnfocused()
         VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(pObjData->color));
 }
 
-ZC_GUI_Window::ZC_GUI_Window(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags)
-    : ZC_GUI_Window(_woiData, ZC_GUI_IconUV::window, _winFlags)
-{}
-
-ZC_GUI_Window::ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags)
-    : ZC_WindowOrthoIndent1(false, _winFlags & ZC_GUI_WF__Movable ?
-        ZC_WOIData
-            {
-                .width = _woiData.width,
-                .height = _woiData.height,
-                .indentX = 0.f,
-                .indentY = 0.f,
-                .indentFlags = ZC_WOIF__X_Center | ZC_WOIF__Y_Center
-            }
-        : _woiData),
-    ZC_GUI_ObjBorder(ZC_GUI_ObjData
-            {
-                .width = _woiData.width,
-                .height = _woiData.height,
-                .depth = _winFlags & ZC_GUI_WF__Stacionar ? GetStacionarDepth() : 0.f,
-                .color = color_unfocused,
-                .uv = uv,
-                .tex_binding = ZC_GUI_Bindings::bind_tex_Icons
-            },
-        _winFlags & ZC_GUI_WF__Scrollable),
-    winFlags(_winFlags)
-{
-    *(this->pBL) = this->bl_WOI;
-       //  if movable window drawing (on start in that case), center position allready calculated in ZC_WindowOrthoIndent, set indent flags bl (unbind movable window from ZC_SWindow resize event in ZC_WindowOrthoIndent)
-    if (winFlags & ZC_GUI_WF__Movable && winFlags & ZC_GUI_WF__NeedDraw)
-        SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
-}
-
 void ZC_GUI_Window::VChanged_bl_WOI()
 {
-    if (this->bl_WOI == *pBL) return;     //  no changes in bl
-    ZC_Vec2<float> rel_bl = this->bl_WOI - *pBL;
+    if (this->bl_WOI == this->Get_bl_Obj()) return;     //  no changes in bl
+    ZC_Vec2<float> rel_bl = this->bl_WOI - this->Get_bl_Obj();
     VCursorMove_Obj(rel_bl[0], rel_bl[1]);
 }
 
-void ZC_GUI_Window::VEraseFrom__buttonKeyboard_objs_B(ZC_GUI_Obj* pDelete)
+void ZC_GUI_Window::VEraseFrom__buttonKeyboard_objs_Obj(ZC_GUI_Obj* pDelete)
 {
     ZC_ForwardListErase(buttonKeyboard_objs, pDelete);
 }
