@@ -11,10 +11,11 @@ enum ZC_GUI_WinFlag
 {
     ZC_GUI_WF__None             = 0,
     ZC_GUI_WF__Stacionar        = 1,        //  The window is always under non-stacionar windows (if the window is in focus and not stationary windows overlap it, the stationary window is still drawn under those windows). Each new created stationary window will always display above the previous created stationary windows (avoid intersecting stationary windows, think of it as a desktop interface).
-    ZC_GUI_WF__NeedDraw         = 1 << 1,   //  Need draw on start
-    ZC_GUI_WF__NoBackground     = 1 << 2,   //  Don't draw background (window background don't make collisioin with mouse cursor, objects of the window still make collision)
+    ZC_GUI_WF__NeedDraw         = 1 << 1,   //  Need draw on start.
+    ZC_GUI_WF__NoBackground     = 1 << 2,   //  Don't draw background (window background don't make collisioin with mouse cursor, objects of the window still make collision).
     ZC_GUI_WF__Movable          = 1 << 3,   //  Window can be moved. ZC_WOIData will be ignored and on first draw, window will be in the ZC_SWindow center, then will be set flags ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel.
-    ZC_GUI_WF__Scrollable       = 1 << 4,   //  Can be used scroll
+    ZC_GUI_WF__Scrollable       = 1 << 4,   //  Can be used scroll.
+    ZC_GUI_WF__Frame            = 1 << 5,   //  Window have 2 pixels frame (border).
 };
 
 struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
@@ -36,7 +37,7 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
 
     virtual void VSetDrawState_W(bool needDraw) = 0;
 
-    bool VIsStacionar_Obj() const noexcept override;
+    bool VIsStacionarWin_Obj() const noexcept override;
 
     bool IsBackground() const noexcept;
         //  make window unfocused (calls in ZC_EventManager::UpdateWindowState())
@@ -45,7 +46,7 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
 
         //  find keyboard event (calls from ZC_GUI_EventManager::GetButtonDownObject()). Overrides in ZC_GUI_TextInputWindow.
     virtual ZC_GUI_Obj* VGetButtonKeyboard_W(ZC_ButtonID buttonId);
-    virtual bool VIsMutable_W() const noexcept = 0;
+    virtual bool VIsMutableWin_Obj() const noexcept = 0;
     virtual void VDraw_W() = 0;
     virtual void VReconf_UpdateTextUV_W() {} //  updates uv in text objs (colling from ZC_GUI_DrawManager::Reconf_UpdateTextUV())
     virtual bool VIsInputWindow_W() const noexcept { return false; }

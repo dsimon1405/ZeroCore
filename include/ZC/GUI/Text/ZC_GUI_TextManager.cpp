@@ -80,7 +80,7 @@ void ZC_GUI_TextManager::SetParams(Params&& _fontParams)
     fontParams = _fontParams;
 }
 
-typename ZC_GUI_TextManager::Text* ZC_GUI_TextManager::GetText(const std::wstring& wstr, bool isImmutable, int reserveWidth)
+typename ZC_GUI_TextManager::Text* ZC_GUI_TextManager::GetText(const std::wstring& wstr, bool isImmutable, int reserveWidth, int* pWSTR_width)
 {
     if (!pTM) return nullptr;
 
@@ -89,7 +89,7 @@ typename ZC_GUI_TextManager::Text* ZC_GUI_TextManager::GetText(const std::wstrin
     
     if (isImmutable && pTM->IsConfigured()) return nullptr;   //  no adds after configuration (for immutable text)
 
-    int wstr_width = CalculateWstrWidth(wstr);
+    int wstr_width = pWSTR_width ? *pWSTR_width : CalculateWstrWidth(wstr);
     if (!isImmutable && reserveWidth > wstr_width) wstr_width = reserveWidth;   //  reserveWidth more then wstr width (only for mutable texts)
     
     Text* pText = isImmutable ? &(pTM->immutable_texts.emplace_back(Text{ .isImmutable = isImmutable, .wstr = wstr, .width = wstr_width, }))
@@ -101,8 +101,7 @@ typename ZC_GUI_TextManager::Text* ZC_GUI_TextManager::GetText(const std::wstrin
 }
 
 void ZC_GUI_TextManager::ProcessDeletableText(int wstr_width, Text* pText)
-{
-        //  find free space in texture
+{       //  find free space in texture
     const std::list<FreeSpace>::iterator emptyIter;
     typename std::list<FreeSpace>::iterator freeSpaceIter = emptyIter;
     for (auto iter = pTM->freeSpaces.begin(); iter != pTM->freeSpaces.end(); ++iter)    //  try to find free space with a width as close as possible to wstr_width
@@ -183,12 +182,13 @@ void ZC_GUI_TextManager::EraseText(Text* pText)
 
 bool ZC_GUI_TextManager::UpdateText(Text*& pText, int total_width, bool brootForceUpdate, const std::wstring& wstr)
 {
-    if (total_width < CalculateWstrWidth(wstr)) return false;   //  new length can't be longer then current
-    if (pText->isImmutable) pText = GetText(wstr, false, total_width);     //  pText is immutable. Get new text
+    int wstr_width = CalculateWstrWidth(wstr);
+    if (total_width < wstr_width) return false;   //  new length can't be longer then current
+    if (pText->isImmutable) pText = GetText(wstr, false, total_width, &wstr_width);     //  pText is immutable. Get new text
     else if (!brootForceUpdate) //  pText mutable and don't need broot force map
     {
         EraseText(pText);   //  delete existing mutable (free space in texture)
-        pText = GetText(wstr, false, total_width);  //  Get new text
+        pText = GetText(wstr, false, total_width, &wstr_width);  //  Get new text
     }
     else MapTexture(pText->start_index, pText->width, CreateWstrData(wstr, pText->width).data());   //  pText is mutable and need brootForceUpdate. Map part of existing texture
     return true;

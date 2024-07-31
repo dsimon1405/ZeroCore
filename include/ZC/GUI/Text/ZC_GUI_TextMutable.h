@@ -28,7 +28,7 @@
 //     bool UpdateText(const std::wstring& wstr, bool brootForceUpdate)
 //     {
 //         auto pText_temp = this->pText;
-//         if (!ZC_GUI_TextManager::UpdateText(pText, this->GetWidth(), brootForceUpdate, wstr)) return false;     //  can't update text
+//         if (!ZC_GUI_TextManager::UpdateText(pText, this->VGetWidth_Obj(), brootForceUpdate, wstr)) return false;     //  can't update text
 //         if (pText_temp != this->pText)  //  UpdateText() was not map existing texture, but set new text in pText. So need update uv
 //         {
 //             this->pObjData->uv = pText->uv;

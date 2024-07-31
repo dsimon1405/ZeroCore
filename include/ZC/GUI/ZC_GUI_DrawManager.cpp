@@ -33,13 +33,13 @@ ZC_GUI_DrawManager::ZC_GUI_DrawManager()
 
 void ZC_GUI_DrawManager::AddWindow(ZC_GUI_Window* pWindow)
 {
-    if (pWindow->VIsMutable_W()) pWindow->VIsDrawing_Obj() ? mutableWins.emplace_front(pWindow) : mutableWins.emplace_back(pWindow);
+    if (pWindow->VIsMutableWin_Obj()) pWindow->VIsDrawing_Obj() ? mutableWins.emplace_front(pWindow) : mutableWins.emplace_back(pWindow);
     else pImmutableWin = pWindow;
 }
 
 void ZC_GUI_DrawManager::EraseWindow(ZC_GUI_Window* pWindow)
 {
-    if (pWindow->VIsMutable_W()) std::erase(mutableWins, pWindow);
+    if (pWindow->VIsMutableWin_Obj()) std::erase(mutableWins, pWindow);
 }
 
 void ZC_GUI_DrawManager::Configure()
@@ -70,7 +70,7 @@ void ZC_GUI_DrawManager::Draw()
 
 void ZC_GUI_DrawManager::UpdateWindowDrawState(ZC_GUI_Window* pWindow)
 {
-    if (!pWindow->VIsMutable_W()) return;   //  change only mutable list
+    if (!(pWindow->VIsMutableWin_Obj())) return;   //  change only mutable list
     if (pWindow->VIsDrawing_Obj() ? mutableWins.front() == pWindow : mutableWins.back() == pWindow) return; //  pWindow allready on that position
     std::erase(mutableWins, pWindow);
     pWindow->VIsDrawing_Obj() ? mutableWins.emplace_front(pWindow) : mutableWins.emplace_back(pWindow);

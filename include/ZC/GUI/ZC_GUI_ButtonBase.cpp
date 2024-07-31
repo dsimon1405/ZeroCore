@@ -1,7 +1,8 @@
 #include <ZC/GUI/ZC_GUI_ButtonBase.h>
 
-ZC_GUI_ButtonBase::ZC_GUI_ButtonBase(const ZC_GUI_ObjData& od)
-    : ZC_GUI_ObjComposite(od)
+ZC_GUI_ButtonBase::ZC_GUI_ButtonBase(const ZC_GUI_ObjData& od, ZC_GUI_ButtonFlags _buttonFlags)
+    : ZC_GUI_ObjComposite(od),
+    buttonFlags(_buttonFlags)
 {}
 
 void ZC_GUI_ButtonBase::StopEventActivity_BS()

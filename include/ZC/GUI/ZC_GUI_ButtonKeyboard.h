@@ -7,7 +7,6 @@
 struct ZC_GUI_ButtonKeyboard : public virtual ZC_GUI_ButtonBase
 {
     ZC_ButtonID buttonId;
-    const bool usePress;
     static inline long waitPressNanoseconds = 300000000;   //  how long wait to start use VKeyboardButtonPressed_BK(), instead VKeyboardButtonDown_BK()
 
         //  may be override
@@ -21,8 +20,8 @@ struct ZC_GUI_ButtonKeyboard : public virtual ZC_GUI_ButtonBase
     // {}
     {std::cout<<"key pressed"<<std::endl;}
 
-    ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, bool _pressOnDown);
-    ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, bool _pressOnDown, const ZC_GUI_UV &uv);
+    ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags);
+    ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV &uv);
 
     bool operator == (ZC_ButtonID _buttonId) const noexcept override;
 

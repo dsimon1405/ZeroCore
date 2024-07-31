@@ -63,7 +63,7 @@ struct ZC_GUI_TextManager
         //  Change default FontParams. Must be called before ZC_SWindow create.
     static void SetParams(Params&& _fontParams);
         //  find or create Text
-    static Text* GetText(const std::wstring& wstr, bool isImmutable, int reserveWidth);
+    static Text* GetText(const std::wstring& wstr, bool isImmutable, int reserveWidth, int* pWSTR_width = nullptr);
     static void ProcessDeletableText(int wstr_width, Text* pText);
         //  erase only deletable text (not stacionar), to free space in texture
     static void EraseText(Text* pText);

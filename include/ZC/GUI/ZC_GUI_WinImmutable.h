@@ -44,7 +44,7 @@ struct ZC_GUI_WinImmutable : public ZC_GUI_Window
     void VConfigure_Obj() override;
     bool VIsConfigured_Obj() const noexcept override;
     
-    bool VIsMutable_W() const noexcept override;
+    bool VIsMutableWin_Obj() const noexcept override;
     void VDraw_W() override;
     void VReconf_UpdateTextUV_W() override;
     void VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData) override;

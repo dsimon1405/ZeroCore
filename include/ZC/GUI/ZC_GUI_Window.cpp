@@ -11,16 +11,8 @@ ZC_GUI_Window::ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC
     : ZC_WindowOrthoIndent1(false, _winFlags & ZC_GUI_WF__Movable ?
         ZC_WOIData(_woiData.width, _woiData.height, 0.f, 0.f, ZC_WOIF__X_Center | ZC_WOIF__Y_Center)
         : _woiData),
-    ZC_GUI_ObjBorder(ZC_GUI_ObjData
-            {
-                .width = _woiData.width,
-                .height = _woiData.height,
-                .depth = _winFlags & ZC_GUI_WF__Stacionar ? GetStacionarDepth() : 0.f,
-                .color = color_unfocused,
-                .uv = uv,
-                .tex_binding = ZC_GUI_Bindings::bind_tex_Icons
-            },
-        _winFlags & ZC_GUI_WF__Scrollable),
+    ZC_GUI_ObjBorder(ZC_GUI_ObjData(_woiData.width, _woiData.height, _winFlags & ZC_GUI_WF__Stacionar ? GetStacionarDepth() : 0.f, color_unfocused, uv, 0, ZC_GUI_Bindings::bind_tex_Icons),
+        _winFlags & ZC_GUI_WF__Scrollable, _winFlags & ZC_GUI_WF__Frame),
     winFlags(_winFlags)
 {
     *(this->pBL) = this->bl_WOI;
@@ -29,7 +21,7 @@ ZC_GUI_Window::ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC
         SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
 }
 
-bool ZC_GUI_Window::VIsStacionar_Obj() const noexcept
+bool ZC_GUI_Window::VIsStacionarWin_Obj() const noexcept
 {
     return winFlags & ZC_GUI_WF__Stacionar;
 }
@@ -84,7 +76,7 @@ void ZC_GUI_Window::SetFocuseDepthAndColor()
     static ZC_GUI_Window* pChangingWindow = nullptr;    //  uses to reset depth for all openable window when reached depth end
     static float focuseDepth = depth_openableStart;
 
-    if (VIsStacionar_Obj() || this == pChangingWindow) return;
+    if (VIsStacionarWin_Obj() || this == pChangingWindow) return;
     if (pObjData->depth == focuseDepth) 
     {
         if (!VIsDrawing_Obj()) pObjData->depth = 0.f; //  window stop drawing, need set depth not equal to focuseDepth (no sense make glmap now. If window will be opened again it will have new depth) 

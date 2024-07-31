@@ -13,6 +13,18 @@ struct ZC_GUI_ObjComposite : public ZC_GUI_Obj
         : ZC_GUI_Obj(_objData)
     {}
 
+    ZC_GUI_ObjComposite(ZC_GUI_ObjComposite&& oc)
+        : ZC_GUI_Obj(dynamic_cast<ZC_GUI_Obj&&>(oc)),
+        objs(std::move(oc.objs))
+    {}
+    
+    ~ZC_GUI_ObjComposite()
+    {
+        for (ZC_GUI_Obj* pObj : objs)
+            pObj->SetObjHolder(nullptr);
+        if (this->pObjHolder) pObjHolder->VEraseObj_Obj(this);  //  erase itself from holder
+    }
+
     ZC_Vec2<float>* VGet_pBL_end() override
     {
         return objs.empty() ? Get_pBL_start() : objs.back()->VGet_pBL_end();
@@ -26,6 +38,28 @@ struct ZC_GUI_ObjComposite : public ZC_GUI_Obj
     ZC_GUI_Obj* VGet_pObj_end() override
     {
         return objs.empty() ? this : objs.back()->VGet_pObj_end();
+    }
+
+    float VGetTop_Obj() override
+    {
+        float total_top = (*pBL)[1] + GetHeight();
+        for (ZC_GUI_Obj* pObj : objs)
+        {
+            float top = pObj->VGetTop_Obj();
+            if (top > total_top) total_top = top;
+        }
+        return total_top;
+    }
+
+    float VGetBottom_Obj() override
+    {
+        float total_bottom = (*pBL)[1];
+        for (ZC_GUI_Obj* pObj : objs)
+        {
+            float bottom = pObj->VGetBottom_Obj();
+            if (bottom < total_bottom) total_bottom = bottom;
+        }
+        return total_bottom;
     }
 
     bool VAddObj_Obj(ZC_GUI_Obj* pObj, ZC_GUI_Obj* pPrevObj) override
@@ -48,7 +82,7 @@ struct ZC_GUI_ObjComposite : public ZC_GUI_Obj
         if (iter != objs.end())
         {
             objs.erase(iter);
-            VIsConfigured_Obj() ? VConfigure_Obj() : VEraseFrom__buttonKeyboard_objs_Obj(pObj);
+            VEraseFrom__buttonKeyboard_objs_Obj(pObj);
         }
     }
 
@@ -76,10 +110,18 @@ struct ZC_GUI_ObjComposite : public ZC_GUI_Obj
         for (ZC_GUI_Obj* pObj : objs) pObj->VConf_SetTextUV_Obj();
     }
 
-    bool VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged) override
+    // bool VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged) override
+    // {
+    //     if (!ChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged)) return false;
+    //     for (ZC_GUI_Obj* pObj : objs) if (!pObj->VChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged)) return false;
+    //     return true;
+    // }
+
+    void VSetDrawState_Obj(bool neeDraw, bool updateGPU) override
     {
-        if (!ChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged)) return false;
-        for (ZC_GUI_Obj* pObj : objs) if (!pObj->VChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged)) return false;
-        return true;
+        if (neeDraw == VIsDrawing_Obj()) return;
+        pObjData->height = neeDraw ? actual_height : 0.f;
+        for (ZC_GUI_Obj* pObj : objs) pObj->VSetDrawState_Obj(neeDraw, false);
+        if (updateGPU) VSubDataObjData_Obj(this->pObjData, objs.empty() ? this->pObjData : objs.back()->pObjData);
     }
 };

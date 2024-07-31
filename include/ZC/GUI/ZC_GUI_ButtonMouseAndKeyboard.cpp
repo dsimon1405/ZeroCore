@@ -1,15 +1,16 @@
 #include <ZC/GUI/ZC_GUI_ButtonMouseAndKeyboard.h>
 
 #include "ZC_GUI_IconUV.h"
+#include <ZC/GUI/ZC_GUI_Bindings.h>
 
-ZC_GUI_ButtonMouseAndKeyboard::ZC_GUI_ButtonMouseAndKeyboard(float width, float height, ZC_GUI_MB__Flags _mb_flags, ZC_ButtonID _buttonId, bool useKeyboardButtonPress)
-    : ZC_GUI_ButtonMouseAndKeyboard(width, height, _mb_flags, _buttonId, useKeyboardButtonPress, ZC_GUI_IconUV::button)
+ZC_GUI_ButtonMouseAndKeyboard::ZC_GUI_ButtonMouseAndKeyboard(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_ButtonID _buttonId)
+    : ZC_GUI_ButtonMouseAndKeyboard(width, height, _buttonFlags, _buttonId, ZC_GUI_IconUV::button)
 {}
 
-ZC_GUI_ButtonMouseAndKeyboard::ZC_GUI_ButtonMouseAndKeyboard(float width, float height, ZC_GUI_MB__Flags _mb_flags, ZC_ButtonID _buttonId, bool useKeyboardButtonPress, const ZC_GUI_UV &uv)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData{ .width = width, .height = height, .uv = uv }),
-    ZC_GUI_ButtonMouse(width, height, _mb_flags, uv),
-    ZC_GUI_ButtonKeyboard(_buttonId, width, height, useKeyboardButtonPress, uv)
+ZC_GUI_ButtonMouseAndKeyboard::ZC_GUI_ButtonMouseAndKeyboard(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_ButtonID _buttonId, const ZC_GUI_UV &uv)
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::bind_tex_Icons), _buttonFlags),
+    ZC_GUI_ButtonMouse(width, height, _buttonFlags, uv),
+    ZC_GUI_ButtonKeyboard(_buttonId, width, height, _buttonFlags, uv)
 {}
 
 bool ZC_GUI_ButtonMouseAndKeyboard::VIsDrawing_Obj() const noexcept

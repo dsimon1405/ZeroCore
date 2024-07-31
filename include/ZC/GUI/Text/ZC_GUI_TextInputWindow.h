@@ -29,7 +29,7 @@ private:
         };
 
         float start_x = 0;  //  highlight bl.x
-        float end_x = 0;    //  highlight br.x (to caltulate width)
+        float end_x = 0;    //  highlight br.x (to calculate width)
         Direction direction = None;     //  start_x is bl.x. If Left: start_x is moveing. If Right: end_x is moving
 
         Highlight(float fontHeight);

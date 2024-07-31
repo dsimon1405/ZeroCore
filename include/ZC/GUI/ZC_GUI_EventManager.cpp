@@ -51,18 +51,18 @@ void ZC_GUI_EventManager::AddWindow(ZC_GUI_Window* pWindow)
 {
     if (pWindow->VIsInputWindow_W()) pTextInputWindow = pWindow;
        //  choose stacionar window or openable, and if window drawing, add in front of list, otherwise in back
-    else if (pWindow->VIsStacionar_Obj()) pWindow->VIsDrawing_Obj() ? stacionarWins.emplace_front(pWindow) : stacionarWins.emplace_back(pWindow);
+    else if (pWindow->VIsStacionarWin_Obj()) pWindow->VIsDrawing_Obj() ? stacionarWins.emplace_front(pWindow) : stacionarWins.emplace_back(pWindow);
     else pWindow->VIsDrawing_Obj() ? openableWins.emplace_front(pWindow) : openableWins.emplace_back(pWindow);
 }
 
 void ZC_GUI_EventManager::EraseWindow(ZC_GUI_Window* pWindow)
 {
-    std::erase(pWindow->VIsStacionar_Obj() ? stacionarWins : openableWins, pWindow);
+    std::erase(pWindow->VIsStacionarWin_Obj() ? stacionarWins : openableWins, pWindow);
 }
 
 bool ZC_GUI_EventManager::IsWindowFocused(ZC_GUI_Obj* pWindow)
 {
-    return !(pWindow->VIsStacionar_Obj()) && pWindow->VIsDrawing_Obj() ? openableWins.front() == pWindow : false;
+    return !(pWindow->VIsStacionarWin_Obj()) && pWindow->VIsDrawing_Obj() ? openableWins.front() == pWindow : false;
 }
 
 void ZC_GUI_EventManager::UpdateWindowState(ZC_GUI_Window* pWindow)
@@ -81,12 +81,12 @@ void ZC_GUI_EventManager::UpdateWindowState(ZC_GUI_Window* pWindow)
     
     if (pWindow->VIsDrawing_Obj())    //  window is drawing, set it to the begin of list
     {
-        if (!(pWindow->VIsStacionar_Obj()) && pObj_pressed)   //  opens openable window, stop all activity of previous window
+        if (!(pWindow->VIsStacionarWin_Obj()) && pObj_pressed)   //  opens openable window, stop all activity of previous window
         {
             StopObjEventActivity(pObj_pressed);
             pObj_cursorMove = nullptr;    //  must be before UpdateCursorCollision()
         }
-        lambResetWindow(pWindow->VIsStacionar_Obj() ? stacionarWins : openableWins, true);     //  set window to the front of list
+        lambResetWindow(pWindow->VIsStacionarWin_Obj() ? stacionarWins : openableWins, true);     //  set window to the front of list
         UpdateCursorCollision();    //  and update cursor position
         pWindow->SetFocuseDepthAndColor();
     }
@@ -101,7 +101,7 @@ void ZC_GUI_EventManager::UpdateWindowState(ZC_GUI_Window* pWindow)
                 pObj_cursorMove = nullptr;    //  must be before UpdateCursorCollision()
             }
         }
-        lambResetWindow(pWindow->VIsStacionar_Obj() ? stacionarWins : openableWins, false);    //  set window to the back of list
+        lambResetWindow(pWindow->VIsStacionarWin_Obj() ? stacionarWins : openableWins, false);    //  set window to the back of list
         UpdateCursorCollision();    //  and update cursor position
         pWindow->SetFocuseDepthAndColor();
     }

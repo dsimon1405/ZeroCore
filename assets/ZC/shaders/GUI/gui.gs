@@ -110,7 +110,8 @@ void main()
     vec2 tl = vec2(bl.x, bl.y + objData.height);
     vec2 tr = vec2(br.x, tl.y);
 
-    if (!ConfigureBorder(objData.borderIndex, bl, br, tl, tr) && Discard()) return;    //  out of border
+    if (vertexID == 0) outG.borderIndex = -1;   //  window background may be with frame border, so don't check border for window's background, just draw
+    else if (!ConfigureBorder(objData.borderIndex, bl, br, tl, tr) && Discard()) return;    //  out of border
         //  depth
     float depth = objData.depth;
     if (vertexID != 0) depth += inObjData.objDatas[baseInstance].depth;  //  object not window border, need add window's border depth

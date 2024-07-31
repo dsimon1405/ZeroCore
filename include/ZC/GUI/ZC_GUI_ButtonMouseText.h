@@ -7,15 +7,20 @@
 
 struct ZC_GUI_ButtonMouseText : public ZC_GUI_ButtonMouse
 {
-    ZC_GUI_ButtonMouseText(float width, float height, ZC_GUI_MB__Flags _mb_flags, ZC_GUI_Text&& text)
-        : ZC_GUI_ButtonBase(ZC_GUI_ObjData{ .width = width, .height = height, .uv = ZC_GUI_IconUV::button, .tex_binding = ZC_GUI_Bindings::bind_tex_Icons }),
-        ZC_GUI_ButtonMouse(width, height, _mb_flags),
-        textImmut(std::move(text))
+    ZC_GUI_ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_GUI_TextForButton&& text)
+        : ZC_GUI_ButtonMouseText(width, height, _buttonFlags, std::move(text), ZC_GUI_IconUV::button)
+    {}
+    
+    ZC_GUI_ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_GUI_TextForButton&& text, const ZC_GUI_UV& uv)
+        : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::bind_tex_Icons), _buttonFlags),
+        ZC_GUI_ButtonMouse(width, height, _buttonFlags),
+        textForButton(std::move(text))
     {
-        if (width < textImmut.GetWidth()) this->pObjData->width = textImmut.GetWidth();
-        if (height < textImmut.GetHeight()) this->SetHeight_Obj(textImmut.GetHeight());
-
-        this->VAddObj_Obj(&textImmut, nullptr);
+        this->VAddObj_Obj(&textForButton, nullptr);
+           //  width buttons with can't be less then text width (if text inside the button)
+        float textForButton_width = this->objs.front()->VGetWidthComposite_Obj();
+        if (textForButton.indent.indentFlag_X != ZC_GUI_TextForButton::Indent::OutOfButton && width < textForButton_width) this->pObjData->width = textForButton_width;
+        if (height < textForButton.GetHeight()) this->SetHeight_Obj(textForButton.GetHeight());
     }
 
     /*
@@ -31,29 +36,31 @@ struct ZC_GUI_ButtonMouseText : public ZC_GUI_ButtonMouse
     */
     bool UpdateText_BMT(const std::wstring& wstr, bool brootForceUpdate)
     {
-        return textImmut.UpdateText(wstr, brootForceUpdate);
+        return textForButton.UpdateText(wstr, brootForceUpdate);
     }
 
-    //  Return current wstring.
-    const std::wstring& GetText_BMT()
+        //  Return current wstring.
+    const std::wstring& GetWStr_BMT()
     {
-        return textImmut.GetText();
+        return textForButton.GetWStr();
     }
 
 protected:
-    void Conf_Set_bl_BMT(const ZC_Vec2<float>& _bl)
+    void UpdateText_BMT(ZC_GUI_TextManager::Text* pText)
     {
-        *(this->pBL) = _bl;
-
-        ZC_Vec2<float> bl_texImmut(_bl[0], _bl[1] + (this->GetHeight() - textImmut.GetHeight()) / 2.f);     //  make text in center by Y
-        textImmut.VSet_pBL_Obj(bl_texImmut);
+        textForButton.UpdateText(pText);
     }
 
 private:
-    ZC_GUI_Text textImmut;
+    ZC_GUI_TextForButton textForButton;
 
-    void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override
+    float VGetWidthComposite_Obj() override
     {
-        Conf_Set_bl_BMT(_bl);
+        return textForButton.indent.indentFlag_X == ZC_GUI_TextForButton::Indent::OutOfButton ? this->VGetWidth_Obj() + this->objs.front()->VGetWidthComposite_Obj() : this->VGetWidth_Obj();
+    }
+
+    void VConf_SetTextUV_Obj() override
+    {
+        this->objs.front()->VConf_SetTextUV_Obj();
     }
 };

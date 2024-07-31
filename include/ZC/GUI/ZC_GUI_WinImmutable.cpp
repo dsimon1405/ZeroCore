@@ -93,7 +93,7 @@ bool ZC_GUI_WinImmutable::VIsConfigured_Obj() const noexcept
     return !bls.empty();
 }
 
-bool ZC_GUI_WinImmutable::VIsMutable_W() const noexcept
+bool ZC_GUI_WinImmutable::VIsMutableWin_Obj() const noexcept
 {
     return false;
 }

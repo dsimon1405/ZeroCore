@@ -19,6 +19,18 @@ struct ZC_Buffer
 	void BindBuffer();
 	void UnbindBuffer();
 
+	/*
+	Create and fill with data shader storage buffer.
+
+	Params:
+	- _binding - binding point.
+	- bytesSize - data bytes size.
+	- data - data to save (if nullptr, reserve place).
+	- flags - 0, GL_DYNAMIC_STORAGE_BIT, GL_MAP_COHERENT_BIT (must include GL_MAP_PERSISTENT_BIT (must include GL_MAP_READ_BIT or GL_MAP_WRITE_BIT)).
+
+	Return:
+	Filled shader storage buffer.
+	*/
 	static ZC_Buffer CreateAndFillStorage(GLuint _binding, GLsizeiptr bytesSize, const void* pData, GLbitfield flags);
 
 	/*

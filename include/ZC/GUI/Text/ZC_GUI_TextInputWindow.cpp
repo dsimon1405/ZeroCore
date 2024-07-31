@@ -107,10 +107,10 @@ void ZC_GUI_TextInputWindow::VSetDrawState_W(bool needDraw)
 
 void ZC_GUI_TextInputWindow::WstrChanged()
 {
-    ZC_DA<wchar_t> da_wch(chDatas.size());
-    int da_wch_i = 0;
-    for (ZC_GUI_ChData& chData : chDatas) da_wch[da_wch_i++] = chData.pCh->symbol;     //  fill da_wch
-    funcChangedWstr(std::wstring(da_wch.Begin()));      //  create wstr and call callback
+    std::wstring wstr;
+    wstr.reserve(chDatas.size());
+    for (ZC_GUI_ChData& chData : chDatas) wstr.append(1, chData.pCh->symbol);
+    funcChangedWstr(wstr);
 }
 
 void ZC_GUI_TextInputWindow::WindowResize(float,float)
@@ -144,9 +144,9 @@ void ZC_GUI_TextInputWindow::Highlight::MBL_DoubleClick()
         if (end_iter != iter) pTIW->caret.SetPositionOfChData(&*end_iter, false, ZC_GUI_TextInputWindow::Caret::Display);   //  new position for caret
             //  if highlight_start more left then window start, try correct offset
         float highlight_start = start_iter->start_index + pTIW->chDatasOffset;
-        float highlight_end = pTIW->caret.Get_bl_Obj()[0] + pTIW->caret.GetWidth();
+        float highlight_end = pTIW->caret.Get_bl_Obj()[0] + pTIW->caret.VGetWidth_Obj();
         float win_start = pTIW->Get_bl_Obj()[0];
-        float win_end = win_start + pTIW->GetWidth();
+        float win_end = win_start + pTIW->VGetWidth_Obj();
         if (highlight_start < win_start && highlight_end < win_end)
         {
             float need_on_start = win_start - highlight_start;     //  need place at the start
@@ -409,12 +409,12 @@ void ZC_GUI_TextInputWindow::Caret::SetDrawState(DrawState _drawState)
     case NotDisplay:
     {
         ecBlinkingUpdate.Disconnect();  //  disconnect update if was blinking
-        if (VIsDrawing_Obj()) ChangeObjsDrawState(false, this, this);   //  stop draw
+        if (VIsDrawing_Obj()) VSetDrawState_Obj(false, true);   //  stop draw
     } break;
     case Display:
     {
         ecBlinkingUpdate.Disconnect();  //  disconnect update if was blinking
-        if (!VIsDrawing_Obj()) ChangeObjsDrawState(true, this, this);   //  start draw
+        if (!VIsDrawing_Obj()) VSetDrawState_Obj(true, true);   //  start draw
     } break;
     }
 }
@@ -635,7 +635,7 @@ void ZC_GUI_TextInputWindow::Caret::TextButtonDown(const typename ZC_GUI_Font::C
         auto& first_element = pTIW->chDatas.front();
         auto& last_element = pTIW->chDatas.back();
         int current_width = (last_element.start_index + last_element.pCh->left_offset + last_element.pCh->width) - first_element.start_index;   //  dirty check. Don't check is first == last, and so on
-        if (current_width + add_width > pTIW->textMut.GetWidth()) return;   //  reached texture capacity
+        if (current_width + add_width > pTIW->textMut.VGetWidth_Obj()) return;   //  reached texture capacity
     }
     if (pChData_pos)    //  caret in text
     {
@@ -665,7 +665,7 @@ void ZC_GUI_TextInputWindow::Caret::BlinkingUpdate(float time)
     if (blinkTime >= blinkTime_limit)   //   time over
     {
         blinkTime -= blinkTime_limit;   //  update time
-        ChangeObjsDrawState(!(VIsDrawing_Obj()), this, this);
+        VSetDrawState_Obj(!(VIsDrawing_Obj()), true);
     }
 }
 

@@ -4,8 +4,6 @@
 #include <ZC/GUI/ZC_GUI_Bindings.h>
 #include "ZC_GUI_IconUV.h"
 
-using namespace ZC_GUI_Bindings;
-
 ZC_GUI_WinMutable::ZC_GUI_WinMutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags)
     : ZC_GUI_WinMutable(_woiData, ZC_GUI_IconUV::window, _winFlags)
 {}
@@ -16,9 +14,9 @@ ZC_GUI_WinMutable::ZC_GUI_WinMutable(const ZC_WOIData& _woiData, const ZC_GUI_UV
     drawArrays(GL_POINTS,
         _winFlags & ZC_GUI_WF__NoBackground ? 1 : 0,    //  if there is no background, return 1 and start drawing at index 1
         _winFlags & ZC_GUI_WF__NoBackground ? 0 : 1),
-    bufBorders(GL_SHADER_STORAGE_BUFFER, bind_Border),
-    bufBLs(GL_SHADER_STORAGE_BUFFER, bind_BL),
-    bufObjDatas(GL_SHADER_STORAGE_BUFFER, bind_ObjData)
+    bufBorders(GL_SHADER_STORAGE_BUFFER, ZC_GUI_Bindings::bind_Border),
+    bufBLs(GL_SHADER_STORAGE_BUFFER, ZC_GUI_Bindings::bind_BL),
+    bufObjDatas(GL_SHADER_STORAGE_BUFFER, ZC_GUI_Bindings::bind_ObjData)
 {
     if (isDrawing) SetFocuseDepthAndColor();
     ZC_GUI::AddWindow(this);
@@ -46,21 +44,27 @@ bool ZC_GUI_WinMutable::VIsDrawing_Obj() const noexcept
 void ZC_GUI_WinMutable::VConfigure_Obj()
 {
     this->VSet_pBL_Obj(this->Get_bl_Obj());     //  calculate bl for all window's objects
+    
+    this->bordersCount = 0;     //  make default value for reconfiguration case
+    this->objsCount = 0;
     this->VConf_GetBordersAndObjsCount_Obj(this->bordersCount, this->objsCount);
 
-    if (VIsConfigured_Obj())    //  buffers allready filled (reconfigureation)
-    {
-        borders = {};
-        bls = {};
-        objDatas = {};
-    }
-    borders.reserve(this->bordersCount);
-    bls.reserve(this->objsCount);
-    objDatas.reserve(this->objsCount);
+    if (VIsConfigured_Obj()) buttonKeyboard_objs = {};
+        //  store data in temp vectors for teconfiguration case
+    std::vector<ZC_GUI_Border> temp_borders;
+    temp_borders.reserve(this->bordersCount);
+    std::vector<ZC_Vec2<float>> temp_bls;
+    temp_bls.reserve(this->objsCount);
+    std::vector<ZC_GUI_ObjData> temp_objDatas;
+    temp_objDatas.reserve(this->objsCount);
 
     drawArrays.count = this->objsCount - drawArrays.first;    //  count drawing elements (GL_POINTS) in window; daic.first shows is border drawn or not
 
-    VConf_GetData_Obj(borders, bls, objDatas, 0, this->buttonKeyboard_objs);
+    VConf_GetData_Obj(temp_borders, temp_bls, temp_objDatas, 0, this->buttonKeyboard_objs);
+
+    borders = std::move(temp_borders);
+    bls = std::move(temp_bls);
+    objDatas = std::move(temp_objDatas);
 
     bufBorders.GLNamedBufferData(sizeof(ZC_GUI_Border) * borders.size(), borders.data(), GL_DYNAMIC_DRAW);
     bufBLs.GLNamedBufferData(sizeof(ZC_Vec2<float>) * bls.size(), bls.data(), GL_DYNAMIC_DRAW);
@@ -72,7 +76,7 @@ bool ZC_GUI_WinMutable::VIsConfigured_Obj() const noexcept
     return !bls.empty();
 }
 
-bool ZC_GUI_WinMutable::VIsMutable_W() const noexcept
+bool ZC_GUI_WinMutable::VIsMutableWin_Obj() const noexcept
 {
     return true;
 }
@@ -106,12 +110,12 @@ void ZC_GUI_WinMutable::VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>
     if (VIsConfigured_Obj()) bufBLs.GLNamedBufferSubData((pBL_start - bls.data()) * sizeof(ZC_Vec2<float>), (pBL_end - pBL_start + 1) * sizeof(ZC_Vec2<float>), pBL_start);
 }
 
-void ZC_GUI_WinImmutable::VSubDataBorder_Obj(ZC_GUI_Border* pBorder_start, ZC_GUI_Border* pBorder_end)
+void ZC_GUI_WinMutable::VSubDataBorder_Obj(ZC_GUI_Border* pBorder_start, ZC_GUI_Border* pBorder_end)
 {
     if (VIsConfigured_Obj()) bufBorders.GLNamedBufferSubData((pBorder_start - borders.data()) * sizeof(ZC_GUI_Border), (pBorder_end - pBorder_start + 1) * sizeof(ZC_GUI_Border), pBorder_start);
 }
 
-void ZC_GUI_WinImmutable::VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC_GUI_ObjData* pObjData_end)
+void ZC_GUI_WinMutable::VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC_GUI_ObjData* pObjData_end)
 {
     if (VIsConfigured_Obj()) bufObjDatas.GLNamedBufferSubData((pObjData_start - objDatas.data()) * sizeof(ZC_GUI_ObjData), (pObjData_end - pObjData_start + 1) * sizeof(ZC_GUI_ObjData), pObjData_start);
 }

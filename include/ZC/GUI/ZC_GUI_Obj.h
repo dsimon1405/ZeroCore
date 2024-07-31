@@ -27,8 +27,16 @@ struct ZC_GUI_Obj
     virtual bool operator == (ZC_ButtonID _buttonId) const noexcept { return false; }
         
     ZC_Vec2<float> Get_bl_Obj();
-    float GetWidth();
+        //  overrides in ZC_GUI_Text
+    virtual float VGetWidth_Obj();
+        //  returns object total width (overrides in composite objectes)
+    virtual float VGetWidthComposite_Obj();
+        //  overrides in ZC_GUI_Text
+    virtual void VSetWidth_Obj(float width);
     float GetHeight();
+        //  Uses to set height. Objs for changing draw state, changes height, so all height changings must be realize with that method! That method don't call gpu changing methods.
+    void SetHeight_Obj(float height);
+
     void SetObjHolder(ZC_GUI_Obj* _pObjHolder);
         //  returns true if window of the object is drawing, otherwise false
     bool IsWindowDrawing_Obj() const noexcept;
@@ -36,9 +44,6 @@ struct ZC_GUI_Obj
     ZC_GUI_Obj* GetWindow();
     bool IsWindowFocused();
     void MakeWindowFocused();
-        //  Uses to set height. Objs for changing draw state, changes height, so all height changings must be realize with that method! That method don't call gpu changing methods.
-    void SetHeight_Obj(float height);
-
 
     ZC_Vec2<float>* Get_pBL_start();
         //  for composie objects, must return pointer on pBL of last drawing obj
@@ -48,12 +53,15 @@ struct ZC_GUI_Obj
     virtual ZC_GUI_ObjData* VGet_pObjData_end();
         //  for composie objects, must return pointer on pObj of last drawing obj
     virtual ZC_GUI_Obj* VGet_pObj_end();
+        //  return top of object (composite)
+    virtual float VGetTop_Obj();
+        //  return bottom of object (composite)
+    virtual float VGetBottom_Obj();
 
     virtual void VSet_pBL_Obj(const ZC_Vec2<float>& _bl);
-    // virtual void VSet_pObjData_Obj(float* pWidth, float* pHeight, float* pDepth, unsigned int* pColor, ZC_GUI_UV* pUV, int* pBorderIndex, unsigned int* pTex_binding);
 
-    
-    virtual bool VIsStacionar_Obj() const noexcept;    //  override in ZC_GUI_Win...
+    virtual bool VIsMutableWin_Obj() const noexcept;    //  override in ZC_GUI_Win...
+    virtual bool VIsStacionarWin_Obj() const noexcept;    //  override in ZC_GUI_Win...
     virtual bool VIsDrawing_Obj() const noexcept;
 
     virtual bool VAddObj_Obj(ZC_GUI_Obj* pObj, ZC_GUI_Obj* pPrevObj) { return false; }
@@ -76,11 +84,12 @@ struct ZC_GUI_Obj
         std::forward_list<ZC_GUI_Obj*>& rButtonKeyboard_objs);
          //  for text functions, configuration of the text texture done, all text heirs must update object uv from text uv
     virtual void VConf_SetTextUV_Obj() {};
-        //  Change drawing state of some object in the window. pObj_start must be in same border with pObj_end (after adding in ZC_GUI_WinMutable ot ZC_GUI_WinImmutable)! Must be used insted VChangeObjsDrawState_Obj();
-    void ChangeObjsDrawState(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end);
-        //  return false when found pObj_end, to stop changind draw state. Must be used ChangeObjsDrawState() insted of this method
-    virtual bool VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged);
-    virtual bool ChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged);
+    //     //  Change drawing state of some object in the window. pObj_start must be in same border with pObj_end (after adding in ZC_GUI_WinMutable ot ZC_GUI_WinImmutable)! Must be used insted VChangeObjsDrawState_Obj();
+    // void ChangeObjsDrawState(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end);
+    //     //  return false when found pObj_end, to stop changind draw state. Must be used ChangeObjsDrawState() insted of this method
+    // virtual bool VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged);
+    // virtual bool ChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged);
+    virtual void VSetDrawState_Obj(bool needDraw, bool updateGPU);
 
     virtual void VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData);
     virtual void VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end);

@@ -3,28 +3,22 @@
 #include "ZC_GUI_IconUV.h"
 #include <ZC/GUI/ZC_GUI_Bindings.h>
 
-ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_MB__Flags _mb_flags)
-    : ZC_GUI_ButtonMouse(width, height, _mb_flags, ZC_GUI_IconUV::button)
+ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags)
+    : ZC_GUI_ButtonMouse(width, height, _buttonFlags, ZC_GUI_IconUV::button)
 {}
 
-ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_MB__Flags _mb_flags, const ZC_GUI_UV& uv)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData{ .width = width, .height = height, .uv = uv, .tex_binding = ZC_GUI_Bindings::bind_tex_Icons }),
-    mb_flags(_mb_flags)
+ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV& uv)
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::bind_tex_Icons), _buttonFlags)
 {}
-
-// bool ZC_GUI_ButtonMouse::VIsDrawing_Obj() const noexcept
-// {
-//     return true;
-// }
 
 bool ZC_GUI_ButtonMouse::VIsUseCursorMoveEventOnMBLetfDown_Obj() const noexcept
 {
-    return this->mb_flags & ZC_GUI_MB__CursorMoveOnMBLPress;
+    return this->buttonFlags & ZC_GUI_BF_M__CursorMoveOnMBLPress;
 }
 
 bool ZC_GUI_ButtonMouse::VIsUseScrollEvent_Obj() const noexcept
 {
-    return this->mb_flags & ZC_GUI_MB__Scroll;
+    return this->buttonFlags & ZC_GUI_BF_M__Scroll;
 }
 
 void ZC_GUI_ButtonMouse::VStopEventActivity_Obj()
@@ -53,14 +47,19 @@ void ZC_GUI_ButtonMouse::VCursorCollisionEnd_Obj(float time)
 
 bool ZC_GUI_ButtonMouse::VMouseButtonLeftDown_Obj(float time)
 {
-    if (this->bs_keyboardButton != BS_Released || this->bs_mouseButton == BS_HoldUntilRelease) return false;  //  don't do anything while uses another button down event
+    if (this->bs_mouseButton == BS_HoldUntilRelease) return false;  //  don't do anything while uses another button down event
+    if (this->bs_keyboardButton != BS_Released)
+    {
+        this->bs_mouseButton = BS_HoldUntilRelease;
+        return false;
+    }
     if (this->bs_mouseButton == BS_Released)
     {
         this->pObjData->color = color_pressed;
         VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
         this->bs_mouseButton = BS_Pressed;
         
-        if (this->mb_flags & ZC_GUI_MB__DoubleCLick)  //  call double click if in limit and restart double time in each case
+        if (this->buttonFlags & ZC_GUI_BF_M__DoubleCLick)  //  call double click if in limit and restart double time in each case
         {
             this->clock.Time<ZC_Nanoseconds>() <= nanosecondLimit ? VLeftButtonDoubleClick_BM(time) : VLeftButtonDown_BM(time);
             this->clock.Start();
@@ -68,10 +67,10 @@ bool ZC_GUI_ButtonMouse::VMouseButtonLeftDown_Obj(float time)
         else
         {
             VLeftButtonDown_BM(time);   //  call event in each case on released button
-            if (this->mb_flags & ZC_GUI_MB__MBLPress) this->clock.Start();    //  if uses bml press event start (restart) time
+            if (this->buttonFlags & ZC_GUI_BF__MBLPress) this->clock.Start();    //  if uses bml press event start (restart) time
         }
     }
-    else if (this->mb_flags & ZC_GUI_MB__MBLPress && this->clock.Time<ZC_Nanoseconds>() >= nanosecondLimit) VLeftButtonPressed_BM(time);  //  if uses mbl press event and it's time, call them
+    else if (this->buttonFlags & ZC_GUI_BF__MBLPress && this->clock.Time<ZC_Nanoseconds>() >= nanosecondLimit) VLeftButtonPressed_BM(time);  //  if uses mbl press event and it's time, call them
     return true;
 }
 

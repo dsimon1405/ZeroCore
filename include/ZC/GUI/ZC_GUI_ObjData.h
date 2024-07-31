@@ -26,4 +26,35 @@ struct ZC_GUI_ObjData //  gui.vs -> struct Data
     ZC_GUI_UV uv;
     int borderIndex = 0;
     unsigned int tex_binding = 0;
+
+    ZC_GUI_ObjData(float _width, float _height, unsigned int _color, const ZC_GUI_UV& _uv, unsigned int _tex_binding)
+        : ZC_GUI_ObjData(_width, _height, 0, _color, _uv, 0, _tex_binding)
+    {}
+
+    ZC_GUI_ObjData(float _width, float _height, float _depth, unsigned int _color, const ZC_GUI_UV& _uv, int _borderIndex, unsigned int _tex_binding)
+        : width(_width),
+        height(_height),
+        depth(_depth),
+        color(_color),
+        uv(_uv),
+        borderIndex(_borderIndex),
+        tex_binding(_tex_binding)
+    {}
 };
+
+// struct ZC_GUI_UpdateName
+// {
+//     float bl_x;
+//     float bl_y;
+//     int width;
+//     const std::wstring& wstr;
+//     ZC_Function<void(const std::wstring&)> callBack;
+
+//     ZC_GUI_UpdateName(float _bl_x, float _bl_y, int _width, const std::wstring& _wstr, ZC_Function<void(const std::wstring&)>&& _callBack)
+//         :bl_x(_bl_x),
+//         bl_y(_bl_y),
+//         width(_width),
+//         wstr(_wstr),
+//         callBack(std::move(_callBack))
+//     {}
+// }
