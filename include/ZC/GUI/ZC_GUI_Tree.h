@@ -238,6 +238,23 @@ struct ZC_GUI_Tree : public ZC_GUI_ObjBorder
                 (*pBL_cur)[1] += needOpen ? - offset_y : offset_y;
             this->VSubDataBL_Obj(pBL_start, pBL_end);
         }
+
+        if (!needOpen)  //  branch closed, need make scroll up for correct recalculation in CalculateScrollData()
+        {
+            for (auto iter = --(rows.end()); ; --iter)  //  find last drawing obj
+            {
+                ZC_GUI_Obj* pObj = iter->objs.front();
+                if (pObj->VIsDrawing_Obj())     //  found last drawing obj
+                {
+                    float drawingObj_buttom = pObj->VGetBottom_Obj();
+                    float offset_y = drawingObj_buttom - this->VGetBottom_Obj();
+                    if (offset_y > 0.f) this->upScroll->MakeScroll(offset_y, 1.f, false);
+                    break;
+                }
+            }
+        }
+        this->upScroll->CalculateScrollData(true);
+        ZC_GUI::pGUI->eventManager.UpdateCursorCollision();
     }
 
 private:
@@ -251,6 +268,8 @@ private:
 
         auto iter = rows.begin();
         SetBranchBL(-1.f, iter, tl);
+
+        upScroll->VSet_pBL_Obj(_bl);  //  calls after all, caurse scroll need top/buttom
     }
 
     void VKeyboardButtonUp_Obj(float time) override

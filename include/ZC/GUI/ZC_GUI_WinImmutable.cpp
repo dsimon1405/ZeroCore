@@ -146,7 +146,7 @@ void ZC_GUI_WinImmutable::VCursorMove_Obj(float rel_x, float rel_y)
     for (GLsizeiptr i = 0; i < this->bordersCount; ++i)
     {
         ZC_GUI_Border& rBorder = *(pBorder + i);
-        if (rBorder.bl[0] == rBorder.tr[0]) continue;   //  border non seen in window, in bl and tr same value, sets in ZC_GUI_ObjBorder::VSetPosition_Obj()
+        // if (rBorder.bl[0] == rBorder.tr[0]) continue;   //  border non seen in window, in bl and tr same value, sets in ZC_GUI_ObjBorder::VSetPosition_Obj()
         rBorder.bl += rel;
         rBorder.tr += rel;
     }

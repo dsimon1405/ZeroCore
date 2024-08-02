@@ -11,7 +11,6 @@
 #include <ZC/GUI/ZC_GUI_Bindings.h>
 struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
 {
-    ZC_GUI_Border* pBorder;
     struct Row
     {
         struct RowParams
@@ -44,35 +43,45 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
         void CalculateObjs_bl(ZC_Vec2<float>& border_tl, float border_width);
     };
 
-    struct Scroll : public ZC_GUI_ButtonMouse
+    struct Scroll : public ZC_GUI_ObjComposite  //  easyer to make new kind of mouse button, than to extend ZC_GUI_MouseButton
     {
+        struct Caret : public ZC_GUI_ButtonMouse
+        {
+            float height_coef = 0.f;
+
+            Caret();
+
+            void VCursorCollisionEnd_Obj(float time) override;
+            void VCursorMove_Obj(float rel_x, float rel_y) override;
+        };
+
+        bool isMBL_pressed;
         static inline const float scroll_width = 4.f;
         float scroll_y = 0.f;
-        float caret_height_coef = 0.f;
         float caret_move_max = 0.f;
         
-        ZC_GUI_ButtonMouse caret;
+        Caret caret;
 
-        Scroll(float height)
-            : ZC_GUI_ButtonBase(ZC_GUI_ObjData(scroll_width, height, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None),
-            ZC_GUI_ButtonMouse(scroll_width, height, ZC_GUI_BF__None),
-            caret(scroll_width, 0.f, ZC_GUI_BF_M__CursorMoveOnMBLPress)
-        {
-            this->VAddObj_Obj(&caret, nullptr);
-        }
-
-        void CalculateScrollData(bool updateGPU);
-            //  return true if scroll may be used
-        bool IsActive();
-        void MakeScroll(float vertical);
+        Scroll(float height);
 
         void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
+        bool VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll) override;
+        bool VMouseButtonLeftDown_Obj(float time) override;
+        void VMouseButtonLeftUp_Obj(float time) override;
+        
+        void CalculateScrollData(bool updateGPU);
+            //  return true if scroll may be used
+        bool IsActive() const;
+        void MakeScroll(float vertical, float speed, bool callCursorCollisiton);
+        void ChangeDrawState(bool needDraw);
+        static float GetCursor_Y();
     };
     
+    ZC_GUI_Border* pBorder;
     std::list<Row> rows;
+    ZC_uptr<Scroll> upScroll;
     bool haveFrame;     //  have 2 pixels frame
     static inline const float frameBorder = 2.f;   //  2pixel frame border
-    ZC_uptr<Scroll> upScroll;
 
     ZC_GUI_ObjBorder(const ZC_GUI_ObjData& _objData, bool _isScrollable, bool _haveFrame);
     ~ZC_GUI_ObjBorder();
@@ -90,9 +99,8 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
     bool AddObjInRow_B(const Row* pRow, ZC_GUI_Obj* pObj, ZC_GUI_Obj* pObj_prev = nullptr);
     void VEraseObj_Obj(ZC_GUI_Obj* pObj) override;
 
-    const ZC_GUI_Border& VGetBorder_Obj() override;
+    ZC_GUI_Border& VGetBorder_Obj() override;
     ZC_GUI_Obj* VGetObjBorder_Obj() override;
-    void VRecalculateBorder_Obj(const ZC_GUI_Border& outer_border) override;
     void CalculateInternalBorder(const ZC_GUI_Border& outer_border);
 
     void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
@@ -109,6 +117,9 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
     bool VCheckCursorCollision_Obj(float x, float y) override;
 
     void VScroll_Obj(float vertical, float time) override;
+    void VNewScrollObj_underCursor_Obj(ZC_GUI_Obj* pObj_underCursor) override;
+
+    void VMoveBL_Obj(float rel_x, float rel_y, int& update_borders) override;
 };
 
 typedef typename ZC_GUI_ObjBorder::Row::RowParams ZC_GUI_RowParams;

@@ -126,7 +126,7 @@ void ZC_GUI_WinMutable::VCursorMove_Obj(float rel_x, float rel_y)
     for (ZC_Vec2<float>& rBL : bls) rBL += rel;
     for (ZC_GUI_Border& rBorder : borders)
     {
-        if (rBorder.bl[0] == rBorder.tr[0]) continue;   //  border non seen in window, in bl and tr same value, sets in ZC_GUI_ObjBorder::VSetPosition_Obj()
+        // if (rBorder.bl[0] == rBorder.tr[0]) continue;   //  border non seen in window, in bl and tr same value, sets in ZC_GUI_ObjBorder::VSetPosition_Obj()
         rBorder.bl += rel;
         rBorder.tr += rel;
     }

@@ -124,4 +124,10 @@ struct ZC_GUI_ObjComposite : public ZC_GUI_Obj
         for (ZC_GUI_Obj* pObj : objs) pObj->VSetDrawState_Obj(neeDraw, false);
         if (updateGPU) VSubDataObjData_Obj(this->pObjData, objs.empty() ? this->pObjData : objs.back()->pObjData);
     }
+
+    void VMoveBL_Obj(float rel_x, float rel_y, int& update_borders) override
+    {
+        MoveVec2(rel_x, rel_y, *(this->pBL));
+        for (ZC_GUI_Obj* pObj : objs) pObj->VMoveBL_Obj(rel_x, rel_y, update_borders);
+    }
 };

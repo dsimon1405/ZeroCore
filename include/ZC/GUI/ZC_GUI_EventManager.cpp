@@ -124,10 +124,12 @@ bool ZC_GUI_EventManager::CursorMove(float x, float y, float rel_x, float rel_y,
 {
     if (!isActive) return true;
     if (pObj_cursorMove) return false;  //  have movable object, will be called in CursorMoveOnceInFrame()
-    pObj_scroll = nullptr;   //  unset scroll object
+    
+    ZC_GUI_Obj* pObj_currentScroll = pObj_scroll;
+    pObj_scroll = nullptr;
 
         //  returns false, if under the cursor
-    auto lambCollisionWindow = [this, x, y, time](std::list<ZC_GUI_Window*>& windows)
+    auto lambCollisionWindow = [this, x, y, time, pObj_currentScroll](std::list<ZC_GUI_Window*>& windows)
     {
         ZC_GUI_Obj* pObj_temp = nullptr;
         for (ZC_GUI_Window* pWindow : windows)  //  find new collision window and object
@@ -141,6 +143,11 @@ bool ZC_GUI_EventManager::CursorMove(float x, float y, float rel_x, float rel_y,
                     if (pObj_temp) pObj_temp->VCursorCollisionStart_Obj(time);
                     pObj_underCursor = pObj_temp;
                 }
+                if (pObj_scroll != pObj_currentScroll)
+                {
+                    if (pObj_currentScroll) pObj_currentScroll->VNewScrollObj_underCursor_Obj(pObj_scroll);
+                    if (pObj_scroll) pObj_scroll->VNewScrollObj_underCursor_Obj(pObj_scroll);
+                }
                 return false;
             }
         }   //  not found window and object, make current window and object nullptr
@@ -149,6 +156,7 @@ bool ZC_GUI_EventManager::CursorMove(float x, float y, float rel_x, float rel_y,
             pObj_underCursor->VCursorCollisionEnd_Obj(time);
             pObj_underCursor = nullptr;
         }
+        if (pObj_currentScroll) pObj_currentScroll->VNewScrollObj_underCursor_Obj(pObj_scroll);
         return true;
     };
         //  check window one by one, starting from openable (if one of labmdas retuns false, then window had cursor collision, so return false from method)

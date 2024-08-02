@@ -125,12 +125,12 @@ ZC_GUI_Obj* ZC_GUI_Obj::VGet_pObj_end()
 
 float ZC_GUI_Obj::VGetTop_Obj()
 {
-    return VIsDrawing_Obj() ? (*pBL)[1] + GetHeight() : 0.f;
+    return (*pBL)[1] + GetHeight();
 }
 
 float ZC_GUI_Obj::VGetBottom_Obj()
 {
-    return VIsDrawing_Obj() ? (*pBL)[1] : 0.f;
+    return (*pBL)[1];
 }
 
 void ZC_GUI_Obj::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
@@ -153,7 +153,7 @@ bool ZC_GUI_Obj::VIsDrawing_Obj() const noexcept
     return pObjData->height == actual_height;
 }
 
-const ZC_GUI_Border& ZC_GUI_Obj::VGetBorder_Obj()
+ZC_GUI_Border& ZC_GUI_Obj::VGetBorder_Obj()
 {
     return pObjHolder->VGetBorder_Obj();
 }
@@ -317,4 +317,15 @@ void ZC_GUI_Obj::VButtonUp_Obj(ZC_ButtonID buttonID, float time)
 void ZC_GUI_Obj::VEraseFrom__buttonKeyboard_objs_Obj(ZC_GUI_Obj* pDelete)
 {
     if (pObjHolder) pObjHolder->VEraseFrom__buttonKeyboard_objs_Obj(pDelete);
+}
+
+void ZC_GUI_Obj::VMoveBL_Obj(float rel_x, float rel_y, int& update_borders)
+{
+    MoveVec2(rel_x, rel_y, *pBL);
+}
+
+void ZC_GUI_Obj::MoveVec2(float rel_x, float rel_y, ZC_Vec2<float>& vec2)
+{
+    vec2[0] += rel_x;
+    vec2[1] += rel_y;
 }

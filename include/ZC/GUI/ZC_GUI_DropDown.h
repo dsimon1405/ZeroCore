@@ -54,30 +54,11 @@ private:
     BMT* pBMT_active = nullptr;
     ZC_EC ecWinResize;
 
-    float CalculateWidth(const std::vector<std::wstring>& variants)
-    {
-        float total_width = 0.f;
-        for (auto& var : variants)
-        {
-            float var_width = textIndent_x + ZC_GUI_TextManager::CalculateWstrWidth(var) + drop_icon_size;
-            if (total_width < var_width) total_width = var_width;
-        }
-        return total_width;
-    }
-
     void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override
     {
         *(this->pBL) = _bl;
         this->objs.front()->VSet_pBL_Obj(_bl);  //  set bl for textButotn
         obj_dd_icon.VSet_pBL_Obj(ZC_Vec2<float>(_bl[0] + this->VGetWidth_Obj() - obj_dd_icon.VGetWidth_Obj(), _bl[1] + (this->GetHeight() - obj_dd_icon.GetHeight()) / 2.f));
-    }
-
-    std::vector<BMT> Fill_bmts(const std::vector<std::wstring> variants)
-    {
-        std::vector<BMT> _bmts;
-        _bmts.reserve(variants.size());
-        for (const std::wstring& var : variants) _bmts.emplace_back(this, this->VGetWidth_Obj(), this->GetHeight(), var);
-        return _bmts;
     }
 
     void VLeftButtonUp_BM(float time) override
@@ -94,6 +75,37 @@ private:
 
         obj_dd_icon.pObjData->uv = ZC_GUI_UV{ .bl{ ZC_GUI_IconUV::checkBox.tr[0], ZC_GUI_IconUV::checkBox.bl[1] }, .tr{ ZC_GUI_IconUV::checkBox.bl[0], ZC_GUI_IconUV::checkBox.tr[1] } };
         VMapObjData_Obj(obj_dd_icon.pObjData, offsetof(ZC_GUI_ObjData, uv), sizeof(ZC_GUI_ObjData::uv), &(obj_dd_icon.pObjData->uv));
+    }
+
+    void VMouseButtonLeftOrRightDown_Obj() override
+    {
+        if (!(win_dd.CheckCursorCollision_Obj())) CollapseDropDown();  //  cursor not in win_dd stop it drowing
+    }
+
+    void VMoveBL_Obj(float rel_x, float rel_y, int& update_borders) override
+    {
+        MoveVec2(rel_x, rel_y, *(this->pBL));
+        for (ZC_GUI_Obj* pObj : objs) pObj->VMoveBL_Obj(rel_x, rel_y, update_borders);
+        if (win_dd.VIsDrawing_Obj()) CollapseDropDown();
+    }
+
+    float CalculateWidth(const std::vector<std::wstring>& variants)
+    {
+        float total_width = 0.f;
+        for (auto& var : variants)
+        {
+            float var_width = textIndent_x + ZC_GUI_TextManager::CalculateWstrWidth(var) + drop_icon_size;
+            if (total_width < var_width) total_width = var_width;
+        }
+        return total_width;
+    }
+
+    std::vector<BMT> Fill_bmts(const std::vector<std::wstring> variants)
+    {
+        std::vector<BMT> _bmts;
+        _bmts.reserve(variants.size());
+        for (const std::wstring& var : variants) _bmts.emplace_back(this, this->VGetWidth_Obj(), this->GetHeight(), var);
+        return _bmts;
     }
 
     void SetActiveBMTDrawState(bool needDraw)
@@ -116,11 +128,6 @@ private:
         win_pos[1] -= win_dd.GetHeight();   //  get win position
         win_pos -= win_dd.Get_bl_Obj();     //  get vector on wich to move win from previous position
         if (win_pos != ZC_Vec2<float>()) win_dd.VCursorMove_Obj(win_pos[0], win_pos[1]);     //  if win_pos x or y not null, move window
-    }
-
-    void VMouseButtonLeftOrRightDown_Obj() override
-    {
-        if (!(win_dd.CheckCursorCollision_Obj())) CollapseDropDown();  //  cursor not in win_dd stop it drowing
     }
 
     void VariantChanged(BMT* pBMT)
