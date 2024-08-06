@@ -11,6 +11,11 @@ ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonF
     : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::bind_tex_Icons), _buttonFlags)
 {}
 
+void ZC_GUI_ButtonMouse::SetDoubleClickLimit_BM(long _doubleClickLimit_nanosec)
+{
+    if (_doubleClickLimit_nanosec > 0) doubleClickLimit_nanosec = _doubleClickLimit_nanosec;
+}
+
 bool ZC_GUI_ButtonMouse::VIsUseCursorMoveEventOnMBLetfDown_Obj() const noexcept
 {
     return this->buttonFlags & ZC_GUI_BF_M__CursorMoveOnMBLPress;
@@ -61,16 +66,29 @@ bool ZC_GUI_ButtonMouse::VMouseButtonLeftDown_Obj(float time)
         
         if (this->buttonFlags & ZC_GUI_BF_M__DoubleCLick)  //  call double click if in limit and restart double time in each case
         {
-            this->clock.Time<ZC_Nanoseconds>() <= nanosecondLimit ? VLeftButtonDoubleClick_BM(time) : VLeftButtonDown_BM(time);
+            this->clock.Time<ZC_Nanoseconds>() <= doubleClickLimit_nanosec ? VLeftButtonDoubleClick_BM(time) : VLeftButtonDown_BM(time);
             this->clock.Start();
+            if (this->buttonFlags & ZC_GUI_BF__MBLPress) pressed_time += time;
         }
         else
         {
             VLeftButtonDown_BM(time);   //  call event in each case on released button
-            if (this->buttonFlags & ZC_GUI_BF__MBLPress) this->clock.Start();    //  if uses bml press event start (restart) time
+            if (this->buttonFlags & ZC_GUI_BF__MBLPress)
+            {
+                pressed_time += time;
+                this->clock.Start();    //  if uses bml press event start (restart) time
+            }
         }
     }
-    else if (this->buttonFlags & ZC_GUI_BF__MBLPress && this->clock.Time<ZC_Nanoseconds>() >= nanosecondLimit) VLeftButtonPressed_BM(time);  //  if uses mbl press event and it's time, call them
+    else if (this->buttonFlags & ZC_GUI_BF__MBLPress && this->clock.Time<ZC_Nanoseconds>() >= waitPressLimit_nanosec)
+    {
+        pressed_time += time;
+        if (pressed_time >= pressedInterval_nanosec)
+        {
+            VLeftButtonPressed_BM(time);  //  if uses mbl press event and it's time, call them
+            pressed_time -= pressedInterval_nanosec;
+        }
+    }
     return true;
 }
 
@@ -85,6 +103,8 @@ void ZC_GUI_ButtonMouse::VMouseButtonLeftUp_Obj(float time)
         }
         else this->pObjData->color = color_default;
         VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
+        
+        pressed_time = 0;
     }
     this->bs_mouseButton = BS_Released;
 }

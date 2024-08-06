@@ -2,6 +2,7 @@
 
 #include <ZC/Video/ZC_SWindow.h>
 #include <ZC/GUI/ZC_GUI.h>
+#include <ZC/Video/ZC_SWindow.h>
 
 #include <cassert>
 

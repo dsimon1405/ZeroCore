@@ -14,12 +14,13 @@ struct ZC_GUI_Text : public ZC_GUI_Obj
     Params:
     - wstr - string in unicode.
     - _isImmutable - if true can't be used method UpdateText().
-    - reserveWidth - may be reserve pixel width longer then in wstr now (have effect only if _isImmutable = false). More info in method UpdateText().
+    - reserveWidth - may be reserve pixel width longer then in wstr (have effect only if _isImmutable = false). More info in method UpdateText().
+    - textAlignment - if reservedWidth more then wstr pixel wisth, current wstr can have horizontal alignment in texture. In other case it's Left.
     */
-    ZC_GUI_Text(const std::wstring& wstr, bool _isImmutable, int reserveWidth)
+    ZC_GUI_Text(const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment)
         : ZC_GUI_Obj(ZC_GUI_ObjData(0.f, 0.f, text_color, {}, ZC_GUI_Bindings::bind_tex_Text)),
         isImmutable(_isImmutable),
-        pText(ZC_GUI_TextManager::GetText(wstr, isImmutable, reserveWidth)),
+        pText(ZC_GUI_TextManager::GetText(wstr, isImmutable, reserveWidth, textAlignment)),
         actual_width(pText ? pText->width : 0)
     {
         if (!pText) return;
@@ -134,12 +135,11 @@ struct ZC_GUI_TextForButton : public ZC_GUI_Text
         {}
     } const indent;
 
-    ZC_GUI_TextForButton(const Indent& _indent, const std::wstring& wstr, bool _isImmutable, int reserveWidth)
-        : ZC_GUI_Text(wstr, _isImmutable, reserveWidth),
+    ZC_GUI_TextForButton(const Indent& _indent, const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment)
+        : ZC_GUI_Text(wstr, _isImmutable, reserveWidth, textAlignment),
         indent(_indent)
     {}
     
-private:
     float VGetWidthComposite_Obj() override
     {
         return indent.indent_x + this->VGetWidth_Obj();

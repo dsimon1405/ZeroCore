@@ -15,7 +15,7 @@ struct ZC_GUI_DropDown : public ZC_GUI_ButtonMouseText
 
         BMT(ZC_GUI_DropDown* _pDropDown, float width, float height, const std::wstring& _wstr)
             : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None),
-            ZC_GUI_ButtonMouseText(width, height, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(textIndent_x, ZC_GUI_TextForButton::Indent::Left),_wstr, true, 0)),
+            ZC_GUI_ButtonMouseText(width, height, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(textIndent_x, ZC_GUI_TextForButton::Indent::Left),_wstr, true, 0, ZC_GUI_TextAlignment::Left)),
             pDropDown(_pDropDown)
         {}
 
@@ -28,7 +28,7 @@ struct ZC_GUI_DropDown : public ZC_GUI_ButtonMouseText
     ZC_GUI_DropDown(const std::vector<std::wstring>& variants, int active_variant)
         : ZC_GUI_ButtonBase(ZC_GUI_ObjData(CalculateWidth(variants), float(ZC_GUI_TextManager::GetFontHeight()), 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None),
         ZC_GUI_ButtonMouseText(this->VGetWidth_Obj(), this->GetHeight(), ZC_GUI_BF__None,
-            ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(textIndent_x, ZC_GUI_TextForButton::Indent::Left), variants.front(), false, this->VGetWidth_Obj() - textIndent_x - drop_icon_size)),
+            ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(textIndent_x, ZC_GUI_TextForButton::Indent::Left), variants.front(), false, this->VGetWidth_Obj() - textIndent_x - drop_icon_size, ZC_GUI_TextAlignment::Left)),
         obj_dd_icon(drop_icon_size, drop_icon_size, 0.f, 0, ZC_GUI_IconUV::checkBox, 0, ZC_GUI_Bindings::bind_tex_Icons),
         bmts(Fill_bmts(variants)),
         win_dd(ZC_WOIData(this->VGetWidth_Obj(), this->GetHeight() * (bmts.size() - 1), 0.f, 0.f, ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel), ZC_GUI_WF__None),
@@ -79,7 +79,7 @@ private:
 
     void VMouseButtonLeftOrRightDown_Obj() override
     {
-        if (!(win_dd.CheckCursorCollision_Obj())) CollapseDropDown();  //  cursor not in win_dd stop it drowing
+        if (!(win_dd.CheckCursorCollision_Obj())) CollapseDropDown();  //  cursor not in win_dd stop it drawing
     }
 
     void VMoveBL_Obj(float rel_x, float rel_y, int& update_borders) override

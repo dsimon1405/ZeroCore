@@ -7,7 +7,6 @@
 struct ZC_GUI_ButtonKeyboard : public virtual ZC_GUI_ButtonBase
 {
     ZC_ButtonID buttonId;
-    static inline long waitPressNanoseconds = 300000000;   //  how long wait to start use VKeyboardButtonPressed_BK(), instead VKeyboardButtonDown_BK()
 
         //  may be override
     virtual void VKeyboardButtonDown_BK(float time)
@@ -24,9 +23,6 @@ struct ZC_GUI_ButtonKeyboard : public virtual ZC_GUI_ButtonBase
     ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV &uv);
 
     bool operator == (ZC_ButtonID _buttonId) const noexcept override;
-
-        //  _waitPressNanoseconds - how long wait to start use VKeyboardButtonPressed_BK(), instead VKeyboardButtonDown_BK(), default 300000000 nanoseconds (uses for all object ZC_GUI_ButtonKeyboard)
-    static void SetWaitPressTime(long _waitPressNanoseconds);
 
     bool VIsButtonKeyboard_Obj() override;
 

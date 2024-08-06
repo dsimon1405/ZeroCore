@@ -5,7 +5,6 @@
 #include <ZC/Video/OpenGL/Texture/ZC_Texture.h>
 
 #include <list>
-#include <forward_list>
 
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 #include <ZC/GUI/ZC_GUI_Bindings.h>
@@ -35,11 +34,19 @@ struct ZC_GUI_TextManager
 
     struct Text
     {
+        enum Alignment
+        {
+            Left,
+            Center,
+            Right
+        };
+
         bool isImmutable;
         std::wstring wstr;
-        int width = 0;          //  text width in pixels
+        int width = 0;          //  width of texture in pixels (reserved width for texture could be larger then pixel width of wstr)
         ZC_GUI_UV uv;
         int start_index = 0;    //  start index on the bottom line on the texture (start from bl, end is br)
+        Alignment alignment;    //  if in texture reserved width more then pixel width of the wstr, may be used alignment
 
         bool operator == (const std::wstring& _wstr) const noexcept;
         int GetHeight();
@@ -63,7 +70,7 @@ struct ZC_GUI_TextManager
         //  Change default FontParams. Must be called before ZC_SWindow create.
     static void SetParams(Params&& _fontParams);
         //  find or create Text
-    static Text* GetText(const std::wstring& wstr, bool isImmutable, int reserveWidth, int* pWSTR_width = nullptr);
+    static Text* GetText(const std::wstring& wstr, bool isImmutable, int reserveWidth, Text::Alignment alignment, int* pWSTR_width = nullptr);
     static void ProcessDeletableText(int wstr_width, Text* pText);
         //  erase only deletable text (not stacionar), to free space in texture
     static void EraseText(Text* pText);
@@ -84,7 +91,9 @@ private:
     std::list<FreeSpace> freeSpaces;    //  free spaces in texture (space for texts from mutable_texts, created after configuration)
     ZC_Texture texture;
 
-    static std::vector<unsigned char> CreateWstrData(const std::wstring& wstr, int width);
-    static std::vector<unsigned char> CreateChDataData(const std::list<ZC_GUI_ChData>& chDatas, int width);
+    static std::vector<unsigned char> CreateWstrData(Text* pText, int* pWSTR_width);
+    static std::vector<unsigned char> CreateChDataData(const std::list<ZC_GUI_ChData>& chDatas, Text* pText);
     static void MapTexture(int start_index, int width, const unsigned char* data);
 };
+
+typedef typename ZC_GUI_TextManager::Text::Alignment ZC_GUI_TextAlignment;

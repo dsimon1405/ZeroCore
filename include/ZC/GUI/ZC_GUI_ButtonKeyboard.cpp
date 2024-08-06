@@ -17,11 +17,6 @@ bool ZC_GUI_ButtonKeyboard::operator == (ZC_ButtonID _buttonId) const noexcept
     return buttonId == _buttonId;
 }
 
-void ZC_GUI_ButtonKeyboard::SetWaitPressTime(long _waitPressNanoseconds)
-{
-    waitPressNanoseconds = _waitPressNanoseconds;
-}
-
 bool ZC_GUI_ButtonKeyboard::VIsButtonKeyboard_Obj()
 {
     return true;
@@ -46,18 +41,22 @@ bool ZC_GUI_ButtonKeyboard::VKeyboardButtonDown_Obj(float time)
         VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
         this->bs_keyboardButton = BS_Pressed;
 
+        VKeyboardButtonDown_BK(time);
         if (this->buttonFlags & ZC_GUI_BF__MBLPress)
         {
-            if (waitPressNanoseconds == 0)  //  no wait time, use VKeyboardButtonPressed_BK() on start
-            {
-                VKeyboardButtonPressed_BK(time);
-                return true;
-            }
+            pressed_time += time;
             this->clock.Start();
         }
-        VKeyboardButtonDown_BK(time);
     }   //  pressed event
-    else if (this->buttonFlags & ZC_GUI_BF__MBLPress && (waitPressNanoseconds == 0 || (this->clock.Time<ZC_Nanoseconds>() >= waitPressNanoseconds))) VKeyboardButtonPressed_BK(time);
+    else if (this->buttonFlags & ZC_GUI_BF__MBLPress && this->clock.Time<ZC_Nanoseconds>() >= waitPressLimit_nanosec)
+    {
+        pressed_time += time;
+        if (pressed_time >= pressedInterval_nanosec)
+        {
+            VKeyboardButtonPressed_BK(time);
+            pressed_time -= pressedInterval_nanosec;
+        }
+    }
     return true;
 }
 
@@ -68,6 +67,8 @@ void ZC_GUI_ButtonKeyboard::VKeyboardButtonUp_Obj(float time)
         this->pObjData->color = color_default;
         VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
         VKeyboardButtonUp_BK(time);
+
+        pressed_time = 0;
     }
     this->bs_keyboardButton = BS_Released;
 }

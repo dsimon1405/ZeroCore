@@ -47,14 +47,20 @@ void ZC_GUI_TextManager::Configure(bool doubleWidth)
         {
             text.start_index = data_index;
             text.uv = ZC_GUI_UV{ .bl{ (float)data_index / (float)total_width, 0.f }, .tr{ float(data_index + text.width) / (float)total_width, 1.f } };
+            int text_data_index = data_index + (text.alignment == ZC_GUI_TextAlignment::Center ? (text.width - CalculateWstrWidth(text.wstr)) / 2.f
+                : text.alignment == ZC_GUI_TextAlignment::Right ? text.width - CalculateWstrWidth(text.wstr)
+                : 0);
             for (const wchar_t& wch : text.wstr)
             {
                 auto pCh = font.GetCharacter(wch);
                 if (!pCh) continue;
-                if (&wch != text.wstr.data()) data_index += pCh->left_offset;   // if this is not the first wch of the wstr, adds left_offset
-                font.AddSymbolData(data, data_index, total_width, pCh);
+                if (&wch != text.wstr.data()) text_data_index += pCh->left_offset;   // if this is not the first wch of the wstr, adds left_offset
+                font.AddSymbolData(data, text_data_index, total_width, pCh);
             }
-            if (!(text.isImmutable)) data_index += text.width - CalculateWstrWidth(text.wstr);  //  text width coud be longer then his current wstr, in that case move data_index
+            
+            data_index += text.width;  //  text width coud be longer then his current wstr, in that case move data_index
+            // if (!(text.isImmutable)) data_index += text.width - CalculateWstrWidth(text.wstr);  //  text width coud be longer then his current wstr, in that case move data_index
+            
             data_index += text_distance_pixel;
         }
     };
@@ -80,20 +86,20 @@ void ZC_GUI_TextManager::SetParams(Params&& _fontParams)
     fontParams = _fontParams;
 }
 
-typename ZC_GUI_TextManager::Text* ZC_GUI_TextManager::GetText(const std::wstring& wstr, bool isImmutable, int reserveWidth, int* pWSTR_width)
+typename ZC_GUI_TextManager::Text* ZC_GUI_TextManager::GetText(const std::wstring& wstr, bool isImmutable, int reserveWidth, Text::Alignment alignment, int* pWSTR_width)
 {
     if (!pTM) return nullptr;
 
-    Text* pExisting_text = ZC_Find(pTM->immutable_texts, wstr);
-    if (pExisting_text) return pExisting_text;
-    
-    if (isImmutable && pTM->IsConfigured()) return nullptr;   //  no adds after configuration (for immutable text)
-
     int wstr_width = pWSTR_width ? *pWSTR_width : CalculateWstrWidth(wstr);
     if (!isImmutable && reserveWidth > wstr_width) wstr_width = reserveWidth;   //  reserveWidth more then wstr width (only for mutable texts)
+
+    Text* pExisting_text = ZC_Find(pTM->immutable_texts, wstr);
+    if (pExisting_text && wstr_width == pExisting_text->width) return pExisting_text;
     
-    Text* pText = isImmutable ? &(pTM->immutable_texts.emplace_back(Text{ .isImmutable = isImmutable, .wstr = wstr, .width = wstr_width, }))
-        : &(pTM->mutable_texts.emplace_back(Text{ .isImmutable = isImmutable, .wstr = wstr, .width = wstr_width, }));
+    if (isImmutable && pTM->IsConfigured()) return nullptr;   //  no adds after configuration (for immutable text)
+                                                                                                                                    //  immutable text could have only left alignment
+    Text* pText = isImmutable ? &(pTM->immutable_texts.emplace_back(Text{ .isImmutable = isImmutable, .wstr = wstr, .width = wstr_width, .alignment = Text::Alignment::Left }))
+        : &(pTM->mutable_texts.emplace_back(Text{ .isImmutable = isImmutable, .wstr = wstr, .width = wstr_width, .alignment = alignment }));
     
     if (pTM->IsConfigured()) ProcessDeletableText(wstr_width, pText);    //  text not configured yet
     
@@ -121,7 +127,7 @@ void ZC_GUI_TextManager::ProcessDeletableText(int wstr_width, Text* pText)
     int fontHeight = pTM->font.GetHeight();
     auto lambFillTextureAndpTextData = [&pText, fontHeight, &freeSpaceIter]()
     {
-        std::vector<unsigned char> data = CreateWstrData(pText->wstr, pText->width);    //  prepare texture data
+        std::vector<unsigned char> data = CreateWstrData(pText, nullptr);    //  prepare texture data
         MapTexture(freeSpaceIter->start_index, pText->width, data.data());    //  fill texture
             //  add start index
         pText->start_index = freeSpaceIter->start_index;
@@ -184,20 +190,24 @@ bool ZC_GUI_TextManager::UpdateText(Text*& pText, int total_width, bool brootFor
 {
     int wstr_width = CalculateWstrWidth(wstr);
     if (total_width < wstr_width) return false;   //  new length can't be longer then current
-    if (pText->isImmutable) pText = GetText(wstr, false, total_width, &wstr_width);     //  pText is immutable. Get new text
+    if (pText->isImmutable) pText = GetText(wstr, false, total_width, pText->alignment, &wstr_width);     //  pText is immutable. Get new text
     else if (!brootForceUpdate) //  pText mutable and don't need broot force map
     {
         EraseText(pText);   //  delete existing mutable (free space in texture)
-        pText = GetText(wstr, false, total_width, &wstr_width);  //  Get new text
+        pText = GetText(wstr, false, total_width, pText->alignment, &wstr_width);  //  Get new text
     }
-    else MapTexture(pText->start_index, pText->width, CreateWstrData(wstr, pText->width).data());   //  pText is mutable and need brootForceUpdate. Map part of existing texture
+    else
+    {
+        pText->wstr = wstr;
+        MapTexture(pText->start_index, pText->width, CreateWstrData(pText, &wstr_width).data());   //  pText is mutable and need brootForceUpdate. Map part of existing texture
+    }
     return true;
 }
 
 bool ZC_GUI_TextManager::UpdateText(Text* pText, const std::list<ZC_GUI_ChData>& chDatas)
 {
     if (pText->width < CalculateChDataWidth(chDatas)) return false;   //  new length can't be longer then current
-    MapTexture(pText->start_index, pText->width, CreateChDataData(chDatas, pText->width).data());
+    MapTexture(pText->start_index, pText->width, CreateChDataData(chDatas, pText).data());
     return true;
 }
 
@@ -225,29 +235,36 @@ int ZC_GUI_TextManager::CalculateChDataWidth(const std::list<ZC_GUI_ChData>& chD
     return chDatas_width;
 }
 
-std::vector<unsigned char> ZC_GUI_TextManager::CreateWstrData(const std::wstring& wstr, int width)
+std::vector<unsigned char> ZC_GUI_TextManager::CreateWstrData(Text* pText, int* pWSTR_width)
 {
-    std::vector<unsigned char> data(width * pTM->font.GetHeight());
-    int data_index = 0;
-    for (const wchar_t& wch : wstr)
+    std::vector<unsigned char> data(pText->width * pTM->font.GetHeight());
+    
+    int data_index = pText->alignment == ZC_GUI_TextAlignment::Center ? (pText->width - (pWSTR_width ? *pWSTR_width : CalculateWstrWidth(pText->wstr))) / 2.f
+        : pText->alignment == ZC_GUI_TextAlignment::Right ? pText->width - (pWSTR_width ? *pWSTR_width : CalculateWstrWidth(pText->wstr))
+        : 0;
+    for (wchar_t wch : pText->wstr)
     {
         auto pCh = pTM->font.GetCharacter(wch);
         if (!pCh) continue;
-        if (&wch != wstr.data()) data_index += pCh->left_offset;   // if this is not the first wch of the wstr, adds left_offset
-        pTM->font.AddSymbolData(data, data_index, width, pCh);
+        if (&wch != pText->wstr.data()) data_index += pCh->left_offset;   // if this is not the first wch of the wstr, adds left_offset
+        pTM->font.AddSymbolData(data, data_index, pText->width, pCh);
     }
     return data;
 }
 
-std::vector<unsigned char> ZC_GUI_TextManager::CreateChDataData(const std::list<ZC_GUI_ChData>& chDatas, int width)
+std::vector<unsigned char> ZC_GUI_TextManager::CreateChDataData(const std::list<ZC_GUI_ChData>& chDatas, Text* pText)
 {
-    std::vector<unsigned char> data(width * pTM->font.GetHeight());
+    std::vector<unsigned char> data(pText->width * pTM->font.GetHeight());
     int data_index = 0;
+    std::wstring new_wstr;
+    new_wstr.reserve(chDatas.size());
     for (const ZC_GUI_ChData& chData : chDatas)
     {
         if (&chData != &(chDatas.front())) data_index += chData.pCh->left_offset;   // if this is not the first wch of the wstr, adds left_offset
-        pTM->font.AddSymbolData(data, data_index, width, chData.pCh);
+        pTM->font.AddSymbolData(data, data_index, pText->width, chData.pCh);
+        new_wstr.append(1, chData.pCh->symbol);     //  add symbol in new wstring
     }
+    pText->wstr = std::move(new_wstr);
     return data;
 }
 

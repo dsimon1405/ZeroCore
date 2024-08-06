@@ -73,7 +73,7 @@ void ZC_GUI_TextInputWindow::TextButtonDown(unsigned char ch)
 ZC_GUI_TextInputWindow::ZC_GUI_TextInputWindow(float fontHeight)
     : ZC_GUI_WinImmutable(ZC_WOIData(0.f, 0.f, 0.f, 0.f, ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel), 0),
     highlight(fontHeight),
-    textMut(L"", false, ZC_GUI_TextManager::pTM->font.GetLongestCharacterLength() * 200),     //  reserve place for 200 longest symbols (may be more if symbols are smaller)
+    textMut(L"", false, ZC_GUI_TextManager::pTM->font.GetLongestCharacterLength() * 200, ZC_GUI_TextAlignment::Left),     //  reserve place for 200 longest symbols (may be more if symbols are smaller)
     caret(fontHeight)
 {
     this->pObjData->color = ZC_PackColorUCharToUInt(20, 20, 20);

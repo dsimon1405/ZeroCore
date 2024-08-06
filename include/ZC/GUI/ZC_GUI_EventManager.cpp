@@ -103,7 +103,11 @@ void ZC_GUI_EventManager::UpdateWindowState(ZC_GUI_Window* pWindow)
         }
         lambResetWindow(pWindow->VIsStacionarWin_Obj() ? stacionarWins : openableWins, false);    //  set window to the back of list
         UpdateCursorCollision();    //  and update cursor position
-        pWindow->SetFocuseDepthAndColor();
+        if (!(pWindow->VIsStacionarWin_Obj()))
+        {
+            ZC_GUI_Window* pWin = openableWins.front();
+            if (pWin->VIsDrawing_Obj()) pWin->SetFocuseDepthAndColor();
+        }
     }
 }
 

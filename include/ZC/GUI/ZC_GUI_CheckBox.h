@@ -12,7 +12,7 @@ struct ZC_GUI_CheckBox : public ZC_GUI_ButtonMouseText
         : ZC_GUI_ButtonBase(ZC_GUI_ObjData((float)ZC_GUI::pGUI->textManager.GetFontHeight(), (float)ZC_GUI::pGUI->textManager.GetFontHeight(), 0,
             isOn ? ZC_GUI_IconUV::checkBox : ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None),
         ZC_GUI_ButtonMouseText(ZC_GUI::pGUI->textManager.GetFontHeight(), ZC_GUI::pGUI->textManager.GetFontHeight(), ZC_GUI_BF__None,
-            ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(ZC_GUI::pGUI->textManager.GetFontHeight() * 0.5f, ZC_GUI_TextForButton::Indent::OutOfButton), name, true, 0),
+            ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(ZC_GUI::pGUI->textManager.GetFontHeight() * 0.5f, ZC_GUI_TextForButton::Indent::OutOfButton), name, true, 0, ZC_GUI_TextAlignment::Left),
             isOn ? ZC_GUI_IconUV::checkBox : ZC_GUI_IconUV::button)
     {}
 

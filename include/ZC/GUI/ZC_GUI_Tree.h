@@ -14,7 +14,7 @@ struct ZC_GUI_Branch : public ZC_GUI_ButtonMouseText
 {
     ZC_GUI_Branch(const std::wstring& name)
         : ZC_GUI_ButtonBase(ZC_GUI_ObjData(0.f, 0.f, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None),
-        ZC_GUI_ButtonMouseText(0.f, 0.f, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(0.f, ZC_GUI_TextForButton::Indent::Left), name, false, 0))
+        ZC_GUI_ButtonMouseText(0.f, 0.f, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(0.f, ZC_GUI_TextForButton::Indent::Left), name, false, 0, ZC_GUI_TextAlignment::Left))
     {}
 
     void VLeftButtonUp_BM(float time) override;
@@ -35,7 +35,7 @@ struct ZC_GUI_Branch : public ZC_GUI_ButtonMouseText
 
     void UpdateName(const std::wstring& name)
     {
-        ZC_GUI_TextManager::Text* pText = ZC_GUI_TextManager::GetText(name, false, 0);
+        ZC_GUI_TextManager::Text* pText = ZC_GUI_TextManager::GetText(name, false, 0, ZC_GUI_TextAlignment::Left);
         this->UpdateText_BMT(pText);
 
         this->pObjData->width = pText->width;
@@ -202,12 +202,12 @@ struct ZC_GUI_Tree : public ZC_GUI_ObjBorder
     {
         if (pBranch == pActiveBranch)
         {
-            pBranch->SetButtonColor(ZC_GUI_ButtonBase::color_pressed);
+            pBranch->SetButtonColor_BS(ZC_GUI_ButtonBase::color_pressed);
             return false;
         }
-        if (pActiveBranch) pActiveBranch->SetButtonColor(ZC_GUI_ButtonBase::color_default);
+        if (pActiveBranch) pActiveBranch->SetButtonColor_BS(ZC_GUI_ButtonBase::color_default);
         pActiveBranch = pBranch;
-        if (pActiveBranch) pActiveBranch->SetButtonColor(ZC_GUI_ButtonBase::color_pressed);
+        if (pActiveBranch) pActiveBranch->SetButtonColor_BS(ZC_GUI_ButtonBase::color_pressed);
         return true;
     }
 

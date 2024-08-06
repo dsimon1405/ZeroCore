@@ -51,7 +51,6 @@ protected:
         textForButton.UpdateText(pText);
     }
 
-private:
     ZC_GUI_TextForButton textForButton;
 
     float VGetWidthComposite_Obj() override
