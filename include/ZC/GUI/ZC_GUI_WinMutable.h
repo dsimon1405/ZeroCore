@@ -20,8 +20,8 @@ struct ZC_GUI_WinMutable : public ZC_GUI_Window
     ZC_Buffer bufBLs;   //  bottom left corners (positions)
     ZC_Buffer bufObjDatas;
 
-    ZC_GUI_WinMutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags);
-    ZC_GUI_WinMutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags);
+    ZC_GUI_WinMutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags, const ColorsWindow& colorsWindow = {});
+    ZC_GUI_WinMutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags, const ColorsWindow& colorsWindow = {});
 
     ~ZC_GUI_WinMutable();
 

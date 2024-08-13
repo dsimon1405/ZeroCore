@@ -19,8 +19,8 @@ struct ZC_GUI_ButtonKeyboard : public virtual ZC_GUI_ButtonBase
     // {}
     {std::cout<<"key pressed"<<std::endl;}
 
-    ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags);
-    ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV &uv);
+    ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ColorsButton& _colorsbutton = {});
+    ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV& uv, const ColorsButton& _colorsbutton = {});
 
     bool operator == (ZC_ButtonID _buttonId) const noexcept override;
 

@@ -5,6 +5,7 @@
 #include <ZC/GUI/ZC_GUI_Bindings.h>
 
 #include <ZC/GUI/ZC_GUI_ButtonMouseText.h>
+#include <ZC/GUI/ZC_GUI_Colors.h>
 
 #include <ZC/GUI/ZC_GUI_IconUV.h>
 #include <ZC/GUI/ZC_GUI.h>
@@ -12,9 +13,21 @@
 #include <iostream>
 struct ZC_GUI_Branch : public ZC_GUI_ButtonMouseText
 {
-    ZC_GUI_Branch(const std::wstring& name)
-        : ZC_GUI_ButtonBase(ZC_GUI_ObjData(0.f, 0.f, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None),
-        ZC_GUI_ButtonMouseText(0.f, 0.f, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(0.f, ZC_GUI_TextForButton::Indent::Left), name, false, 0, ZC_GUI_TextAlignment::Left))
+    struct ColorsBranch
+    {
+        uint color_text = ZC_GUI_Colors::tree_branch_text;
+        ZC_GUI_ButtonBase::ColorsButton colorsBranchButton;
+
+        ColorsBranch(uint _color_text = ZC_GUI_Colors::tree_branch_text, const ZC_GUI_ButtonBase::ColorsButton& _colorsBranchButton =
+                ZC_GUI_ButtonBase::ColorsButton(ZC_GUI_Colors::tree_branch_button, ZC_GUI_Colors::tree_branch_button_under_cursor, ZC_GUI_Colors::tree_branch_button_pressed))
+            : color_text(_color_text),
+            colorsBranchButton(_colorsBranchButton)
+        {}
+    };
+
+    ZC_GUI_Branch(const std::wstring& name, const ColorsBranch& colorsBranch = {})
+        : ZC_GUI_ButtonBase(ZC_GUI_ObjData(0.f, 0.f, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None, colorsBranch.colorsBranchButton),
+        ZC_GUI_ButtonMouseText(0.f, 0.f, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(0.f, ZC_GUI_TextForButton::Indent::Left), name, false, 0, ZC_GUI_TextAlignment::Left, colorsBranch.color_text))
     {}
 
     void VLeftButtonUp_BM(float time) override;
@@ -45,41 +58,53 @@ struct ZC_GUI_Branch : public ZC_GUI_ButtonMouseText
 
 struct ZC_GUI_BranchOpenable : public ZC_GUI_Branch
 {
-    struct OpenCloseButton : public ZC_GUI_ButtonMouse
+    struct BranchOpenableColors
     {
-        OpenCloseButton(float size, bool isOpen)
-            : ZC_GUI_ButtonBase(ZC_GUI_ObjData(size, size, 0, isOpen ? ZC_GUI_IconUV::checkBox : ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None),
+        ZC_GUI_Branch::ColorsBranch colorsBranch;
+        ZC_GUI_ButtonBase::ColorsButton colorsArrowButton;
+
+        BranchOpenableColors(const ZC_GUI_Branch::ColorsBranch& _colorsBranch = {}, const ZC_GUI_ButtonBase::ColorsButton& _colorsArrowButton =
+                ZC_GUI_ButtonBase::ColorsButton(ZC_GUI_Colors::tree_branch_arrow, ZC_GUI_Colors::tree_branch_arrow_under_cursor, ZC_GUI_Colors::tree_branch_arrow_pressed))
+            : colorsBranch(_colorsBranch),
+            colorsArrowButton(_colorsArrowButton)
+        {}
+    };
+
+    struct ArrowButton : public ZC_GUI_ButtonMouse
+    {
+        ArrowButton(float size, bool isOpen, const ZC_GUI_ButtonBase::ColorsButton& colorsArrowButton)
+            : ZC_GUI_ButtonBase(ZC_GUI_ObjData(size, size, 0, isOpen ? ZC_GUI_IconUV::arrowDown : ZC_GUI_IconUV::arrowRight, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None, colorsArrowButton),
             ZC_GUI_ButtonMouse(size, size, ZC_GUI_BF__None)
         {}
 
         bool IsOpen()
         {
-            return this->pObjData->uv.bl[0] == ZC_GUI_IconUV::checkBox.bl[0];
+            return this->pObjData->uv.bl[0] == ZC_GUI_IconUV::arrowDown.bl[0];
         }
 
         void ChangeArrow()
         {
-            this->pObjData->uv = IsOpen() ? ZC_GUI_IconUV::button : ZC_GUI_IconUV::checkBox;
+            this->pObjData->uv = IsOpen() ? ZC_GUI_IconUV::arrowRight : ZC_GUI_IconUV::arrowDown;
             this->VMapObjData_Obj(this->pObjData, offsetof(ZC_GUI_ObjData, uv), sizeof(ZC_GUI_ObjData::uv), &(this->pObjData->uv));
         }
 
         void VLeftButtonUp_BM(float time) override;
     };
 
-    OpenCloseButton openCloseButton;
+    ArrowButton arrowButton;
 
-    ZC_GUI_BranchOpenable(const std::wstring& name, bool isOpen)
-        : ZC_GUI_ButtonBase(ZC_GUI_ObjData(0.f, 0.f, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF_M__DoubleCLick),
-        ZC_GUI_Branch(name),
-        openCloseButton(float(ZC_GUI_TextManager::GetFontHeight()), isOpen)
+    ZC_GUI_BranchOpenable(const std::wstring& name, bool isOpen, const BranchOpenableColors& branchOpenableColors = {})
+        : ZC_GUI_ButtonBase(ZC_GUI_ObjData(0.f, 0.f, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF_M__DoubleCLick, branchOpenableColors.colorsBranch.colorsBranchButton),
+        ZC_GUI_Branch(name, branchOpenableColors.colorsBranch),
+        arrowButton(float(ZC_GUI_TextManager::GetFontHeight()), isOpen, branchOpenableColors.colorsArrowButton)
     {
-        this->VAddObj_Obj(&openCloseButton, nullptr);
+        this->VAddObj_Obj(&arrowButton, nullptr);
     }
 
     void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override
     {
-        openCloseButton.VSet_pBL_Obj(_bl);      //  at first open/close button
-        *pBL = { _bl[0] + openCloseButton.VGetWidth_Obj(), _bl[1] };    //  text button righter, on half font height
+        arrowButton.VSet_pBL_Obj(_bl);      //  at first open/close button
+        *pBL = { _bl[0] + arrowButton.VGetWidth_Obj(), _bl[1] };    //  text button righter, on half font height
         this->objs.front()->VSet_pBL_Obj(*this->pBL);   //  set texts bl
     }
 
@@ -92,12 +117,12 @@ struct ZC_GUI_BranchOpenable : public ZC_GUI_Branch
 
     bool VIsOpen_Br() override
     {
-        return openCloseButton.IsOpen();
+        return arrowButton.IsOpen();
     }
 
     bool VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll) override
     {
-        return MakeCursorCollision_Obj(x, y, rpObj, rpScroll) || openCloseButton.MakeCursorCollision_Obj(x, y, rpObj, rpScroll);
+        return MakeCursorCollision_Obj(x, y, rpObj, rpScroll) || arrowButton.MakeCursorCollision_Obj(x, y, rpObj, rpScroll);
     }
 };
 
@@ -105,10 +130,21 @@ struct ZC_GUI_Tree : public ZC_GUI_ObjBorder
 {
     ZC_GUI_Branch* pActiveBranch = nullptr;
     static const inline float newRowIndent = 10.f;
-    static const inline uint color_tree = ZC_PackColorUCharToUInt(255,255,255);
+    
+    struct ColorsTree
+    {
+        uint color_tree_background;
+        Scroll::ColorsScroll colorsScroll;
 
-    ZC_GUI_Tree(float width, float height)
-        : ZC_GUI_ObjBorder(ZC_GUI_ObjData(width, height, color_tree, ZC_GUI_IconUV::window, ZC_GUI_Bindings::bind_tex_Icons), true, false)
+        ColorsTree(uint _color_tree_background = ZC_GUI_Colors::tree_background, const Scroll::ColorsScroll& _colorsScroll = Scroll::ColorsScroll(ZC_GUI_Colors::tree_scroll_background,
+                    ZC_GUI_ButtonBase::ColorsButton(ZC_GUI_Colors::tree_scroll_caret, ZC_GUI_Colors::tree_scroll_caret_under_cursor, ZC_GUI_Colors::tree_scroll_caret_pressed)))
+            : color_tree_background(_color_tree_background),
+            colorsScroll(_colorsScroll)
+        {}
+    };
+
+    ZC_GUI_Tree(float width, float height, const ColorsTree& colorsTree = {})
+        : ZC_GUI_ObjBorder(ZC_GUI_ObjData(width, height, colorsTree.color_tree_background, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons), true, false, colorsTree.colorsScroll)
     {}
 
     bool operator == (ZC_ButtonID _buttonId) const noexcept
@@ -202,12 +238,12 @@ struct ZC_GUI_Tree : public ZC_GUI_ObjBorder
     {
         if (pBranch == pActiveBranch)
         {
-            pBranch->SetButtonColor_BS(ZC_GUI_ButtonBase::color_pressed);
+            pBranch->SetButtonColor_BS(pBranch->colorsButton.color_button_pressed);
             return false;
         }
-        if (pActiveBranch) pActiveBranch->SetButtonColor_BS(ZC_GUI_ButtonBase::color_default);
+        if (pActiveBranch) pActiveBranch->SetButtonColor_BS(pActiveBranch->colorsButton.color_button);
         pActiveBranch = pBranch;
-        if (pActiveBranch) pActiveBranch->SetButtonColor_BS(ZC_GUI_ButtonBase::color_pressed);
+        if (pActiveBranch) pActiveBranch->SetButtonColor_BS(pActiveBranch->colorsButton.color_button_pressed);
         return true;
     }
 
@@ -233,7 +269,7 @@ struct ZC_GUI_Tree : public ZC_GUI_ObjBorder
         if (offset_y != 0.f && ++iter != rows.end())      //  move down rest rows
         {
             ZC_Vec2<float>* pBL_start = iter->objs.front()->Get_pBL_start();
-            ZC_Vec2<float>* pBL_end = rows.back().objs.front()->VGet_pBL_end();    //  take as end, next after last pointer (as in iterators list.end...)
+            ZC_Vec2<float>* pBL_end = rows.back().objs.front()->VGet_pBL_end();
             for (auto pBL_cur = pBL_start; pBL_cur <= pBL_end; ++pBL_cur)
                 (*pBL_cur)[1] += needOpen ? - offset_y : offset_y;
             this->VSubDataBL_Obj(pBL_start, pBL_end);
@@ -340,11 +376,11 @@ void ZC_GUI_Branch::VLeftButtonUp_BM(float time)
 void ZC_GUI_BranchOpenable::VLeftButtonDoubleClick_BM(float time)
 {
     dynamic_cast<ZC_GUI_Tree*>(this->pObjHolder)->ChangeOpenableBranchState(this);
-    openCloseButton.ChangeArrow();
+    arrowButton.ChangeArrow();
 }
 
 
-void ZC_GUI_BranchOpenable::OpenCloseButton::VLeftButtonUp_BM(float time)
+void ZC_GUI_BranchOpenable::ArrowButton::VLeftButtonUp_BM(float time)
 {
     dynamic_cast<ZC_GUI_Tree*>(this->pObjHolder->pObjHolder)->ChangeOpenableBranchState(dynamic_cast<ZC_GUI_BranchOpenable*>(this->pObjHolder));
     ChangeArrow();

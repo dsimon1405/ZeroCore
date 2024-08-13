@@ -3,12 +3,12 @@
 #include "ZC_GUI_IconUV.h"
 #include <ZC/GUI/ZC_GUI_Bindings.h>
 
-ZC_GUI_ButtonKeyboard::ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags)
-    : ZC_GUI_ButtonKeyboard(_buttonId, width, height, _buttonFlags, ZC_GUI_IconUV::button)
+ZC_GUI_ButtonKeyboard::ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ColorsButton& _colorsbutton)
+    : ZC_GUI_ButtonKeyboard(_buttonId, width, height, _buttonFlags, ZC_GUI_IconUV::button, _colorsbutton)
 {}
 
-ZC_GUI_ButtonKeyboard::ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV &uv)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::bind_tex_Icons), _buttonFlags),
+ZC_GUI_ButtonKeyboard::ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV &uv, const ColorsButton& _colorsbutton)
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::bind_tex_Icons), _buttonFlags, _colorsbutton),
     buttonId(_buttonId)
 {}
 
@@ -37,7 +37,7 @@ bool ZC_GUI_ButtonKeyboard::VKeyboardButtonDown_Obj(float time)
     }
     if (this->bs_keyboardButton == BS_Released) //  first press
     {
-        this->pObjData->color = color_pressed;
+        this->pObjData->color = colorsButton.color_button_pressed;
         VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
         this->bs_keyboardButton = BS_Pressed;
 
@@ -64,7 +64,7 @@ void ZC_GUI_ButtonKeyboard::VKeyboardButtonUp_Obj(float time)
 {
     if (this->bs_keyboardButton == BS_Pressed)
     {
-        this->pObjData->color = color_default;
+        this->pObjData->color = colorsButton.color_button;
         VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
         VKeyboardButtonUp_BK(time);
 

@@ -29,6 +29,8 @@ struct ZC_GUI_EventManager
     void AddWindow(ZC_GUI_Window* pWindow);
     void EraseWindow(ZC_GUI_Window* pWindow);
     bool IsWindowFocused(ZC_GUI_Obj* pWindow);
+        //  update openable windows depthes
+    void UpdateDepths();
 
     void UpdateWindowState(ZC_GUI_Window* pWindow);
         //  if pObj belongs to the pClosedWindow, call object's close window event

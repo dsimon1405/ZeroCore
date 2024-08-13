@@ -102,19 +102,23 @@ void main()
     ZC_GUI_ObjData objData = inObjData.objDatas[vertIndex];
     if (objData.height == 0 && Discard()) return;   //  object not drawing
         //  border
-    ZC_GUI_Border border = inBorder.borders[objData.borderIndex];
-    if (border.bl.x == border.tr.x && Discard()) return;      //  not valid border (border in the window, but now outside the window border) discard element
+    if (objData.borderIndex != -1)  //- if -1 it's window's frame (don't have border)
+    {
+        ZC_GUI_Border border = inBorder.borders[objData.borderIndex];
+        if (border.bl.x == border.tr.x && Discard()) return;      //  not valid border (border in the window, but now outside the window border) discard element
+    }
 
     vec2 bl = inBL.bls[vertIndex];
     vec2 br = vec2(bl.x + objData.width, bl.y);
     vec2 tl = vec2(bl.x, bl.y + objData.height);
     vec2 tr = vec2(br.x, tl.y);
 
-    if (vertexID == 0) outG.borderIndex = -1;   //  window background may be with frame border, so don't check border for window's background, just draw
+    if (vertexID == 0 || objData.borderIndex == -1) outG.borderIndex = -1;   //  window background may be with frame, so don't check border for window's background and frame, just draw
     else if (!ConfigureBorder(objData.borderIndex, bl, br, tl, tr) && Discard()) return;    //  out of border
         //  depth
-    float depth = objData.depth;
-    if (vertexID != 0) depth += inObjData.objDatas[baseInstance].depth;  //  object not window border, need add window's border depth
+    float depth = objData.depth != 0 ? objData.depth : inObjData.objDatas[baseInstance].depth;      //  if not equal 0 it's window wit hown depth, otherwise it object withought own depth, set window depth
+    // if (depth == 0) depth = inObjData.objDatas[baseInstance].depth;  //  object not window, need add window's depth
+    // if (vertexID != 0) depth += inObjData.objDatas[baseInstance].depth;
     
         //  texture index
     outG.tex_binding = objData.tex_binding;

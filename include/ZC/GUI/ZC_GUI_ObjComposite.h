@@ -109,14 +109,7 @@ struct ZC_GUI_ObjComposite : public ZC_GUI_Obj
     {
         for (ZC_GUI_Obj* pObj : objs) pObj->VConf_SetTextUV_Obj();
     }
-
-    // bool VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged) override
-    // {
-    //     if (!ChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged)) return false;
-    //     for (ZC_GUI_Obj* pObj : objs) if (!pObj->VChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged)) return false;
-    //     return true;
-    // }
-
+    
     void VSetDrawState_Obj(bool neeDraw, bool updateGPU) override
     {
         if (neeDraw == VIsDrawing_Obj()) return;

@@ -71,9 +71,9 @@ void ZC_Mouse::ScrollOnceInFrame(float time)
 {
     if (scrolledHorizontal != 0.f || scrolledVertical != 0.f)
     {
-        if (!ZC_GUI::pGUI) sigScroll.CallLastConnected(scrolledHorizontal, scrolledVertical, time);     //  no gui, call signal
+        if (!ZC_GUI::pGUI) sigScrollOnceInFrame.CallLastConnected(scrolledHorizontal, scrolledVertical, time);     //  no gui, call signal
         else if (ZC_GUI::pGUI->eventManager.ScrollWheelOnceInFrame(scrolledVertical, time))  //  gui calls scroll wheel
-            sigScroll.CallLastConnected(scrolledHorizontal, scrolledVertical, time);    //  if gui don't need cursor move event, call signal
+            sigScrollOnceInFrame.CallLastConnected(scrolledHorizontal, scrolledVertical, time);    //  if gui don't need cursor move event, call signal
         scrolledHorizontal = 0.f;
         scrolledVertical = 0.f;
     }

@@ -5,7 +5,7 @@
 #include <iostream>
 struct ZC_GUI_ButtonMouse : public virtual ZC_GUI_ButtonBase
 {
-    static inline long doubleClickLimit_nanosec = 300000000;   //  uses ass nanosec limit in lmb: ZC_GUI_BF_M__DoubleCLick, ZC_GUI_MB__MBLPress events evetns
+    static inline long doubleClickLimit_nanosec = 300000000;   //  uses as nanosec limit in lmb: ZC_GUI_BF_M__DoubleCLick, ZC_GUI_MB__MBLPress events evetns
 
         //  may be override
     void VScroll_Obj(float vertical, float time) override
@@ -27,8 +27,8 @@ struct ZC_GUI_ButtonMouse : public virtual ZC_GUI_ButtonBase
     // {}
     {std::cout<<"mouse left up"<<std::endl;}
 
-    ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags);
-    ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV& uv);
+    ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ColorsButton& _colorsbutton = {});
+    ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV& uv, const ColorsButton& _colorsbutton = {});
 
     /*
     Sets nanosecond limit wich desides to call VLeftButtonDown_BM() or VLeftButtonDoubleClick_BM(), counting time from previous click. Default 300000000 nanoseconds.

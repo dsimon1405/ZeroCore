@@ -3,12 +3,12 @@
 #include "ZC_GUI_IconUV.h"
 #include <ZC/GUI/ZC_GUI_Bindings.h>
 
-ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags)
-    : ZC_GUI_ButtonMouse(width, height, _buttonFlags, ZC_GUI_IconUV::button)
+ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ColorsButton& _colorsbutton)
+    : ZC_GUI_ButtonMouse(width, height, _buttonFlags, ZC_GUI_IconUV::button, _colorsbutton)
 {}
 
-ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV& uv)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::bind_tex_Icons), _buttonFlags)
+ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV& uv, const ColorsButton& _colorsbutton)
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::bind_tex_Icons), _buttonFlags, _colorsbutton)
 {}
 
 void ZC_GUI_ButtonMouse::SetDoubleClickLimit_BM(long _doubleClickLimit_nanosec)
@@ -38,15 +38,15 @@ bool ZC_GUI_ButtonMouse::VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*&
 
 void ZC_GUI_ButtonMouse::VCursorCollisionStart_Obj(float time)
 {
-    if (this->pObjData->color == color_pressed) return;     //  button pressed, wait while up
-    this->pObjData->color = color_under_cursor;
+    if (this->pObjData->color == colorsButton.color_button_pressed) return;     //  button pressed, wait while up
+    this->pObjData->color = colorsButton.color_button_under_cursor;
     VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
 }
 
 void ZC_GUI_ButtonMouse::VCursorCollisionEnd_Obj(float time)
 {
-    if (this->pObjData->color == color_pressed) return;     //  button pressed, wait while up
-    this->pObjData->color = color_default;
+    if (this->pObjData->color == colorsButton.color_button_pressed) return;     //  button pressed, wait while up
+    this->pObjData->color = colorsButton.color_button;
     VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
 }
 
@@ -60,7 +60,7 @@ bool ZC_GUI_ButtonMouse::VMouseButtonLeftDown_Obj(float time)
     }
     if (this->bs_mouseButton == BS_Released)
     {
-        this->pObjData->color = color_pressed;
+        this->pObjData->color = colorsButton.color_button_pressed;
         VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
         this->bs_mouseButton = BS_Pressed;
         
@@ -98,10 +98,10 @@ void ZC_GUI_ButtonMouse::VMouseButtonLeftUp_Obj(float time)
     {
         if (CheckCursorCollision_Obj())
         {
-            this->pObjData->color = color_under_cursor;
+            this->pObjData->color = colorsButton.color_button_under_cursor;
             VLeftButtonUp_BM(time);
         }
-        else this->pObjData->color = color_default;
+        else this->pObjData->color = colorsButton.color_button;
         VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
         
         pressed_time = 0;

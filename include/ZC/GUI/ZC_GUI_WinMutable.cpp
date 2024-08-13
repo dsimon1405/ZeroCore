@@ -4,12 +4,12 @@
 #include <ZC/GUI/ZC_GUI_Bindings.h>
 #include "ZC_GUI_IconUV.h"
 
-ZC_GUI_WinMutable::ZC_GUI_WinMutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags)
-    : ZC_GUI_WinMutable(_woiData, ZC_GUI_IconUV::window, _winFlags)
+ZC_GUI_WinMutable::ZC_GUI_WinMutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags, const ColorsWindow& colorsWindow)
+    : ZC_GUI_WinMutable(_woiData, ZC_GUI_IconUV::quad, _winFlags, colorsWindow)
 {}
 
-ZC_GUI_WinMutable::ZC_GUI_WinMutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags)
-    : ZC_GUI_Window(_woiData, uv, _winFlags),
+ZC_GUI_WinMutable::ZC_GUI_WinMutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags, const ColorsWindow& colorsWindow)
+    : ZC_GUI_Window(_woiData, uv, _winFlags, colorsWindow),
     isDrawing(_winFlags & ZC_GUI_WF__NeedDraw),
     drawArrays(GL_POINTS,
         _winFlags & ZC_GUI_WF__NoBackground ? 1 : 0,    //  if there is no background, return 1 and start drawing at index 1

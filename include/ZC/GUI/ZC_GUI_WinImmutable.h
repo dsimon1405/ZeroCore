@@ -32,8 +32,8 @@ struct ZC_GUI_WinImmutable : public ZC_GUI_Window
     } daic;
     size_t daicOffset;    //  offset in bufDAICs
 
-    ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags);
-    ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags);
+    ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags, const ColorsWindow& colorsWindow = {});
+    ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags, const ColorsWindow& colorsWindow = {});
 
     ~ZC_GUI_WinImmutable();
 

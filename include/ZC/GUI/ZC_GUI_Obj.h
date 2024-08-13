@@ -81,11 +81,6 @@ struct ZC_GUI_Obj
         std::forward_list<ZC_GUI_Obj*>& rButtonKeyboard_objs);
          //  for text functions, configuration of the text texture done, all text heirs must update object uv from text uv
     virtual void VConf_SetTextUV_Obj() {};
-    //     //  Change drawing state of some object in the window. pObj_start must be in same border with pObj_end (after adding in ZC_GUI_WinMutable ot ZC_GUI_WinImmutable)! Must be used insted VChangeObjsDrawState_Obj();
-    // void ChangeObjsDrawState(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end);
-    //     //  return false when found pObj_end, to stop changind draw state. Must be used ChangeObjsDrawState() insted of this method
-    // virtual bool VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged);
-    // virtual bool ChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged);
     virtual void VSetDrawState_Obj(bool needDraw, bool updateGPU);
 
     virtual void VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData);

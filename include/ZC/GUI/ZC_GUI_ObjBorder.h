@@ -1,14 +1,12 @@
 #pragma once
 
-#include <ZC/GUI/ZC_GUI_Obj.h>
 #include <ZC/GUI/ZC_GUI_ButtonMouse.h>
 #include <ZC/Tools/ZC_uptr.h>
+#include <ZC/GUI/ZC_GUI_Colors.h>
 
 #include <list>
 #include <algorithm>
 
-#include <ZC/GUI/ZC_GUI_IconUV.h>
-#include <ZC/GUI/ZC_GUI_Bindings.h>
 struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
 {
     struct Row
@@ -45,11 +43,22 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
 
     struct Scroll : public ZC_GUI_ObjComposite  //  easyer to make new kind of mouse button, than to extend ZC_GUI_MouseButton
     {
+        struct ColorsScroll
+        {
+            uint color_scroll_background;
+            ZC_GUI_ButtonBase::ColorsButton colors_caret_scroll;
+
+            ColorsScroll(uint _color_scroll_background = 0, const ZC_GUI_ButtonBase::ColorsButton& _colors_caret_scroll = {})
+                : color_scroll_background(_color_scroll_background),
+                colors_caret_scroll(_colors_caret_scroll)
+            {}
+        };
+
         struct Caret : public ZC_GUI_ButtonMouse
         {
             float height_coef = 0.f;
 
-            Caret();
+            Caret(const ColorsScroll& colorsScroll);
 
             void VCursorCollisionEnd_Obj(float time) override;
             void VCursorMove_Obj(float rel_x, float rel_y) override;
@@ -62,7 +71,7 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
         
         Caret caret;
 
-        Scroll(float height);
+        Scroll(float height, const ColorsScroll& colorsScroll);
 
         void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
         bool VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll) override;
@@ -76,14 +85,32 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
         void ChangeDrawState(bool needDraw);
         static float GetCursor_Y();
     };
+
+    struct ColorsObjBorder
+    {
+        Scroll::ColorsScroll colorsScroll;
+        uint color_frame;
+
+        ColorsObjBorder(const Scroll::ColorsScroll& _colorsScroll = {}, uint _color_frame = 0);
+    };
+
+    struct Frame : public ZC_GUI_ObjComposite
+    {
+        ZC_GUI_Obj top;
+        ZC_GUI_Obj right;
+        ZC_GUI_Obj bottom;
+
+        Frame(float frame_width, float objBorder_width, float objBorder_height, uint color);
+
+        void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
+    };
     
     ZC_GUI_Border* pBorder;
     std::list<Row> rows;
     ZC_uptr<Scroll> upScroll;
-    bool haveFrame;     //  have 2 pixels frame
-    static inline const float frameBorder = 2.f;   //  2pixel frame border
+    ZC_uptr<Frame> upFrame;
 
-    ZC_GUI_ObjBorder(const ZC_GUI_ObjData& _objData, bool _isScrollable, bool _haveFrame);
+    ZC_GUI_ObjBorder(const ZC_GUI_ObjData& _objData, bool _isScrollable, float frameWidth, const ColorsObjBorder& colorsObjBorder = {});
     ~ZC_GUI_ObjBorder();
 
     ZC_Vec2<float>* VGet_pBL_end() override;
@@ -108,8 +135,6 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
     void VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vector<ZC_Vec2<float>>& rBLs, std::vector<ZC_GUI_ObjData>& rObjDatas, int borderIndex,
         std::forward_list<ZC_GUI_Obj*>& rButtonKeyboard_objs) override;
     void VConf_SetTextUV_Obj() override;
-        
-    // bool VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged) override;
 
     bool VIsUseScrollEvent_Obj() const noexcept override;
 

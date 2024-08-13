@@ -104,5 +104,4 @@ void ZC_ESignal<TVal(TParams...)>::MakeReconnection()
         for (auto pFuncData : disconnectPFuncData) std::erase(functions, pFuncData);
         disconnectPFuncData.clear();
     }
-
 }

@@ -4,6 +4,7 @@
 #include <ZC/GUI/Text/ZC_GUI_TextManager.h>
 #include <ZC/GUI/ZC_GUI_Bindings.h>
 #include <ZC/Tools/Math/ZC_Math.h>
+#include <ZC/GUI/ZC_GUI_Colors.h>
 
 //  Text is created once and until the end of the program (cannot be changed)
 struct ZC_GUI_Text : public ZC_GUI_Obj
@@ -17,8 +18,8 @@ struct ZC_GUI_Text : public ZC_GUI_Obj
     - reserveWidth - may be reserve pixel width longer then in wstr (have effect only if _isImmutable = false). More info in method UpdateText().
     - textAlignment - if reservedWidth more then wstr pixel wisth, current wstr can have horizontal alignment in texture. In other case it's Left.
     */
-    ZC_GUI_Text(const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment)
-        : ZC_GUI_Obj(ZC_GUI_ObjData(0.f, 0.f, text_color, {}, ZC_GUI_Bindings::bind_tex_Text)),
+    ZC_GUI_Text(const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment, unsigned int color = ZC_GUI_Colors::text)
+        : ZC_GUI_Obj(ZC_GUI_ObjData(0.f, 0.f, color, {}, ZC_GUI_Bindings::bind_tex_Text)),
         isImmutable(_isImmutable),
         pText(ZC_GUI_TextManager::GetText(wstr, isImmutable, reserveWidth, textAlignment)),
         actual_width(pText ? pText->width : 0)
@@ -95,8 +96,6 @@ struct ZC_GUI_Text : public ZC_GUI_Obj
     }
 
 protected:
-    static inline unsigned int text_color = ZC_PackColorUCharToUInt(200, 200, 200);
-    
     bool isImmutable;
     typename ZC_GUI_TextManager::Text* pText;
     float actual_width;     //  mutable textuew can get Texts with different texture width. Object's width must be updated with Text width (to have don't wraped texture size). So actual_width is object width actual width. this->pObjData->width can have less or equal actual_width from new Text.
@@ -135,8 +134,8 @@ struct ZC_GUI_TextForButton : public ZC_GUI_Text
         {}
     } const indent;
 
-    ZC_GUI_TextForButton(const Indent& _indent, const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment)
-        : ZC_GUI_Text(wstr, _isImmutable, reserveWidth, textAlignment),
+    ZC_GUI_TextForButton(const Indent& _indent, const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment, unsigned int color = ZC_GUI_Colors::text)
+        : ZC_GUI_Text(wstr, _isImmutable, reserveWidth, textAlignment, color),
         indent(_indent)
     {}
     

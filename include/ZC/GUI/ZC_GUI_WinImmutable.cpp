@@ -4,12 +4,12 @@
 #include <ZC/GUI/ZC_GUI_Bindings.h>
 #include "ZC_GUI_IconUV.h"
 
-ZC_GUI_WinImmutable::ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags)
-    : ZC_GUI_WinImmutable(_woiData, ZC_GUI_IconUV::window, _winFlags)
+ZC_GUI_WinImmutable::ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags, const ColorsWindow& colorsWindow)
+    : ZC_GUI_WinImmutable(_woiData, ZC_GUI_IconUV::quad, _winFlags, colorsWindow)
 {}
 
-ZC_GUI_WinImmutable::ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags)
-    : ZC_GUI_Window(_woiData, uv, _winFlags),
+ZC_GUI_WinImmutable::ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags, const ColorsWindow& colorsWindow)
+    : ZC_GUI_Window(_woiData, uv, _winFlags, colorsWindow),
     daic{
         .count = static_cast<GLuint>(_winFlags & ZC_GUI_WF__NoBackground ? 0 : 1),    //  if there is no background, return 0 and draw count became 0
         .instanceCount = static_cast<GLuint>(_winFlags & ZC_GUI_WF__NeedDraw ? 1 : 0),   //  make instanceCount 1 for drawing, otherwise 0

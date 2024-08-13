@@ -20,20 +20,31 @@ enum ZC_GUI_WinFlag
 
 struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
 {
-    static inline const float depth_step             = 0.000001f;
+    static inline const float depth_step_win         = 0.000001f;       //  difference betwween widnows
+    static inline const float depth_step_obj         = 0.0000001f;      //  difference berwween objects in the window (uses in ZCR_GUI_Orientation::UpdateAxisPositions())
     static inline const float depth_stacionarStart   = 0.9999999f;
     static inline const float depth_openableStart    = 0.9999f;
     static inline const float depth_openableEnd      = 0.f;
 
-    static inline const uint color_unfocused = 0;
-    static inline const uint color_focused = ZC_PackColorUCharToUInt(5,5,5);
+    struct ColorsWindow
+    {
+        uint color_window;
+        uint color_window_focused;
+        ColorsObjBorder colorsObjBorder;
+
+        ColorsWindow(uint _color_window = ZC_GUI_Colors::window, uint _color_window_focused = ZC_GUI_Colors::window_focused, const ColorsObjBorder& _colorsObjBorder = 
+            ColorsObjBorder(Scroll::ColorsScroll(ZC_GUI_Colors::window_scroll_background, ZC_GUI_ButtonBase::ColorsButton(ZC_GUI_Colors::window_scroll_caret, ZC_GUI_Colors::window_scroll_caret_under_cursor,
+                ZC_GUI_Colors::window_scroll_caret_pressed)), ZC_GUI_Colors::window_frame));
+    };
+    const uint color_window;
+    const uint color_window_focused;
 
     ZC_GUI_WinFlags winFlags;
     GLsizeiptr bordersCount = 0,    //  future size of vector (and buffer for that vectors) of borders of heir or static window
         objsCount = 0;          //  future size of vectors (and buffers for that vectors) of bls, depths of heir or static window
     std::forward_list<ZC_GUI_Obj*> buttonKeyboard_objs;     //  ZC_ButtonKeyboard(s) and it's heirs
 
-    ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags winFlags);
+    ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags winFlags, const ColorsWindow& colorsWindow);
 
     virtual void VSetDrawState_W(bool needDraw) = 0;
 
@@ -57,4 +68,5 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
 
     float GetStacionarDepth();
     void SetFocuseDepthAndColor();
+    void SetFocusDepth(bool updateGPU);
 };

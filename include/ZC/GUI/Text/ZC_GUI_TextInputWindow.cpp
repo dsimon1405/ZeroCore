@@ -122,7 +122,7 @@ void ZC_GUI_TextInputWindow::WindowResize(float,float)
     //  Highlight
 
 ZC_GUI_TextInputWindow::Highlight::Highlight(float fontHeight)
-    : ZC_GUI_Obj(0.f, fontHeight, 0.f, ZC_PackColorUCharToUInt(0,0,0), ZC_GUI_IconUV::window, 0, ZC_GUI_Bindings::bind_tex_Icons)
+    : ZC_GUI_Obj(0.f, fontHeight, 0.f, ZC_PackColorUCharToUInt(0,0,0), ZC_GUI_IconUV::quad, 0, ZC_GUI_Bindings::bind_tex_Icons)
 {}
 
 void ZC_GUI_TextInputWindow::Highlight::MBL_DoubleClick()
@@ -392,7 +392,7 @@ void ZC_GUI_TextInputWindow::Highlight::DeleteHighlight(bool needSubData)
     //  Caret
 
 ZC_GUI_TextInputWindow::Caret::Caret(float fontHeight)
-    : ZC_GUI_Obj(1.f, fontHeight, 0.f, ZC_PackColorUCharToUInt(150,150,150), ZC_GUI_IconUV::window, 0, ZC_GUI_Bindings::bind_tex_Icons)
+    : ZC_GUI_Obj(1.f, fontHeight, 0.f, ZC_PackColorUCharToUInt(150,150,150), ZC_GUI_IconUV::quad, 0, ZC_GUI_Bindings::bind_tex_Icons)
 {}
 
 void ZC_GUI_TextInputWindow::Caret::SetDrawState(DrawState _drawState)

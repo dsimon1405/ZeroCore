@@ -2,6 +2,10 @@
 
 #include <ZC/GUI/ZC_GUI_ButtonMouseText.h>
 
+#include <ZC/GUI/Text/ZC_GUI_TextManager.h>
+#include <ZC/GUI/ZC_GUI_IconUV.h>
+#include <ZC/GUI/ZC_GUI_Bindings.h>
+
 #include <concepts>
 
 template <typename T>
@@ -19,9 +23,6 @@ concept ZC_cGUI_Number = std::same_as<T, signed char>
                         || std::same_as<T, double>
                         || std::same_as<T, long double>;
 
-#include <ZC/GUI/Text/ZC_GUI_TextManager.h>
-#include <ZC/GUI/ZC_GUI_IconUV.h>
-#include <ZC/GUI/ZC_GUI_Bindings.h>
 template <ZC_cGUI_Number TNum>
 struct ZC_GUI_ButtonNumber : public ZC_GUI_ButtonMouseText
 {
@@ -58,7 +59,7 @@ private:
         bool leftArrow;
 
         ButtonArrow(bool _leftAarrow)
-            : ZC_GUI_ButtonBase(ZC_GUI_ObjData(ZC_GUI_TextManager::GetFontHeight(), ZC_GUI_TextManager::GetFontHeight(), 0, ZC_GUI_IconUV::checkBox, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__MBLPress),
+            : ZC_GUI_ButtonBase(ZC_GUI_ObjData(ZC_GUI_TextManager::GetFontHeight(), ZC_GUI_TextManager::GetFontHeight(), 0, ZC_GUI_IconUV::arrowDown, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__MBLPress),
             ZC_GUI_ButtonMouse(0.f, 0.f, 0),
             leftArrow(_leftAarrow)
         {}

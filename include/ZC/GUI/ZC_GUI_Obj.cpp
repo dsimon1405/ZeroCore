@@ -205,26 +205,6 @@ void ZC_GUI_Obj::Conf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, std::vect
     if (VIsButtonKeyboard_Obj()) rButtonKeyboard_objs.emplace_front(this);
 }
 
-// void ZC_GUI_Obj::ChangeObjsDrawState(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end)
-// {
-//     ZC_GUI_Obj* pObjBorder_start = pObj_start->VGetObjBorder_Obj();
-//     if (pObjBorder_start != pObj_end->VGetObjBorder_Obj() || !VIsConfigured_Obj()) return; //  must be in one border, in configured window
-//     bool unused = false;
-//     pObjBorder_start->VChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end->VGet_pObj_end(), unused);
-// }
-
-// bool ZC_GUI_Obj::VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged)
-// {
-//     return ChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged);
-// }
-
-// bool ZC_GUI_Obj::ChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged)
-// {
-//     if (!mustBeChanged && pObj_start == this) mustBeChanged = true;     //  if pObj_start not found yet, chek current obj
-//     if (mustBeChanged) pObjData->height = needDraw ? actual_height : 0;     //  if pObj_start where found, make changes
-//     return this != pObj_end;
-// }
-
 void ZC_GUI_Obj::VSetDrawState_Obj(bool neeDraw, bool updateGPU)
 {
     if (neeDraw == VIsDrawing_Obj()) return;

@@ -41,20 +41,3 @@ struct ZC_GUI_ObjData //  gui.vs -> struct Data
         tex_binding(_tex_binding)
     {}
 };
-
-// struct ZC_GUI_UpdateName
-// {
-//     float bl_x;
-//     float bl_y;
-//     int width;
-//     const std::wstring& wstr;
-//     ZC_Function<void(const std::wstring&)> callBack;
-
-//     ZC_GUI_UpdateName(float _bl_x, float _bl_y, int _width, const std::wstring& _wstr, ZC_Function<void(const std::wstring&)>&& _callBack)
-//         :bl_x(_bl_x),
-//         bl_y(_bl_y),
-//         width(_width),
-//         wstr(_wstr),
-//         callBack(std::move(_callBack))
-//     {}
-// }

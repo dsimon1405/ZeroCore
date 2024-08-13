@@ -3,14 +3,18 @@
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 #include <ZC/GUI/ZC_GUI.h>
 #include <ZC/Video/ZC_SWindow.h>
+#include <ZC/GUI/ZC_GUI_IconUV.h>
+#include <ZC/GUI/ZC_GUI_Bindings.h>
 
-ZC_GUI_ObjBorder::ZC_GUI_ObjBorder(const ZC_GUI_ObjData& _objData, bool _isScrollable, bool _haveFrame)
+ZC_GUI_ObjBorder::ZC_GUI_ObjBorder(const ZC_GUI_ObjData& _objData, bool _isScrollable, float frameWidth, const ColorsObjBorder& colorsObjBorder)
     : ZC_GUI_Obj(_objData),
     pBorder{ new ZC_GUI_Border() },
-    upScroll(_isScrollable ? new Scroll(_objData.height - (_haveFrame ? frameBorder * 2.f : 0.f)) : nullptr),
-    haveFrame(_haveFrame)
+    upScroll(_isScrollable ? new Scroll(this->GetHeight() - (frameWidth * 2.f), colorsObjBorder.colorsScroll) : nullptr),
+    // upFrame(nullptr)
+    upFrame(frameWidth == 0.f ? nullptr : new Frame(frameWidth, this->VGetWidth_Obj(), this->GetHeight(), colorsObjBorder.color_frame))
 {
     if (upScroll) upScroll->SetObjHolder(this);
+    if (upFrame) upFrame->SetObjHolder(this);
 }
 
 ZC_GUI_ObjBorder::~ZC_GUI_ObjBorder()
@@ -25,12 +29,20 @@ ZC_GUI_ObjBorder::~ZC_GUI_ObjBorder()
 
 ZC_Vec2<float>* ZC_GUI_ObjBorder::VGet_pBL_end()
 {
-    return rows.empty() ? Get_pBL_start() : rows.back().objs.back()->VGet_pBL_end();
+    return upScroll ? upScroll->VGet_pBL_end()
+                    : rows.empty() ? upFrame ? upFrame->VGet_pBL_end()
+                                             : Get_pBL_start()
+                                    : rows.back().objs.back()->VGet_pBL_end();
+    // return rows.empty() ? Get_pBL_start() : rows.back().objs.back()->VGet_pBL_end();
 }
 
 ZC_GUI_ObjData* ZC_GUI_ObjBorder::VGet_pObjData_end()
 {
-    return rows.empty() ? Get_pObjData_start() : rows.back().objs.back()->VGet_pObjData_end();
+    return upScroll ? upScroll->VGet_pObjData_end()
+                    : rows.empty() ? upFrame ? upFrame->VGet_pObjData_end()
+                                             : Get_pObjData_start()
+                                    : rows.back().objs.back()->VGet_pObjData_end();
+    // return rows.empty() ? Get_pObjData_start() : rows.back().objs.back()->VGet_pObjData_end();
 }
 
 ZC_GUI_Obj* ZC_GUI_ObjBorder::VGet_pObj_end()
@@ -119,12 +131,12 @@ void ZC_GUI_ObjBorder::CalculateInternalBorder(const ZC_GUI_Border& outer_border
     }
     ZC_Vec2<float> bl = Get_bl_Obj();
         //  set bl and check with window border bl
-    ZC_Vec2<float> border_bl = haveFrame ? bl + frameBorder : bl;   //  if have frame move on fame border size
+    ZC_Vec2<float> border_bl = upFrame ? bl + upFrame->VGetWidth_Obj() : bl;   //  if have frame move on fame border size
     if (border_bl[0] < outer_border.bl[0]) border_bl[0] = outer_border.bl[0];
     if (border_bl[1] < outer_border.bl[1]) border_bl[1] = outer_border.bl[1];
         //  set tr and check with window border tr
     ZC_Vec2<float> border_tr(bl[0] + this->VGetWidth_Obj(), bl[1] + this->GetHeight());   //  calculate tr from new position
-    if (haveFrame) border_tr -= frameBorder;   //  if have frame move on fame border size
+    if (upFrame) border_tr -= upFrame->VGetWidth_Obj();   //  if have frame move on fame border size
     if (outer_border.tr[0] < border_tr[0]) border_tr[0] = outer_border.tr[0];
     if (outer_border.tr[1] < border_tr[1]) border_tr[1] = outer_border.tr[1];
 
@@ -139,13 +151,15 @@ void ZC_GUI_ObjBorder::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
     *(this->pBL) = _bl;
         //  calculate border
     if (this->pObjHolder) CalculateInternalBorder(this->pObjHolder->VGetBorder_Obj());    //  if not window, just a border in window, so calculate border for drawing object
-    else *pBorder = ZC_GUI_Border{ .bl = haveFrame ? _bl + frameBorder : _bl, .tr{ _bl[0] + this->pObjData->width - (haveFrame ? frameBorder : 0.f), _bl[1] + this->pObjData->height - (haveFrame ? frameBorder : 0.f) } };
+    else *pBorder = ZC_GUI_Border{ .bl = upFrame ? _bl + upFrame->VGetWidth_Obj() : _bl, .tr{ _bl[0] + this->pObjData->width - (upFrame ? upFrame->VGetWidth_Obj() : 0.f),
+        _bl[1] + this->pObjData->height - (upFrame ? upFrame->VGetWidth_Obj() : 0.f) } };
         //  tl take from calculated border (that includes frame border if it is)
-    ZC_Vec2<float> tl(pBorder->bl[0], _bl[1] + this->GetHeight() - (haveFrame ? frameBorder : 0.f) + (upScroll ? upScroll->scroll_y : 0));
+    ZC_Vec2<float> tl(pBorder->bl[0], _bl[1] + this->GetHeight() - (upFrame ? upFrame->VGetWidth_Obj() : 0.f) + (upScroll ? upScroll->scroll_y : 0));
     for (Row& row : rows)
         row.CalculateObjs_bl(tl, this->VGetWidth_Obj());
 
     if (upScroll) upScroll->VSet_pBL_Obj(_bl);  //  calls after all, caurse scroll need top/buttom
+    if (upFrame) upFrame->VSet_pBL_Obj(_bl);    //  no metter where to call (don't include in scroll)
 }
 
 void ZC_GUI_ObjBorder::VConf_GetBordersAndObjsCount_Obj(GLsizeiptr& rBordersCount, GLsizeiptr& rObjsCount)
@@ -153,6 +167,7 @@ void ZC_GUI_ObjBorder::VConf_GetBordersAndObjsCount_Obj(GLsizeiptr& rBordersCoun
     ++rBordersCount;
     ++rObjsCount;
 
+    if (upFrame) upFrame->VConf_GetBordersAndObjsCount_Obj(rBordersCount, rObjsCount);
     if (upScroll) upScroll->VConf_GetBordersAndObjsCount_Obj(rBordersCount, rObjsCount);
 
     for (Row& row : rows)
@@ -180,6 +195,8 @@ void ZC_GUI_ObjBorder::VConf_GetData_Obj(std::vector<ZC_GUI_Border>& rBorder, st
     this->pObjData = pObjData_temp;
 
     if (VIsButtonKeyboard_Obj()) rButtonKeyboard_objs.emplace_front(this);
+                                                //  if have obj holder it's frame into the window, otherwise it's window frame and must have index_border = -1
+    if (upFrame) upFrame->VConf_GetData_Obj(rBorder, rBLs, rObjDatas, this->pObjHolder ? this->pObjData->borderIndex : -1, rButtonKeyboard_objs);
 
     for (Row& row: rows)
         for (ZC_GUI_Obj* pObj : row.objs)
@@ -194,43 +211,6 @@ void ZC_GUI_ObjBorder::VConf_SetTextUV_Obj()
         for (ZC_GUI_Obj* pObj : row.objs) pObj->VConf_SetTextUV_Obj();
 }
 
-// bool ZC_GUI_ObjBorder::VChangeObjsDrawState_Obj(bool needDraw, ZC_GUI_Obj* pObj_start, ZC_GUI_Obj* pObj_end, bool& mustBeChanged)
-// {
-//     bool isEnd = false;
-//     float offset_y = 0.f;
-//     for (Row& row : rows)
-//     {
-//         if (isEnd)
-//         {
-//             if (offset_y != 0.f)
-//             {       //  all pBL is pointers from the large ZC_GUI_Win*** array (after configuration), so we can itarate with them
-//                 ZC_Vec2<float>* pBL_start_index = row.objs.front()->Get_pBL_start();    //  get pBL of the first element in the border
-//                 ZC_Vec2<float>* pBL_end_index = rows.back().objs.back()->VGet_pBL_end();   //  get pBL of the last element in the border
-//                 ++pBL_end_index;    // and incriment to the next (like .end() in stl containers)
-//                 for (ZC_Vec2<float>* i = pBL_start_index; i != pBL_end_index; ++i)
-//                     (*i)[1] += needDraw ? - offset_y : offset_y;
-//                 VSubDataBL_Obj(pBL_start_index, --pBL_end_index);   //  --pBL_end_index -> to return in borders array range
-//                 ZC_GUI::pGUI->eventManager.UpdateCursorCollision();
-//             }
-//             return false;
-//         }
-//         for (ZC_GUI_Obj* pObj : row.objs)
-//         {
-//             if (!(pObj->VChangeObjsDrawState_Obj(needDraw, pObj_start, pObj_end, mustBeChanged)))
-//             {
-//                 isEnd = true;
-//                 if (offset_y != 0.f && pObj != row.objs.back())
-//                     offset_y -= row.rowParams.height + row.rowParams.indent_y;    //  end object not reached end of the row, exclude height of that row from offset_y if height was inluded
-//                 VSubDataObjData_Obj(pObj_start->Get_pObjData_start(), pObj_end->VGet_pObjData_end());
-//             }
-//             if (mustBeChanged && pObj == row.objs.front()) offset_y += row.rowParams.height + row.rowParams.indent_y;   //  change draw state from first element of the row, need include rows height in offset_y
-//             if (isEnd) break;
-//         }
-//     }
-
-//     return true;
-// }
-
 bool ZC_GUI_ObjBorder::VIsUseScrollEvent_Obj() const noexcept
 {
     return upScroll != nullptr && upScroll->IsActive();
@@ -241,10 +221,12 @@ bool ZC_GUI_ObjBorder::VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& r
     if (!VCheckCursorCollision_Obj(x, y)) return false;
     
     if (!(this->pObjHolder)) rpObj = this;     //  top level, it's window
-    if (VIsUseScrollEvent_Obj()) rpScroll = this;
-
-    if (upScroll) if (upScroll->VMakeCursorCollision_Obj(x, y, rpObj, rpScroll)) return true;   //  must be before all, at first make scroll buttons collision
-
+    if (VIsUseScrollEvent_Obj())
+    {
+        rpScroll = this;
+        if (upScroll->VMakeCursorCollision_Obj(x, y, rpObj, rpScroll)) return true;   //  must be before all, at first make scroll buttons collision
+    }
+    
     for (Row& row : rows)    //  window collision
         for (ZC_GUI_Obj* pObj : row.objs)
             if (pObj->VMakeCursorCollision_Obj(x, y, rpObj, rpScroll)) return true;
@@ -279,6 +261,7 @@ void ZC_GUI_ObjBorder::VMoveBL_Obj(float rel_x, float rel_y, int& update_borders
         MoveVec2(rel_x, rel_y, pBorder->tr);
     }
     ++update_borders;
+    if (upFrame) upFrame->VMoveBL_Obj(rel_x, rel_y, update_borders);
     if (upScroll) upScroll->VMoveBL_Obj(rel_x, rel_y, update_borders);
     for (Row& row : rows)    //  window collision
         for (ZC_GUI_Obj* pObj : row.objs)
@@ -372,8 +355,9 @@ ZC_GUI_RowParams::RowParams(float _indent_x, Indent_X _indentFlag_X, float _inde
 
     //  ZC_GUI_ObjBorder::Scroll
 
-ZC_GUI_ObjBorder::Scroll::Scroll(float height)
-    : ZC_GUI_ObjComposite(ZC_GUI_ObjData(scroll_width, height, ZC_PackColorUCharToUInt(255,255,255), ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons))
+ZC_GUI_ObjBorder::Scroll::Scroll(float height, const ColorsScroll& colorsScroll)
+    : ZC_GUI_ObjComposite(ZC_GUI_ObjData(scroll_width, height, colorsScroll.color_scroll_background, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons)),
+    caret(colorsScroll)
 {
     this->VAddObj_Obj(&caret, nullptr);
     this->VSetDrawState_Obj(false, false);
@@ -382,7 +366,7 @@ ZC_GUI_ObjBorder::Scroll::Scroll(float height)
 void ZC_GUI_ObjBorder::Scroll::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
 {
     ZC_GUI_ObjBorder* pOB = dynamic_cast<ZC_GUI_ObjBorder*>(this->pObjHolder);
-    *(this->pBL) = ZC_Vec2<float>(_bl[0] + pOB->VGetWidth_Obj() - (pOB->haveFrame ? pOB->frameBorder : 0.f) - this->pObjData->width, pOB->haveFrame ? _bl[1] + pOB->frameBorder : _bl[1]);
+    *(this->pBL) = ZC_Vec2<float>(_bl[0] + pOB->VGetWidth_Obj() - (pOB->upFrame ? pOB->upFrame->VGetWidth_Obj() : 0.f) - this->pObjData->width, pOB->upFrame ? _bl[1] + pOB->upFrame->VGetWidth_Obj() : _bl[1]);
     CalculateScrollData(false);
 }
 
@@ -409,6 +393,7 @@ void ZC_GUI_ObjBorder::Scroll::VMouseButtonLeftUp_Obj(float time)
 void ZC_GUI_ObjBorder::Scroll::CalculateScrollData(bool updateGPU)
 {
     ZC_GUI_ObjBorder* pOB = dynamic_cast<ZC_GUI_ObjBorder*>(this->pObjHolder);
+    if (pOB->rows.empty()) return;
     float total_top = pOB->rows.front().objs.front()->VGetTop_Obj() + pOB->rows.front().rowParams.indent_y;
 
     float total_bottom = total_top;     //  set something higher then bottom
@@ -442,7 +427,7 @@ void ZC_GUI_ObjBorder::Scroll::CalculateScrollData(bool updateGPU)
     }
         //  update caret height
     float caret_height = this->GetHeight() * caret.height_coef;
-    if (caret.VIsDrawing_Obj()) caret.pObjData->height = caret_height;   //  need update height if obj is drawing. Must be before changing caret.actual_height, caurse: caret.actual_height must be 0.f or equal caret.height
+    if (this->VIsConfigured_Obj() && caret.VIsDrawing_Obj()) caret.pObjData->height = caret_height;   //  need update height if obj is drawing. Must be before changing caret.actual_height, caurse: caret.actual_height must be 0.f or equal caret.height
     caret.actual_height = caret_height;   //  must be updated actual_height
     
     if (caret.VIsDrawing_Obj() && updateGPU)
@@ -517,15 +502,15 @@ float ZC_GUI_ObjBorder::Scroll::GetCursor_Y()
 
     //  ZC_GUI_ObjBorder::ScrollCaret::Caret
 
-ZC_GUI_ObjBorder::Scroll::Caret::Caret()
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(Scroll::scroll_width, 0.f, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF_M__CursorMoveOnMBLPress),
+ZC_GUI_ObjBorder::Scroll::Caret::Caret(const ColorsScroll& colorsScroll)
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(Scroll::scroll_width, 0.f, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF_M__CursorMoveOnMBLPress, colorsScroll.colors_caret_scroll),
     ZC_GUI_ButtonMouse(Scroll::scroll_width, 0.f, ZC_GUI_BF_M__CursorMoveOnMBLPress)
 {}
 
 void ZC_GUI_ObjBorder::Scroll::Caret::VCursorCollisionEnd_Obj(float time)
 {
-    if (this->pObjData->color == color_pressed) return;     //  button pressed, wait while up
-    this->pObjData->color = color_default;
+    if (this->pObjData->color == colorsButton.color_button_pressed) return;     //  button pressed, wait while up
+    this->pObjData->color = colorsButton.color_button;
     if (ZC_GUI::pGUI->eventManager.pObj_scroll != this->VGetObjBorder_Obj())
     {
         this->pObjHolder->VSetDrawState_Obj(false, false);
@@ -541,4 +526,33 @@ void ZC_GUI_ObjBorder::Scroll::Caret::VCursorMove_Obj(float rel_x, float rel_y)
     float cursor_y = Scroll::GetCursor_Y();
     if (border->VGetTop_Obj() >= cursor_y && cursor_y >= border->VGetBottom_Obj())    //  cursor Y somewhere in caret height (cursor X may not belong caret width)
         dynamic_cast<Scroll*>(pObjHolder)->MakeScroll(rel_y / height_coef, 1.f, true);
+}
+
+
+    //  ZC_GUI_ObjBorder::ColorsObjBorder
+ZC_GUI_ObjBorder::ColorsObjBorder::ColorsObjBorder(const Scroll::ColorsScroll& _colorsScroll, uint _color_frame)
+    : colorsScroll(_colorsScroll),
+    color_frame(_color_frame)
+{}
+
+
+    //  ZC_GUI_ObjBorder::Frame
+
+ZC_GUI_ObjBorder::Frame::Frame(float frame_width, float objBorder_width, float objBorder_height, uint color)
+    : ZC_GUI_ObjComposite(ZC_GUI_ObjData(frame_width, objBorder_height, color, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons)),
+    top(ZC_GUI_ObjData(objBorder_width, frame_width, color, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons)),
+    right(ZC_GUI_ObjData(frame_width, objBorder_height, color, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons)),
+    bottom(ZC_GUI_ObjData(objBorder_width, frame_width, color, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons))
+{
+    this->VAddObj_Obj(&top, nullptr);
+    this->VAddObj_Obj(&right, nullptr);
+    this->VAddObj_Obj(&bottom, nullptr);
+}
+
+void ZC_GUI_ObjBorder::Frame::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
+{       //  frame width is left(this) or right width, or top or bottom height
+    (*this->pBL) = _bl;
+    top.VSet_pBL_Obj({ _bl[0], _bl[1] + this->GetHeight() - top.GetHeight() });
+    right.VSet_pBL_Obj({ _bl[0] + top.VGetWidth_Obj() - right.VGetWidth_Obj(), _bl[1] });
+    bottom.VSet_pBL_Obj(_bl);
 }

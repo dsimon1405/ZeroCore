@@ -65,6 +65,11 @@ bool ZC_GUI_EventManager::IsWindowFocused(ZC_GUI_Obj* pWindow)
     return !(pWindow->VIsStacionarWin_Obj()) && pWindow->VIsDrawing_Obj() ? openableWins.front() == pWindow : false;
 }
 
+void ZC_GUI_EventManager::UpdateDepths()
+{
+    for (ZC_GUI_Window* pWin : openableWins) pWin->SetFocusDepth(true);
+}
+
 void ZC_GUI_EventManager::UpdateWindowState(ZC_GUI_Window* pWindow)
 {       //    return true, if was changed list
     auto lambResetWindow = [pWindow](std::list<ZC_GUI_Window*>& rWins, bool empl_front)

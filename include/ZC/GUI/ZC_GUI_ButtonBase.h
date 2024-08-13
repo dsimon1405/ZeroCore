@@ -3,6 +3,7 @@
 #include <ZC/Tools/Math/ZC_Math.h>
 #include <ZC/GUI/ZC_GUI_ObjComposite.h>
 #include <ZC/Tools/Time/ZC_Clock.h>
+#include <ZC/GUI/ZC_GUI_Colors.h>
 
 typedef int ZC_GUI_ButtonFlags;
 enum ZC_GUI_ButtonFlag
@@ -16,10 +17,15 @@ enum ZC_GUI_ButtonFlag
 
 struct ZC_GUI_ButtonBase : public ZC_GUI_ObjComposite
 {
-    static inline uint color_default = 0;
-    static inline uint color_under_cursor = ZC_PackColorUCharToUInt(30, 30, 30);
-    static inline uint color_pressed = ZC_PackColorUCharToUInt(50, 50, 50);
+    struct ColorsButton
+    {
+        uint color_button;                  //  color adding to the texture of a button by default
+        uint color_button_under_cursor;     //  color adding to the texture of a button if button under cursor
+        uint color_button_pressed;          //  color adding to the texture of a button if button pressed
 
+        ColorsButton(uint _color_button = ZC_GUI_Colors::button, uint _color_button_under_cursor = ZC_GUI_Colors::button_under_cursor, uint _color_button_pressed = ZC_GUI_Colors::button_pressed);
+    } colorsButton;
+    
     enum ButtonState
     {
         BS_Pressed,
@@ -35,7 +41,7 @@ struct ZC_GUI_ButtonBase : public ZC_GUI_ObjComposite
     static inline long waitPressLimit_nanosec = 300000000;   //  how long wait to start use VKeyboardButtonPressed_BK(), instead VKeyboardButtonDown_BK()
     static inline long pressedInterval_nanosec = 100000000;
 
-    ZC_GUI_ButtonBase(const ZC_GUI_ObjData& od, ZC_GUI_ButtonFlags _b_flags);
+    ZC_GUI_ButtonBase(const ZC_GUI_ObjData& od, ZC_GUI_ButtonFlags _b_flags, const ColorsButton& _colorsbutton = {});
         
     /*
     Sets nanosecond limit of waiting to start use ZC_GUI_ButtonKeyboard::VKeyboardButtonPressed_BK() instead ZC_GUI_ButtonKeyboard::VKeyboardButtonDown_BK(), or ZC_GUI_ButtonMouse::VLeftButtonPressed_BM() instead
@@ -56,5 +62,6 @@ struct ZC_GUI_ButtonBase : public ZC_GUI_ObjComposite
 
         //  uses in method VStopEventActivity_Obj() from ZC_GUI_ButtonMouse and ZC_GUI_ButtonKeyboard
     void StopEventActivity_BS();
+        //  set color in pObjData and update gpu
     void SetButtonColor_BS(uint color);
 };
