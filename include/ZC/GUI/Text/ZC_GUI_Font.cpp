@@ -19,11 +19,14 @@ int ZC_GUI_Font::GetHeight()
 
 int ZC_GUI_Font::GetLongestCharacterLength() const noexcept
 {
-    int longestLength = 0;
-    for (auto& ch : characters)
+    static int longestLength = 0;
+    if (longestLength == 0)
     {
-        int length = ch.width + ch.left_offset;
-        if (length > longestLength) longestLength = length;
+        for (auto& ch : characters)
+        {
+            int length = ch.width + ch.left_offset;
+            if (length > longestLength) longestLength = length;
+        }
     }
     return longestLength;
 }
@@ -46,7 +49,7 @@ void ZC_GUI_Font::AddSymbolData(std::vector<unsigned char>& data, int& rData_ind
         
 bool ZC_GUI_Font::Character::operator == (wchar_t ch) const noexcept
 {
-    return symbol == ch;
+    return character == ch;
 }
 
 

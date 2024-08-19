@@ -231,6 +231,7 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Text/ZC_GUI_TextManager.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Text/ZC_GUI_TextInputWindow.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_IconUV.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_Colors.cpp
 	)
 
 #========================= include dirs

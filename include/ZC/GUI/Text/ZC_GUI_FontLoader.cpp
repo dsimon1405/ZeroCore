@@ -66,7 +66,7 @@ ZC_GUI_Font ZC_GUI_FontLoader::CreateFont(void* ft_face, std::forward_list<Eleme
 
     int max_top = 0;    //  highest top (pixel)
     int max_tail = 0;   //  lowest tail (pixel)
-    int min_left_offset = ZC_INT_MAX;
+    int min_left_offset = INT_MAX;
     for (ElementsRange& el_r : el_ranges) el_r.FillCharactersParams(ft_face, chrs, max_top, max_tail, min_left_offset);
 
     int total_height = max_top + max_tail;    //  heigth for each symbol (pixel)
@@ -133,7 +133,7 @@ void ZC_GUI_FontLoader::ElementsRange::FillCharactersParams(void* ft_face, std::
             }
             ZC_GUI_Character& curChar = rChrs.emplace_back(ZC_GUI_Character
             {
-                .symbol = static_cast<wchar_t>(symbol),
+                .character = static_cast<wchar_t>(symbol),
                 .left_offset = face->glyph->bitmap_left >= 0 ? face->glyph->bitmap_left : - face->glyph->bitmap_left,
                 .width =  static_cast<int>(symbol == ulong(' ') ? face->glyph->advance.x >> 6 : face->glyph->bitmap.width),     //  white space haven't bitmap, so take its distance from origin to next symbol 
                 .height = static_cast<int>(face->glyph->bitmap.rows),

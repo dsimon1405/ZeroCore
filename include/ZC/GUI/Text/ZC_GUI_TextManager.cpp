@@ -262,7 +262,7 @@ std::vector<unsigned char> ZC_GUI_TextManager::CreateChDataData(const std::list<
     {
         if (&chData != &(chDatas.front())) data_index += chData.pCh->left_offset;   // if this is not the first wch of the wstr, adds left_offset
         pTM->font.AddSymbolData(data, data_index, pText->width, chData.pCh);
-        new_wstr.append(1, chData.pCh->symbol);     //  add symbol in new wstring
+        new_wstr.append(1, chData.pCh->character);     //  add symbol in new wstring
     }
     pText->wstr = std::move(new_wstr);
     return data;

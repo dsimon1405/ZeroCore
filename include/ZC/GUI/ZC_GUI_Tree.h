@@ -13,6 +13,8 @@
 #include <iostream>
 struct ZC_GUI_Branch : public ZC_GUI_ButtonMouseText
 {
+    static inline int max_symbols = 20;   //  max symbols in text of each branch
+
     struct ColorsBranch
     {
         uint color_text = ZC_GUI_Colors::tree_branch_text;
@@ -53,6 +55,11 @@ struct ZC_GUI_Branch : public ZC_GUI_ButtonMouseText
 
         this->pObjData->width = pText->width;
         this->VMapObjData_Obj(this->pObjData, offsetof(ZC_GUI_ObjData, width), sizeof(ZC_GUI_ObjData::width), &(this->pObjData->width));
+    }
+
+    static void SetMaxSymbolsCount(int count)
+    {
+        if (count > max_symbols) max_symbols = count;
     }
 };
 
@@ -129,7 +136,7 @@ struct ZC_GUI_BranchOpenable : public ZC_GUI_Branch
 struct ZC_GUI_Tree : public ZC_GUI_ObjBorder
 {
     ZC_GUI_Branch* pActiveBranch = nullptr;
-    static const inline float newRowIndent = 10.f;
+    static inline const float newRowIndent = 20.f;
     
     struct ColorsTree
     {
@@ -311,7 +318,8 @@ private:
     void VKeyboardButtonUp_Obj(float time) override
     {
         if (!pActiveBranch) return;
-        ZC_GUI_TextInputWindow::StartInputWindow(this->Get_bl_Obj()[0], pActiveBranch->Get_bl_Obj()[1], this->VGetWidth_Obj(), pActiveBranch->GetWStr_BMT(), { &ZC_GUI_Branch::UpdateName, pActiveBranch });
+        ZC_GUI_TextInputWindow::StartInputWindow(this->Get_bl_Obj()[0], pActiveBranch->Get_bl_Obj()[1], this->VGetWidth_Obj(), ZC_GUI_Branch::max_symbols,
+            pActiveBranch->GetWStr_BMT(), { &ZC_GUI_Branch::UpdateName, pActiveBranch }, false);
     }
 
     bool VIsButtonKeyboard_Obj() override

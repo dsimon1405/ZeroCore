@@ -6,7 +6,7 @@
 
 #include <forward_list>
 
-#define ZC_AddToRenderer ZC_INT_MIN
+#define ZC_AddToRenderer INT_MIN
 
 class ZC_UBOs
 {

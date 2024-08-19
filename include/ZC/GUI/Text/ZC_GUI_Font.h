@@ -9,7 +9,7 @@ struct ZC_GUI_Font
 {
     struct Character
     {
-        wchar_t symbol;  //  character in unicode
+        wchar_t character;  //  character in unicode
         int left_offset; //  in a text string, the offset after the previous symbol
         int width;       //  fact width of element (pixels)
         int height;      //  fact height of element (pixels) (not height of data)

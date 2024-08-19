@@ -88,12 +88,12 @@ bool ZC_Buffer::GLMapNamedBufferRange_Write(GLintptr offset, GLsizeiptr length, 
 
 void ZC_Buffer::GetElementsData(ulong maxElementsIndex, ulong& storingTypeSize, GLenum& rElementsType) noexcept
 {
-    if (maxElementsIndex <= ZC_UCHAR_MAX)
+    if (maxElementsIndex <= UCHAR_MAX)
     {
         storingTypeSize = sizeof(uchar);
         rElementsType = GL_UNSIGNED_BYTE;
     }
-    else if (maxElementsIndex <= ZC_USHRT_MAX)
+    else if (maxElementsIndex <= USHRT_MAX)
     {
         storingTypeSize = sizeof(ushort);
         rElementsType = GL_UNSIGNED_SHORT;

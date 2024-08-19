@@ -1,28 +1,31 @@
 #pragma once
 
-#define ZC_CHAR_BIT 	8
-#define ZC_SCHAR_MIN 	-128
-#define ZC_SCHAR_MAX 	127
-#define ZC_UCHAR_MAX 	255     //  (0xff)
-#define ZC_CHAR_MIN 	-128
-#define ZC_CHAR_MAX 	127
-#define ZC_SHRT_MIN 	-32768
-#define ZC_SHRT_MAX 	32767
-#define ZC_USHRT_MAX 	65535   //  (0xffff)
-#define ZC_INT_MIN 	    -2147483648
-#define ZC_INT_MAX 	    2147483647
-#define ZC_UINT_MAX 	4294967295 //   (0xffffffff)
-#define ZC_LONG_MIN 	-2147483648
-#define ZC_LONG_MAX 	2147483647
-#define ZC_ULONG_MAX 	4294967295 //   (0xffffffff)
-#define ZC_LLONG_MIN 	-9223372036854775808
-#define ZC_LLONG_MAX 	9223372036854775807
-#define ZC_ULLONG_MAX 	18446744073709551615 // (0xffffffffffffffff)
+#include <climits>
+// #define ZC_CHAR_BIT 	8
+// #define ZC_CHAR_MIN 	-128
+// #define ZC_CHAR_MAX 	127
+// #define ZC_UCHAR_MAX 	255     //  (0xff)
+// #define ZC_SHRT_MIN 	-32768
+// #define ZC_SHRT_MAX 	32767
+// #define ZC_USHRT_MAX 	65535   //  (0xffff)
+// #define ZC_INT_MIN 	    -2147483648
+// #define ZC_INT_MAX 	    2147483647
+// #define ZC_UINT_MAX 	4294967295 //   (0xffffffff)
+// #define ZC_LONG_MIN 	-2147483648
+// #define ZC_LONG_MAX 	2147483647
+// #define ZC_ULONG_MAX 	4294967295 //   (0xffffffff)
+// #define ZC_LLONG_MIN 	-9223372036854775808
+// #define ZC_LLONG_MAX 	9223372036854775807
+// #define ZC_ULLONG_MAX 	18446744073709551615 // (0xffffffffffffffff)
 
-typedef unsigned long ulong;
-typedef unsigned int uint;
+typedef signed char schar;
 typedef unsigned char uchar;
 typedef unsigned short ushort;
+typedef unsigned int uint;
+typedef unsigned long ulong;
+typedef long long llong;
+typedef unsigned long long ullong;
+typedef double long ldouble;
 
 #define ZC_ROUND(val) (val + 0.5)   //  round float or double to integer value
 #define ZC_ToZeroOneRange(val) ((val + 1.0) / 2.0)  //  from range [-1,1] to range [0,1]
@@ -63,7 +66,7 @@ constexpr uint ZC_PackColorUCharToUInt(uchar r, uchar g, uchar b) noexcept
 
 constexpr ushort ZC_PackTexCoordFloatToUShort(float coord)
 {
-    return static_cast<ushort>(coord * ZC_USHRT_MAX);
+    return static_cast<ushort>(coord * USHRT_MAX);
 }
 
 constexpr int Pack_INT_2_10_10_10_REV(float x, float y, float z)

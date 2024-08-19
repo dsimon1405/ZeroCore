@@ -11,14 +11,15 @@ struct ZC_GUI_CheckBox : public ZC_GUI_ButtonMouseText
 {
     struct ColorsCheckBox
     {
-        ZC_GUI_ButtonBase::ColorsButton colorsButton;
         uint color_arrow;
         uint color_text;
+        ZC_GUI_ButtonBase::ColorsButton colorsButton;
 
-        ColorsCheckBox(const ZC_GUI_ButtonBase::ColorsButton& _colorsButton = {}, uint _color_arrow = ZC_GUI_Colors::text, uint _color_text = ZC_GUI_Colors::text)
-            : colorsButton(_colorsButton),
-            color_arrow(_color_arrow),
-            color_text(_color_text)
+        ColorsCheckBox(uint _color_arrow = ZC_GUI_Colors::checkBox_arrow, uint _color_text = ZC_GUI_Colors::checkBox_text, const ColorsButton& _colorsButton =
+                ColorsButton(ZC_GUI_Colors::checkBox_button, ZC_GUI_Colors::checkBox_button_under_cursor, ZC_GUI_Colors::checkBox_button_pressed))
+            : color_arrow(_color_arrow),
+            color_text(_color_text),
+            colorsButton(_colorsButton)
         {}
     };
 

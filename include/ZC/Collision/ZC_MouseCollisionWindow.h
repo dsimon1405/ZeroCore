@@ -21,7 +21,7 @@ public:
             trY;    //  top right corner
 
         //  by default set the width and height to be too high to fit the window exactly
-        Border(float _blX = 0, float _blY = 0, float width = ZC_INT_MAX / 2, float height = ZC_INT_MAX / 2);
+        Border(float _blX = 0, float _blY = 0, float width = INT_MAX / 2, float height = INT_MAX / 2);
         bool operator == (const Border& frame) const noexcept;
         bool MakeCollision(float cursorX, float cursorY);
     };
