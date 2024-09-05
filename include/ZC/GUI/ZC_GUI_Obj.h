@@ -34,6 +34,8 @@ struct ZC_GUI_Obj
         //  overrides in ZC_GUI_Text
     virtual void VSetWidth_Obj(float width);
     float GetHeight();
+        //  returns object total height (overrides in composite objectes)
+    virtual float VGetHeightComposite_Obj();
         //  Uses to set height. Objs for changing draw state, changes height, so all height changings must be realize with that method! That method don't call gpu changing methods.
     void SetHeight_Obj(float height);
 
@@ -64,7 +66,7 @@ struct ZC_GUI_Obj
     virtual bool VIsStacionarWin_Obj() const noexcept;    //  override in ZC_GUI_Win...
     virtual bool VIsDrawing_Obj() const noexcept;
 
-    virtual bool VAddObj_Obj(ZC_GUI_Obj* pObj, ZC_GUI_Obj* pPrevObj) { return false; }
+    virtual bool VAddObj_Obj(ZC_GUI_Obj* pObj, ZC_GUI_Obj* pPrevObj = nullptr) { return false; }
     virtual void VEraseObj_Obj(ZC_GUI_Obj* pObj) {}
     
     virtual ZC_GUI_Border& VGetBorder_Obj();

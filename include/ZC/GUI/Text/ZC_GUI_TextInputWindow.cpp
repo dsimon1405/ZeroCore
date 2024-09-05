@@ -17,9 +17,9 @@ void ZC_GUI_TextInputWindow::SetColors(uint color_background, uint color_text, u
     pTIW->VSubDataObjData_Obj(pTIW->Get_pObjData_start(), pTIW->VGet_pObjData_end());
 }
 
-bool ZC_GUI_TextInputWindow::StartInputWindow(float bl_x, float bl_y, int win_width, int max_symbols, const std::wstring& wstr, ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text)
+bool ZC_GUI_TextInputWindow::StartInputWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text)
 {
-    if (!pTIW->StartInputWindow(bl_x, bl_y, win_width, max_symbols, wstr, highlight_text)) return false;
+    if (!pTIW->StartWindow(bl_x, bl_y, win_width, _max_symbols, wstr, highlight_text)) return false;
     funcChangedWstr = std::move(_callBack);
     return true;
 }
@@ -100,9 +100,11 @@ void ZC_GUI_TextInputWindow::VSetDrawState_W(bool needDraw)
         sizeof(ZC_DrawArraysIndirectCommand::instanceCount), &(this->daic.instanceCount));
 }
 
-bool ZC_GUI_TextInputWindow::StartInputWindow(float bl_x, float bl_y, int win_width, int max_symbols, const std::wstring& wstr, bool highlight_text)
+bool ZC_GUI_TextInputWindow::StartWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, bool highlight_text)
 {
     if (this->VIsDrawing_Obj()) return false;     //  allready drawing
+
+    max_symbols = _max_symbols;
 
     int text_new_width = max_symbols * ZC_GUI_TextManager::pTM->font.GetLongestCharacterLength();
     if (text_new_width > text.VGetWidth_Obj()) text.UpdateText(ZC_GUI::pGUI->textManager.GetText(wstr, false, text_new_width, ZC_GUI_TextAlignment::Left));     //  in text width too small, need more texture space, so update pText in text
@@ -152,6 +154,32 @@ void ZC_GUI_TextInputWindow::WindowResize(float,float)
     VSetDrawState_W(false);
 }
 
+bool ZC_GUI_TextInputWindow::MoveChDataAfterErase(std::list<ZC_GUI_ChData>::iterator after_erase_iter, int deleted_width)
+{
+    bool text_moved = false;
+        //  move text pos to right
+    if (chDatasOffset < 0)
+    {
+        int offset_left_to_right = 0;
+        if (chDatasOffset * -1 >= deleted_width)
+        {
+            offset_left_to_right = deleted_width;
+            chDatasOffset += deleted_width;
+        }
+        else
+        {
+            offset_left_to_right = chDatasOffset * -1;
+            chDatasOffset = 0;
+        }
+
+        (*(text.pBL))[0] += offset_left_to_right;
+        text_moved = true;
+    }
+    for ( ; after_erase_iter != chDatas.end(); ++after_erase_iter) after_erase_iter->start_index -= deleted_width;
+
+    return text_moved;
+}
+
 
     //  Highlight
 
@@ -198,7 +226,7 @@ void ZC_GUI_TextInputWindow::Highlight::MBL_DoubleClick()
     };
 
     direction = Right;  //  double click and triple click is Right direction highlight
-
+    
     if (pTIW->caret.pChData_pos)
     {
         auto iter = std::find(pTIW->chDatas.begin(), pTIW->chDatas.end(), pTIW->caret.pChData_pos);
@@ -344,19 +372,20 @@ void ZC_GUI_TextInputWindow::Highlight::KeyboardButtonRightDown()
 
 void ZC_GUI_TextInputWindow::Highlight::BackspaceDown()
 {       //  if have hightlight delete, otherwise call caret
-    IsHighLight() ? DeleteHighlight(true) : pTIW->caret.BackspaceDown();
+    IsHighLight() ? DeleteHighlight() : pTIW->caret.BackspaceDown();
 }
 
 void ZC_GUI_TextInputWindow::Highlight::DeleteDown()
 {       //  if have hightlight delete, otherwise call caret
-    IsHighLight() ? DeleteHighlight(true) : pTIW->caret.DeleteDown();
+    IsHighLight() ? DeleteHighlight() : pTIW->caret.DeleteDown();
 }
 
 void ZC_GUI_TextInputWindow::Highlight::TextButtonDown()
 {
+    if ((int)pTIW->chDatas.size() == pTIW->max_symbols && start_x == end_x) return;
     const typename ZC_GUI_Font::Character* pCh = ZC_GUI_TextManager::pTM->font.GetCharacter(pTIW->eventHandler.wch_lastDown);
     if (!pCh || (upINumberInput && !(upINumberInput->NewCharacter(pCh->character)))) return;
-    if (IsHighLight()) DeleteHighlight(false);
+    if (IsHighLight()) DeleteHighlight();
     pTIW->caret.TextButtonDown(pCh);
 }
 
@@ -386,38 +415,27 @@ void ZC_GUI_TextInputWindow::Highlight::UpdateData()
     VMapObjData_Obj(this->pObjData, offsetof(ZC_GUI_ObjData, width), sizeof(ZC_GUI_ObjData::width), &(this->pObjData->width));
 }
 
-void ZC_GUI_TextInputWindow::Highlight::DeleteHighlight(bool needSubData)
+void ZC_GUI_TextInputWindow::Highlight::DeleteHighlight()
 {
     typename std::list<ZC_GUI_ChData>::iterator start_iter;
     typename std::list<ZC_GUI_ChData>::iterator end_iter = pTIW->chDatas.end();
-    int delete_width = 0;
     for (auto iter = pTIW->chDatas.begin(); iter != pTIW->chDatas.end(); ++iter)
     {
-        if (delete_width != 0)  //  start_iter and end_iter found, delete them width from rest symbols 
-        {
-            iter->start_index -= delete_width;
-            continue;
-        }
         if (iter->start_index + pTIW->chDatasOffset == start_x) start_iter = iter;
-        else if (iter->start_index + pTIW->chDatasOffset == end_x)
-        {
-            end_iter = iter;
-            delete_width = end_iter->start_index - start_iter->start_index;
-            end_iter->start_index -= delete_width;
-        }
+        else if (iter->start_index + pTIW->chDatasOffset == end_x) end_iter = iter;
     }
 
     ZC_GUI_ChData* pChData_caret = nullptr;
-    if (direction == Right && start_iter != pTIW->chDatas.begin())  //  prepare data for caret position (need only if direction Right)
+    if (start_iter != pTIW->chDatas.begin())  //  prepare data for caret position (need only if direction Right)
     {
         std::list<ZC_GUI_ChData>::iterator iter_caret = start_iter;
         pChData_caret = &*(--iter_caret);
     }
 
-    pTIW->chDatas.erase(start_iter, end_iter);
+    auto after_erase_iter = pTIW->chDatas.erase(start_iter, end_iter);
     pTIW->text.UpdateText(pTIW->chDatas);
     
-    if (direction == Right) pTIW->caret.SetPositionOfChData(pChData_caret, needSubData, ZC_GUI_TextInputWindow::Caret::Display);   //  need move caret
+    pTIW->caret.SetPositionOfChData(pChData_caret, true, ZC_GUI_TextInputWindow::Caret::Display, pTIW->MoveChDataAfterErase(after_erase_iter, end_x - start_x));   //  need move caret
     SetDefaultState();
 }
 
@@ -472,10 +490,9 @@ void ZC_GUI_TextInputWindow::Caret::SetDrawState(DrawState _drawState)
     }
 }
 
-void ZC_GUI_TextInputWindow::Caret::SetPositionOfChData(ZC_GUI_ChData* _pChData_pos, bool needSubData, DrawState _drawState)
+void ZC_GUI_TextInputWindow::Caret::SetPositionOfChData(ZC_GUI_ChData* _pChData_pos, bool needSubData, DrawState _drawState, bool texturePosChanged)
 {
     pChData_pos = _pChData_pos;
-    bool texturePosChanged = false;
     if (pChData_pos)    //   have object
     {
         int caretPos_start = _pChData_pos->start_index + pTIW->chDatasOffset + (&(pTIW->chDatas.front()) == pChData_pos ? 0 : _pChData_pos->pCh->left_offset)
@@ -552,10 +569,11 @@ void ZC_GUI_TextInputWindow::Caret::KeyboardButtonLeftDown(bool needSubData)
             SetPositionOfChData(nullptr, needSubData, Display);
             return;
         }
-        while (true)
+        
+        for (bool text_reached = false; ; )
         {
             --iter;
-            if (iter->pCh->character == L' ')  //  reached whitespace
+            if (text_reached && iter->pCh->character == L' ')  //  reached whitespace
             {
                 SetPositionOfChData(&*iter, needSubData, Display);
                 return;
@@ -565,6 +583,7 @@ void ZC_GUI_TextInputWindow::Caret::KeyboardButtonLeftDown(bool needSubData)
                 SetPositionOfChData(nullptr, needSubData, Display);
                 return;
             }
+            if (iter->pCh->character != L' ') text_reached = true;
         }
     }
     else SetPositionOfChData(pTIW->chDatas.begin() == iter ? nullptr : &*(--iter), true, Display);
@@ -614,16 +633,13 @@ void ZC_GUI_TextInputWindow::Caret::BackspaceDown()
     else if (ZC_Events::IsButtonPressed(K_LCTRL) || ZC_Events::IsButtonPressed(K_RCTRL))    //  dleete from caret to the begin of the word
     {
         auto last_iter = iter;
-        bool text_reached = false;
-        for (; ; --iter)    //  search white space
+        for ( ; iter != pTIW->chDatas.begin(); --iter)
         {
-            if (text_reached && iter->pCh->character == L' ')  //  word's start reached
+            if (last_iter->pCh->character == L' ' ? iter->pCh->character != L' ' : iter->pCh->character == L' ')
             {
                 ++iter;
                 break;
             }
-            else if (iter == pTIW->chDatas.begin()) break;   //  reached text's begin
-            else text_reached = true;
         }
         int deleted_width = (last_iter->start_index + last_iter->pCh->left_offset + last_iter->pCh->width) - iter->start_index;     //  need left offset caurse it's not first symbol anyway
         iter = pTIW->chDatas.erase(iter, ++last_iter);
@@ -633,17 +649,17 @@ void ZC_GUI_TextInputWindow::Caret::BackspaceDown()
             pChData_newCaretPos = &*(--iter);
             ++iter;
         }
-        for ( ; iter != pTIW->chDatas.end(); ++iter) iter->start_index -= deleted_width;
-        SetPositionOfChData(pChData_newCaretPos, true, Display);
+
+        SetPositionOfChData(pChData_newCaretPos, true, Display, pTIW->MoveChDataAfterErase(iter, deleted_width));
         pTIW->text.UpdateText(pTIW->chDatas);
     }
     else
     {
-        int deleted_width = iter->pCh->left_offset + iter->pCh->width;     //  need left offset caurse it's not first symbol anyway
+        int deleted_width = iter->pCh->left_offset + iter->pCh->width;     //  need left_offset caurse it's not first symbol anyway
         iter = pTIW->chDatas.erase(iter);
         auto prev_iter = --iter;
-        for (++iter; iter != pTIW->chDatas.end(); ++iter) iter->start_index -= deleted_width;
-        SetPositionOfChData(&*prev_iter, true, Display);
+        // for (++iter; iter != pTIW->chDatas.end(); ++iter) iter->start_index -= deleted_width;
+        SetPositionOfChData(&*prev_iter, true, Display, pTIW->MoveChDataAfterErase(++iter, deleted_width));
         pTIW->text.UpdateText(pTIW->chDatas);
     }
 }
@@ -662,7 +678,7 @@ void ZC_GUI_TextInputWindow::Caret::DeleteDown()
         for (++iter; iter != pTIW->chDatas.end(); ++iter)
         {
             if (text_reached && iter->pCh->character == L' ') break;
-            else text_reached = true;
+            if (iter->pCh->character != L' ') text_reached = true;
             
             deleted_width += iter->pCh->left_offset + iter->pCh->width;     //  allways not first symbol add left offset
         }
@@ -769,7 +785,7 @@ ZC_GUI_Obj* ZC_GUI_TextInputWindow::EventHandler::AddButtonDown(ZC_ButtonID butt
             case Triple:
             {
                 mbl_click = Double;
-                clock_click.Restart<ZC_Nanoseconds>() <= waitPressNanoseconds ? pTIW->highlight.MBL_TripleClick() : lamb_oneClick();  //  Tiple click or back to First click
+                clock_click.Restart<ZC_Nanoseconds>() <= waitPressNanoseconds ? pTIW->highlight.MBL_TripleClick() : lamb_oneClick();  //  Triple click or back to First click
             } break;
             }
         }

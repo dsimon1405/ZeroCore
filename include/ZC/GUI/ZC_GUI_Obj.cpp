@@ -62,6 +62,11 @@ float ZC_GUI_Obj::GetHeight()
     return actual_height;   //  allways actual, pObjData->height may be 0 if obj not drawing
 }
 
+float ZC_GUI_Obj::VGetHeightComposite_Obj()
+{
+    return actual_height;
+}
+
 void ZC_GUI_Obj::SetHeight_Obj(float height)
 {
     actual_height = height;

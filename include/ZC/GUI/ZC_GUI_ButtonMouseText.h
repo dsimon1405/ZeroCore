@@ -23,6 +23,14 @@ struct ZC_GUI_ButtonMouseText : public ZC_GUI_ButtonMouse
         if (height < textForButton.GetHeight()) this->SetHeight_Obj(textForButton.GetHeight());
     }
 
+    ZC_GUI_ButtonMouseText(ZC_GUI_ButtonMouseText&& bmt)
+        : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(bmt)),
+        ZC_GUI_ButtonMouse(dynamic_cast<ZC_GUI_ButtonMouse&&>(bmt)),
+        textForButton(std::move(bmt.textForButton))
+    {
+        this->VAddObj_Obj(&textForButton, nullptr);
+    }
+
     /*
     Update text in wstring. Data updates only if pixel width of new string less or equal current width. Text width don't change in any case.
 
@@ -46,13 +54,13 @@ struct ZC_GUI_ButtonMouseText : public ZC_GUI_ButtonMouse
     }
 
 protected:
+    ZC_GUI_TextForButton textForButton;
+
     void UpdateText_BMT(ZC_GUI_TextManager::Text* pText)
     {
         textForButton.UpdateText(pText);
     }
-
-    ZC_GUI_TextForButton textForButton;
-
+    
     float VGetWidthComposite_Obj() override
     {
         return textForButton.indent.indentFlag_X == ZC_GUI_TextForButton::Indent::OutOfButton ? this->VGetWidth_Obj() + this->objs.front()->VGetWidthComposite_Obj() : this->VGetWidth_Obj();
@@ -60,6 +68,6 @@ protected:
 
     void VConf_SetTextUV_Obj() override
     {
-        this->objs.front()->VConf_SetTextUV_Obj();
+        textForButton.VConf_SetTextUV_Obj();
     }
 };

@@ -80,18 +80,18 @@ struct ZC_GUI_BranchOpenable : public ZC_GUI_Branch
     struct ArrowButton : public ZC_GUI_ButtonMouse
     {
         ArrowButton(float size, bool isOpen, const ZC_GUI_ButtonBase::ColorsButton& colorsArrowButton)
-            : ZC_GUI_ButtonBase(ZC_GUI_ObjData(size, size, 0, isOpen ? ZC_GUI_IconUV::arrowDown : ZC_GUI_IconUV::arrowRight, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None, colorsArrowButton),
+            : ZC_GUI_ButtonBase(ZC_GUI_ObjData(size, size, 0, isOpen ? ZC_GUI_IconUV::arrow_down : ZC_GUI_IconUV::arrow_right, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None, colorsArrowButton),
             ZC_GUI_ButtonMouse(size, size, ZC_GUI_BF__None)
         {}
 
         bool IsOpen()
         {
-            return this->pObjData->uv.bl[0] == ZC_GUI_IconUV::arrowDown.bl[0];
+            return this->pObjData->uv.bl[0] == ZC_GUI_IconUV::arrow_down.bl[0];
         }
 
         void ChangeArrow()
         {
-            this->pObjData->uv = IsOpen() ? ZC_GUI_IconUV::arrowRight : ZC_GUI_IconUV::arrowDown;
+            this->pObjData->uv = IsOpen() ? ZC_GUI_IconUV::arrow_right : ZC_GUI_IconUV::arrow_down;
             this->VMapObjData_Obj(this->pObjData, offsetof(ZC_GUI_ObjData, uv), sizeof(ZC_GUI_ObjData::uv), &(this->pObjData->uv));
         }
 

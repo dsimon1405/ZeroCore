@@ -14,8 +14,9 @@ struct ZC_GUI_ObjComposite : public ZC_GUI_Obj
     {}
 
     ZC_GUI_ObjComposite(ZC_GUI_ObjComposite&& oc)
-        : ZC_GUI_Obj(dynamic_cast<ZC_GUI_Obj&&>(oc)),
-        objs(std::move(oc.objs))
+        : ZC_GUI_Obj(dynamic_cast<ZC_GUI_Obj&&>(oc))
+        // ,
+        // objs(std::move(oc.objs))
     {}
     
     ~ZC_GUI_ObjComposite()
@@ -62,7 +63,7 @@ struct ZC_GUI_ObjComposite : public ZC_GUI_Obj
         return total_bottom;
     }
 
-    bool VAddObj_Obj(ZC_GUI_Obj* pObj, ZC_GUI_Obj* pPrevObj) override
+    bool VAddObj_Obj(ZC_GUI_Obj* pObj, ZC_GUI_Obj* pPrevObj = nullptr) override
     {
         if (pPrevObj)
         {

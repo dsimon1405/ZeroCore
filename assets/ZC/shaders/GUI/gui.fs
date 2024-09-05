@@ -1,4 +1,5 @@
 #version 460 core
+
 //  in
 struct ZC_GUI_Border
 {
@@ -12,7 +13,11 @@ layout (location = 0) in InF
     flat int borderIndex;       //  if -1, don't need border check
     flat uint tex_binding;     //  0 is tex_Icon, 1 is tex_Text(alpha)
     vec2 uv;
-    flat uint color;
+        //  colors
+    float red;
+    float green;
+    float blue;
+    float alpha;     //  alpha sets only in color pack uint32 -> 8x8x8x8 in ZC_GUI_ColorManipulator
 } inF;
 
 layout (location = 0, binding = 0) uniform sampler2D tex_Icon;
@@ -20,6 +25,8 @@ layout (location = 1, binding = 1) uniform sampler2D tex_Text;
     
 //  out
 layout (location = 0) out vec4 FragColor;
+
+void AddColorsToTexture();
 
 void main()
 {
@@ -29,17 +36,32 @@ void main()
         if (border.bl.x > gl_FragCoord.x || border.bl.y > gl_FragCoord.y || border.tr.x < gl_FragCoord.x || border.tr.y < gl_FragCoord.y) discard; 
     }
 
-    if (inF.tex_binding == 0) FragColor = texture(tex_Icon, inF.uv);
-    else FragColor = vec4(0, 0, 0, texture(tex_Text, inF.uv).r);
-
-    if (FragColor.a == 0) discard;
-
-    if (inF.color != 0)
+    switch (inF.tex_binding)    //  classification in ZC_GUI_Bindings.h
     {
-        FragColor.r += (inF.color >> 20) / 255.f;
-        FragColor.g += (inF.color >> 10 & uint(1023)) / 255.f;
-        FragColor.b += (inF.color & uint(1023)) / 255.f;
+    case 0:     //  icons texture
+    {
+        FragColor = texture(tex_Icon, inF.uv);
+        AddColorsToTexture();
+    } break;
+    case 1:     //  text texture
+    {
+        FragColor = vec4(0, 0, 0, texture(tex_Text, inF.uv).r);
+        AddColorsToTexture();
+    } break;
+    case 10: FragColor = vec4(inF.red, inF.green, inF.blue, inF.alpha); break;    //  ZC_GUI_ColorManipulator (result_triangle), haven't texture, only rgba
+    case 11: FragColor = vec4(inF.red, inF.green, inF.blue, 1.f); break;    //  ZC_GUI_ColorManipulator (saturation_triangle), haven't texture, only rgb
+    case 12: FragColor = FragColor = texture(tex_Icon, inF.uv); break;      //  ZC_GUI_ColorManipulator (alpha_triangle), have texture
+    default: break;
     }
+}
+
+void AddColorsToTexture()
+{
+    if (FragColor.a == 0) discard;
+        //  adds colors to texture color
+    FragColor.r += inF.red;
+    FragColor.g += inF.green;
+    FragColor.b += inF.blue;
 }
 
 

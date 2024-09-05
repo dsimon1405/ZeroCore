@@ -49,7 +49,7 @@ namespace ZC_GUI_Colors
         //  text
     extern uint checkBox_text;
 
-    //  Number
+    //  ButtonNumber
         //  button
     extern uint number_button;
     extern uint number_button_under_cursor;

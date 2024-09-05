@@ -6,6 +6,8 @@
 #include <ZC/Tools/Math/ZC_Math.h>
 #include <ZC/GUI/ZC_GUI_Colors.h>
 
+#include <cmath>
+
 //  Text is created once and until the end of the program (cannot be changed)
 struct ZC_GUI_Text : public ZC_GUI_Obj
 {
@@ -95,11 +97,6 @@ struct ZC_GUI_Text : public ZC_GUI_Obj
         return actual_width;
     }
 
-protected:
-    bool isImmutable;
-    typename ZC_GUI_TextManager::Text* pText;
-    float actual_width;     //  mutable textuew can get Texts with different texture width. Object's width must be updated with Text width (to have don't wraped texture size). So actual_width is object width actual width. this->pObjData->width can have less or equal actual_width from new Text.
-
     void VConf_SetTextUV_Obj() override
     {
         this->pObjData->uv = pText->uv;
@@ -109,6 +106,17 @@ protected:
     {
         pObjData->width = width < actual_width ? width : actual_width;     //  can't be set width large then actual_width
     }
+
+    void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override
+    {
+        *pBL = ZC_Vec2<float>(std::round(_bl[0]), std::round(_bl[1]));
+    }
+
+protected:
+    bool isImmutable;
+    typename ZC_GUI_TextManager::Text* pText;
+    float actual_width;     //  mutable texture can get Texts with different texture width. Object's width must be updated with Text width (to have don't wraped texture size). So actual_width is object width actual width. this->pObjData->width can have less or equal actual_width from new Text.
+
 };
 
 
@@ -118,7 +126,7 @@ struct ZC_GUI_TextForButton : public ZC_GUI_Text
 {
     struct Indent
     {
-        enum Indent_X
+        enum Location
         {
             Left,       //  indent X calculates from the left border
             Right,      //  indent X calculates from right border
@@ -126,9 +134,9 @@ struct ZC_GUI_TextForButton : public ZC_GUI_Text
             OutOfButton //  out of button (from right side)
         };
         float indent_x = 0.f;       //  indent from buttons left/right border
-        Indent_X indentFlag_X = Left;   //  indent specifier for indent_x
+        Location indentFlag_X = Left;   //  indent specifier for indent_x
 
-        Indent(float _indent_x, Indent_X _indentFlag_X)
+        Indent(float _indent_x, Location _indentFlag_X)
             : indent_x(_indent_x < 0.f || _indentFlag_X == Center ? 0.f : _indent_x),
             indentFlag_X(_indentFlag_X)
         {}
@@ -150,19 +158,19 @@ struct ZC_GUI_TextForButton : public ZC_GUI_Text
         {
         case Indent::Left:
         {
-            *pBL = ZC_Vec2<float>(_bl[0] + indent.indent_x, _bl[1] + ((pObjHolder->GetHeight() - this->GetHeight()) / 2.f));
+            *pBL = ZC_Vec2<float>(std::round(_bl[0] + indent.indent_x), std::round(_bl[1] + ((pObjHolder->GetHeight() - this->GetHeight()) / 2.f)));
         } break;
         case Indent::Right:
         {
-            *pBL = ZC_Vec2<float>(_bl[0] + pObjHolder->VGetWidth_Obj() - indent.indent_x - this->VGetWidth_Obj(), _bl[1] + ((pObjHolder->GetHeight() - this->GetHeight()) / 2.f));
+            *pBL = ZC_Vec2<float>(std::round(_bl[0] + pObjHolder->VGetWidth_Obj() - indent.indent_x - this->VGetWidth_Obj()), std::round(_bl[1] + ((pObjHolder->GetHeight() - this->GetHeight()) / 2.f)));
         } break;
         case Indent::Center:
         {
-            *pBL = ZC_Vec2<float>(_bl[0] + ((pObjHolder->VGetWidth_Obj() - this->VGetWidth_Obj()) / 2.f), _bl[1] + ((pObjHolder->GetHeight() - this->GetHeight()) / 2.f));
+            *pBL = ZC_Vec2<float>(std::round(_bl[0] + ((pObjHolder->VGetWidth_Obj() - this->VGetWidth_Obj()) / 2.f)), std::round(_bl[1] + ((pObjHolder->GetHeight() - this->GetHeight()) / 2.f)));
         } break;
         case Indent::OutOfButton:
         {
-            *pBL = ZC_Vec2<float>(_bl[0] + pObjHolder->VGetWidth_Obj() + indent.indent_x, _bl[1] + ((pObjHolder->GetHeight() - this->GetHeight()) / 2.f));
+            *pBL = ZC_Vec2<float>(std::round(_bl[0] + pObjHolder->VGetWidth_Obj() + indent.indent_x), std::round(_bl[1] + ((pObjHolder->GetHeight() - this->GetHeight()) / 2.f)));
         } break;
         }
     }

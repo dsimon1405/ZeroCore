@@ -308,8 +308,9 @@ void ZC_GUI_Row::CalculateObjs_bl(ZC_Vec2<float>& border_tl, float border_width)
         for (ZC_GUI_Obj* pObj : objs)
         {
             cur_x += pObj == objs.front() ? rowParams.indent_x : rowParams.distance_x;
-            if (pObj->GetHeight() > rowParams.height) rowParams.height = pObj->GetHeight(); //  update the row height to a higher one
-            pObj->VSet_pBL_Obj({ cur_x, border_tl[1] - pObj->GetHeight() });
+            float compositeHeight = pObj->VGetHeightComposite_Obj();
+            if (compositeHeight > rowParams.height) rowParams.height = compositeHeight; //  update the row height to a higher one
+            pObj->VSet_pBL_Obj({ cur_x, border_tl[1] - compositeHeight });
             cur_x += pObj->VGetWidthComposite_Obj();
         }
     };
@@ -323,8 +324,9 @@ void ZC_GUI_Row::CalculateObjs_bl(ZC_Vec2<float>& border_tl, float border_width)
         for (ZC_GUI_Obj* pObj : objs)
         {
             cur_x -= pObj == objs.front() ? rowParams.indent_x : rowParams.distance_x;
-            if (pObj->GetHeight() > rowParams.height) rowParams.height = pObj->GetHeight(); //  update the row height to a higher one
-            pObj->VSet_pBL_Obj({ cur_x, border_tl[1] - pObj->GetHeight() });
+            float compositeHeight = pObj->VGetHeightComposite_Obj();
+            if (compositeHeight > rowParams.height) rowParams.height = compositeHeight; //  update the row height to a higher one
+            pObj->VSet_pBL_Obj({ cur_x, border_tl[1] - compositeHeight });
             cur_x -= pObj->VGetWidthComposite_Obj();
         }
     } break;
@@ -429,7 +431,7 @@ void ZC_GUI_ObjBorder::Scroll::CalculateScrollData(bool updateGPU)
     float caret_height = this->GetHeight() * caret.height_coef;
     if (this->VIsConfigured_Obj() && caret.VIsDrawing_Obj()) caret.pObjData->height = caret_height;   //  need update height if obj is drawing. Must be before changing caret.actual_height, caurse: caret.actual_height must be 0.f or equal caret.height
     caret.actual_height = caret_height;   //  must be updated actual_height
-    
+
     if (caret.VIsDrawing_Obj() && updateGPU)
         VMapObjData_Obj(caret.pObjData, offsetof(ZC_GUI_ObjData, height), sizeof(ZC_GUI_ObjData::height), &(caret.pObjData->height));      //  if need gpu update and caret drawing, update height
     caret_move_max = total_height - this->GetHeight();
@@ -499,8 +501,15 @@ float ZC_GUI_ObjBorder::Scroll::GetCursor_Y()
 }
 
 
+    //  ZC_GUI_ObjBorder::Scroll::ColorsScroll
 
-    //  ZC_GUI_ObjBorder::ScrollCaret::Caret
+ZC_GUI_ObjBorder::Scroll::ColorsScroll::ColorsScroll(uint _color_scroll_background, const ZC_GUI_ButtonBase::ColorsButton& _colors_caret_scroll)
+    : color_scroll_background(_color_scroll_background),
+    colors_caret_scroll(_colors_caret_scroll)
+{}
+
+
+    //  ZC_GUI_ObjBorder::Scroll::Caret
 
 ZC_GUI_ObjBorder::Scroll::Caret::Caret(const ColorsScroll& colorsScroll)
     : ZC_GUI_ButtonBase(ZC_GUI_ObjData(Scroll::scroll_width, 0.f, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF_M__CursorMoveOnMBLPress, colorsScroll.colors_caret_scroll),
@@ -530,6 +539,7 @@ void ZC_GUI_ObjBorder::Scroll::Caret::VCursorMove_Obj(float rel_x, float rel_y)
 
 
     //  ZC_GUI_ObjBorder::ColorsObjBorder
+
 ZC_GUI_ObjBorder::ColorsObjBorder::ColorsObjBorder(const Scroll::ColorsScroll& _colorsScroll, uint _color_frame)
     : colorsScroll(_colorsScroll),
     color_frame(_color_frame)

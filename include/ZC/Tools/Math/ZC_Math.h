@@ -1,5 +1,8 @@
 #pragma once
 
+#include "ZC_Vec2.h"
+#include "ZC_Vec3.h"
+
 #include <climits>
 // #define ZC_CHAR_BIT 	8
 // #define ZC_CHAR_MIN 	-128
@@ -35,51 +38,70 @@ typedef double long ldouble;
 Packs color from 3 float channels into one uint[32] indices -> [0-1] nothing, [2-11] red, [12-21] green, [22-31] blue.
 
 Params:
-r - red color (range 0.f - 1.f).
-g - green color (range 0.f - 1.f).
-b - blue color (range 0.f - 1.f).
+- r - red color (range 0.f - 1.f).
+- g - green color (range 0.f - 1.f).
+- b - blue color (range 0.f - 1.f).
 
 Return:
 On success packed color, otherwise 0.
 */
-constexpr uint ZC_PackColorFloatToUInt(float r, float g, float b) noexcept
-{
-    if (r < 0.f || r > 1.f || g < 0.f || g > 1.f || b < 0.f || b > 1.f) return 0;
-    return ((uint)(r * 255.f) << 10 | (uint)(g * 255.f)) << 10 | (uint)(b * 255.f);
-};
+uint ZC_PackColorFloatToUInt_RGB(float r, float g, float b) noexcept;
+
+uint ZC_PackColorFloatToUInt_RGBA(float r, float g, float b, float a) noexcept;
 
 /*
 Packs color from 3 float channels into one uint[32] indices -> [0-1] nothing, [2-11] red, [12-21] green, [22-31] blue.
 
 Params:
-r - red color (range 0.f - 1.f).
-g - green color (range 0.f - 1.f).
-b - blue color (range 0.f - 1.f).
+- r - red color (range 0.f - 1.f).
+- g - green color (range 0.f - 1.f).
+- b - blue color (range 0.f - 1.f).
 
 Return:
 On success packed color, otherwise 0.
 */
-constexpr uint ZC_PackColorUCharToUInt(uchar r, uchar g, uchar b) noexcept
-{
-    return ((static_cast<uint>(r) << 10) | static_cast<uint>(g)) << 10 | static_cast<uint>(b);
-};
+uint ZC_PackColorUCharToUInt_RGB(uchar r, uchar g, uchar b) noexcept;
 
-constexpr ushort ZC_PackTexCoordFloatToUShort(float coord)
-{
-    return static_cast<ushort>(coord * USHRT_MAX);
-}
+uint ZC_PackColorUcharToUInt_RGBA(uchar r, uchar g, uchar b, uchar a) noexcept;
 
-constexpr int Pack_INT_2_10_10_10_REV(float x, float y, float z)
-{
-    //  pack float in signed byte array[10]:
-    //  array[0] - sign (0 is pluss, 1 is minus);
-    //  array[1 - 9] - number;
-    //  512(min), 511(max) signed byte[9] values.
-    auto packIn10Bytes = [](float val) -> int
-    {
-        return  val < 0 ?
-        512 | static_cast<int>(ZC_ROUND(512.f + val * 512.f))
-        : static_cast<int>(ZC_ROUND(val * 511.f));
-    };
-    return ((packIn10Bytes(z) << 20) | (packIn10Bytes(y) << 10)) | packIn10Bytes(x);
-};
+ushort ZC_PackTexCoordFloatToUShort(float coord);
+
+int ZC_Pack_INT_2_10_10_10_REV(float x, float y, float z);
+
+/*
+Params:
+- a, b, c - triangle points coords.
+- p - point to check.
+
+Return:
+true if point belong triangle, otherwise false.
+*/
+bool ZC_IsPointBelongTriangle_2D(const ZC_Vec2<float>& a, const ZC_Vec2<float>& b, const ZC_Vec2<float>& c, const ZC_Vec2<float>& p);
+
+ZC_Vec3<float> ZC_CalculateTriangleBarycenters(const ZC_Vec2<float>& a, const ZC_Vec2<float>& b, const ZC_Vec2<float>& c, const ZC_Vec2<float>& p);
+
+/*
+Calculate barycenters and check is point belong triangle.
+
+Params:
+- a, b, c - triangle points coords.
+- p - point to check.
+- barycenters - here will be set barycenters.
+
+Return:
+true if (p) belong triangle (a,b,c), otherwise false.
+*/
+bool ZC_IsPointBelongTriangle_2D(const ZC_Vec2<float>& a, const ZC_Vec2<float>& b, const ZC_Vec2<float>& c, const ZC_Vec2<float>& p, ZC_Vec3<float>& barycenters);
+
+/*
+Find intercection point of two lines in 2D.
+
+Params:
+- p1, p2 - first line coords.
+- p3, p4 - second line coords.
+- rPoint - place for intersection point.
+
+Return:
+true if lines intersects, otherwise false and rPoint value don't changing.
+*/
+bool ZC_FindLineIntercectionPoint_2D(const ZC_Vec2<float>& p1, const ZC_Vec2<float>& p2, const ZC_Vec2<float>& p3, const ZC_Vec2<float>& p4, ZC_Vec2<float>& rPoint);

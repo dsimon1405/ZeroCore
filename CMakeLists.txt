@@ -188,6 +188,7 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_TornToCamera.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_WindowOrthoIndent.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_ButtonManipulator.cpp
+	${PROJECT_SOURCE_DIR}/src/Tools/Math/ZC_Math.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_MakeErrorString.cpp
 	${PROJECT_SOURCE_DIR}/src/File/Read/ZC_FileReader.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_ErrorLogger.cpp
@@ -226,12 +227,13 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ButtonKeyboard.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ButtonMouseAndKeyboard.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ButtonBase.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_IconUV.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_Colors.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_ColorManipulator.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Text/ZC_GUI_Font.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Text/ZC_GUI_FontLoader.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Text/ZC_GUI_TextManager.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Text/ZC_GUI_TextInputWindow.cpp
-	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_IconUV.cpp
-	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI_Colors.cpp
 	)
 
 #========================= include dirs

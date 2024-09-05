@@ -44,7 +44,11 @@ layout (location = 0) out OutG
     int borderIndex;    //  if -1, don't need border check
     uint tex_binding;
     vec2 uv;
-    uint color;
+        //  colors
+    float red;
+    float green;
+    float blue;
+    float alpha;     //  alpha sets only in color pack uint32 -> 8x8x8x8 in ZC_GUI_ColorManipulator
 } outG;
 
 
@@ -81,12 +85,33 @@ bool ConfigureBorder(int borderIndex, vec2 bl, vec2 br, vec2 tl, vec2 tr)
     return true;
 }
 
-void SetVertex(float u, float v, vec2 pos, float depth)
+void SetVertex(vec2 pos, float depth)
 {
-    outG.uv = vec2(u, v);
     gl_Position = ortho * vec4(pos, 0, 1);
     gl_Position.z = depth;
     EmitVertex();
+}
+
+void SetVertex(float u, float v, vec2 pos, float depth)
+{
+    outG.uv = vec2(u, v);
+    SetVertex(pos, depth);
+}
+
+void UnpackAndSetColor(uint color)
+{
+    if (color != 0)
+    {
+        outG.red = (color >> 20) / 255.f;
+        outG.green = (color >> 10 & uint(1023)) / 255.f;
+        outG.blue = (color & uint(1023)) / 255.f;
+    }
+    else
+    {
+        outG.red = 0.f;
+        outG.green = 0.f;
+        outG.blue = 0.f;
+    }
 }
 
 void main()
@@ -102,7 +127,7 @@ void main()
     ZC_GUI_ObjData objData = inObjData.objDatas[vertIndex];
     if (objData.height == 0 && Discard()) return;   //  object not drawing
         //  border
-    if (objData.borderIndex != -1)  //- if -1 it's window's frame (don't have border)
+    if (objData.borderIndex != -1)  // if -1 it's window's frame (don't have border)
     {
         ZC_GUI_Border border = inBorder.borders[objData.borderIndex];
         if (border.bl.x == border.tr.x && Discard()) return;      //  not valid border (border in the window, but now outside the window border) discard element
@@ -122,12 +147,61 @@ void main()
     
         //  texture index
     outG.tex_binding = objData.tex_binding;
-    outG.color = objData.color;
 
-        //  vertices
-    SetVertex(objData.uv[0], objData.uv[1], bl, depth);
-    SetVertex(objData.uv[2], objData.uv[1], br, depth);
-    SetVertex(objData.uv[0], objData.uv[3], tl, depth);
-    SetVertex(objData.uv[2], objData.uv[3], tr, depth);
+    switch (outG.tex_binding)    //  classification in ZC_GUI_Bindings.h
+    {
+    case 10:     //  result triangle, don't have texture, just a color RGBA packed uint32 -> 8x8x8x8 (look ZC_GUI_ColorManipulator)
+    {
+        if (objData.color != 0)
+        {
+            outG.red = (objData.color >> 24 & uint(255)) / 255.f;
+            outG.green = (objData.color >> 16 & uint(255)) / 255.f;
+            outG.blue = (objData.color >> 8 & uint(255)) / 255.f;
+            outG.alpha = (objData.color & uint(255)) / 255.f;
+        }
+        else
+        {
+            outG.red = 0.f;
+            outG.green = 0.f;
+            outG.blue = 0.f;
+            outG.alpha = 0.f;
+        }
+            //  vertices
+        SetVertex(bl, depth);
+        SetVertex(br, depth);
+        SetVertex(tl, depth);
+    } break;
+    case 11:     //  saturation triangle, don't have texture, just a color RGB packed uint32 -> 2x10x10x10 (look ZC_GUI_ColorManipulator)
+    {       //  set black color
+        outG.red = 0.f;
+        outG.green = 0.f;
+        outG.blue = 0.f;
+        SetVertex(br, depth);   //  uses black color
+            //  set white color
+        outG.red = 1.f;
+        outG.green = 1.f;
+        outG.blue = 1.f;
+        SetVertex(tl, depth);   //  uses white color
+            //  set saturatuion color
+        UnpackAndSetColor(objData.color);
+        SetVertex(tr, depth);   //  uses saturation color
+    } break;
+    case 12:    //  alpha triangle, have texture
+    {
+        UnpackAndSetColor(objData.color);
+        SetVertex(objData.uv[0], objData.uv[1], bl, depth);
+        SetVertex(objData.uv[2], objData.uv[1], br, depth);
+        SetVertex(objData.uv[0], objData.uv[3], tl, depth);
+    }
+    default:    //  uses texture, color RGB packed uint32 -> 2x10x10x10 (2 unused), that color adds to texture, if it is
+    {
+        UnpackAndSetColor(objData.color);
+            //  vertices
+        SetVertex(objData.uv[0], objData.uv[1], bl, depth);
+        SetVertex(objData.uv[2], objData.uv[1], br, depth);
+        SetVertex(objData.uv[0], objData.uv[3], tl, depth);
+        SetVertex(objData.uv[2], objData.uv[3], tr, depth);
+    } break;
+    }
     EndPrimitive();
 }

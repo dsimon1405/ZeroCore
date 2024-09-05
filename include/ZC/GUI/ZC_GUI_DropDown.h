@@ -29,7 +29,7 @@ struct ZC_GUI_DropDown : public ZC_GUI_ButtonMouseText
         : ZC_GUI_ButtonBase(ZC_GUI_ObjData(CalculateWidth(variants), float(ZC_GUI_TextManager::GetFontHeight()), 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None),
         ZC_GUI_ButtonMouseText(this->VGetWidth_Obj(), this->GetHeight(), ZC_GUI_BF__None,
             ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(textIndent_x, ZC_GUI_TextForButton::Indent::Left), variants.front(), false, this->VGetWidth_Obj() - textIndent_x - drop_icon_size, ZC_GUI_TextAlignment::Left)),
-        obj_dd_icon(drop_icon_size, drop_icon_size, 0.f, 0, ZC_GUI_IconUV::arrowDown, 0, ZC_GUI_Bindings::bind_tex_Icons),
+        obj_dd_icon(drop_icon_size, drop_icon_size, 0.f, 0, ZC_GUI_IconUV::arrow_down, 0, ZC_GUI_Bindings::bind_tex_Icons),
         bmts(Fill_bmts(variants)),
         win_dd(ZC_WOIData(this->VGetWidth_Obj(), this->GetHeight() * (bmts.size() - 1), 0.f, 0.f, ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel), ZC_GUI_WF__None),
         pBMT_active(&(bmts[active_variant]))
@@ -73,7 +73,7 @@ private:
         ZC_GUI::pGUI->eventManager.SetMouseButtonDownWatcherObj(this);
         ecWinResize.NewConnection(ZC_Events::ConnectWindowResize({ &ZC_GUI_DropDown::SWindowResized, this }));
 
-        obj_dd_icon.pObjData->uv = ZC_GUI_UV{ .bl{ ZC_GUI_IconUV::arrowDown.tr[0], ZC_GUI_IconUV::arrowDown.bl[1] }, .tr{ ZC_GUI_IconUV::arrowDown.bl[0], ZC_GUI_IconUV::arrowDown.tr[1] } };
+        obj_dd_icon.pObjData->uv = ZC_GUI_UV{ .bl{ ZC_GUI_IconUV::arrow_down.tr[0], ZC_GUI_IconUV::arrow_down.bl[1] }, .tr{ ZC_GUI_IconUV::arrow_down.bl[0], ZC_GUI_IconUV::arrow_down.tr[1] } };
         VMapObjData_Obj(obj_dd_icon.pObjData, offsetof(ZC_GUI_ObjData, uv), sizeof(ZC_GUI_ObjData::uv), &(obj_dd_icon.pObjData->uv));
     }
 
@@ -145,7 +145,7 @@ private:
         ZC_GUI::pGUI->eventManager.SetMouseButtonDownWatcherObj(nullptr);
         ecWinResize.Disconnect();
         
-        obj_dd_icon.pObjData->uv = ZC_GUI_IconUV::arrowDown;
+        obj_dd_icon.pObjData->uv = ZC_GUI_IconUV::arrow_down;
         VMapObjData_Obj(obj_dd_icon.pObjData, offsetof(ZC_GUI_ObjData, uv), sizeof(ZC_GUI_ObjData::uv), &(obj_dd_icon.pObjData->uv));
     }
 

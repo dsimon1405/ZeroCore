@@ -29,7 +29,7 @@ struct ZC_GUI_CheckBox : public ZC_GUI_ButtonMouseText
         ZC_GUI_ButtonMouseText(0, 0, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(ZC_GUI::pGUI->textManager.GetFontHeight() * 0.5f, ZC_GUI_TextForButton::Indent::OutOfButton),
                 name, true, 0, ZC_GUI_TextAlignment::Left, colorsCheckBox.color_text)),
         isOn(_isOn),
-        objArrow(ZC_GUI_ObjData(this->VGetWidth_Obj(), this->GetHeight(), colorsCheckBox.color_arrow, ZC_GUI_IconUV::arrowDown, ZC_GUI_Bindings::bind_tex_Icons))
+        objArrow(ZC_GUI_ObjData(this->VGetWidth_Obj(), this->GetHeight(), colorsCheckBox.color_arrow, ZC_GUI_IconUV::arrow_down, ZC_GUI_Bindings::bind_tex_Icons))
     {
         this->VAddObj_Obj(&objArrow, nullptr);
         if (!isOn) objArrow.VSetDrawState_Obj(false, false);

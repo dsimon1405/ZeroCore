@@ -123,12 +123,14 @@ struct ZC_GUI_TextInputWindow : protected ZC_GUI_WinImmutable
 
     static void SetColors(uint textInput_background, uint textInput_text, uint textInput_caret, uint texInput_highlight);
 
-    static bool StartInputWindow(float bl_x, float bl_y, int win_width, int max_symbols, const std::wstring& wstr, ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text);
+    static bool StartInputWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text);
     
+    //  _max_symbols - if less or equal 0, takes some valid count.
     template <ZC_GUI_Number::cNumber TNum>
-    static bool StartInputWindow(float bl_x, float bl_y, int win_width, NumberInput<TNum>&& numberInput, bool highlight_text)
+    static bool StartInputNumberWindow(float bl_x, float bl_y, int win_width, NumberInput<TNum>&& numberInput, bool highlight_text, int _max_symbols)
     {
-        if (!(pTIW->StartInputWindow(bl_x, bl_y, win_width, std::same_as<TNum, schar> ? schar_min.size() :
+        if (!(pTIW->StartWindow(bl_x, bl_y, win_width, _max_symbols > 0 ? _max_symbols :
+                                                            std::same_as<TNum, schar> ? schar_min.size() :
                                                             std::same_as<TNum, uchar> ? uchar_max.size() :
                                                             std::same_as<TNum, short> ? short_min.size() :
                                                             std::same_as<TNum, ushort> ? ushort_max.size() :
@@ -192,7 +194,7 @@ private:
         bool IsHighLight();
         void SetDefaultState();
         void UpdateData();
-        void DeleteHighlight(bool needSubData);
+        void DeleteHighlight();
         bool IsContainCharacter(wchar_t character);
     };
 
@@ -246,7 +248,7 @@ private:
         bool IsCaretOnStart();
         void SetDrawState(DrawState _drawState);
             //  set position by ZC_GUI_ChData*. Position for caret is space after ChData*
-        void SetPositionOfChData(ZC_GUI_ChData* _pChData_pos, bool needSubData, DrawState _drawState);
+        void SetPositionOfChData(ZC_GUI_ChData* _pChData_pos, bool needSubData, DrawState _drawState, bool texturePosChanged = false);
         void SetPositionOfMouseCursor();
         void KeyboardButtonLeftDown(bool needSubData);
         void KeyboardButtonRightDown(bool needSubData);
@@ -269,6 +271,7 @@ private:
     static inline ZC_Function<void(const std::wstring&)> funcChangedWstr;   //  callback for text input
     static inline ZC_uptr<INumberInput> upINumberInput;     //  for number input (include callback)
 
+    int max_symbols = 0;
     int winEnd = 0;
 
     std::list<ZC_GUI_ChData> chDatas;
@@ -278,7 +281,9 @@ private:
 
     void VSetDrawState_W(bool needDraw) override;
 
-    bool StartInputWindow(float bl_x, float bl_y, int win_width, int max_symbols, const std::wstring& wstr, bool highlight_text);
+    bool StartWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, bool highlight_text);
 
     void WindowResize(float,float);
+
+    bool MoveChDataAfterErase(std::list<ZC_GUI_ChData>::iterator after_erase_iter, int deleted_width);
 };

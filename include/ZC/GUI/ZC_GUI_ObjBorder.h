@@ -48,10 +48,7 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
             uint color_scroll_background;
             ZC_GUI_ButtonBase::ColorsButton colors_caret_scroll;
 
-            ColorsScroll(uint _color_scroll_background = 0, const ZC_GUI_ButtonBase::ColorsButton& _colors_caret_scroll = {})
-                : color_scroll_background(_color_scroll_background),
-                colors_caret_scroll(_colors_caret_scroll)
-            {}
+            ColorsScroll(uint _color_scroll_background = 0, const ZC_GUI_ButtonBase::ColorsButton& _colors_caret_scroll = {});
         };
 
         struct Caret : public ZC_GUI_ButtonMouse

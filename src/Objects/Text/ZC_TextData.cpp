@@ -14,13 +14,13 @@ bool ZC_TextData::IsDrawing()
 
 void ZC_TextData::SetColorFloat(float red, float green, float blue)
 {
-    uint colorUint = ZC_PackColorFloatToUInt(red, green, blue);
+    uint colorUint = ZC_PackColorFloatToUInt_RGB(red, green, blue);
     UpdateColor(colorUint);
 }
 
 void ZC_TextData::SetColorUChar(uchar red, uchar green, uchar blue)
 {
-    uint colorUint = ZC_PackColorUCharToUInt(red, green, blue);
+    uint colorUint = ZC_PackColorUCharToUInt_RGB(red, green, blue);
     UpdateColor(colorUint);
 }
 
