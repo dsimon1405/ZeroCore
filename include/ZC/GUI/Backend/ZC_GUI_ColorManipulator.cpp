@@ -26,7 +26,7 @@ ZC_GUI_ColorManipulator::ZC_GUI_ColorManipulator(bool _rgbCallback)
 }
 
 ZC_GUI_ColorManipulator::ZC_GUI_ColorManipulator(ZC_GUI_ColorManipulator&& cm)
-    : ZC_GUI_ObjComposite(dynamic_cast<ZC_GUI_ObjComposite&&>(std::move(cm))),
+    : ZC_GUI_ObjComposite(static_cast<ZC_GUI_ObjComposite&&>(cm)),
     isMBL_pressed(cm.isMBL_pressed),
     rgbCallback(cm.rgbCallback),
     cursor_color_line(std::move(cm.cursor_color_line)),
@@ -356,8 +356,8 @@ ZC_GUI_ColorManipulator::Saturation::Saturation(float size)
 }
 
 ZC_GUI_ColorManipulator::Saturation::Saturation(Saturation&& s)
-    : ZC_GUI_ObjComposite(dynamic_cast<ZC_GUI_ObjComposite&&>(std::move(s))),
-    cursor_saturation(std::move(s.cursor_saturation))
+    : ZC_GUI_ObjComposite(static_cast<ZC_GUI_ObjComposite&&>(s)),
+    cursor_saturation(static_cast<ZC_GUI_Obj&&>(s.cursor_saturation))
 {
     this->VAddObj_Obj(&cursor_saturation);
 }

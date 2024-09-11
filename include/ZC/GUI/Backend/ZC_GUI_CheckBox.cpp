@@ -15,11 +15,13 @@ ZC_GUI_CheckBox::ZC_GUI_CheckBox(const std::wstring& name, bool _isOn, const Col
     if (!isOn) objArrow.VSetDrawState_Obj(false, false);
 }
 
+        #include <ZC/Tools/Time/ZC_Clock.h>
+        #include <iostream>
 ZC_GUI_CheckBox::ZC_GUI_CheckBox(ZC_GUI_CheckBox&& chB)
-    : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(chB)),
-    ZC_GUI_ButtonMouseText(std::move(chB)),
+    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(chB)),
+    ZC_GUI_ButtonMouseText(static_cast<ZC_GUI_ButtonMouseText&&>(chB)),
     isOn(chB.isOn),
-    objArrow(std::move(chB.objArrow))
+    objArrow(static_cast<ZC_GUI_Obj&&>(chB.objArrow))
 {
     this->VAddObj_Obj(&objArrow, nullptr);
     if (!isOn) objArrow.VSetDrawState_Obj(false, false);

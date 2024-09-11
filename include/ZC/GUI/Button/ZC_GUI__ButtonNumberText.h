@@ -79,7 +79,7 @@ const std::wstring& ZC_GUI__ButtonNumberText<TNum>::GetName_BNT()
 
 template <ZC_GUI_Number::cNumber TNum>
 ZC_GUI__BNT<TNum>::ZC_GUI__BNT(ZC_GUI__ButtonNumberText<TNum>* _pBNT, ZC_GUI_ButtonNumber<TNum>&& buttonNumber, ZC_GUI_Text&& _text, float _text_button_distance)
-    : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(buttonNumber)),
+    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(buttonNumber)),
     ZC_GUI_ButtonNumberText<TNum>(std::move(buttonNumber), std::move(_text), _text_button_distance),
     pBNT(_pBNT)
 {}

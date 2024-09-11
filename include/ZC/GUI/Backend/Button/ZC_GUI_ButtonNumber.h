@@ -117,8 +117,8 @@ ZC_GUI_ButtonNumber<TNum>::ZC_GUI_ButtonNumber(uint width, uint height, TNum _nu
 
 template <ZC_GUI_Number::cNumber TNum>
 ZC_GUI_ButtonNumber<TNum>::ZC_GUI_ButtonNumber(ZC_GUI_ButtonNumber&& bn)
-    : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(bn)),
-    ZC_GUI_ButtonMouseText(dynamic_cast<ZC_GUI_ButtonMouseText&&>(bn)),
+    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(bn)),
+    ZC_GUI_ButtonMouseText(static_cast<ZC_GUI_ButtonMouseText&&>(bn)),
     number_min(bn.number_min),
     number_max(bn.number_max),
     afterDot_count(bn.afterDot_count),

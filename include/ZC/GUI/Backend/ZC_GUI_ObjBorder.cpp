@@ -20,7 +20,7 @@ ZC_GUI_ObjBorder::ZC_GUI_ObjBorder(const ZC_GUI_ObjData& _objData, bool _isScrol
 }
 
 ZC_GUI_ObjBorder::ZC_GUI_ObjBorder(ZC_GUI_ObjBorder&& ob)
-    : ZC_GUI_Obj(dynamic_cast<ZC_GUI_Obj&&>(ob)),
+    : ZC_GUI_Obj(static_cast<ZC_GUI_Obj&&>(ob)),
     pBorder(ob.pBorder),
     rows(std::move(ob.rows)),
     upScroll(std::move(ob.upScroll)),

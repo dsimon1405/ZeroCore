@@ -69,8 +69,8 @@ float ZC_GUI_Obj::VGetHeightComposite_Obj()
 
 void ZC_GUI_Obj::SetHeight_Obj(float height)
 {
-    actual_height = height;
-    if (!VIsConfigured_Obj() || VIsDrawing_Obj()) pObjData->height = height;
+    actual_height = std::round(height);
+    if (!VIsConfigured_Obj() || VIsDrawing_Obj()) pObjData->height = actual_height;
 }
 
 void ZC_GUI_Obj::SetObjHolder(ZC_GUI_Obj* _pObjHolder)

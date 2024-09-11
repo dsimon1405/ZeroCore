@@ -5,7 +5,7 @@
 #include "ZC_GUI_DDVariant.h"
 
 /*
-Drop down class with switch system. One of variants allways choosen and shown in button for drop down open. Takes all variants in vector of std::wstring. If variant changes calls VVariantChossed(int new_variant) with
+Drop down class with switch system. One of variants allways choosen and shown in button for drop down open. Takes all variants in vector of std::wstring. If variant changes calls VVariantChoosed(int new_variant) with
 index from vector of the selected variant in new_variant.
 */
 struct ZC_GUI_SwitchDropDown : public ZC_GUI_ButtonMouseText
@@ -14,17 +14,17 @@ struct ZC_GUI_SwitchDropDown : public ZC_GUI_ButtonMouseText
 
     ZC_GUI_SwitchDropDown(ZC_GUI_SwitchDropDown&& dds);
     
-    virtual void VVariantChossed(uint variant_index) {}
+    virtual void VVariantChoosed(uint variant_index) {}
 
     void MakeVariantActive(uint index);
         //  for private call from ZC_GUI_DDVariant::VLeftButtonUp_BM()
-    void VariantChoosed(ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* _pBMT_active);
+    void VariantChoosed(ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* pDDVariant_choosed);
 
 private:
     ZC_GUI_DropDownIcon obj_dd_icon;
     std::vector<ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>> ddVariants;
-    ZC_GUI_WinImmutable win_dd;
-    ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* pBMT_active = nullptr;
+    ZC_GUI_WinImmutable ddWindow;
+    ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* pDDVariant_active = nullptr;
 
     void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
     void VLeftButtonUp_BM(float time) override;
@@ -33,5 +33,5 @@ private:
     float CalculateWidth(const std::vector<std::wstring>& variants, float width);
     std::vector<ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>> Fill_variants(const std::vector<std::wstring> variants);
     void SetActiveBMTDrawState(bool needDraw);
-    void UpdatePos_win_dd();
+    void UpdatePos_ddWindow();
 };

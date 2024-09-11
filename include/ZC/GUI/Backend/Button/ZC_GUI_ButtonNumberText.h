@@ -24,7 +24,7 @@ struct ZC_GUI_ButtonNumberText : public ZC_GUI_ButtonNumber<TNum>
     
 template <ZC_GUI_Number::cNumber TNum>
 ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumber<TNum>&& buttonNumber, ZC_GUI_Text&& _text, float _text_button_distance)
-    : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(buttonNumber)),
+    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(buttonNumber)),
     ZC_GUI_ButtonNumber<TNum>(std::move(buttonNumber)),
     text(std::move(_text)),
     text_button_distance(_text_button_distance)
@@ -34,7 +34,7 @@ ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumber<TNum>
 
 template <ZC_GUI_Number::cNumber TNum>
 ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumberText&& bnt)
-    : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(bnt)),
+    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(bnt)),
     ZC_GUI_ButtonNumber<TNum>(std::move(bnt)),
     text(std::move(bnt.text)),
     text_button_distance(bnt.text_button_distance)

@@ -17,7 +17,7 @@ ZC_GUI_Text::ZC_GUI_Text(const std::wstring& wstr, bool _isImmutable, int reserv
 }
 
 ZC_GUI_Text::ZC_GUI_Text(ZC_GUI_Text&& t)
-    : ZC_GUI_Obj(dynamic_cast<ZC_GUI_Obj&&>(t)),
+    : ZC_GUI_Obj(static_cast<ZC_GUI_Obj&&>(t)),
     isImmutable(t.isImmutable),
     pText(t.pText),
     actual_width(t.actual_width)

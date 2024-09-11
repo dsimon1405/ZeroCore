@@ -20,8 +20,8 @@ ZC_GUI_ButtonMouseText::ZC_GUI_ButtonMouseText(float width, float height, ZC_GUI
 }
 
 ZC_GUI_ButtonMouseText::ZC_GUI_ButtonMouseText(ZC_GUI_ButtonMouseText&& bmt)
-    : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(bmt)),
-    ZC_GUI_ButtonMouse(dynamic_cast<ZC_GUI_ButtonMouse&&>(bmt)),
+    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(bmt)),
+    ZC_GUI_ButtonMouse(static_cast<ZC_GUI_ButtonMouse&&>(bmt)),
     textForButton(std::move(bmt.textForButton))
 {
     this->VAddObj_Obj(&textForButton, nullptr);

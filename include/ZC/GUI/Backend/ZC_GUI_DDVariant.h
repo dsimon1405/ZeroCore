@@ -36,6 +36,8 @@ struct ZC_GUI_DDVariant : public ZC_GUI_ButtonMouseText
     ZC_GUI_DDVariant(THolder* _pHolder, float width, float height, const std::wstring& _wstr);
 
     void VLeftButtonUp_BM(float time) override;
+        //  overrides for THolder = ZC_GUI_DropDown
+    void VCursorCollisionEnd_Obj(float time) override;
 };
 
     //  ZC_GUI_SwitchDropDown::ZC_GUI_DDVariant
@@ -51,4 +53,23 @@ template <typename THolder>
 void ZC_GUI_DDVariant<THolder>::VLeftButtonUp_BM(float time)
 {
     pHolder->VariantChoosed(this);
+}
+
+struct ZC_GUI_DropDown;
+
+template <typename THolder>
+void ZC_GUI_DDVariant<THolder>::VCursorCollisionEnd_Obj(float time)
+{
+    if (this->pObjData->color == this->colorsButton.color_button_pressed) return;     //  button pressed, wait while up
+    this->SetButtonColor_BS(this->colorsButton.color_button, true);
+    if constexpr (std::same_as<THolder, ZC_GUI_DropDown>)
+    {
+        if (pHolder->isUnderCursorFlag)     //  ZC_GUI_DropDown (pHolder) uses ZC_GUI_DDF__UnderCursor. Current button not under cursor any more, need to check is under cursor: ddWindow (pObjHolder) or drop down button (pHolder) -> if not stop drawing ddWidnow.
+        {
+            if ((this->pObjHolder->CheckCursorCollision_Obj()) || pHolder->CheckCursorCollision_Obj()) return;  //  cursor still above ddWindow (pObjHolder) or button (pHolder)
+                //  cursor somwhere else, stop drawing window
+            this->pObjHolder->VSetDrawState_Obj(false, true);     //  stop drawing ddWindow
+            pHolder->SetButtonColor_BS(pHolder->colorsButton.color_button, true);   //  set default color to button
+        }
+    }
 }

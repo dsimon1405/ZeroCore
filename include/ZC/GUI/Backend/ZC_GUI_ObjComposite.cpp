@@ -7,7 +7,7 @@ ZC_GUI_ObjComposite::ZC_GUI_ObjComposite(const ZC_GUI_ObjData& _objData)
 {}
 
 ZC_GUI_ObjComposite::ZC_GUI_ObjComposite(ZC_GUI_ObjComposite&& oc)
-    : ZC_GUI_Obj(dynamic_cast<ZC_GUI_Obj&&>(oc))
+    : ZC_GUI_Obj(static_cast<ZC_GUI_Obj&&>(oc))
 {       //  obj can be added in new object with VAddObj_Obj() before calling dstr of current object, so to avoid damaging pointer on objHolder in dstr, make it all nullptr here and clear objs
     for (ZC_GUI_Obj* pObj : oc.objs)
         pObj->SetObjHolder(nullptr);

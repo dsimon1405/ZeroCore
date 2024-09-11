@@ -23,6 +23,11 @@ ZC_GUI_Window::ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC
         SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
 }
 
+void ZC_GUI_Window::VSetDrawState_Obj(bool needDraw, bool updateGPU)
+{
+    VSetDrawState_W(needDraw);
+}
+
 bool ZC_GUI_Window::VIsStacionarWin_Obj() const noexcept
 {
     return winFlags & ZC_GUI_WF__Stacionar;

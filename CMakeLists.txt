@@ -245,6 +245,7 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_ObjComposite.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_Switch.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_DDVariant.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_DropDown.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Button/ZC_GUI__ButtonMouse.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Button/ZC_GUI__ButtonKeyboard.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Button/ZC_GUI__ButtonMouseAndKeyboard.cpp

@@ -10,8 +10,8 @@ ZC_GUI_BranchSimple::ZC_GUI_BranchSimple(const std::wstring& name, const ColorsB
 {}
 
 ZC_GUI_BranchSimple::ZC_GUI_BranchSimple(ZC_GUI_BranchSimple&& bs)
-    : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(bs)),
-    ZC_GUI_ButtonMouseText(dynamic_cast<ZC_GUI_ButtonMouseText&&>(std::move(bs)))
+    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(bs)),
+    ZC_GUI_ButtonMouseText(static_cast<ZC_GUI_ButtonMouseText&&>(bs))
 {}
 
 void ZC_GUI_BranchSimple::VLeftButtonUp_BM(float time)

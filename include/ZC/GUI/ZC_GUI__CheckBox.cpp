@@ -3,7 +3,7 @@
     //  ZC_GUI__ChB
 
 ZC_GUI__ChB::ZC_GUI__ChB(ZC_GUI__CheckBox* _pHolder, ZC_GUI_CheckBox&& checkBox)
-    : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(checkBox)),
+    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(checkBox)),
     ZC_GUI_CheckBox(std::move(checkBox)),
     pHolder(_pHolder)
 {}

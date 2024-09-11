@@ -28,9 +28,9 @@ ZC_Camera::ZC_Camera(const ZC_Vec3<float>& _camPos, const ZC_Vec3<float>& _lookO
 }
 
 ZC_Camera::ZC_Camera(ZC_Camera&& c)
-    : ZC_View(dynamic_cast<ZC_View&&>(c)),
-    ZC_Perspective(dynamic_cast<ZC_Perspective&&>(c)),
-    ZC_Ortho(dynamic_cast<ZC_Ortho&&>(c)),
+    : ZC_View(static_cast<ZC_View&&>(c)),
+    ZC_Perspective(static_cast<ZC_Perspective&&>(c)),
+    ZC_Ortho(static_cast<ZC_Ortho&&>(c)),
     uboSet(c.uboSet),
     sConWindowResize(c.sConWindowResize.IsConnected() ? ZC_Events::ConnectWindowResize({ &ZC_Camera::WindowResize, this }) : ZC_EC())
 {

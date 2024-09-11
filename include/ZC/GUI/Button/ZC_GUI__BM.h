@@ -20,7 +20,7 @@ struct ZC_GUI__BM : public TBM
 
 template <typename TBM, typename THolder>
 ZC_GUI__BM<TBM, THolder>::ZC_GUI__BM(TBM&& bm, THolder* _pHolder)
-    : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(bm)),
+    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(bm)),
     TBM(std::move(bm)),
     pHolder(_pHolder)
 {}

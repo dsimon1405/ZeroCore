@@ -48,6 +48,7 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
     ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags winFlags, const ColorsWindow& colorsWindow);
 
     virtual void VSetDrawState_W(bool needDraw) = 0;
+    void VSetDrawState_Obj(bool needDraw, bool updateGPU) override;
 
     bool VIsStacionarWin_Obj() const noexcept override;
 

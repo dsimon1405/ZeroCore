@@ -58,8 +58,7 @@ bool ZC_GUI_ButtonMouse::VMouseButtonLeftDown_Obj(float time)
     }
     if (this->bs_mouseButton == BS_Released)
     {
-        this->pObjData->color = colorsButton.color_button_pressed;
-        VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
+        this->SetButtonColor_BS(this->colorsButton.color_button_pressed, true);
         this->bs_mouseButton = BS_Pressed;
         
         if (this->buttonFlags & ZC_GUI_BF_M__DoubleCLick)  //  call double click if in limit and restart double time in each case

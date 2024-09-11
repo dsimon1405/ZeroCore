@@ -13,8 +13,8 @@ ZC_GUI_BranchOpenable::ZC_GUI_BranchOpenable(const std::wstring& name, bool isOp
 }
 
 ZC_GUI_BranchOpenable::ZC_GUI_BranchOpenable(ZC_GUI_BranchOpenable&& bo)
-    : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(bo)),
-    ZC_GUI_BranchSimple(dynamic_cast<ZC_GUI_BranchSimple&&>(std::move(bo))),
+    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(bo)),
+    ZC_GUI_BranchSimple(static_cast<ZC_GUI_BranchSimple&&>(bo)),
     arrowButton(std::move(bo.arrowButton))
 {
     this->VAddObj_Obj(&arrowButton, nullptr);

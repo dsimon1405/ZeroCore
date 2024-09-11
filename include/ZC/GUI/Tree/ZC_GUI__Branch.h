@@ -57,7 +57,7 @@ void ZC_GUI__Branch<TBranch>::UpdateName(const std::wstring& name)
 
 template <typename TBranch>
 ZC_GUI__Branch<TBranch>::Branch::Branch(ZC_GUI__Branch<TBranch>* _pHolder, TBranch&& _branch)
-    : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(_branch)),
+    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(_branch)),
     TBranch(std::move(_branch)),
     pHolder(_pHolder)
 {}

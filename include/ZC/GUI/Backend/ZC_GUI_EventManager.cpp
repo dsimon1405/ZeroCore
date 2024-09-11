@@ -200,7 +200,7 @@ ZC_GUI_Obj* ZC_GUI_EventManager::GetButtonDownObject(ZC_ButtonID buttonID)
     ZC_GUI_Obj* pObj_inputText = pTextInputWindow->VGetButtonKeyboard_W(buttonID);
     if (pObj_inputText) return pObj_inputText;    //  uses input text event system
     
-    if (buttonID == ZC_ButtonID::M_LEFT || buttonID == ZC_ButtonID::M_RIGHT)
+    if (buttonID == ZC_ButtonID::M_LEFT || buttonID == ZC_ButtonID::M_RIGHT || buttonID == ZC_ButtonID::M_MIDLE)
     {
         if (pWin_mouseButtonDown_watcher) pWin_mouseButtonDown_watcher->MouseButtonLeftOrRightDown();
         return pObj_underCursor;
@@ -209,7 +209,16 @@ ZC_GUI_Obj* ZC_GUI_EventManager::GetButtonDownObject(ZC_ButtonID buttonID)
     if (!(openableWins.empty()))    //  try find event button in focused (first in list) openable windows
     {
         ZC_GUI_Window* pWin = openableWins.front();
-        if (pWin->IsWindowDrawing_Obj()) return pWin->VGetButtonKeyboard_W(buttonID);
+        if (pWin->IsWindowDrawing_Obj())
+        {
+            if (buttonID == ZC_ButtonID::K_ESCAPE)  //  close first open window
+            {
+                pWin->VSetDrawState_W(false);
+                return pWin;    //  return closed window to hold the event from other use
+            }
+
+            return pWin->VGetButtonKeyboard_W(buttonID);
+        }
     }
     
     for (ZC_GUI_Window* pStW : stacionarWins)    //  try find event button in stacionar windows

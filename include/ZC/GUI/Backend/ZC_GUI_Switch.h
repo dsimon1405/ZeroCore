@@ -47,7 +47,7 @@ struct ZC_GUI_Switch : public TSwitch
 
     ZC_GUI_Switch(ZC_GUI_Switch&& sw);
 
-    virtual void VVariantChossed(uint variant_index) {}
+    virtual void VVariantChoosed(uint variant_index) {}
 
     void MakeVariantActive(uint index);
 
@@ -76,8 +76,8 @@ private:
 
 template <ZC_GUI_cSwitch TSwitch>
 ZC_GUI_Switch<TSwitch>::ZC_GUI_Switch(ZC_GUI_Switch<TSwitch>&& sw)
-    : ZC_GUI_ButtonBase(dynamic_cast<ZC_GUI_ButtonBase&&>(sw)),
-    TSwitch(dynamic_cast<TSwitch&&>(sw)),
+    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(sw)),
+    TSwitch(static_cast<TSwitch&&>(sw)),
     variants(std::move(sw.variants))
 {
     for (Variant& var : variants)
@@ -173,7 +173,7 @@ void ZC_GUI_Switch<TSwitch>::MakeActive(TSwitch* _pBM_active)
     if (pBM_active) pBM_active->SetButtonColor_BS(pBM_active->colorsButton.color_button, true);
     pBM_active = _pBM_active;
     pBM_active->SetButtonColor_BS(pBM_active->colorsButton.color_button_pressed, true);
-    VVariantChossed(pBM_active == this ? 0 : pBM_active - dynamic_cast<TSwitch*>(&(variants.front())) + 1);   //  first (0) variant is ZC_GUI_Switch, not into the vector
+    VVariantChoosed(pBM_active == this ? 0 : pBM_active - dynamic_cast<TSwitch*>(&(variants.front())) + 1);   //  first (0) variant is ZC_GUI_Switch, not into the vector
 }
 
 template <ZC_GUI_cSwitch TSwitch>
