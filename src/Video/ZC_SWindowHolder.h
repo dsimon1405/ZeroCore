@@ -4,7 +4,7 @@
 #include <Tools/Time/ZC_FPS.h>
 #include <ZC/Video/OpenGL/Renderer/ZC_Renderer.h>
 #include <Collision/ZC_MouseCollisionWindowController.h>
-#include <ZC/GUI/ZC_GUI.h>
+#include <ZC/GUI/Backend/ZC_GUI.h>
 
 class ZC_SWindowHolder
 {

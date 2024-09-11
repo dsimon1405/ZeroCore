@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ZC_Render.h"
-#include <ZC/GUI/ZC_GUI.h>
+#include <ZC/GUI/Backend/ZC_GUI.h>
 
 class ZC_Renderer : public ZC_UBOs
 {

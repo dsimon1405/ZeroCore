@@ -2,7 +2,7 @@
 
 #include <ZC/Tools/Function/ZC_Function.h>
 #include <ZC/Events/ZC_ButtonID.h>
-#include <ZC/GUI/ZC_GUI_Obj.h>
+#include <ZC/GUI/Backend/ZC_GUI_Obj.h>
 
 template<typename TFunc>    //  TObject -> ZC_Function<void(float)> or ZC_Function<void(float)>* or ZC_GUI_Obj*
 struct ZC_ConnectedButton
