@@ -4,6 +4,7 @@
 #include "ZC_GUI_DDVariant.h"
 #include <ZC/Tools/ZC_uptr.h>
 #include <ZC/GUI/Backend/Window/ZC_GUI_WinImmutable.h>
+#include <ZC/Tools/Function/ZC_Function.h>
 
 #include <vector>
 
@@ -19,11 +20,11 @@ struct ZC_GUI_DropDown : public ZC_GUI_ButtonMouseText
 {
     const bool isUnderCursorFlag;
 
-    ZC_GUI_DropDown(const std::wstring& name, const std::vector<std::wstring>& variants, float width, float height, ZC_GUI_DropDownFlags dropDownFlags, const ZC_GUI_ColorsDropDown& colorsDropDown = {});
+    ZC_GUI_DropDown(const std::wstring& name, const std::vector<std::wstring>& variants, float width, float height, ZC_GUI_DropDownFlags dropDownFlags, ZC_Function<void(uint)>&& _callback,
+        const ZC_GUI_ColorsDropDown& colorsDropDown = {});
 
     ZC_GUI_DropDown(ZC_GUI_DropDown&& dd);
 
-    virtual void VVariantChoosed(uint variant_index) {}
         //  for private call from ZC_GUI_DDVariant::VLeftButtonUp_BM()
     void VariantChoosed(ZC_GUI_DDVariant<ZC_GUI_DropDown>* pDDVariant_choosed);
 
@@ -31,6 +32,7 @@ private:
     ZC_uptr<ZC_GUI_DropDownIcon> upDropDownIcon;
     std::vector<ZC_GUI_DDVariant<ZC_GUI_DropDown>> ddVariants;
     ZC_GUI_WinImmutable ddWindow;
+    ZC_Function<void(uint)> callback;
 
     std::vector<ZC_GUI_DDVariant<ZC_GUI_DropDown>> FillVariants(const std::wstring& name, const std::vector<std::wstring>& variants, float width, float height);
 

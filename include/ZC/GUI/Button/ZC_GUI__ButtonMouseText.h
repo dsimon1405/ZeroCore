@@ -14,28 +14,47 @@ May be override:
 - void VLeftButtonPressed(float time) {}
 - void VLeftButtonUp(float time) {}
 */
-class ZC_GUI__ButtonMouseText : public ZC_GUI__Button<ZC_GUI__BM<ZC_GUI_ButtonMouseText, ZC_GUI__ButtonMouseText>>
+class ZC_GUI__ButtonMouseText : public ZC_GUI__Button<ZC_GUI__BM<ZC_GUI_ButtonMouseText>>
 {
 public:
     /*
     Params:
-    - width - button pixel with, if less then text pixels length, takes text pixels length.
-    - height - button pixel height, if less then text pixels height, takes text pixels height.
+    - width - width in pixels, if less then text pixels length, takes text pixels length.
+    - height - height in pixels, if less then text pixels height, takes text pixels height.
     - _buttonFlags - flags determine wich virtual methods will be called on evetns.
-    - text - look ZC_GUI_TextForButton ctr.
+    - text - button name. Look ZC_GUI_TextForButton ctr.
     - _colorsButton - buttons collors (may stay default).
     */
     ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_GUI_TextForButton&& text, const ZC_GUI_ColorsButton& _colorsButton = {});
     /*
     Params:
-    - width - button pixel with, if less then text pixels length, takes text pixels length.
-    - height - button pixel height, if less then text pixels height, takes text pixels height.
+    - width - width in pixels, if less then text pixels length, takes text pixels length.
+    - height - height in pixels, if less then text pixels height, takes text pixels height.
     - _buttonFlags - flags determine wich virtual methods will be called on evetns.
-    - text - look ZC_GUI_TextForButton ctr.
+    - text - button name. Look ZC_GUI_TextForButton ctr.
     - uv - custom uv if uses custom icons texture (not default).
     - _colorsButton - buttons collors (may stay default).
     */
     ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_GUI_TextForButton&& text, const ZC_GUI_UV& uv, const ZC_GUI_ColorsButton& _colorsButton = {});
+    /*
+    Params:
+    - width - width in pixels, if less then text pixels length, takes text pixels length.
+    - height - height in pixels, if less then text pixels height, takes text pixels height.
+    - _buttonFlags - flags determine wich virtual methods will be called on evetns.
+    - name - button name.
+    - _colorsButton - buttons collors (may stay default).
+    */
+    ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const std::wstring& name, const ZC_GUI_ColorsButton& _colorsButton = {});
+    /*
+    Params:
+    - width - width in pixels, if less then text pixels length, takes text pixels length.
+    - height - height in pixels, if less then text pixels height, takes text pixels height.
+    - _buttonFlags - flags determine wich virtual methods will be called on evetns.
+    - name - button name.
+    - uv - custom uv if uses custom icons texture (not default).
+    - _colorsButton - buttons collors (may stay default).
+    */
+    ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const std::wstring& name, const ZC_GUI_UV& uv, const ZC_GUI_ColorsButton& _colorsButton = {});
 
     /*
     Update text in wstring. Data updates only if pixel width of new string less or equal current width. Text width don't change in any case.

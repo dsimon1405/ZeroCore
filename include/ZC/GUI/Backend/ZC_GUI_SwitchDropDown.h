@@ -5,18 +5,16 @@
 #include "ZC_GUI_DDVariant.h"
 
 /*
-Drop down class with switch system. One of variants allways choosen and shown in button for drop down open. Takes all variants in vector of std::wstring. If variant changes calls VVariantChoosed(int new_variant) with
+Drop down class with switch system. One of variants allways choosen and shown in button for drop down open. Takes all variants in vector of std::wstring. If variant changes calls callback with
 index from vector of the selected variant in new_variant.
 */
 struct ZC_GUI_SwitchDropDown : public ZC_GUI_ButtonMouseText
 {
-    ZC_GUI_SwitchDropDown(const std::vector<std::wstring>& variants, uint active_variant, float width, float height, const ZC_GUI_ColorsDropDown& colorsDropDownSwitch = {});
+    ZC_GUI_SwitchDropDown(const std::vector<std::wstring>& variants, uint active_variant, float width, float height, ZC_Function<void(uint)>&& _callback, const ZC_GUI_ColorsDropDown& colorsDropDownSwitch = {});
 
     ZC_GUI_SwitchDropDown(ZC_GUI_SwitchDropDown&& dds);
     
-    virtual void VVariantChoosed(uint variant_index) {}
-
-    void MakeVariantActive(uint index);
+    void MakeVariantActive(uint index, bool use_callback);
         //  for private call from ZC_GUI_DDVariant::VLeftButtonUp_BM()
     void VariantChoosed(ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* pDDVariant_choosed);
 
@@ -25,6 +23,7 @@ private:
     std::vector<ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>> ddVariants;
     ZC_GUI_WinImmutable ddWindow;
     ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* pDDVariant_active = nullptr;
+    ZC_Function<void(uint)> callback;
 
     void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
     void VLeftButtonUp_BM(float time) override;
@@ -34,4 +33,5 @@ private:
     std::vector<ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>> Fill_variants(const std::vector<std::wstring> variants);
     void SetActiveBMTDrawState(bool needDraw);
     void UpdatePos_ddWindow();
+    void MakeActive(ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* pDDVariant_choosed, bool use_callback);
 };

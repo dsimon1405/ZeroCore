@@ -1,17 +1,10 @@
 #pragma once
 
 #include <ZC/GUI/Backend/Text/ZC_GUI_Font.h>
+#include "ZC_GUI_FontElement.h"
 
 #include <forward_list>
 #include <string>
-
-enum ZC_GUI_FontElement
-{
-    ZC_GUI_FE__Symbols     = 1,
-    ZC_GUI_FE__English     = 1 << 1,
-    ZC_GUI_FE__Russian     = 1 << 2
-};
-typedef int ZC_GUI_FontElements;
 
 struct ZC_GUI_FontLoader
 {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ZC_GUI__Button.h"
 #include "ZC_GUI__BM.h"
 #include <ZC/GUI/Backend/Button/ZC_GUI_ButtonMouse.h>
 
@@ -14,25 +13,25 @@ May be override:
 - void VLeftButtonPressed(float time) {}
 - void VLeftButtonUp(float time) {}
 */
-class ZC_GUI__ButtonMouse : public ZC_GUI__Button<ZC_GUI__BM<ZC_GUI_ButtonMouse, ZC_GUI__ButtonMouse>>
+class ZC_GUI__ButtonMouse : public ZC_GUI__Button<ZC_GUI__BM<ZC_GUI_ButtonMouse>>
 {
 public:
     /*
     Params:
-    - width - pixel width.
-    - height - pixel height.
+    - width - width in pixels.
+    - height - height in pixels.
     - _buttonFlags - flags determine wich virtual methods will be called on evetns.
-    - _colorsButton - button colors.
+    - _colorsButton - button colors (may stay default).
     */
     ZC_GUI__ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_ColorsButton& _colorsButton = {});
 
     /*
     Params:
-    - width - pixel width.
-    - height - pixel height.
+    - width - width in pixels.
+    - height - height in pixels.
     - _buttonFlags - flags determine wich virtual methods will be called on evetns.
     - uv - custom uv if uses custom icons texture (not default).
-    - _colorsButton - button colors.
+    - _colorsButton - button colors (may stay default).
     */
     ZC_GUI__ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV& uv, const ZC_GUI_ColorsButton& _colorsButton = {});
 };

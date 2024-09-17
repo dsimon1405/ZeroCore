@@ -114,22 +114,22 @@ struct ZC_GUI_Obj
 
     virtual void VCursorCollisionStart_Obj(float time) {}
     virtual void VCursorCollisionEnd_Obj(float time) {}
-        //  Called after calls VMouseButtonLeftDown_Obj(...) or VRightButtonDown_Obj(...) with cursorMoveWhilePressed = true;
+        //  Called after calls VMouseButtonLeftDown_Obj(...) or VMouseButtonRightDown_Obj(...) with cursorMoveWhilePressed = true;
         //  Called once per frame (parrams: x, y - have last position; rel_x, rel_y - have sum of all changes in frame).
     virtual void VCursorMove_Obj(float rel_x, float rel_y) {}
     virtual void VScroll_Obj(float vertical, float time) {}
     virtual void VNewScrollObj_underCursor_Obj(ZC_GUI_Obj* pObj_underCursor) {}     //  calls from ZC_GUI_EventManager::CursorMove(), when scrollable obj under cursor is changed
 
-        //  process all button down events, and call VMouseButtonLeftDown_Obj(), VRightButtonDown_Obj(), VKeyboardButtonDown_Obj(). That method overrides only in ZC_GUI_TextInputWindow!
+        //  process all button down events, and call VMouseButtonLeftDown_Obj(), VMouseButtonRightDown_Obj(), VKeyboardButtonDown_Obj(). That method overrides only in ZC_GUI_TextInputWindow!
     virtual void VButtonDown_Obj(ZC_ButtonID buttonID, float time);
-        //  process all button up events, and call VMouseButtonLeftUp_Obj(), VRightButtonUp_Obj(), VKeyboardButtonUp_Obj(). That method overrides only in ZC_GUI_TextInputWindow!
+        //  process all button up events, and call VMouseButtonLeftUp_Obj(), VMouseButtonRightUp_Obj(), VKeyboardButtonUp_Obj(). That method overrides only in ZC_GUI_TextInputWindow!
     virtual void VButtonUp_Obj(ZC_ButtonID buttonID, float time);
         //  return false if event is holds while release
     virtual bool VMouseButtonLeftDown_Obj(float time) { return true; }
     virtual void VMouseButtonLeftUp_Obj(float time) {}
         //  return false if event is holds while release
-    virtual bool VRightButtonDown_Obj(float time) { return true; }
-    virtual void VRightButtonUp_Obj(float time) {}
+    virtual bool VMouseButtonRightDown_Obj(float time) { return true; }
+    virtual void VMouseButtonRightUp_Obj(float time) {}
         //  return false if event is holds while release
     virtual bool VKeyboardButtonDown_Obj(float time) { return true; }
     virtual void VKeyboardButtonUp_Obj(float time) {}

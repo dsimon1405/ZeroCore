@@ -1,7 +1,7 @@
 #include "ZC_Mouse.h"
 
 #include <ZC/Events/ZC_Events.h>
-#include <ZC/GUI/Backend/ZC_GUI.h>
+#include <ZC/GUI/Backend/System/ZC_GUI.h>
 
 void ZC_Mouse::Init()
 {

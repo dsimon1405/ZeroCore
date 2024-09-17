@@ -1,7 +1,7 @@
 #include <ZC/GUI/Backend/ZC_GUI_Obj.h>
 
 #include <ZC/Video/ZC_SWindow.h>
-#include <ZC/GUI/Backend/ZC_GUI.h>
+#include <ZC/GUI/Backend/System/ZC_GUI.h>
 #include <ZC/Video/ZC_SWindow.h>
 
 #include <cmath>
@@ -276,7 +276,7 @@ void ZC_GUI_Obj::VButtonDown_Obj(ZC_ButtonID buttonID, float time)
     } break;
     case ZC_ButtonID::M_RIGHT:
     {
-        if (!VRightButtonDown_Obj(time)) return;
+        if (!VMouseButtonRightDown_Obj(time)) return;
         MakeWindowFocused();    //  if RMB is pressed, regardless of the object or window, the window should focus if it can
     } break;
     default: if (!VKeyboardButtonDown_Obj(time)) return;
@@ -294,7 +294,7 @@ void ZC_GUI_Obj::VButtonUp_Obj(ZC_ButtonID buttonID, float time)
         VMouseButtonLeftUp_Obj(time);
         ZC_GUI::pGUI->eventManager.MouseButtonUp();
     } break;
-    case ZC_ButtonID::M_RIGHT: VRightButtonUp_Obj(time); break;
+    case ZC_ButtonID::M_RIGHT: VMouseButtonRightUp_Obj(time); break;
     default: VKeyboardButtonUp_Obj(time); break;
     }
     ZC_GUI::pGUI->eventManager.SetPressedObj(nullptr);

@@ -1,7 +1,7 @@
 #include "ZC_GUI_ButtonMouseText.h"
 
-#include <ZC/GUI/Backend/ZC_GUI_IconUV.h>
-#include <ZC/GUI/Backend/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 
 ZC_GUI_ButtonMouseText::ZC_GUI_ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_GUI_TextForButton&& text, const ColorsButton& _colorsButton)
     : ZC_GUI_ButtonMouseText(width, height, _buttonFlags, std::move(text), ZC_GUI_IconUV::button, _colorsButton)
@@ -15,7 +15,7 @@ ZC_GUI_ButtonMouseText::ZC_GUI_ButtonMouseText(float width, float height, ZC_GUI
     this->VAddObj_Obj(&textForButton, nullptr);
         //  width buttons with can't be less then text width (if text inside the button)
     float textForButton_width = this->objs.front()->VGetWidthComposite_Obj();
-    if (textForButton.indent.indentFlag_X != ZC_GUI_TextForButton::Indent::OutOfButton && width < textForButton_width) this->pObjData->width = textForButton_width;
+    if (textForButton.indent.indentFlag_X != ZC_GUI_TFB_Indent::OutOfButton && width < textForButton_width) this->pObjData->width = textForButton_width;
     if (height < textForButton.GetHeight()) this->SetHeight_Obj(textForButton.GetHeight());
 }
 
@@ -44,7 +44,7 @@ void ZC_GUI_ButtonMouseText::UpdateText_BMT(ZC_GUI_TextManager::Text* pText)
 
 float ZC_GUI_ButtonMouseText::VGetWidthComposite_Obj()
 {
-    return textForButton.indent.indentFlag_X == ZC_GUI_TextForButton::Indent::OutOfButton ? this->VGetWidth_Obj() + this->objs.front()->VGetWidthComposite_Obj() : this->VGetWidth_Obj();
+    return textForButton.indent.indentFlag_X == ZC_GUI_TFB_Indent::OutOfButton ? this->VGetWidth_Obj() + this->objs.front()->VGetWidthComposite_Obj() : this->VGetWidth_Obj();
 }
 
 void ZC_GUI_ButtonMouseText::VConf_SetTextUV_Obj()

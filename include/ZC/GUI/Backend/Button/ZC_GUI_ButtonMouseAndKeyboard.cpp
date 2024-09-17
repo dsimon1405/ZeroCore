@@ -1,7 +1,7 @@
 #include "ZC_GUI_ButtonMouseAndKeyboard.h"
 
-#include <ZC/GUI/Backend/ZC_GUI_IconUV.h>
-#include <ZC/GUI/Backend/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 
 ZC_GUI_ButtonMouseAndKeyboard::ZC_GUI_ButtonMouseAndKeyboard(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_ButtonID _buttonId, const ColorsButton& _colorsButton)
     : ZC_GUI_ButtonMouseAndKeyboard(width, height, _buttonFlags, _buttonId, ZC_GUI_IconUV::button, _colorsButton)

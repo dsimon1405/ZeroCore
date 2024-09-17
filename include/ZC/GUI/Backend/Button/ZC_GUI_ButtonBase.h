@@ -2,7 +2,7 @@
 
 #include <ZC/GUI/Backend/ZC_GUI_ObjComposite.h>
 #include <ZC/Tools/Time/ZC_Clock.h>
-#include <ZC/GUI/Backend/ZC_GUI_Colors.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Colors.h>
 
 typedef int ZC_GUI_ButtonFlags;
 enum ZC_GUI_ButtonFlag

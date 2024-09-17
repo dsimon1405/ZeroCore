@@ -3,7 +3,7 @@
 #include <ZC/GUI/Backend/Window/ZC_GUI_WinImmutable.h>
 #include <ZC/GUI/Backend/Window/ZC_GUI_WinMutable.h>
 
-#include <ZC/GUI/Backend/ZC_GUI_IconUV.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
 #include <ZC/GUI/Backend/Window/ZC_GUI_TextInputWindow.h>
 
 template <typename TWin>
@@ -13,6 +13,9 @@ public:
     ZC_GUI__Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags, const ZC_GUI_ColorsWindow& colorsWindow = {});
 
     virtual ~ZC_GUI__Window() = default;
+
+    //  Sets scroll speed for all scrollable windows and other objects use scroll (ZC_GUI__Tree). Default value is 40.
+    static void SetScrollSpeed(uint speed = 40);
     
     /*
     Add new row in window. For immutable windows have effect only before configuration.
@@ -73,6 +76,12 @@ private:
 };
 
 template <typename TWin>
+void ZC_GUI__Window<TWin>::SetScrollSpeed(uint speed)
+{
+    ZC_GUI_ObjBorder::Scroll::scroll_speed = speed;
+}
+
+template <typename TWin>
 ZC_GUI__Window<TWin>::ZC_GUI__Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags, const ZC_GUI_ColorsWindow& colorsWindow)
     : win(_woiData, uv, _winFlags, colorsWindow)
 {}
@@ -120,16 +129,22 @@ void ZC_GUI__Window<TWin>::SetDrawState(bool needDraw)
 }
 
 
-    //  ZC_GUI__WinMutable
-
+/*
+Each window consist from rows (adds with AddRow() - they are invisible) in wich adds objects. Objects (buttons, texts and so on) adds in rows with AddObj(). Configuration set up all objects added in window.
+Configuration makes once in ZC_SWindow::RuntMainCycle() method. Mutable window may be reconfigured after configuration. Reconfiguration need when some object adds/erases in window after configuratin.
+Recomended to use ZC_GUI__WinImmutable if don't need to add/erase objects after configuration. Object ZC_GUI__Tree may may add/erase branches (objects) after configuration, if uses that behaviour, tree must be used
+into mutable window.
+*/
 struct ZC_GUI__WinMutable : public ZC_GUI__Window<ZC_GUI_WinMutable>
 {
     ZC_GUI__WinMutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags, const ZC_GUI_ColorsWindow& colorsWindow = {});
     ZC_GUI__WinMutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags, const ZC_GUI_ColorsWindow& colorsWindow = {});
 };
 
-    //  ZC_GUI__WinImmutable
-
+/*
+Each window consist from rows (adds with AddRow() - they are invisible) in wich adds objects. Objects (buttons, texts and so on) adds in rows with AddObj(). Configuration set up all objects added in window.
+Configuration makes once in ZC_SWindow::RuntMainCycle() method. Immutable window can't be reconfigured after configuration and all add/erase methods have no effect after configuration.
+*/
 struct ZC_GUI__WinImmutable : public ZC_GUI__Window<ZC_GUI_WinImmutable>
 {
     ZC_GUI__WinImmutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags, const ZC_GUI_ColorsWindow& colorsWindow = {});

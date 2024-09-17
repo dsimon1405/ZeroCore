@@ -1,8 +1,8 @@
 #include "ZC_GUI_WinImmutable.h"
 
-#include <ZC/GUI/Backend/ZC_GUI.h>
-#include <ZC/GUI/Backend/ZC_GUI_Bindings.h>
-#include <ZC/GUI/Backend/ZC_GUI_IconUV.h>
+#include <ZC/GUI/Backend/System/ZC_GUI.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
 
 ZC_GUI_WinImmutable::ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags, const ColorsWindow& colorsWindow)
     : ZC_GUI_WinImmutable(_woiData, ZC_GUI_IconUV::quad, _winFlags, colorsWindow)

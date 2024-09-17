@@ -1,7 +1,8 @@
 #pragma once
 
 #include <ZC/GUI/Backend/Button/ZC_GUI_ButtonMouseText.h>
-#include <ZC/GUI/Backend/ZC_GUI_Colors.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Colors.h>
+#include <ZC/Tools/Function/ZC_Function.h>
 
 struct ZC_GUI_CheckBox : public ZC_GUI_ButtonMouseText
 {
@@ -15,22 +16,18 @@ struct ZC_GUI_CheckBox : public ZC_GUI_ButtonMouseText
                 ColorsButton(ZC_GUI_Colors::checkBox_button, ZC_GUI_Colors::checkBox_button_under_cursor, ZC_GUI_Colors::checkBox_button_pressed));
     };
 
-    ZC_GUI_CheckBox(const std::wstring& name, bool _isOn, const ColorsCheckBox& colorsCheckBox = {});
+    ZC_GUI_CheckBox(const std::wstring& name, bool _isOn, ZC_Function<void(bool)> _callback, const ColorsCheckBox& colorsCheckBox = {});
 
     ZC_GUI_CheckBox(ZC_GUI_CheckBox&& chB);
-
-    /*
-    Overrides in heir to get check box changes.
-
-    Params:
-    - state - if true check box is on, otherwise off.
-    */
-    virtual void VStateChanged_CB(bool state)
-    //  = 0;
-    {}
+        //  Return chaeck box state.
+    bool GetState_ChB();
+        //  Changes check box state. If use_callback true, use callback.
+    void ChangeState_ChB(bool use_callback);
+    
 private:
     bool isOn;
     ZC_GUI_Obj objArrow;
+    ZC_Function<void(bool)> callback;
     
     void VSetDrawState_Obj(bool neeDraw, bool updateGPU) override;
     void VLeftButtonUp_BM(float time) override;

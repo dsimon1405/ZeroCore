@@ -7,6 +7,8 @@ struct ZC_GUI__Button : public ZC_GUI__Obj<T>
 {
     ZC_GUI__Button(T&& t);
 
+    ZC_GUI__Button(ZC_GUI__Button&& b);
+
     virtual void VScroll(float vertical, float time) {}
     virtual void VCursorMove(float rel_x, float rel_y) {}
     virtual void VLeftButtonDown(float time) {}
@@ -23,3 +25,10 @@ template <typename T>
 ZC_GUI__Button<T>::ZC_GUI__Button(T&& t)
     : ZC_GUI__Obj<T>(std::move(t))
 {}
+
+template <typename T>
+ZC_GUI__Button<T>::ZC_GUI__Button(ZC_GUI__Button&& b)
+    : ZC_GUI__Obj<T>(dynamic_cast<ZC_GUI__Obj<T>&&>(b))
+{       //  pHolder can be ZC_GUI__BK::pHolder, or ZC_GUI___BM<TBM>::pHolder or other. Variables with different type but same name. It made to avoid typing move ctrs for each type to update pHolder variable. So all that variables updates here on move.
+    this->obj.pHolder = this;
+}

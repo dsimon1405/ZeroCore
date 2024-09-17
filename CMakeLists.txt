@@ -214,13 +214,18 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindow.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindowController.cpp
 	
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/System/ZC_GUI_DrawManager.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/System/ZC_GUI_EventManager.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/System/ZC_GUI_TextManager.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/System/ZC_GUI.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Config/ZC_GUI_IconUV.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Config/ZC_GUI_Colors.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Window/ZC_GUI_Window.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Window/ZC_GUI_WinMutable.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Window/ZC_GUI_WinImmutable.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Window/ZC_GUI_TextInputWindow.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Text/ZC_GUI_Font.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Text/ZC_GUI_FontLoader.cpp
-	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Text/ZC_GUI_TextManager.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Text/ZC_GUI_Text.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Text/ZC_GUI_TextForButton.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Button/ZC_GUI_ButtonMouse.cpp
@@ -231,14 +236,9 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Tree/ZC_GUI_BranchSimple.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Tree/ZC_GUI_BranchOpenable.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/Tree/ZC_GUI_Tree.cpp
-	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_EventManager.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_Obj.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_ObjBorder.cpp
-	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI.cpp
-	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_DrawManager.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_ObjData.cpp
-	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_IconUV.cpp
-	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_Colors.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_ColorManipulator.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_SwitchDropDown.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/ZC_GUI_CheckBox.cpp
@@ -250,12 +250,15 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Button/ZC_GUI__ButtonKeyboard.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Button/ZC_GUI__ButtonMouseAndKeyboard.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Button/ZC_GUI__ButtonMouseText.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Button/ZC_GUI__Click.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Tree/ZC_GUI__Tree.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI__Text.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI__Window.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI__CheckBox.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI__ColorManipulator.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI__Switch.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC_GUI__DropDown.cpp
+	${PROJECT_SOURCE_DIR}/include/ZC/GUI/ZC__GUI.cpp	
 	)
 
 #========================= include dirs
@@ -286,7 +289,6 @@ add_dependencies(${PROJECT_NAME} ZC_COPY_ASSETS)
 
 message(STATUS "======================== ZERO CORE CONFIG ========================")
 message(STATUS "ZC_PC: ${ZC_PC}")
-# message(STATUS "ZC_ANDROID: ${ZC_ANDROID}")
 message(STATUS "ZC_STATIC: ${ZC_STATIC}")
 message(STATUS "ZC_AUDIO: ${ZC_AUDIO}")
 message(STATUS "========================= ZERO CORE END ==========================")

@@ -1,8 +1,8 @@
 #include "ZC_GUI_Window.h"
 
-#include <ZC/GUI/Backend/ZC_GUI.h>
+#include <ZC/GUI/Backend/System/ZC_GUI.h>
 #include <ZC/GUI/Backend/ZC_GUI_ObjData.h>
-#include <ZC/GUI/Backend/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 
 // #include <cassert>
@@ -49,6 +49,11 @@ ZC_GUI_Obj* ZC_GUI_Window::VGetButtonKeyboard_W(ZC_ButtonID buttonId)
 bool ZC_GUI_Window::IsBackground() const noexcept
 {
     return !(winFlags & ZC_GUI_WF__NoBackground);
+}
+
+bool ZC_GUI_Window::IsEscapeClsoe() const noexcept
+{
+    return winFlags & ZC_GUI_WF__EscapeClose;
 }
 
 void ZC_GUI_Window::MakeUnfocused()

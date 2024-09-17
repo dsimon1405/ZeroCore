@@ -1,21 +1,15 @@
 #include "ZC_GUI__CheckBox.h"
 
-    //  ZC_GUI__ChB
-
-ZC_GUI__ChB::ZC_GUI__ChB(ZC_GUI__CheckBox* _pHolder, ZC_GUI_CheckBox&& checkBox)
-    : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(checkBox)),
-    ZC_GUI_CheckBox(std::move(checkBox)),
-    pHolder(_pHolder)
+ZC_GUI__CheckBox::ZC_GUI__CheckBox(const std::wstring& name, bool _isOn, ZC_Function<void(bool)> _callback, const ZC_GUI_ColorsCheckBox& colorsCheckBox)
+    : ZC_GUI__Obj<ZC_GUI_CheckBox>(ZC_GUI_CheckBox(name, _isOn, std::move(_callback), colorsCheckBox))
 {}
 
-void ZC_GUI__ChB::VStateChanged_CB(bool state)
+bool ZC_GUI__CheckBox::GetState()
 {
-    pHolder->VStateChanged(state);
+    return this->obj.GetState_ChB();
 }
 
-
-    //  ZC_GUI__CheckBox
-
-ZC_GUI__CheckBox::ZC_GUI__CheckBox(const std::wstring& name, bool _isOn, const ZC_GUI_ColorsCheckBox& colorsCheckBox)
-    : ZC_GUI__Obj<ZC_GUI__ChB>(ZC_GUI__ChB(this, ZC_GUI_CheckBox(name, _isOn, colorsCheckBox)))
-{}
+void ZC_GUI__CheckBox::ChangeState(bool use_callback)
+{
+    this->obj.ChangeState_ChB(use_callback);
+}

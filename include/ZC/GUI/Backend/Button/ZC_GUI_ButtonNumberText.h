@@ -9,7 +9,7 @@ struct ZC_GUI_ButtonNumberText : public ZC_GUI_ButtonNumber<TNum>
     ZC_GUI_Text text;
     float text_button_distance;
     
-    ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumber<TNum>&& buttonNumber, ZC_GUI_Text&& _text, float _text_button_distance);
+    ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumber<TNum>&& buttonNumber, const std::wstring& name, float _text_button_distance, uint color_name = ZC_GUI_Colors::window_text);
     
     ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumberText&& bnt);
 
@@ -23,14 +23,12 @@ struct ZC_GUI_ButtonNumberText : public ZC_GUI_ButtonNumber<TNum>
 
     
 template <ZC_GUI_Number::cNumber TNum>
-ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumber<TNum>&& buttonNumber, ZC_GUI_Text&& _text, float _text_button_distance)
+ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumber<TNum>&& buttonNumber, const std::wstring& name, float _text_button_distance, uint color_name)
     : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(buttonNumber)),
     ZC_GUI_ButtonNumber<TNum>(std::move(buttonNumber)),
-    text(std::move(_text)),
+    text(name, true, 0, ZC_GUI_TextAlignment::Left, color_name),
     text_button_distance(_text_button_distance)
-{
-    this->VAddObj_Obj(&text, nullptr);
-}
+{}
 
 template <ZC_GUI_Number::cNumber TNum>
 ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumberText&& bnt)
@@ -38,10 +36,7 @@ ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumberText&&
     ZC_GUI_ButtonNumber<TNum>(std::move(bnt)),
     text(std::move(bnt.text)),
     text_button_distance(bnt.text_button_distance)
-{
-    this->VAddObj_Obj(&text, nullptr);
-}
-
+{}
 
 template <ZC_GUI_Number::cNumber TNum>
 const std::wstring& ZC_GUI_ButtonNumberText<TNum>::GetName_BNT()
@@ -57,7 +52,9 @@ float ZC_GUI_ButtonNumberText<TNum>::VGetWidthComposite_Obj()
 
 template <ZC_GUI_Number::cNumber TNum>
 void ZC_GUI_ButtonNumberText<TNum>::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
-{
+{       //  set here to avoid reset in move ctr
+    this->VAddObj_Obj(&text, nullptr);
+
     float y_offset = (this->GetHeight() - text.GetHeight()) / 2.f;
     y_offset == 0.f ? text.VSet_pBL_Obj(_bl) : text.VSet_pBL_Obj({ _bl[0], _bl[1] + y_offset });
 

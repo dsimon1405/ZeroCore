@@ -1,9 +1,9 @@
 #include "ZC_GUI_TextInputWindow.h"
 
-#include <ZC/GUI/Backend/ZC_GUI.h>
-#include <ZC/GUI/Backend/ZC_GUI_Bindings.h>
-#include <ZC/GUI/Backend/ZC_GUI_IconUV.h>
-#include <ZC/GUI/Backend/ZC_GUI_Colors.h>
+#include <ZC/GUI/Backend/System/ZC_GUI.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Colors.h>
 #include <ZC/Video/ZC_SWindow.h>
 #include <ZC/Events/ZC_Events.h>
 

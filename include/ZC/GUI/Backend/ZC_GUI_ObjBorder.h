@@ -2,7 +2,7 @@
 
 #include <ZC/GUI/Backend/Button/ZC_GUI_ButtonMouse.h>
 #include <ZC/Tools/ZC_uptr.h>
-#include <ZC/GUI/Backend/ZC_GUI_Colors.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Colors.h>
 
 #include <list>
 
@@ -71,6 +71,7 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
             void VCursorMove_Obj(float rel_x, float rel_y) override;
         };
 
+        static inline float scroll_speed = 40.f;
         bool isMBL_pressed;
         static inline const float scroll_width = 4.f;
         float scroll_y = 0.f;

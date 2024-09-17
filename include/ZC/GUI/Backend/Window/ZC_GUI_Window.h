@@ -16,7 +16,8 @@ enum ZC_GUI_WinFlag
     ZC_GUI_WF__Movable              = 1 << 3,   //  Window can be moved. ZC_WOIData will be ignored and on first draw, window will be in the ZC_SWindow center, then will be set flags ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel.
     ZC_GUI_WF__Scrollable           = 1 << 4,   //  Can be used scroll.
     ZC_GUI_WF__Frame                = 1 << 5,   //  Window have 2 pixels frame (border).
-    ZC_GUI_WF__OutAreaClickClose    = 1 << 6    //  If mouse cursor click outside window area, widnow will close.
+    ZC_GUI_WF__OutAreaClickClose    = 1 << 6,   //  If mouse cursor click outside window area, widnow will close.
+    ZC_GUI_WF__EscapeClose          = 1 << 7,   //  On Escape close last focused window with that flag. That flag can't be used wisth ZC_GUI_WF__Stacionar (have no effect).
 };
 
 struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
@@ -53,6 +54,7 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
     bool VIsStacionarWin_Obj() const noexcept override;
 
     bool IsBackground() const noexcept;
+    bool IsEscapeClsoe() const noexcept;
         //  make window unfocused (calls in ZC_EventManager::UpdateWindowState())
     void MakeUnfocused();
     bool VIsUseCursorMoveEventOnMBLetfDown_Obj() const noexcept override;

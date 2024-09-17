@@ -1,19 +1,19 @@
 #include "ZC_GUI_SwitchDropDown.h"
 
-#include "ZC_GUI_IconUV.h"
-#include "ZC_GUI_Bindings.h"
-#include <ZC/GUI/Backend/Text/ZC_GUI_TextManager.h>
-#include <ZC/GUI/Backend/ZC_GUI.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
+#include <ZC/GUI/Backend/System/ZC_GUI.h>
 
-ZC_GUI_SwitchDropDown::ZC_GUI_SwitchDropDown(const std::vector<std::wstring>& variants, uint active_variant, float width, float height, const ZC_GUI_ColorsDropDown& colorsDropDownSwitch)
+ZC_GUI_SwitchDropDown::ZC_GUI_SwitchDropDown(const std::vector<std::wstring>& variants, uint active_variant, float width, float height, ZC_Function<void(uint)>&& _callback, const ZC_GUI_ColorsDropDown& colorsDropDownSwitch)
     : ZC_GUI_ButtonBase(ZC_GUI_ObjData(CalculateWidth(variants, width), height, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None, colorsDropDownSwitch.colorsButton),
     ZC_GUI_ButtonMouseText(this->VGetWidth_Obj(), this->GetHeight(), ZC_GUI_BF__None,
-        ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(ZC_GUI_DropDownIcon::GetTextIndentX(), ZC_GUI_TextForButton::Indent::Left), variants[active_variant], false,
+        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(ZC_GUI_DropDownIcon::GetTextIndentX(), ZC_GUI_TFB_Indent::Left), variants[active_variant], false,
             this->VGetWidth_Obj() - ZC_GUI_DropDownIcon::GetTextIndentX() - ZC_GUI_DropDownIcon::width, ZC_GUI_TextAlignment::Left, colorsDropDownSwitch.color_text)),
     obj_dd_icon(colorsDropDownSwitch.color_arrow),
     ddVariants(Fill_variants(variants)),
-    ddWindow(ZC_WOIData(this->VGetWidth_Obj(), this->GetHeight() * (variants.size() - 1), 0.f, 0.f, ZC_WOIF__X_Right_Pixel | ZC_WOIF__Y_Top_Pixel), ZC_GUI_WF__OutAreaClickClose),
-    pDDVariant_active(&(ddVariants[active_variant]))
+    ddWindow(ZC_WOIData(this->VGetWidth_Obj(), this->GetHeight() * (variants.size() - 1), 0.f, 0.f, ZC_WOIF__X_Right_Pixel | ZC_WOIF__Y_Top_Pixel), ZC_GUI_WF__OutAreaClickClose | ZC_GUI_WF__EscapeClose),
+    pDDVariant_active(&(ddVariants[active_variant])),
+    callback(std::move(_callback))
 {}
 
 ZC_GUI_SwitchDropDown::ZC_GUI_SwitchDropDown(ZC_GUI_SwitchDropDown&& dds)
@@ -21,15 +21,21 @@ ZC_GUI_SwitchDropDown::ZC_GUI_SwitchDropDown(ZC_GUI_SwitchDropDown&& dds)
     ZC_GUI_ButtonMouseText(static_cast<ZC_GUI_ButtonMouseText&&>(dds)),
     obj_dd_icon(std::move(dds.obj_dd_icon)),
     ddVariants(std::move(dds.ddVariants)),
-    ddWindow(ZC_WOIData(this->VGetWidth_Obj(), this->GetHeight() * (ddVariants.size() - 1), 0.f, 0.f, ZC_WOIF__X_Right_Pixel | ZC_WOIF__Y_Top_Pixel), ZC_GUI_WF__OutAreaClickClose),
-    pDDVariant_active(dds.pDDVariant_active)
+    ddWindow(ZC_WOIData(this->VGetWidth_Obj(), this->GetHeight() * (ddVariants.size() - 1), 0.f, 0.f, ZC_WOIF__X_Right_Pixel | ZC_WOIF__Y_Top_Pixel), ZC_GUI_WF__OutAreaClickClose | ZC_GUI_WF__EscapeClose),
+    pDDVariant_active(dds.pDDVariant_active),
+    callback(std::move(dds.callback))
 {}
 
-void ZC_GUI_SwitchDropDown::MakeVariantActive(uint index)
+void ZC_GUI_SwitchDropDown::MakeVariantActive(uint index, bool use_callback)
 {
     if (index >= ddVariants.size()) return;    //  out of range
     ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* pDDVariant_choosed = &(ddVariants[index]);
-    if (pDDVariant_choosed != pDDVariant_active) VariantChoosed(pDDVariant_choosed);
+    if (pDDVariant_choosed != pDDVariant_active) MakeActive(pDDVariant_choosed, use_callback);
+}
+
+void ZC_GUI_SwitchDropDown::VariantChoosed(ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* pDDVariant_choosed)
+{
+    MakeActive(pDDVariant_choosed, true);
 }
 
 void ZC_GUI_SwitchDropDown::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
@@ -105,11 +111,11 @@ void ZC_GUI_SwitchDropDown::UpdatePos_ddWindow()
     if (bl != ZC_Vec2<float>()) ddWindow.VCursorMove_Obj(bl[0], bl[1]);     //  if bl.x or bl.y not 0 need to move ddWindow
 }
 
-void ZC_GUI_SwitchDropDown::VariantChoosed(ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* pDDVariant_choosed)
+void ZC_GUI_SwitchDropDown::MakeActive(ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* pDDVariant_choosed, bool use_callback)
 {
     SetActiveBMTDrawState(true);
     pDDVariant_active = pDDVariant_choosed;
     this->UpdateText_BMT(pDDVariant_active->GetWStr_BMT(), false);
     ddWindow.VSetDrawState_W(false);
-    VVariantChoosed(pDDVariant_active - ddVariants.data());  //  get index in vector and call VVariantChanged_DD()
+    if (use_callback) callback(pDDVariant_active - ddVariants.data());  //  get index in vector and call VVariantChanged_DD()
 }

@@ -2,27 +2,32 @@
 
 #include "ZC_GUI_ButtonMouseText.h"
 
-#include <ZC/GUI/Backend/Text/ZC_GUI_TextManager.h>
+#include <ZC/GUI/Backend/System/ZC_GUI_TextManager.h>
 #include <ZC/GUI/Backend/Text/ZC_GUI_TextForButton.h>
-#include <ZC/GUI/Backend/ZC_GUI_IconUV.h>
-#include <ZC/GUI/Backend/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 #include <ZC/GUI/Backend/ZC_cGUI_Number.h>
 #include <ZC/GUI/Backend/Window/ZC_GUI_TextInputWindow.h>
+#include <ZC/Tools/Function/ZC_Function.h>
+
+struct ZC_GUI_ColorsButtonNumber
+{
+    ZC_GUI_ColorsButton colorsButton;
+    uint color_text;
+    ZC_GUI_ColorsButton colorsArrow;
+
+    ZC_GUI_ColorsButtonNumber(const ZC_GUI_ColorsButton& _colorsButton = ZC_GUI_ColorsButton(ZC_GUI_Colors::number_button, ZC_GUI_Colors::number_button_under_cursor, ZC_GUI_Colors::number_button_pressed),
+            uint _color_text = ZC_GUI_Colors::number_text, const ZC_GUI_ColorsButton& _colorsArrow = ZC_GUI_ColorsButton(ZC_GUI_Colors::number_arrow, ZC_GUI_Colors::number_arrow_under_cursor, ZC_GUI_Colors::number_arrow_pressed))
+        : colorsButton(_colorsButton),
+        color_text(_color_text),
+        colorsArrow(_colorsArrow)
+    {}
+};
 
 //  Button for manipulation with number. TNum type of storing number.
 template <ZC_GUI_Number::cNumber TNum>
 struct ZC_GUI_ButtonNumber : public ZC_GUI_ButtonMouseText
 {
-    struct ColorsButtonNumber
-    {
-        ColorsButton colorsButton;
-        uint color_text;
-        ColorsButton colorsArrow;
-
-        ColorsButtonNumber(const ColorsButton& _colorsButton = ColorsButton(ZC_GUI_Colors::number_button, ZC_GUI_Colors::number_button_under_cursor, ZC_GUI_Colors::number_button_pressed),
-                uint _color_text = ZC_GUI_Colors::number_text, const ColorsButton& _colorsArrow = ColorsButton(ZC_GUI_Colors::number_arrow, ZC_GUI_Colors::number_arrow_under_cursor, ZC_GUI_Colors::number_arrow_pressed));
-    };
-
     /*
     Button consist from 3 buttons: left arrow, button with number, right arrow.
 
@@ -36,23 +41,27 @@ struct ZC_GUI_ButtonNumber : public ZC_GUI_ButtonMouseText
     - _step_fast - number will change on that valut on left button mouse press.
     - _afterDot_count - if number is float/double/ldouble count of shown values after dot.
     - textAlignment - alignment of drawn number in texture. Have affect if texture with number larger then current number in the texture. Default Center alignment.
+    - _callback - function calls on change storing number.
     - colorsButtonNumber - specific colors for button's objects and states.
     */
-    ZC_GUI_ButtonNumber(uint width, uint height, TNum _number, TNum _number_min, TNum _number_max, TNum _step, TNum _step_fast, unsigned char _afterDot_count, ZC_GUI_TextAlignment textAlignment,
-            const ColorsButtonNumber& colorsButtonNumber = {});
+    ZC_GUI_ButtonNumber(float width, float height, TNum _number, TNum _number_min, TNum _number_max, TNum _step, TNum _step_fast, unsigned char _afterDot_count, ZC_GUI_TextAlignment textAlignment,
+            ZC_Function<void(TNum)> _callback, const ZC_GUI_ColorsButtonNumber& colorsButtonNumber = {});
 
     ZC_GUI_ButtonNumber(ZC_GUI_ButtonNumber&& bn);
-
-    virtual void VNumberChanged_BN(TNum _number) {}
 
     /*
     Update number. If trying to set number outside the max/min limit, the max/min limit is set accordingly.
 
     Params:
     - _number - new value.
+    - use_callback - if true will use callback setted in constructor.
     */
-    void UpdateNumber(TNum _number);
+    void SetNumber(TNum _number, bool use_callback);
+        //  return number
     TNum GetNumber() const noexcept;
+        //  Update callback. Usefull if class from callback was moved and class have new address.
+    void UpdateCallback(ZC_Function<void(TNum)>&& _callback);
+
     bool VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll) override;
 
 protected:
@@ -84,6 +93,8 @@ private:
 
     ButtonArrow buttonArrow_left;     //  button with text of number
     ButtonArrow buttonArrow_right;     //  button with text of number
+
+    ZC_Function<void(TNum)> callback;
     
     float VGetWidthComposite_Obj() override;
     void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
@@ -93,27 +104,24 @@ private:
     void VLeftButtonDoubleClick_BM(float time) override;
     void UpdateNumberFromArrow(TNum _number);
     float CalculateNumberMaxWidth(TNum _number, TNum _number_min, TNum _number_max, unsigned char _afterDot_count);
-    void UpdateNumber(TNum _number, bool call_VNumberChanged_BN);
 };
 
 
     //  ZC_GUI_ButtonNumber<TNum>
 
 template <ZC_GUI_Number::cNumber TNum>
-ZC_GUI_ButtonNumber<TNum>::ZC_GUI_ButtonNumber(uint width, uint height, TNum _number, TNum _number_min, TNum _number_max, TNum _step, TNum _step_fast, unsigned char _afterDot_count, ZC_GUI_TextAlignment textAlignment,
-        const ColorsButtonNumber& colorsButtonNumber)
+ZC_GUI_ButtonNumber<TNum>::ZC_GUI_ButtonNumber(float width, float height, TNum _number, TNum _number_min, TNum _number_max, TNum _step, TNum _step_fast, unsigned char _afterDot_count, ZC_GUI_TextAlignment textAlignment,
+        ZC_Function<void(TNum)> _callback, const ZC_GUI_ColorsButtonNumber& colorsButtonNumber)
     : ZC_GUI_ButtonBase(GetButtonBase_BN(width, height, colorsButtonNumber.colorsButton)),
     ZC_GUI_ButtonMouseText(width, height, 0,
-        ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(0.f, ZC_GUI_TextForButton::Indent::Location::Center), ZC_GUI_Number::NumberToWstr(number, afterDot_count), false,
+        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Center), ZC_GUI_Number::NumberToWstr(number, afterDot_count), false,
             CalculateNumberMaxWidth(_number, _number_min, _number_max, _afterDot_count), textAlignment, colorsButtonNumber.color_text)),
     step(_step < 0 ? - _step : _step),    //  must be positive
     step_fast(_step_fast < 0 ? - _step_fast : _step_fast),    //  must be positive
     buttonArrow_left(this->GetHeight(), true, colorsButtonNumber.colorsArrow),
-    buttonArrow_right(this->GetHeight(), false, colorsButtonNumber.colorsArrow)
-{
-    this->VAddObj_Obj(&buttonArrow_left, nullptr);
-    this->VAddObj_Obj(&buttonArrow_right, nullptr);
-}
+    buttonArrow_right(this->GetHeight(), false, colorsButtonNumber.colorsArrow),
+    callback(std::move(_callback))
+{}
 
 template <ZC_GUI_Number::cNumber TNum>
 ZC_GUI_ButtonNumber<TNum>::ZC_GUI_ButtonNumber(ZC_GUI_ButtonNumber&& bn)
@@ -127,22 +135,32 @@ ZC_GUI_ButtonNumber<TNum>::ZC_GUI_ButtonNumber(ZC_GUI_ButtonNumber&& bn)
     step_fast(bn.step_fast),
     max_symbols(bn.max_symbols),
     buttonArrow_left(std::move(bn.buttonArrow_left)),
-    buttonArrow_right(std::move(bn.buttonArrow_right))
-{
-    this->VAddObj_Obj(&buttonArrow_left, nullptr);
-    this->VAddObj_Obj(&buttonArrow_right, nullptr);
-}
+    buttonArrow_right(std::move(bn.buttonArrow_right)),
+    callback(std::move(bn.callback))
+{}
 
 template <ZC_GUI_Number::cNumber TNum>
-void ZC_GUI_ButtonNumber<TNum>::UpdateNumber(TNum _number)
+void ZC_GUI_ButtonNumber<TNum>::SetNumber(TNum _number, bool use_callback)
 {
-    UpdateNumber(_number, false);
+    TNum temp_number = _number < number_min ? number_min
+        : _number > number_max ? number_max
+        : _number;
+    if (number == temp_number) return;
+    number = temp_number;
+    this->UpdateText_BMT(ZC_GUI_Number::NumberToWstr(number, afterDot_count), true);
+    if (use_callback) callback(number);
 }
 
 template <ZC_GUI_Number::cNumber TNum>
 TNum ZC_GUI_ButtonNumber<TNum>::GetNumber() const noexcept
 {
     return number;
+}
+
+template <ZC_GUI_Number::cNumber TNum>
+void ZC_GUI_ButtonNumber<TNum>::UpdateCallback(ZC_Function<void(TNum)>&& _callback)
+{
+    callback = std::move(_callback);
 }
 
 template <ZC_GUI_Number::cNumber TNum>
@@ -160,7 +178,12 @@ ZC_GUI_ButtonBase ZC_GUI_ButtonNumber<TNum>::GetButtonBase_BN(float width, float
 
 template <ZC_GUI_Number::cNumber TNum>
 void ZC_GUI_ButtonNumber<TNum>::Set_pBL_BN(const ZC_Vec2<float>& _bl)
-{       //  left button
+{
+        //  set here to avoid reset in move ctr
+    this->VAddObj_Obj(&buttonArrow_left, nullptr);
+    this->VAddObj_Obj(&buttonArrow_right, nullptr);
+
+           //  left button
     buttonArrow_left.VSet_pBL_Obj(_bl);
         //  text button
     ZC_Vec2<float> next_bl(_bl[0] + buttonArrow_left.VGetWidth_Obj(), _bl[1]);
@@ -204,8 +227,8 @@ template <ZC_GUI_Number::cNumber TNum>
 void ZC_GUI_ButtonNumber<TNum>::ChangeAndUpdateNumber(ldouble offset)
 {
     ldouble new_number = ldouble(number) + (offset * ldouble(step));
-    offset > 0 ? UpdateNumber(ldouble(number_max) > new_number ? TNum(new_number) : number_max, true)
-        : UpdateNumber(ldouble(number_min) < new_number ? TNum(new_number) : number_min, true);
+    offset > 0 ? SetNumber(ldouble(number_max) > new_number ? TNum(new_number) : number_max, true)
+        : SetNumber(ldouble(number_min) < new_number ? TNum(new_number) : number_min, true);
 }
 
 template <ZC_GUI_Number::cNumber TNum>
@@ -219,7 +242,7 @@ void ZC_GUI_ButtonNumber<TNum>::VLeftButtonDoubleClick_BM(float time)
 template <ZC_GUI_Number::cNumber TNum>
 void ZC_GUI_ButtonNumber<TNum>::UpdateNumberFromArrow(TNum _number)
 {
-    UpdateNumber(_number, true);
+    SetNumber(_number, true);
 }
 
 template <ZC_GUI_Number::cNumber TNum>
@@ -313,28 +336,6 @@ float ZC_GUI_ButtonNumber<TNum>::CalculateNumberMaxWidth(TNum _number, TNum _num
 
     return number_min_length > number_max_length ? number_min_length : number_max_length;
 }
-
-template <ZC_GUI_Number::cNumber TNum>
-void ZC_GUI_ButtonNumber<TNum>::UpdateNumber(TNum _number, bool call_VNumberChanged_BN)
-{
-    TNum temp_number = _number < number_min ? number_min
-        : _number > number_max ? number_max
-        : _number;
-    if (number == temp_number) return;
-    number = temp_number;
-    this->UpdateText_BMT(ZC_GUI_Number::NumberToWstr(number, afterDot_count), true);
-    if (call_VNumberChanged_BN) VNumberChanged_BN(number);
-}
-
-
-    //  ZC_GUI_ButtonNumber<TNum>::ColorsButtonNumber
-
-template <ZC_GUI_Number::cNumber TNum>
-ZC_GUI_ButtonNumber<TNum>::ColorsButtonNumber::ColorsButtonNumber(const ColorsButton& _colorsButton, uint _color_text, const ColorsButton& _colorsArrow)
-    : colorsButton(_colorsButton),
-    color_text(_color_text),
-    colorsArrow(_colorsArrow)
-{}
 
 
     //  ZC_GUI_ButtonNumber<TNum>::ButtonArrow

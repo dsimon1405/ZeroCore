@@ -1,10 +1,10 @@
 #include <ZC/GUI/Backend/ZC_GUI_ObjBorder.h>
 
 #include <ZC/Tools/Container/ZC_ContFunc.h>
-#include <ZC/GUI/Backend/ZC_GUI.h>
+#include <ZC/GUI/Backend/System/ZC_GUI.h>
 #include <ZC/Video/ZC_SWindow.h>
-#include <ZC/GUI/Backend/ZC_GUI_IconUV.h>
-#include <ZC/GUI/Backend/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 
 #include <algorithm>
 
@@ -46,7 +46,6 @@ ZC_Vec2<float>* ZC_GUI_ObjBorder::VGet_pBL_end()
                     : rows.empty() ? upFrame ? upFrame->VGet_pBL_end()
                                              : Get_pBL_start()
                                     : rows.back().objs.back()->VGet_pBL_end();
-    // return rows.empty() ? Get_pBL_start() : rows.back().objs.back()->VGet_pBL_end();
 }
 
 ZC_GUI_ObjData* ZC_GUI_ObjBorder::VGet_pObjData_end()
@@ -55,7 +54,6 @@ ZC_GUI_ObjData* ZC_GUI_ObjBorder::VGet_pObjData_end()
                     : rows.empty() ? upFrame ? upFrame->VGet_pObjData_end()
                                              : Get_pObjData_start()
                                     : rows.back().objs.back()->VGet_pObjData_end();
-    // return rows.empty() ? Get_pObjData_start() : rows.back().objs.back()->VGet_pObjData_end();
 }
 
 ZC_GUI_Obj* ZC_GUI_ObjBorder::VGet_pObj_end()
@@ -94,7 +92,7 @@ void ZC_GUI_ObjBorder::EraseRow(const Row* pRow)
 
 bool ZC_GUI_ObjBorder::VAddObj_Obj(ZC_GUI_Obj* pObj, ZC_GUI_Obj* pObj_prev)
 {
-    if (!(VIsMutableWin_Obj()) && VIsConfigured_Obj()) return false;  //  window is stacionar and allready configured
+    if (!(VIsMutableWin_Obj()) && VIsConfigured_Obj()) return false;  //  window is immutable and allready configured
     if (rows.empty()) rows.emplace_back(Row({}));   //  empty rows, add default row
     pObj->SetObjHolder(this);
     bool result = rows.back().AddObj(pObj, pObj_prev);
@@ -253,7 +251,7 @@ bool ZC_GUI_ObjBorder::VCheckCursorCollision_Obj(float x, float y)
 
 void ZC_GUI_ObjBorder::VScroll_Obj(float vertical, float time)
 {
-    if (upScroll) upScroll->MakeScroll(vertical, 20.f, true);
+    if (upScroll) upScroll->MakeScroll(vertical, Scroll::scroll_speed, true);
 }
 
 void ZC_GUI_ObjBorder::VNewScrollObj_underCursor_Obj(ZC_GUI_Obj* pObj_underCursor)

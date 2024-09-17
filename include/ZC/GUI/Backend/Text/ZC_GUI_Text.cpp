@@ -1,6 +1,6 @@
 #include "ZC_GUI_Text.h"
 
-#include <ZC/GUI/Backend/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 #include <ZC/Tools/Math/ZC_Math.h>
 
 #include <cmath>

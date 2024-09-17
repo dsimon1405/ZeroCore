@@ -1,8 +1,8 @@
 #pragma once
 
 #include <ZC/GUI/Backend/ZC_GUI_Obj.h>
-#include <ZC/GUI/Backend/Text/ZC_GUI_TextManager.h>
-#include <ZC/GUI/Backend/ZC_GUI_Colors.h>
+#include <ZC/GUI/Backend/System/ZC_GUI_TextManager.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Colors.h>
 
 //  Text is created once and until the end of the program (cannot be changed)
 struct ZC_GUI_Text : public ZC_GUI_Obj

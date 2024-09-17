@@ -1,34 +1,32 @@
 #include "ZC_GUI_ColorManipulator.h"
 
-#include <ZC/GUI/Backend/ZC_GUI_Bindings.h>
-#include <ZC/GUI/Backend/ZC_GUI_IconUV.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
 #include <ZC/Video/ZC_SWindow.h>
 
-//  - rgbCallback - if true, VColorChanged_CM() will calls with values in range [0, 255], otherwise in range [0, 1]. Haven't influence to users input type mode.
-ZC_GUI_ColorManipulator::ZC_GUI_ColorManipulator(bool _rgbCallback)
+ZC_GUI_ColorManipulator::ZC_GUI_ColorManipulator(ZC_Function<void(float,float,float,float)>&& _callback, bool _range_255)
     : ZC_GUI_ObjComposite(ZC_GUI_ObjData(0.f, 20.f, 0, ZC_GUI_IconUV::quad_colored, ZC_GUI_Bindings::bind_tex_Icons)),      //  wisth sets in VSet_pBL_Obj()
-    rgbCallback(_rgbCallback),
+    range_255(_range_255),
     cursor_color_line(ZC_GUI_ObjData(2.f, this->GetHeight(), 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons)),
     result_triangle(ZC_GUI_ObjData(GetTriangleSize(), GetTriangleSize(), ZC_PackColorUcharToUInt_RGBA(255, 0, 0, 255), {}, ZC_GUI_Bindings::bind_ColorManipulator_resultTriangle)),
     alpha_triangle(ZC_GUI_ObjData(result_triangle.VGetWidth_Obj(), result_triangle.GetHeight(), 0, ZC_GUI_IconUV::background_alpha, ZC_GUI_Bindings::bind_ColorManipulator_alphaTrinalge)),
     saturation_triangle(GetTriangleSize()),
-    bnt_red_uchar(L"R", 50.f),
-    bnt_green_uchar(L"G", 50.f),
-    bnt_blue_uchar(L"B", 50.f),
-    bnt_red_float(L"R", 50.f),
-    bnt_green_float(L"G", 50.f),
-    bnt_blue_float(L"B", 50.f),
-    bnt_alpha(L"A", 50.f),
+    bnt_red_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 255, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr), L"R", GetDistance(L"R")),
+    bnt_green_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 0, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr), L"G", GetDistance(L"G")),
+    bnt_blue_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 0, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr), L"B", GetDistance(L"B")),
+    bnt_red_float(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 1.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr), L"R", GetDistance(L"R")),
+    bnt_green_float(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 0.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr), L"G", GetDistance(L"G")),
+    bnt_blue_float(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 0.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr), L"B", GetDistance(L"B")),
+    bnt_alpha(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 1.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr), L"A", GetDistance(L"A")),
     bmt_uchar(bnt_red_uchar.VGetWidthComposite_Obj() / 2.f, true),
-    bmt_float(bnt_red_uchar.VGetWidthComposite_Obj() / 2.f, false)
-{
-    AddObjs();
-}
+    bmt_float(bnt_red_uchar.VGetWidthComposite_Obj() / 2.f, false),
+    callback(std::move(_callback))
+{}
 
 ZC_GUI_ColorManipulator::ZC_GUI_ColorManipulator(ZC_GUI_ColorManipulator&& cm)
     : ZC_GUI_ObjComposite(static_cast<ZC_GUI_ObjComposite&&>(cm)),
     isMBL_pressed(cm.isMBL_pressed),
-    rgbCallback(cm.rgbCallback),
+    range_255(cm.range_255),
     cursor_color_line(std::move(cm.cursor_color_line)),
     result_triangle(std::move(cm.result_triangle)),
     alpha_triangle(std::move(cm.alpha_triangle)),
@@ -41,9 +39,42 @@ ZC_GUI_ColorManipulator::ZC_GUI_ColorManipulator(ZC_GUI_ColorManipulator&& cm)
     bnt_blue_float(std::move(cm.bnt_blue_float)),
     bnt_alpha(std::move(cm.bnt_alpha)),
     bmt_uchar(std::move(cm.bmt_uchar)),
-    bmt_float(std::move(cm.bmt_float))
+    bmt_float(std::move(cm.bmt_float)),
+    callback(std::move(cm.callback))
+{}
+
+void ZC_GUI_ColorManipulator::SetAlpha(float alpha, bool use_callback)
 {
-    AddObjs();
+    bnt_alpha.SetNumber(alpha, false);
+    ChangedAlphaInButton(alpha, use_callback);
+}
+
+float ZC_GUI_ColorManipulator::GetDistance(const std::wstring& rgba)
+{
+    static float dist_R = 0.f;
+    static float dist_G = 0.f;
+    static float dist_B = 0.f;
+    static float dist_A = 0.f;
+
+    if (dist_R == 0.f)
+    {
+        float distance = ZC_GUI_TextManager::GetFontHeight() / 10.f;     //  distance between letter and button (left arrow)
+        
+        const ZC_GUI_Font::Character* chs[] { ZC_GUI::pGUI->textManager.font.GetCharacter(L'R'), ZC_GUI::pGUI->textManager.font.GetCharacter(L'G'),
+            ZC_GUI::pGUI->textManager.font.GetCharacter(L'B'), ZC_GUI::pGUI->textManager.font.GetCharacter(L'A'),};
+        float max_width = 0.f;
+        for (auto pCh : chs) if (pCh->width > max_width) max_width = pCh->width;
+
+        dist_R = distance + ((max_width - chs[0]->width) / 2.f);
+        dist_G = distance + ((max_width - chs[1]->width) / 2.f);
+        dist_B = distance + ((max_width - chs[2]->width) / 2.f);
+        dist_A = distance + ((max_width - chs[3]->width) / 2.f);
+    }
+
+    return rgba == L"R" ? dist_R
+        : rgba == L"G" ? dist_G
+        : rgba == L"B" ? dist_B
+        : dist_A;
 }
 
 void ZC_GUI_ColorManipulator::AddObjs()
@@ -69,6 +100,14 @@ void ZC_GUI_ColorManipulator::AddObjs()
     bmt_uchar.SetButtonColor_BS(bmt_uchar.colorsButton.color_button_pressed, false);
 
     this->VAddObj_Obj(&bnt_alpha);
+
+    bnt_red_uchar.UpdateCallback(ZC_Function<void(uchar)>(&ZC_GUI_ColorManipulator::Callback_uchar, this));
+    bnt_green_uchar.UpdateCallback(ZC_Function<void(uchar)>(&ZC_GUI_ColorManipulator::Callback_uchar, this));
+    bnt_blue_uchar.UpdateCallback(ZC_Function<void(uchar)>(&ZC_GUI_ColorManipulator::Callback_uchar, this));
+    bnt_red_float.UpdateCallback(ZC_Function<void(float)>(&ZC_GUI_ColorManipulator::Callback_float, this));
+    bnt_green_float.UpdateCallback(ZC_Function<void(float)>(&ZC_GUI_ColorManipulator::Callback_float, this));
+    bnt_blue_float.UpdateCallback(ZC_Function<void(float)>(&ZC_GUI_ColorManipulator::Callback_float, this));
+    bnt_alpha.UpdateCallback(ZC_Function<void(float)>(&ZC_GUI_ColorManipulator::Callback_alpha, this));
 }
 
 float ZC_GUI_ColorManipulator::VGetHeightComposite_Obj()
@@ -83,7 +122,10 @@ float ZC_GUI_ColorManipulator::VGetWidthComposite_Obj()
 }
 
 void ZC_GUI_ColorManipulator::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
-{       //  bls sets from buttom to top
+{
+    AddObjs();  //  call here to avoid calls in move ctr
+
+           //  bls sets from buttom to top
     alpha_triangle.VSet_pBL_Obj(_bl);   //  drawn under result_triangle
     result_triangle.VSet_pBL_Obj(_bl);
     saturation_triangle.VSet_pBL_Obj({ _bl[0] + 5.f, _bl[1] });     //  4 is distance between result_triangle and saturation_triangle
@@ -202,7 +244,7 @@ void ZC_GUI_ColorManipulator::UpdateColorLineCursorPosition(const ZC_Vec2<float>
         saturation_triangle.SetColorTR(r, g, b);    //  update tr color
         saturation_triangle.UpdateResultColorByBarycenters(false);
         this->VMapObjData_Obj(result_triangle.pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData) + sizeof(ZC_GUI_ObjData::color), &(result_triangle.pObjData->color));     //  updates from result_triangle->pObjData.color to saturation_triangle.pObjData->color
-        ColorChanged();
+        ValueChanged();
     };
         //  walk by round red-pink-blue-azure-green-yellow-red
         //      rpbager_step - 255
@@ -251,20 +293,20 @@ void ZC_GUI_ColorManipulator::UpdateResultColorAndNumbers(float r, float g, floa
 {
     if (IsActiveUCharButtons())
     {
-        bnt_red_uchar.UpdateNumber(r);
-        bnt_green_uchar.UpdateNumber(g);
-        bnt_blue_uchar.UpdateNumber(b);
+        bnt_red_uchar.SetNumber(r, false);
+        bnt_green_uchar.SetNumber(g, false);
+        bnt_blue_uchar.SetNumber(b, false);
     }
     else
     {
-        bnt_red_float.UpdateNumber(r / 255.f);
-        bnt_green_float.UpdateNumber(g / 255.f);
-        bnt_blue_float.UpdateNumber(b / 255.f);
+        bnt_red_float.SetNumber(r / 255.f, false);
+        bnt_green_float.SetNumber(g / 255.f, false);
+        bnt_blue_float.SetNumber(b / 255.f, false);
     }
 
     result_triangle.pObjData->color = ZC_PackColorUcharToUInt_RGBA(r, g, b, bnt_alpha.GetNumber() * 255);
     if (updateGPU) this->VMapObjData_Obj(result_triangle.pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(result_triangle.pObjData->color));
-    ColorChanged();
+    ValueChanged();
 }
 
 void ZC_GUI_ColorManipulator::SetCursorColorLinePosition(const ZC_Vec2<float>& bl, bool updateGPU)
@@ -279,12 +321,12 @@ ZC_Vec2<float> ZC_GUI_ColorManipulator::GetCursorColorLinePosition()
     return { bl[0] + (cursor_color_line.VGetWidth_Obj() / 2.f), bl[1] };
 }
 
-void ZC_GUI_ColorManipulator::UpdateAlpha(float alpha)
+void ZC_GUI_ColorManipulator::ChangedAlphaInButton(float alpha, bool use_callback)
 {
     result_triangle.pObjData->color = IsActiveUCharButtons() ? ZC_PackColorUcharToUInt_RGBA(bnt_red_uchar.GetNumber(), bnt_green_uchar.GetNumber(), bnt_blue_uchar.GetNumber(), alpha * 255.f)
         : ZC_PackColorFloatToUInt_RGBA(bnt_red_float.GetNumber(), bnt_green_float.GetNumber(), bnt_blue_float.GetNumber(), alpha);
     this->VMapObjData_Obj(result_triangle.pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(result_triangle.pObjData->color));
-    VAlphaChanged_CM(alpha);
+    if (use_callback) ValueChanged();
 }
 
 void ZC_GUI_ColorManipulator::MakeActiveButtonType(bool makeActiveUChar)
@@ -300,9 +342,9 @@ void ZC_GUI_ColorManipulator::MakeActiveButtonType(bool makeActiveUChar)
         bnt_green_float.VSetDrawState_Obj(true, false);
         bnt_blue_float.VSetDrawState_Obj(true, false);
 
-        bnt_red_float.UpdateNumber(bnt_red_uchar.GetNumber() / 255.f);
-        bnt_green_float.UpdateNumber(bnt_green_uchar.GetNumber() / 255.f);
-        bnt_blue_float.UpdateNumber(bnt_blue_uchar.GetNumber() / 255.f);
+        bnt_red_float.SetNumber(bnt_red_uchar.GetNumber() / 255.f, false);
+        bnt_green_float.SetNumber(bnt_green_uchar.GetNumber() / 255.f, false);
+        bnt_blue_float.SetNumber(bnt_blue_uchar.GetNumber() / 255.f, false);
 
         bmt_uchar.SetButtonColor_BS(bmt_uchar.colorsButton.color_button, false);   //  move active color
         bmt_float.SetButtonColor_BS(bmt_float.colorsButton.color_button_pressed, false);   //  set active color
@@ -317,9 +359,9 @@ void ZC_GUI_ColorManipulator::MakeActiveButtonType(bool makeActiveUChar)
         bnt_green_uchar.VSetDrawState_Obj(true, false);
         bnt_blue_uchar.VSetDrawState_Obj(true, false);
 
-        bnt_red_uchar.UpdateNumber(bnt_red_float.GetNumber() * 255.f);
-        bnt_green_uchar.UpdateNumber(bnt_green_float.GetNumber() * 255.f);
-        bnt_blue_uchar.UpdateNumber(bnt_blue_float.GetNumber() * 255.f);
+        bnt_red_uchar.SetNumber(bnt_red_float.GetNumber() * 255.f, false);
+        bnt_green_uchar.SetNumber(bnt_green_float.GetNumber() * 255.f, false);
+        bnt_blue_uchar.SetNumber(bnt_blue_float.GetNumber() * 255.f, false);
 
         bmt_float.SetButtonColor_BS(bmt_float.colorsButton.color_button, false);   //  move active color
         bmt_uchar.SetButtonColor_BS(bmt_uchar.colorsButton.color_button_pressed, false);   //  set active color
@@ -327,22 +369,37 @@ void ZC_GUI_ColorManipulator::MakeActiveButtonType(bool makeActiveUChar)
     VMapObjData_Obj(bnt_red_uchar.Get_pObjData_start(), 0, (bmt_float.VGet_pObjData_end() - bnt_red_uchar.Get_pObjData_start()) * sizeof(ZC_GUI_ObjData), bnt_red_uchar.Get_pObjData_start());
 }
 
-void ZC_GUI_ColorManipulator::ColorChanged()
+void ZC_GUI_ColorManipulator::ValueChanged()
 {
     if (IsActiveUCharButtons())
     {
         float r = bnt_red_uchar.GetNumber();
         float g = bnt_green_uchar.GetNumber();
         float b = bnt_blue_uchar.GetNumber();
-        rgbCallback ? VColorChanged_CM(r, g, b) : VColorChanged_CM(r / 255.f, g / 255.f, b / 255.f);
+        range_255 ? callback(r, g, b, bnt_alpha.GetNumber()) : callback(r / 255.f, g / 255.f, b / 255.f, bnt_alpha.GetNumber());
     }
     else
     {
         float r = bnt_red_float.GetNumber();
         float g = bnt_green_float.GetNumber();
         float b = bnt_blue_float.GetNumber();
-        rgbCallback ? VColorChanged_CM(r * 255.f, g * 255.f, b * 255.f) : VColorChanged_CM(r, g, b);
+        range_255 ? callback(r * 255.f, g * 255.f, b * 255.f, bnt_alpha.GetNumber()) : callback(r, g, b, bnt_alpha.GetNumber());
     }
+}
+
+void ZC_GUI_ColorManipulator::Callback_uchar(uchar)
+{
+    ChangedColorInButton(&bnt_red_uchar, &bnt_green_uchar, &bnt_blue_uchar, true);
+}
+
+void ZC_GUI_ColorManipulator::Callback_float(float)
+{
+    ChangedColorInButton(&bnt_red_float, &bnt_green_float, &bnt_blue_float, true);
+}
+
+void ZC_GUI_ColorManipulator::Callback_alpha(float alpha)
+{
+    ChangedAlphaInButton(alpha, true);
 }
 
     
@@ -532,7 +589,7 @@ void ZC_GUI_ColorManipulator::Saturation::GetTriangleCoords(ZC_Vec2<float>& tl, 
 
 ZC_GUI_ColorManipulator::TypeSwitcher::TypeSwitcher(float width, bool _isUChar)
     : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, ZC_GUI_TextManager::GetFontHeight(), 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_ButtonFlag::ZC_GUI_BF__None),
-    ZC_GUI_ButtonMouseText(width, ZC_GUI_TextManager::GetFontHeight(), 0, ZC_GUI_TextForButton(ZC_GUI_TextForButton::Indent(0.f, ZC_GUI_TextForButton::Indent::Location::Center),
+    ZC_GUI_ButtonMouseText(width, ZC_GUI_TextManager::GetFontHeight(), 0, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Location::Center),
         _isUChar ? L"255" : L"1.0", true, 0, ZC_GUI_TextAlignment::Center)),
     isUChar(_isUChar)
 {}

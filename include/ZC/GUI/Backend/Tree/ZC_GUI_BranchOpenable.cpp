@@ -1,7 +1,7 @@
 #include "ZC_GUI_BranchOpenable.h"
 
-#include <ZC/GUI/Backend/ZC_GUI_IconUV.h>
-#include <ZC/GUI/Backend/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 #include "ZC_GUI_Tree.h"
 
 ZC_GUI_BranchOpenable::ZC_GUI_BranchOpenable(const std::wstring& name, bool isOpen, const ColorsBranchOpenable& branchOpenableColors)

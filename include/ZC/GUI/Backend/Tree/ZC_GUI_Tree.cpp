@@ -1,8 +1,8 @@
 #include "ZC_GUI_Tree.h"
 
-#include <ZC/GUI/Backend/ZC_GUI_IconUV.h>
-#include <ZC/GUI/Backend/ZC_GUI_Bindings.h>
-#include <ZC/GUI/Backend/ZC_GUI.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/System/ZC_GUI.h>
 
 ZC_GUI_Tree::ZC_GUI_Tree(float width, float height, const ColorsTree& colorsTree)
     : ZC_GUI_ObjBorder(ZC_GUI_ObjData(width, height, colorsTree.color_tree_background, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons), true, false, colorsTree.colorsScroll)

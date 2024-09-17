@@ -2,8 +2,9 @@
 
 #include <ZC/GUI/Backend/Button/ZC_GUI_ButtonMouseAndKeyboard.h>
 #include <ZC/GUI/Backend/Button/ZC_GUI_ButtonMouseText.h>
-#include "ZC_GUI_Bindings.h"
-#include "ZC_GUI_IconUV.h"
+#include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
+#include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
+#include <ZC/Tools/Function/ZC_Function.h>
 
 #include <vector>
 
@@ -38,24 +39,25 @@ struct ZC_GUI_Switch : public TSwitch
     };
 
         //  ctr with ZC_GUI_ButtonMouse specialization
-    ZC_GUI_Switch(const std::vector<ZC_GUI_UV>& uvs, float width, float height, bool orientation_horizontal, float distance, const ZC_GUI_ColorsButton& _colorsButton = {});
+    ZC_GUI_Switch(const std::vector<ZC_GUI_UV>& uvs, float width, float height, bool orientation_horizontal, float distance, ZC_Function<void(uint)>&& _callback, uint active_variant = UINT_MAX,
+        const ZC_GUI_ColorsButton& _colorsButton = {});
         //  ctr with ZC_GUI_ButtonMouseAndKeyboard specialization
-    ZC_GUI_Switch(const std::vector<ZC_GUI_KeyboardUV>& keyboardUVs, float width, float height, bool orientation_horizontal, float distance, const ZC_GUI_ColorsButton& _colorsButton = {});
+    ZC_GUI_Switch(const std::vector<ZC_GUI_KeyboardUV>& keyboardUVs, float width, float height, bool orientation_horizontal, float distance, ZC_Function<void(uint)>&& _callback, uint active_variant = UINT_MAX,
+        const ZC_GUI_ColorsButton& _colorsButton = {});
         //  ctr with ZC_GUI_ButtonMouseText specialization
-    ZC_GUI_Switch(const std::vector<std::wstring>& names, float width, float height, bool orientation_horizontal, float distance,
+    ZC_GUI_Switch(const std::vector<std::wstring>& names, float width, float height, bool orientation_horizontal, float distance, ZC_Function<void(uint)>&& _callback, uint active_variant = UINT_MAX,
         const ZC_GUI_ColorsButton& _colorsButton = {}, uint _color_text = ZC_GUI_Colors::dropDownSwitch_text);
 
     ZC_GUI_Switch(ZC_GUI_Switch&& sw);
 
-    virtual void VVariantChoosed(uint variant_index) {}
-
-    void MakeVariantActive(uint index);
+    void MakeVariantActive(uint index, bool use_callback);
 
 private:
     typedef typename ZC_GUI_ButtonBase::ButtonState ZC_GUI_BB_BS;
 
     std::vector<Variant> variants;
     TSwitch* pBM_active = nullptr;
+    ZC_Function<void(uint)> callback;
 
     float VGetWidthComposite_Obj() override;
     float VGetHeightComposite_Obj() override;
@@ -66,7 +68,7 @@ private:
     bool VKeyboardButtonDown_Obj(float time) override;
     void VKeyboardButtonUp_Obj(float time) override;
 
-    void MakeActive(TSwitch* _pBM_active);
+    void MakeActive(TSwitch* _pBM_active, bool use_callback);
         //  find longest of names pixel width
     float CalculateNamesWidth(const std::vector<std::wstring>& names, float width);
 };
@@ -78,17 +80,18 @@ template <ZC_GUI_cSwitch TSwitch>
 ZC_GUI_Switch<TSwitch>::ZC_GUI_Switch(ZC_GUI_Switch<TSwitch>&& sw)
     : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(sw)),
     TSwitch(static_cast<TSwitch&&>(sw)),
-    variants(std::move(sw.variants))
+    variants(std::move(sw.variants)),
+    callback(std::move(sw.callback))
 {
     for (Variant& var : variants)
         this->VAddObj_Obj(&var);
 }
 
 template <ZC_GUI_cSwitch TSwitch>
-void ZC_GUI_Switch<TSwitch>::MakeVariantActive(uint index)
+void ZC_GUI_Switch<TSwitch>::MakeVariantActive(uint index, bool use_callback)
 {
     if (index > variants.size()) return;    //  out of range
-    MakeActive(index == 0 ? dynamic_cast<TSwitch*>(this) : dynamic_cast<TSwitch*>(&(variants[index - 1])));    //  index 0 is is ZC_GUI_Switch, not into the vector
+    MakeActive(index == 0 ? dynamic_cast<TSwitch*>(this) : dynamic_cast<TSwitch*>(&(variants[index - 1])), use_callback);    //  index 0 is is ZC_GUI_Switch, not into the vector
 }
 
 template <ZC_GUI_cSwitch TSwitch>
@@ -141,7 +144,7 @@ template <ZC_GUI_cSwitch TSwitch>
 void ZC_GUI_Switch<TSwitch>::VMouseButtonLeftUp_Obj(float time)
 {
     if (this->bs_mouseButton == ZC_GUI_BB_BS::BS_Pressed && this->CheckCursorCollision_Obj())
-        MakeActive(dynamic_cast<TSwitch*>(this));
+        MakeActive(dynamic_cast<TSwitch*>(this), true);
     this->bs_mouseButton = ZC_GUI_BB_BS::BS_Released;
 }
 
@@ -162,18 +165,18 @@ template <ZC_GUI_cSwitch TSwitch>
 void ZC_GUI_Switch<TSwitch>::VKeyboardButtonUp_Obj(float time)
 {
     if (this->bs_keyboardButton == ZC_GUI_BB_BS::BS_Pressed)
-        MakeActive(dynamic_cast<TSwitch*>(this));
+        MakeActive(dynamic_cast<TSwitch*>(this), true);
     this->bs_keyboardButton = ZC_GUI_BB_BS::BS_Released;
 }
 
 template <ZC_GUI_cSwitch TSwitch>
-void ZC_GUI_Switch<TSwitch>::MakeActive(TSwitch* _pBM_active)
+void ZC_GUI_Switch<TSwitch>::MakeActive(TSwitch* _pBM_active, bool use_callback)
 {
     if (pBM_active && pBM_active == _pBM_active) return;
     if (pBM_active) pBM_active->SetButtonColor_BS(pBM_active->colorsButton.color_button, true);
     pBM_active = _pBM_active;
     pBM_active->SetButtonColor_BS(pBM_active->colorsButton.color_button_pressed, true);
-    VVariantChoosed(pBM_active == this ? 0 : pBM_active - dynamic_cast<TSwitch*>(&(variants.front())) + 1);   //  first (0) variant is ZC_GUI_Switch, not into the vector
+    if (use_callback) callback(pBM_active == this ? 0 : pBM_active - dynamic_cast<TSwitch*>(&(variants.front())) + 1);  //  first (0) variant is ZC_GUI_Switch, not into the vector
 }
 
 template <ZC_GUI_cSwitch TSwitch>
@@ -207,7 +210,7 @@ template <ZC_GUI_cSwitch TSwitch>
 void ZC_GUI_Switch<TSwitch>::Variant::VMouseButtonLeftUp_Obj(float time)
 {
     if (this->bs_mouseButton == ZC_GUI_BB_BS::BS_Pressed && this->CheckCursorCollision_Obj())
-        dynamic_cast<ZC_GUI_Switch<TSwitch>*>(this->pObjHolder)->MakeActive(dynamic_cast<TSwitch*>(this));
+        dynamic_cast<ZC_GUI_Switch<TSwitch>*>(this->pObjHolder)->MakeActive(dynamic_cast<TSwitch*>(this), true);
     this->bs_mouseButton = ZC_GUI_BB_BS::BS_Released;
 }
 
@@ -228,6 +231,6 @@ template <ZC_GUI_cSwitch TSwitch>
 void ZC_GUI_Switch<TSwitch>::Variant::VKeyboardButtonUp_Obj(float time)
 {
     if (this->bs_keyboardButton == ZC_GUI_BB_BS::BS_Pressed)
-        dynamic_cast<ZC_GUI_Switch<TSwitch>*>(this->pObjHolder)->MakeActive(dynamic_cast<TSwitch*>(this));
+        dynamic_cast<ZC_GUI_Switch<TSwitch>*>(this->pObjHolder)->MakeActive(dynamic_cast<TSwitch*>(this), true);
     this->bs_keyboardButton = ZC_GUI_BB_BS::BS_Released;
 }
