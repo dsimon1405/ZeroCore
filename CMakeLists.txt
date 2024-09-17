@@ -289,6 +289,6 @@ add_dependencies(${PROJECT_NAME} ZC_COPY_ASSETS)
 
 message(STATUS "======================== ZERO CORE CONFIG ========================")
 message(STATUS "ZC_PC: ${ZC_PC}")
-message(STATUS "ZC_STATIC: ${ZC_STATIC}")
+# message(STATUS "ZC_STATIC: ${ZC_STATIC}")
 message(STATUS "ZC_AUDIO: ${ZC_AUDIO}")
 message(STATUS "========================= ZERO CORE END ==========================")
