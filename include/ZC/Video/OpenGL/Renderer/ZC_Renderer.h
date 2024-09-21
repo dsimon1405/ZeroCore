@@ -13,7 +13,7 @@ public:
     static void EraseUBOs(ZC_UBO* pUbo);
     static void Add(ZC_Render* pRender);
     static void Erase(ZC_Render* pRender);
-    void Draw(ZC_GUI& gui);
+    void Draw(ZC_GUI* gui);
     
 private:
     static inline ZC_Renderer* pRenderer;

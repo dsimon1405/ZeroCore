@@ -20,6 +20,8 @@ ZC_Shader* ZC_ShFragment1::GetShader(Name name)    //  add here new
     case Name::colorTex: path = ZC_FSPath(shadersPath).append("colorTex.fs").string(); break;
     case Name::text: path = ZC_FSPath(shadersPath).append("text.fs").string(); break;
     case Name::orthoTexture: path = ZC_FSPath(shadersPath).append("orthoTexture.fs").string(); break;
+
+    case Name::game_sphere: path = ZC_FSPath(shadersPath).append("Game/sphere.fs").string(); break;
     default: break;
     }
 
@@ -41,6 +43,8 @@ typename ZC_ShFragment1::Set ZC_ShFragment1::GetVAOAndUniformData(Name name)    
         return { GetShader(Name::text), { { new TName[]{ TName::texColor }, 1 } }, ZC_Uniform::GetUniformVector(unoforms, 2) };      //  shader same as text, but different uniform configuration
     }
     case Name::orthoTexture: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, ZC_Uniform::GetUniformVector({ ZC_UN_unAlpha, false }) };
+
+    case Name::game_sphere: return { .shader = GetShader(name), .texSets = { { new TName[]{ TName::texColor }, 1 } } };
     default: return {};
     }
 }

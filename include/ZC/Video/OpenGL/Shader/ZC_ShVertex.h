@@ -19,6 +19,8 @@ struct ZC_ShVertex1
         textWindow,
         textScene,
         textWindowIntoScene,
+
+        Game_PlayerSphere
     };
 
     struct Set

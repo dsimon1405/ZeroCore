@@ -15,17 +15,18 @@ N - normalizes, S is signed short [-1,1], if US unsigned short [0,1] (if don't u
 */
 enum ZC_VAOLayout
 {
-    ZC_VAOL_None,
-    ZC_VAOL_F_2_0__UB_2_1_N,
-    ZC_VAOL_F_2_0__US_2_1_N,
-    ZC_VAOL_F_3_0,
-    ZC_VAOL_F_3_0__F_3_1,
-    ZC_VAOL_F_3_0__F_2_1,
-    ZC_VAOL_F_3_0__F_2_3,
-    ZC_VAOL_F_3_0__UB_3_1_N,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
-    ZC_VAOL_F_4_0__UB_3_1_N,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
-    ZC_VAOL_F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N,     //  I_2_10_10_10_REV_1 one int32 in code and vec4 of floats in GLSL
-    ZC_VAOL_F_4_0,
+    ZC_VAOL__None,
+    ZC_VAOL__F_2_0__UB_2_1_N,
+    ZC_VAOL__F_2_0__US_2_1_N,   //  US_2 in unsigned short packed texture coords 
+    ZC_VAOL__F_3_0,
+    ZC_VAOL__F_3_0__F_3_1,
+    ZC_VAOL__F_3_0__F_2_1,
+    ZC_VAOL__F_3_0__F_2_3,
+    ZC_VAOL__F_3_0__UB_3_1_N,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
+    ZC_VAOL__F_4_0__UB_3_1_N,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
+    ZC_VAOL__F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N,     //  I_2_10_10_10_REV_1 one int32 in code and vec4 of floats in GLSL
+    ZC_VAOL__F_4_0,
+    ZC_VAOL__F_3_0__I_2_10_10_10_REV_1_1_N__US_2_2_N
 };
 
 //  Class for configuring ZC_VAO.

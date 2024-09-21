@@ -6,7 +6,7 @@
 #include <ZC/Video/ZC_SWindow.h>
 
 #ifdef ZC_SDL_VIDEO
-#include "PC/SDL/ZC_SDL_Window.h"
+#include <Video/PC/SDL/ZC_SDL_Window.h>
 bool ZC_SWindowHolder::MakeWindowHolder(int flags, int width, int height, const char* name)
 {
     upWindowHolder = ZC_uptrMakeFromChild<ZC_SWindowHolder, ZC_SDL_Window>(flags, width, height, name);
@@ -34,10 +34,13 @@ ZC_SWindowHolder::~ZC_SWindowHolder()
 void ZC_SWindowHolder::RunMainCycle()
 {
     if (upGUI) upGUI->Configure();
+    collision_manager.Configure();
     while (true)
     {
-        if (!(upEventsHolder->PollEvents(fps.StartNewFrame()))) break;
-        renderer.Draw(*(upGUI.Get()));
+        float time = fps.StartNewFrame();   //  tyime in nanoseconds
+        if (!(upEventsHolder->PollEvents(time))) break;
+        collision_manager.MakeCollision();
+        renderer.Draw(upGUI ? upGUI.Get() : nullptr);
     }
 }
 
@@ -66,9 +69,14 @@ void ZC_SWindowHolder::GetCursorPosition(float& posX, float& posY)
     upEventsHolder->GetCursorPosition(posX, posY);
 }
 
+void ZC_SWindowHolder::SetFPSTimeMeasure(ZC_FPS_TimeMeasure timeMeasure)
+{
+    fps.ChangeTimeMeasure(timeMeasure);
+}
+
 ZC_SWindowHolder::ZC_SWindowHolder()
     : upEventsHolder(ZC_EventsHolder::MakeEventsHolder()),
-	fps(ZC_FPS::Nanoseconds),
+	fps(ZC_FPS_TimeMeasure::ZC_FPS_TM__Nanoseconds),
     renderer({ &ZC_SWindowHolder::SwapBuffer, this })
 {}
 

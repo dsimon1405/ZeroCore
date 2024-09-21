@@ -213,6 +213,9 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_TextWindowIntoScene.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindow.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindowController.cpp
+	${PROJECT_SOURCE_DIR}/src/Collision/ZC_CO_Figure.cpp
+	${PROJECT_SOURCE_DIR}/src/Collision/ZC_CollisionManager.cpp
+	${PROJECT_SOURCE_DIR}/src/Collision/ZC_CollisionObject.cpp
 	
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/System/ZC_GUI_DrawManager.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/System/ZC_GUI_EventManager.cpp
@@ -268,6 +271,7 @@ target_include_directories(${PROJECT_NAME} ${ZC_INCLUDE_DIRS}
 	PRIVATE ${PROJECT_SOURCE_DIR}/src
 	PUBLIC ${PROJECT_BINARY_DIR}/config
 	PUBLIC $<$<BOOL:${ZC_AUDIO}>:${PROJECT_SOURCE_DIR}/includeVariable/Audio>
+	PUBLIC ${PROJECT_SOURCE_DIR}/external/stb_image/include
 	)
 
 #========================= link libs
@@ -289,6 +293,6 @@ add_dependencies(${PROJECT_NAME} ZC_COPY_ASSETS)
 
 message(STATUS "======================== ZERO CORE CONFIG ========================")
 message(STATUS "ZC_PC: ${ZC_PC}")
-# message(STATUS "ZC_STATIC: ${ZC_STATIC}")
+message(STATUS "ZC_STATIC: ${ZC_STATIC}")
 message(STATUS "ZC_AUDIO: ${ZC_AUDIO}")
 message(STATUS "========================= ZERO CORE END ==========================")

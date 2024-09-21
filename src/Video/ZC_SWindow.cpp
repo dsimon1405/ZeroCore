@@ -63,7 +63,7 @@ void ZC_SWindow::StopInputText()
     if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->VStopInputText();
 }
 
-void ZC_SWindow::RuntMainCycle()
+void ZC_SWindow::RunMainCycle()
 {
     if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->RunMainCycle();
 }
@@ -81,4 +81,9 @@ bool ZC_SWindow::IsFPSDrawing()
 void ZC_SWindow::GetCursorPosition(float& posX, float& posY)
 {
     if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->GetCursorPosition(posX, posY);
+}
+
+void ZC_SWindow::SetFPSTimeMeasure(ZC_FPS_TimeMeasure timeMeasure)
+{
+    if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->SetFPSTimeMeasure(timeMeasure);
 }

@@ -78,6 +78,16 @@ true if point belong triangle, otherwise false.
 */
 bool ZC_IsPointBelongTriangle_2D(const ZC_Vec2<float>& a, const ZC_Vec2<float>& b, const ZC_Vec2<float>& c, const ZC_Vec2<float>& p);
 
+/*
+Calculate barycenters of point in triangle.
+
+Params:
+- a, b, c - triangle points coords.
+- p - point to calculate barycanters.
+
+Return:
+ZC_Vec3 of barycenters acoding a,b,c corners of triangle.
+*/
 ZC_Vec3<float> ZC_CalculateTriangleBarycenters(const ZC_Vec2<float>& a, const ZC_Vec2<float>& b, const ZC_Vec2<float>& c, const ZC_Vec2<float>& p);
 
 /*
@@ -105,3 +115,16 @@ Return:
 true if lines intersects, otherwise false and rPoint value don't changing.
 */
 bool ZC_FindLineIntercectionPoint_2D(const ZC_Vec2<float>& p1, const ZC_Vec2<float>& p2, const ZC_Vec2<float>& p3, const ZC_Vec2<float>& p4, ZC_Vec2<float>& rPoint);
+
+/*
+Finds shortest (orthogonal) distance from point to plane. If result > 0, point is in direction of normal, if result < 0 point behind the plane. In each case modulus of the result is the distance to the plane.
+
+Params:
+- point_in_plane - some point in lpane.
+- normal_plane - plane normal. Must be normalized!
+- point - point to find distance for.
+
+Return:
+Shortest distance from point to plane.
+*/
+float ZC_DistanceFromPointToPlane(ZC_Vec3<float> point_in_plane, ZC_Vec3<float> normal_plane, ZC_Vec3<float> point);

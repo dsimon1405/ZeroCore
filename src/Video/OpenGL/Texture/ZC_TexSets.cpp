@@ -38,7 +38,7 @@ void ZC_TexSets::VectorOfTexturesCreator::Add(ZC_Texture&& tex)
     texs.emplace_back(std::move(tex));
 }
 
-std::vector<ZC_Texture> ZC_TexSets::VectorOfTexturesCreator::GetVector()
+std::vector<ZC_Texture>&& ZC_TexSets::VectorOfTexturesCreator::GetVector()
 {
     if (texSets.size != texs.size()) ZC_ErrorLogger::Err("Not all textures added!", __FILE__,__LINE__);
     return std::move(texs);

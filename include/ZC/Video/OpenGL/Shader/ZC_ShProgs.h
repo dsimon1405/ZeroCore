@@ -21,6 +21,8 @@ enum ZC_ShPName
     ShPN_ZC_TextScene,
     ShPN_ZC_TextWindowIntoScene,
     ShPN_ZC_OrthoTexture,
+
+    ShPN_Game_PlayerSphere,
     
     ShPN_LoadAll,    //  must be last
 };

@@ -26,6 +26,8 @@ ZC_Shader* ZC_ShVertex1::GetShader(Name name)    //  add here new
     case Name::textWindow: path = ZC_FSPath(shadersPath).append("textWindow.vs").string(); break;
     case Name::textScene: path = ZC_FSPath(shadersPath).append("textScene.vs").string(); break;
     case Name::textWindowIntoScene: path = ZC_FSPath(shadersPath).append("textWindowIntoScene.vs").string(); break;
+    
+    case Name::Game_PlayerSphere: path = ZC_FSPath(shadersPath).append("Game/sphere.vs").string(); break;
     }
 
     return &(shaders.emplace(name, ZC_Shader(ZC_Shader::ReadShaderFile(path.c_str(), GL_VERTEX_SHADER).pHead, GL_VERTEX_SHADER)).first->second);
@@ -53,6 +55,8 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_ShVertex1::GetUniformData(Name name)    //  
     case Name::textWindow: return ZC_Uniform::GetUniformVector({ ZC_UN_unPositionWindow, true });
     case Name::textScene: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
     case Name::textWindowIntoScene: return ZC_Uniform::GetUniformVector({ ZC_UN_unPositionScene, true });
+
+    case Name::Game_PlayerSphere: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
     default: return std::vector<ZC_uptr<ZC_Uniform>>{};
     }
 }

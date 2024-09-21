@@ -45,15 +45,19 @@ ZC_ShProg::~ZC_ShProg()
 {
     glDeleteProgram(id);
 }
-//  add deactivate shader !!!!
+
 void ZC_ShProg::ActivateOpenGL() const
-{
-    static GLuint activeId = 0;
-    
+{    
     if (activeId == id || id == 0) return;
     activeId = id;
     
     glUseProgram(id);
+}
+
+void ZC_ShProg::SetDefault()
+{
+    activeId = 0;
+    glUseProgram(activeId);
 }
 
 GLint ZC_ShProg::GetUniformLocation(const char* name)

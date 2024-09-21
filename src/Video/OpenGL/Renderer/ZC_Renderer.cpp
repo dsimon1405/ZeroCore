@@ -99,7 +99,7 @@ void ZC_Renderer::Erase(ZC_Render* pRender)
 //     pShP = new ZC_ShProg(vs.id, fs.id, gs.id);
 // }
 
-void ZC_Renderer::Draw(ZC_GUI& gui)
+void ZC_Renderer::Draw(ZC_GUI* pGUI)
 {
     this->UpdateUBO();
 
@@ -121,12 +121,16 @@ void ZC_Renderer::Draw(ZC_GUI& gui)
     // int w,h;
     // ZC_SWindow::GetSize(w,h);
 // glDisable(GL_DEPTH_TEST);
-    glClear(GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    gui.Draw();
+    if (pGUI)
+    {
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+        pGUI->Draw();
+    }
 
     //  my rendering finished, make openGL state default
+    ZC_ShProg::SetDefault();
     ZC_VAO::UnbindVertexArray();
     ZC_GLBlend::Disable();
     ZC_Framebuffer::Unbind();

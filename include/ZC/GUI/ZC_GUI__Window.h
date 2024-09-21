@@ -131,7 +131,7 @@ void ZC_GUI__Window<TWin>::SetDrawState(bool needDraw)
 
 /*
 Each window consist from rows (adds with AddRow() - they are invisible) in wich adds objects. Objects (buttons, texts and so on) adds in rows with AddObj(). Configuration set up all objects added in window.
-Configuration makes once in ZC_SWindow::RuntMainCycle() method. Mutable window may be reconfigured after configuration. Reconfiguration need when some object adds/erases in window after configuratin.
+Configuration makes once in ZC_SWindow::RunMainCycle() method. Mutable window may be reconfigured after configuration. Reconfiguration need when some object adds/erases in window after configuratin.
 Recomended to use ZC_GUI__WinImmutable if don't need to add/erase objects after configuration. Object ZC_GUI__Tree may may add/erase branches (objects) after configuration, if uses that behaviour, tree must be used
 into mutable window.
 */
@@ -143,7 +143,7 @@ struct ZC_GUI__WinMutable : public ZC_GUI__Window<ZC_GUI_WinMutable>
 
 /*
 Each window consist from rows (adds with AddRow() - they are invisible) in wich adds objects. Objects (buttons, texts and so on) adds in rows with AddObj(). Configuration set up all objects added in window.
-Configuration makes once in ZC_SWindow::RuntMainCycle() method. Immutable window can't be reconfigured after configuration and all add/erase methods have no effect after configuration.
+Configuration makes once in ZC_SWindow::RunMainCycle() method. Immutable window can't be reconfigured after configuration and all add/erase methods have no effect after configuration.
 */
 struct ZC_GUI__WinImmutable : public ZC_GUI__Window<ZC_GUI_WinImmutable>
 {

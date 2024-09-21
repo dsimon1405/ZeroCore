@@ -16,10 +16,13 @@ struct ZC_ShProg
 
     ~ZC_ShProg();
 
-	/*
-	Activate shader program.
-	*/
+		//	Activate shader program.
     void ActivateOpenGL() const;
+		//	Unset activeId in the end of the draw cycle
+	static void SetDefault();
 
 	int GetUniformLocation(const char* name);
+
+private:
+    static inline GLuint activeId = 0;
 };

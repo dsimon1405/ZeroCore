@@ -5,15 +5,9 @@
 #include <thread>
 #include <format>
 
-ZC_FPS::ZC_FPS(TimeMeasure timeMeasure)
+ZC_FPS::ZC_FPS(ZC_FPS_TimeMeasure timeMeasure)
 {
-    switch (timeMeasure)
-    {
-    case TimeMeasure::Nanoseconds: nanosecondsDivisor = 1.f; break;
-    case TimeMeasure::Microseconds: nanosecondsDivisor = 1000.f; break;
-    case TimeMeasure::Milliseconds: nanosecondsDivisor = 1000000.f; break;
-    case TimeMeasure::Seconds: nanosecondsDivisor = 1000000000.f; break;
-    }
+    ChangeTimeMeasure(timeMeasure);
 }
 
 float ZC_FPS::StartNewFrame()
@@ -35,6 +29,17 @@ void ZC_FPS::SetLimit(long fps)
 {
     if (fps < 0) fps = 0;
     fpsTime = fps == 0 ? 0 : static_cast<long>(nanosecond) / (fps + 1);
+}
+
+void ZC_FPS::ChangeTimeMeasure(ZC_FPS_TimeMeasure timeMeasure)
+{
+    switch (timeMeasure)
+    {
+    case ZC_FPS_TimeMeasure::ZC_FPS_TM__Nanoseconds: nanosecondsDivisor = 1.f; break;
+    case ZC_FPS_TimeMeasure::ZC_FPS_TM__Microseconds: nanosecondsDivisor = 1000.f; break;
+    case ZC_FPS_TimeMeasure::ZC_FPS_TM__Milliseconds: nanosecondsDivisor = 1000000.f; break;
+    case ZC_FPS_TimeMeasure::ZC_FPS_TM__Seconds: nanosecondsDivisor = 1000000000.f; break;
+    }
 }
 
 float ZC_FPS::PreviousFrameTime() const noexcept

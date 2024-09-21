@@ -2,19 +2,12 @@
 
 #include <ZC/Tools/Time/ZC_Clock.h>
 #include <ZC/Objects/Text/ZC_TextWindow.h>
+#include <ZC/Tools/Time/ZC_FPS_TimeMeasure.h>
 
 struct ZC_FPS
 {
-    enum TimeMeasure
-    {
-        Nanoseconds,
-        Microseconds,
-        Milliseconds,
-        Seconds,
-    };
-
     //  timeMeasure - defined in which time measure going to be returned all time results.
-    ZC_FPS(TimeMeasure timeMeasure);
+    ZC_FPS(ZC_FPS_TimeMeasure timeMeasure);
 
     /*
     Start count time of new frame.
@@ -30,6 +23,9 @@ struct ZC_FPS
     fps - limit. If 0 - unlimit. If < 0 than will set 0.
     */
     void SetLimit(long fps);
+
+    //  Change time measure.
+    void ChangeTimeMeasure(ZC_FPS_TimeMeasure timeMeasure);
 
     /*
     Return:

@@ -74,8 +74,8 @@ public:
 
     ~ZC_Texture();
 
-        //  activates texture
-    void GLBindTextureUnit(GLuint DELTE_BINDING = 1000000) const;
+        //  activates texture, DELETE_BINDING parameter must be deleted in future uses from ZC_TexturesHolder::ActivateOpenGL() from ZC_DSController.cpp
+    void GLBindTextureUnit(GLuint DELETE_BINDING = 1000000) const;
     GLuint GetId() const noexcept;
 
     /*

@@ -42,7 +42,7 @@ struct ZC_TexSets
 
         TextureName* NextName();
         void Add(ZC_Texture&& tex);
-        std::vector<ZC_Texture> GetVector();
+        std::vector<ZC_Texture>&& GetVector();
 
     private:
         std::vector<ZC_Texture> texs;

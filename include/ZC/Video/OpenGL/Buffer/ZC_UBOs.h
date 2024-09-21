@@ -25,7 +25,7 @@ public:
 	void AddUBO(ZC_UBO* pUbo, ZC_Function<void()>&& fUpdate);
 	void EraseUBO(ZC_UBO* pUbo);
 
-protected:
+// protected:
 	void UpdateUBO();
 
 private:

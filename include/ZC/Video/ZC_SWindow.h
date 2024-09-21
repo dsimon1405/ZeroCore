@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ZC/Tools/Function/ZC_Function.h>
+#include <ZC/Tools/Time/ZC_FPS_TimeMeasure.h>
 
 typedef int ZC_WindowFlags;     //  ZC_SWindow::Flags
 /*
@@ -86,7 +88,7 @@ namespace ZC_SWindow
     void StopInputText();
 
     //  Run cycle (handle events => OpenGL draw).
-    void RuntMainCycle();
+    void RunMainCycle();
 
     //  Displays or not the number of frames per second.
     void NeedDrawFPS(bool needDraw);
@@ -96,4 +98,7 @@ namespace ZC_SWindow
 
     //  Sets the position X, Y coords in references.
     void GetCursorPosition(float& posX, float& posY);
+    
+    //  Set time measure of fps. Default ZC_FPS_TM__Nanoseconds. Method ZC_SWindow::GetPreviousFrameTime() will return time in that measure. And collbacs from ZC_Event will gave time in that measure.
+    void SetFPSTimeMeasure(ZC_FPS_TimeMeasure timeMeasure);
 };

@@ -4,7 +4,7 @@
 #include <ZC/Tools/Math/ZC_Math.h>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <Tools/stb_image.h>
+#include <stb_image.h>
 
 ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLuint _binding, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
 {
@@ -152,10 +152,10 @@ ZC_Texture::~ZC_Texture()
     if (id != 0) glDeleteTextures(1, &id);
 }
 
-void ZC_Texture::GLBindTextureUnit(GLuint DELTE_BINDING) const
+void ZC_Texture::GLBindTextureUnit(GLuint DELETE_BINDING) const
 {
-    if (DELTE_BINDING == 1000000) glBindTextureUnit(binding, id);
-    else glBindTextureUnit(DELTE_BINDING, id);
+    if (DELETE_BINDING == 1000000) glBindTextureUnit(binding, id);
+    else glBindTextureUnit(DELETE_BINDING, id);
 }
 
 GLuint ZC_Texture::GetId() const noexcept

@@ -5,6 +5,7 @@
 #include <ZC/Video/OpenGL/Renderer/ZC_Renderer.h>
 #include <Collision/ZC_MouseCollisionWindowController.h>
 #include <ZC/GUI/Backend/System/ZC_GUI.h>
+#include <Collision/ZC_CollisionManager.h>
 
 class ZC_SWindowHolder
 {
@@ -29,6 +30,7 @@ public:
     void NeedDrawFPS(bool needDraw);
     bool IsFPSDrawing();
     void GetCursorPosition(float& posX, float& posY);
+    void SetFPSTimeMeasure(ZC_FPS_TimeMeasure timeMeasure);
 
 protected:
     ZC_SWindowHolder();
@@ -38,6 +40,7 @@ private:
 	ZC_FPS fps;
     ZC_Renderer renderer;
     ZC_uptr<ZC_GUI> upGUI;
+    ZC_CollisionManager collision_manager;
 
     ZC_MouseCollisionWindowController mcwc;
 
