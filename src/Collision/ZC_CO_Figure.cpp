@@ -91,7 +91,7 @@ const ZC_CO_Surface<ZC_Vec3<float>*>* ZC_CO_Figure::GetClosesSurface(const ZC_Ve
     return pSurf_closest;
 }
 
-const ZC_Vec3<float>* ZC_CO_Figure::GetSourcePoint(const ZC_Vec3<float>* pPoint_fact)
+const ZC_Vec3<float>* ZC_CO_Figure::GetSourcePoint(const ZC_Vec3<float>* pPoint_fact) const
 {
     size_t index = pPoint_fact - all_points_fact.data();
     return index < all_points_src.size() ? &all_points_src[index] : nullptr;

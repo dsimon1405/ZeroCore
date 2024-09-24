@@ -22,6 +22,8 @@ float ZC_FPS::StartNewFrame()
 
     if (upTextFPS && upTextFPS->IsDrawing()) UpdateText(timeFromPreviousRestart);
 
+    ++frame_counter;
+
     return static_cast<float>(previousFrameNanoseconds) / nanosecondsDivisor;
 }
 
@@ -56,6 +58,11 @@ void ZC_FPS::NeedDraw(bool needDraw)
 bool ZC_FPS::IsDrawing()
 {
     return upTextFPS && upTextFPS->IsDrawing();
+}
+
+unsigned long long ZC_FPS::GetCurrentFrameNumber() const
+{
+    return frame_counter;
 }
 
 ZC_uptr<ZC_TextWindow> ZC_FPS::CreateText()

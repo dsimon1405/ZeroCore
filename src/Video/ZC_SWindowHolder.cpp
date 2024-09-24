@@ -35,10 +35,12 @@ void ZC_SWindowHolder::RunMainCycle()
 {
     if (upGUI) upGUI->Configure();
     collision_manager.Configure();
+    fps.StartNewFrame();    //  make prepearing call, to avoid false large information about frist frmae time
     while (true)
     {
-        float time = fps.StartNewFrame();   //  tyime in nanoseconds
+        float time = fps.StartNewFrame();   //  time in nanoseconds (default) or in user's seted measure 
         if (!(upEventsHolder->PollEvents(time))) break;
+        updater.Call(time);
         collision_manager.MakeCollision();
         renderer.Draw(upGUI ? upGUI.Get() : nullptr);
     }
@@ -72,6 +74,16 @@ void ZC_SWindowHolder::GetCursorPosition(float& posX, float& posY)
 void ZC_SWindowHolder::SetFPSTimeMeasure(ZC_FPS_TimeMeasure timeMeasure)
 {
     fps.ChangeTimeMeasure(timeMeasure);
+}
+
+ZC_EC ZC_SWindowHolder::ConnectUpdate(ZC_Function<void(float)>&& func, size_t level)
+{
+    return updater.Connect(std::move(func), level);
+}
+
+unsigned long long ZC_SWindowHolder::GetCurrentFrameNumber() const
+{
+    return fps.GetCurrentFrameNumber();
 }
 
 ZC_SWindowHolder::ZC_SWindowHolder()

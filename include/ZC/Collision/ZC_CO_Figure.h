@@ -21,6 +21,7 @@ struct ZC_CO_Figure
 
     Params:
     - _center - center of a figure.
+    - _radius - radius from figure's center to farest point of figure (include variant when figure points move in animation).
     - _surfaces - surfaces of a figure.
     */
     ZC_CO_Figure(ZC_Vec3<float> _center, float _radius, std::vector<ZC_CO_Surface<ZC_Vec3<float>>> _surfaces);
@@ -29,5 +30,5 @@ struct ZC_CO_Figure
         //  return closest surface to a point
     const ZC_CO_Surface<ZC_Vec3<float>*>* GetClosesSurface(const ZC_Vec3<float>& point);
         //  return pointer on src point of fact point, if can't find nullptr
-    const ZC_Vec3<float>* GetSourcePoint(const ZC_Vec3<float>* pPoint_fact);
+    const ZC_Vec3<float>* GetSourcePoint(const ZC_Vec3<float>* pPoint_fact) const;
 };

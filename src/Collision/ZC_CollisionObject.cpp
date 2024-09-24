@@ -2,12 +2,14 @@
 
 #include <Collision/ZC_CollisionManager.h>
 #include <ZC/Tools/Math/ZC_Math.h>
+#include <ZC/Video/ZC_SWindow.h>
 
-ZC_CollisionObject::ZC_CollisionObject(ZC_CO_Figure&& _figure, ZC_C0_Type _collision_type, ZC_Function<void(const ZC_CO_CollisionResult&)>&& _collision_callback, const ZC_Mat4<float>& mat_model)
-    : mat_model_actual(mat_model),
-    figure(std::move(_figure)),
+ZC_CollisionObject::ZC_CollisionObject(ZC_CO_Figure&& _figure, ZC_C0_Type _collision_type, void* _pHolder, ZC_Function<void(const ZC_CO_CollisionResult&)>&& _collision_callback, const ZC_Mat4<float>& mat_model)
+    : figure(std::move(_figure)),
     collision_type(_collision_type),
-    collision_callback(std::move(_collision_callback))
+    collision_callback(std::move(_collision_callback)),
+    pHolder(_pHolder),
+    mat_model_actual(mat_model)
 {
     ZC_CollisionManager::AddFigure(this);
 }
@@ -30,14 +32,29 @@ void ZC_CollisionObject::UpdateModelMatrix(const ZC_Mat4<float>& mat)
     if (ZC_CollisionManager::IsCollisionInProcess()) UpdateDataWithModelMatrix();   //  collision in process need update data for correct collisions with rest objects
 }
 
-const ZC_CO_Surface<ZC_Vec3<float>*>* ZC_CollisionObject::GetClosesSurface(const ZC_Vec3<float>& point)
+const ZC_CO_Surface<ZC_Vec3<float>*>* ZC_CollisionObject::GetClosestSurface(const ZC_Vec3<float>& point)
 {
     return figure.GetClosesSurface(point);
 }
 
-const ZC_Vec3<float>* ZC_CollisionObject::GetSourcePoint(const ZC_Vec3<float>* pPoint_fact)
+const ZC_Vec3<float>* ZC_CollisionObject::GetSourcePoint(const ZC_Vec3<float>* pPoint_fact) const
 {
     return figure.GetSourcePoint(pPoint_fact);
+}
+
+const ZC_CO_Figure& ZC_CollisionObject::GetFigure() const
+{
+    return figure;
+}
+
+bool ZC_CollisionObject::IsCurrentFrameCollision() const
+{
+    return ZC_SWindow::GetCurrentFrameNumber() == last_collision_frame_number;
+}
+
+void* ZC_CollisionObject::GetHolder()
+{
+    return pHolder;
 }
 
 void ZC_CollisionObject::UpdateDataWithModelMatrix()
@@ -59,6 +76,8 @@ bool ZC_CollisionObject::MakeCollision(ZC_CollisionObject* pCO)
     {
         if (SimpleCollision(points, surfaces))   //  both object need simple collision
         {
+            last_collision_frame_number = ZC_SWindow::GetCurrentFrameNumber();
+            pCO->last_collision_frame_number = last_collision_frame_number;
             if (collision_callback) collision_callback(ZC_CO_CollisionResult{ .pObj = pCO, });
             if (pCO->collision_callback) collision_callback(ZC_CO_CollisionResult{ .pObj = this });
             return true;
@@ -118,6 +137,8 @@ bool ZC_CollisionObject::HardCollision(ZC_CollisionObject* pCO)
                 dist_to_surf = dist;
             }
         }
+
+        assert(pSurf_collisioned != nullptr);
 
             //  find distance to farthest point from found surface (farthest_point_distance)
         for (ZC_Vec3<float>* pPoint : points_inside)

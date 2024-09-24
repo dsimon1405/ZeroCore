@@ -36,14 +36,14 @@ struct ZC_CollisionObject
 
     /*
     Params:
-    - _radius - radius from figure's center to farest point of figure (include variant when figure points move in animation).
-    - collision_data - data of object for collision.
+    - _figure - store collision model.
     - _collision_type - look ZC_C0_Type.
+    - pHolder - pointer on object (holder) wich will be return on call GetHolder()
     - _func_callision - callback calls on collision, if don't need may be missed. Params: first - pointer on object with wich were happened collision.
                                                                                           second - pointer on surface on wich where happend collision.
     - mat_model - model matrix. For static ZC_COT__Static and ZC_COT__StaticSoloCollision object actual model matrix must be seted in ctr or with UpdateModelMatrix() before call ZC_SWindow::RunMainCycle()!
     */
-    ZC_CollisionObject(ZC_CO_Figure&& _figure, ZC_C0_Type _collision_type, ZC_Function<void(const ZC_CO_CollisionResult&)>&& _func_callision, const ZC_Mat4<float>& mat_model = ( 1.f ));
+    ZC_CollisionObject(ZC_CO_Figure&& _figure, ZC_C0_Type _collision_type, void* _pHolder, ZC_Function<void(const ZC_CO_CollisionResult&)>&& _func_callision, const ZC_Mat4<float>& mat_model = ( 1.f ));
 
     ~ZC_CollisionObject();
     
@@ -52,17 +52,25 @@ struct ZC_CollisionObject
         //  update model matrix and data dependent on it
     void UpdateModelMatrix(const ZC_Mat4<float>& mat);
         //  return closest surface to a point
-    const ZC_CO_Surface<ZC_Vec3<float>*>* GetClosesSurface(const ZC_Vec3<float>& point);
+    const ZC_CO_Surface<ZC_Vec3<float>*>* GetClosestSurface(const ZC_Vec3<float>& point);
         //  return pointer on src point of fact point, if can't find nullptr
-    const ZC_Vec3<float>* GetSourcePoint(const ZC_Vec3<float>* pPoint_fact);
+    const ZC_Vec3<float>* GetSourcePoint(const ZC_Vec3<float>* pPoint_fact) const;
+        //  return const reference on figure (collision model)
+    const ZC_CO_Figure& GetFigure() const;
+        //  Return true if object has collision with other object in current frame
+    bool IsCurrentFrameCollision() const;
+        //  return pointer on object's holder
+    void* GetHolder();
 
 private:
-    ZC_Mat4<float> mat_model_actual;   //  model matrix of global position stores in that class and all changes makes throught access methods
-    ZC_Mat4<float> mat_model_previous;   //  model matrix fom previous move
     ZC_CO_Figure figure;  //  sets in ctr
     ZC_C0_Type collision_type;
-    bool mat_model_was_updated = true;
+    void* pHolder;  //  holder of the object
     ZC_Function<void(const ZC_CO_CollisionResult&)> collision_callback;
+    ZC_Mat4<float> mat_model_actual;   //  model matrix of global position stores in that class and all changes makes throught access methods
+    ZC_Mat4<float> mat_model_previous;   //  model matrix fom previous move
+    bool mat_model_was_updated = true;
+    unsigned long long last_collision_frame_number;     //  number of the frame in wich was last collision
 
         //  updates fact data with model matrix
     void UpdateDataWithModelMatrix();

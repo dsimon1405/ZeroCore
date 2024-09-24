@@ -184,11 +184,12 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Tools/Exception/ZC_Exception.cpp
     ${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_Clock.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_FPS.cpp
+	${PROJECT_SOURCE_DIR}/src/Tools/Math/ZC_Math.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_OrthoSquare.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_TornToCamera.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_WindowOrthoIndent.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_ButtonManipulator.cpp
-	${PROJECT_SOURCE_DIR}/src/Tools/Math/ZC_Math.cpp
+	${PROJECT_SOURCE_DIR}/src/Tools/ZC_Updater.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_MakeErrorString.cpp
 	${PROJECT_SOURCE_DIR}/src/File/Read/ZC_FileReader.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_ErrorLogger.cpp

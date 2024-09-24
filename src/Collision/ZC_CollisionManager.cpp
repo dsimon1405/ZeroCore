@@ -44,7 +44,7 @@ void ZC_CollisionManager::MakeCollision()
 {
     collision_in_process = true;
 
-    for (ZC_CollisionObject* pCF : dynamic_figures) pCF->UpdateDataWithModelMatrix();  //  update poistion and normal need only for dynamic objects
+    for (ZC_CollisionObject* pCF : dynamic_figures) pCF->UpdateDataWithModelMatrix();  //  update position and normal need only for dynamic objects
 
         //  make collision each dynamic object with all others
     for (auto cur_iter = dynamic_figures.begin(); cur_iter != dynamic_figures.end(); ++cur_iter)

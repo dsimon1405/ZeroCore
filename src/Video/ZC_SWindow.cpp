@@ -87,3 +87,13 @@ void ZC_SWindow::SetFPSTimeMeasure(ZC_FPS_TimeMeasure timeMeasure)
 {
     if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->SetFPSTimeMeasure(timeMeasure);
 }
+
+ZC_EC ZC_SWindow::ConnectUpdate(ZC_Function<void(float)>&& func, size_t level)
+{
+    return ZC_SWindowHolder::upWindowHolder ? ZC_SWindowHolder::upWindowHolder->ConnectUpdate(std::move(func), level) : ZC_EC();
+}
+
+unsigned long long ZC_SWindow::GetCurrentFrameNumber()
+{
+    return ZC_SWindowHolder::upWindowHolder ? ZC_SWindowHolder::upWindowHolder->GetCurrentFrameNumber() : 0;
+}

@@ -2,6 +2,7 @@
 
 #include <ZC/Tools/Function/ZC_Function.h>
 #include <ZC/Tools/Time/ZC_FPS_TimeMeasure.h>
+#include <ZC/Events/ZC_EC.h>
 
 typedef int ZC_WindowFlags;     //  ZC_SWindow::Flags
 /*
@@ -101,4 +102,19 @@ namespace ZC_SWindow
     
     //  Set time measure of fps. Default ZC_FPS_TM__Nanoseconds. Method ZC_SWindow::GetPreviousFrameTime() will return time in that measure. And collbacs from ZC_Event will gave time in that measure.
     void SetFPSTimeMeasure(ZC_FPS_TimeMeasure timeMeasure);
+
+    /*
+    Connect to update in each frame. Update is calling after polling events and before collsion.
+
+    Params:
+    - func - function to call on update. Parameter (float) is time of previous frame.
+    - level - level on wich add function. Order of calling on update.
+
+    Return:
+    Event connection for disconnect.
+    */
+    ZC_EC ConnectUpdate(ZC_Function<void(float)>&& func, size_t level);
+
+    //  Returns number of current frame.
+    unsigned long long GetCurrentFrameNumber();
 };

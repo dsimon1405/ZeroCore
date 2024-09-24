@@ -6,6 +6,7 @@
 #include <Collision/ZC_MouseCollisionWindowController.h>
 #include <ZC/GUI/Backend/System/ZC_GUI.h>
 #include <Collision/ZC_CollisionManager.h>
+#include <Tools/ZC_Updater.h>
 
 class ZC_SWindowHolder
 {
@@ -31,6 +32,8 @@ public:
     bool IsFPSDrawing();
     void GetCursorPosition(float& posX, float& posY);
     void SetFPSTimeMeasure(ZC_FPS_TimeMeasure timeMeasure);
+    ZC_EC ConnectUpdate(ZC_Function<void(float)>&& func, size_t level);
+    unsigned long long GetCurrentFrameNumber() const;
 
 protected:
     ZC_SWindowHolder();
@@ -41,6 +44,7 @@ private:
     ZC_Renderer renderer;
     ZC_uptr<ZC_GUI> upGUI;
     ZC_CollisionManager collision_manager;
+    ZC_Updater updater;
 
     ZC_MouseCollisionWindowController mcwc;
 

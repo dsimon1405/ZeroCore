@@ -35,6 +35,8 @@ struct ZC_FPS
 
     void NeedDraw(bool _needDraw);
     bool IsDrawing();
+    //  retrun current frame number
+    unsigned long long GetCurrentFrameNumber() const;
 
 private:
     ZC_Clock clock;
@@ -43,6 +45,8 @@ private:
     long previousFrameNanoseconds = 0;
     long fpsTime = static_cast<long>(nanosecond / 61.f);
     float nanosecondsDivisor;
+
+    unsigned long long frame_counter = 0;
 
     bool needDraw = false;
     ZC_uptr<ZC_TextWindow> upTextFPS;
