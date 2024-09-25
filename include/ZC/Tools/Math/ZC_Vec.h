@@ -14,7 +14,7 @@ namespace ZC_Vec
     Normalize the vector - make its length = 1, preserving the direction.
 
     Params:
-    vec - vector for normalization.
+    - vec - vector for normalization.
 
     Return:
     Normalized vector;
@@ -38,8 +38,8 @@ namespace ZC_Vec
     Creates a vector orthogonal (90 degrees) to two others. If you look from vec2 to vec1, the result will be on the right.
 
     Params:
-    vec1 - first vector for creation orthogonal vector.
-    vec2 - second vector for creation orthogonal vector.
+    - vec1 - first vector for creation orthogonal vector.
+    - vec2 - second vector for creation orthogonal vector.
 
     Return:
     Orthogonal vector.
@@ -51,18 +51,33 @@ namespace ZC_Vec
     }
 
     /*
-    Convert degrees to radians.
+    Convert radians to degrees.
 
     Params:
-    angle - angle in degrees.
+    - angle_degrees - angle in degrees.
 
     Return:
     Angle in radians.
     */
     template<typename TValue>
-    constexpr TValue Radians(TValue angle) noexcept
+    constexpr TValue Radians(TValue angle_degrees) noexcept
     {
-        return angle * static_cast<TValue>(ZC_PI_RAD_COEF);
+        return angle_degrees * static_cast<TValue>(ZC_PI_RAD_COEF);
+    }
+
+    /*
+    Convert degrees to radians.
+
+    Params:
+    - angle_radians - angle in radians.
+
+    Return:
+    Angle in degrees.
+    */
+    template<typename TValue>
+    constexpr TValue Degrees(TValue angle_radians) noexcept
+    {
+        return angle_radians / static_cast<TValue>(ZC_PI_RAD_COEF);
     }
 
     /*
@@ -73,8 +88,8 @@ namespace ZC_Vec
     Then cos270 = 0 and return to cos360 = 1 = cos0.
 
     Params:
-    vec1 - first vector.
-    vec2 - second vector.
+    - vec1 - first vector.
+    - vec2 - second vector.
 
     Return:
     Cosine of the angle between vec1 and vec2.
@@ -89,7 +104,7 @@ namespace ZC_Vec
     Vector length.
 
     Params:
-    vec1 - vector.
+    - vec1 - vector.
 
     Return:
     Vector length.
@@ -104,9 +119,9 @@ namespace ZC_Vec
     Moves a vector in a specified direction (may not be normalized) by a specified length.
 
     Params:
-    v - vector to move.
-    direction - where to move.
-    length - on what length to move.
+    - v - vector to move.
+    - direction - where to move.
+    - length - on what length to move.
 
     Return:
     Vector with new position.
@@ -115,5 +130,11 @@ namespace ZC_Vec
     ZC_Vec3<TValue> MoveByLength(const ZC_Vec3<TValue>& v, const ZC_Vec3<TValue>& direction, TValue length) noexcept
     {
         return v + (direction * static_cast<TValue>(length / sqrt(direction[0] * direction[0] + direction[1] * direction[1] + direction[2] * direction[2])));
+    }
+
+    template<typename TValue>
+    ZC_Vec3<TValue> Vec4_to_Vec3(const ZC_Vec4<TValue>& v) noexcept
+    {
+        return { v[0], v[1], v[2] };
     }
 }

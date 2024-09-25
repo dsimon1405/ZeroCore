@@ -7,7 +7,7 @@ function(F_FATAL_EQUAL data1 data2 errorMessage)
 	endif()
 endfunction()
 
-#   fing git package
+#   find git package
 find_package(Git QUIET)
 if(NOT GIT_FOUND)
     message(FATAL_ERROR "Could not find_package(Git QUIET)!")

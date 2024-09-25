@@ -7,8 +7,8 @@
 ZC_CollisionObject::ZC_CollisionObject(ZC_CO_Figure&& _figure, ZC_C0_Type _collision_type, void* _pHolder, ZC_Function<void(const ZC_CO_CollisionResult&)>&& _collision_callback, const ZC_Mat4<float>& mat_model)
     : figure(std::move(_figure)),
     collision_type(_collision_type),
-    collision_callback(std::move(_collision_callback)),
     pHolder(_pHolder),
+    collision_callback(std::move(_collision_callback)),
     mat_model_actual(mat_model)
 {
     ZC_CollisionManager::AddFigure(this);

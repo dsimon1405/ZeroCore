@@ -10,8 +10,8 @@ uniform sampler2D texColor;
 
 void main()
 {    
-    // FragColor = vec4(1,1,1,1);
-    // FragColor = vColor;
-    FragColor = vec4(texture(texColor, TexCoords).xyz * vColor_coef, 1);
-    // FragColor = texture(texture_diffuse1, TexCoords);
+    vec3 color = texture(texColor, TexCoords).xyz;
+    if (color.x > 0.2f && color.y > 0.2f && color.z > 0.2f) color = vec3(1, 0, 0);
+    FragColor = vec4(color * vColor_coef, 1);
+    // FragColor = vec4(texture(texColor, TexCoords).xyz, 1);
 }
