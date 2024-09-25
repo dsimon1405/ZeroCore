@@ -125,7 +125,7 @@ endif()
 
 #========================= add lib
 add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
-	$<$<NOT:${ZC_MY_DEBUG}>:/external/glad/src/glad.c>
+	$<$<NOT:${ZC_MY_DEBUG}>:${PROJECT_SOURCE_DIR}/external/glad/src/glad.c>
 	$<IF:$<CONFIG:Debug>,
 		${PROJECT_SOURCE_DIR}/src/ErrorLogger/Exception/ZC_ErrorLogger.cpp,
 		${PROJECT_SOURCE_DIR}/src/ErrorLogger/Message/ZC_ErrorLogger.cpp>
