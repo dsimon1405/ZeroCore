@@ -4,7 +4,7 @@
 
 void ZC_TexSets::Uniformli(ZC_ShProg& shProg)
 {
-    for (ulong texSetsI = 0; texSetsI < texSets.size; ++texSetsI)
+    for (unsigned long texSetsI = 0; texSetsI < texSets.size; ++texSetsI)
     {
         switch (texSets[texSetsI])
         {

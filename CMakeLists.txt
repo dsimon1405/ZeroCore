@@ -282,7 +282,8 @@ target_link_libraries(${PROJECT_NAME} ${ZC_LINK_LIBS}
 	
 #========================= compiler params
 target_compile_options(${PROJECT_NAME}
-	PRIVATE	$<IF:$<BOOL:${WIN32}>,-W3,-Wall>
+	PRIVATE	
+			$<$<CONFIG:Debug>:$<IF:$<BOOL:${WIN32}>,-W3,-Wall>>
 			$<$<CONFIG:Release>:-O3>
 	)
 
