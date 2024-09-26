@@ -3,6 +3,7 @@
 #include <ZC/Video/OpenGL/Texture/ZC_Texture.h>
 #include <ZC/GUI/Backend/ZC_GUI_ObjData.h>
 #include <ZC/GUI/Backend/Text/ZC_GUI_FontLoader.h>
+#include <ZC/Tools/Math/ZC_Math.h>
 
 #include <list>
 

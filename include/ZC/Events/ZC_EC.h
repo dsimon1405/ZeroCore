@@ -10,8 +10,6 @@ public:
     ZC_EC() = default;
     ZC_EC(ZC_uptr<ZC_EventConnection>&& _eventConnection);
     
-    ZC_EC(ZC_EC&&) = delete;
-
     void Disconnect();
     bool IsConnected() const noexcept;
     //  Disconnects connected event, and store new event connection.

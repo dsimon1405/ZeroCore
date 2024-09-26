@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef _WIN32
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
+
 #include <ZC/Tools/Function/ZC_Function.h>
 #include <ZC/Tools/Time/ZC_FPS_TimeMeasure.h>
 #include <ZC/Events/ZC_EC.h>

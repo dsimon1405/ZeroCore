@@ -43,10 +43,10 @@ void ZC_GUI_TextManager::Configure(bool doubleWidth)
         for (Text& text : texts)
         {
             text.start_index = data_index;
-            text.uv = ZC_GUI_UV{ .bl{ (float)data_index / (float)total_width, 0.f }, .tr{ float(data_index + text.width) / (float)total_width, 1.f } };
-            int text_data_index = data_index + (text.alignment == ZC_GUI_TextAlignment::Center ? (text.width - CalculateWstrWidth(text.wstr)) / 2.f
+            text.uv = ZC_GUI_UV{ { (float)data_index / (float)total_width, 0.f }, { float(data_index + text.width) / (float)total_width, 1.f } };
+            int text_data_index(data_index + (text.alignment == ZC_GUI_TextAlignment::Center ? (text.width - CalculateWstrWidth(text.wstr)) / 2.f
                 : text.alignment == ZC_GUI_TextAlignment::Right ? text.width - CalculateWstrWidth(text.wstr)
-                : 0);
+                : 0));
             for (const wchar_t& wch : text.wstr)
             {
                 auto pCh = font.GetCharacter(wch);

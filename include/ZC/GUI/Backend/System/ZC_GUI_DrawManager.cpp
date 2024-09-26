@@ -9,7 +9,7 @@
 
 ZC_GUI_DrawManager::ZC_GUI_DrawManager()
 {
-    texture = ZC_Texture::LoadTexture2D(ZC_FSPath(ZC_ZCDirPath).append("textures/gui/icons.png").c_str(), ZC_GUI_Bindings::bind_tex_Icons);
+    texture = ZC_Texture::LoadTexture2D(ZC_FSPath(ZC_ZCDirPath).append("textures/gui/icons.png").string().c_str(), ZC_GUI_Bindings::bind_tex_Icons);
     
     assert(ZC_ShaderPrograms::CompilationTest(ZC_ShaderPath::GetPath_Vertex(ZC_SV_gui).c_str(), nullptr, nullptr, ZC_ShaderPath::GetPath_Geometry(ZC_SG_gui).c_str(),
         ZC_ShaderPath::GetPath_Fragment(ZC_SF_gui).c_str()));

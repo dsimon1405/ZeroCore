@@ -9,10 +9,10 @@ template<typename T>
 struct ZC_DA
 {
     T* pHead = nullptr;
-    ulong size = 0;
+    unsigned long size = 0;
 
-    ZC_DA(T* _pArray = nullptr, ulong _size = 0);
-    ZC_DA(ulong _size);
+    ZC_DA(T* _pArray = nullptr, unsigned long _size = 0);
+    ZC_DA(unsigned long _size);
 
     ZC_DA(const ZC_DA&) = delete;
     ZC_DA& operator = (const ZC_DA&) = delete;
@@ -22,8 +22,8 @@ struct ZC_DA
 
     ~ZC_DA();
 
-    T& operator [] (ulong index);
-    const T& operator [] (ulong index) const;
+    T& operator [] (unsigned long index);
+    const T& operator [] (unsigned long index) const;
 
     unsigned long BytesSize() noexcept;
     T* Begin() noexcept;
@@ -37,13 +37,13 @@ struct ZC_DA
 };
 
 template<typename T>
-ZC_DA<T>::ZC_DA(T* _pArray, ulong _size)
+ZC_DA<T>::ZC_DA(T* _pArray, unsigned long _size)
     : pHead(_pArray),
     size(_size)
 {}
 
 template<typename T>
-ZC_DA<T>::ZC_DA(ulong _size)
+ZC_DA<T>::ZC_DA(unsigned long _size)
     : pHead(static_cast<T*>(malloc(sizeof(T) * _size))),
     size(_size)
 {}
@@ -80,14 +80,14 @@ ZC_DA<T>::~ZC_DA()
 }
 
 template<typename T>
-T& ZC_DA<T>::operator [] (ulong index)
+T& ZC_DA<T>::operator [] (unsigned long index)
 {
     assert(index < size);   //  out of range
     return pHead[index];
 }
 
 template<typename T>
-const T& ZC_DA<T>::operator [] (ulong index) const
+const T& ZC_DA<T>::operator [] (unsigned long index) const
 {
     assert(index < size);   //  out of range
     return const_cast<T&>(pHead[index]);

@@ -5,11 +5,11 @@
 
 void ZC_ShaderPrograms::Clear()
 {
-    vertex.clear();
-    tessControl.clear();
-    tessEvaluation.clear();
-    geometry.clear();
-    fragment.clear();
+    if (!(vertex.empty())) vertex.clear();
+    if (!(tessControl.empty())) tessControl.clear();
+    if (!(tessEvaluation.empty())) tessEvaluation.clear();
+    if (!(geometry.empty())) geometry.clear();
+    if (!(fragment.empty())) fragment.clear();
 }
 
 ZC_ShaderProgram* ZC_ShaderPrograms::GetShader(GLenum type, int customID)
@@ -119,7 +119,7 @@ ZC_DA<char> ZC_ShaderPrograms::ReadShaderFile(const char* path)
         return nullptr;
     }
 
-    ulong fileSize = upFileReader->Size();
+    unsigned long fileSize = upFileReader->Size();
     if (fileSize == 0)
     {
         assert(false);  //  empty file

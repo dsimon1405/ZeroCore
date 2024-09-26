@@ -2,7 +2,7 @@
 
 void ZC_ShaderManager::Clear()
 {
-    pipelines.clear();
+    if (!(pipelines.empty())) pipelines.clear();
     shaderPrograms.Clear();
 }
 
