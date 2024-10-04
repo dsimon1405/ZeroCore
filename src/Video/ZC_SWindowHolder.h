@@ -24,7 +24,10 @@ public:
     virtual void VUnlimitCursor() {}
     virtual void VStartInputText() {}
     virtual void VStopInputText() {}
+    virtual void VSetMaxSize(int x, int y) {}
+    virtual void VSetMinSize(int x, int y) {}
 
+    void CloseWindow();
     void RunMainCycle();
     void SetFPS(long limit);
     float GetPreviousFrameTime() const noexcept;
@@ -32,13 +35,16 @@ public:
     bool IsFPSDrawing();
     void GetCursorPosition(float& posX, float& posY);
     void SetFPSTimeMeasure(ZC_FPS_TimeMeasure timeMeasure);
-    ZC_EC ConnectUpdate(ZC_Function<void(float)>&& func, size_t level);
+    ZC_EC ConnectToUpdater(ZC_Function<void(float)>&& func, size_t level);
     unsigned long long GetCurrentFrameNumber() const;
+    void ChangeUpdaterState(bool needUpdate);
+    void ChangeUpdaterLevelState(size_t lvl, bool is_active);
 
 protected:
     ZC_SWindowHolder();
 
 private:
+    bool isDrawing = true;
     ZC_uptr<ZC_EventsHolder> upEventsHolder;
 	ZC_FPS fps;
     ZC_Renderer renderer;
@@ -52,5 +58,5 @@ private:
     void AddZC_Render();
 
     //  Changes the current buffer to a buffer with a prepared sketch
-    virtual void SwapBuffer() = 0;
+    virtual void VSwapBuffer() = 0;
 };

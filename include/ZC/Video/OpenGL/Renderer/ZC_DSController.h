@@ -47,7 +47,7 @@ struct ZC_DSController   //  stores data of object of ZC_DrawerSet for search in
     ~ZC_DSController();
 
     /*
-    Switchs to choosen draw level in choosen render level. In one render level could only at one draw level at time.
+    Switchs to choosen draw level in choosen render level. At one render level could be only one draw level at time.
 
     Paramas:
     - renderLevel - level of render for switching.

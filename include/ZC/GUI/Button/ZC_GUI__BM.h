@@ -16,6 +16,7 @@ struct ZC_GUI__BM : public TBM
     void VLeftButtonDoubleClick_BM(float time) override;
     void VLeftButtonPressed_BM(float time) override;
     void VLeftButtonUp_BM(float time) override;
+    void VFocuseChanged_BM(bool isFocused) override;
 };
 
 
@@ -60,4 +61,10 @@ template <typename TBM>
 void ZC_GUI__BM<TBM>::VLeftButtonUp_BM(float time)
 {
     pHolder->VLeftButtonUp(time);
+}
+
+template <typename TBM>
+void ZC_GUI__BM<TBM>::VFocuseChanged_BM(bool isFocused)
+{
+    pHolder->VFocuseChanged(isFocused);
 }

@@ -3,24 +3,31 @@
 #include <ZC/Tools/Function/ZC_Function.h>
 
 template <typename TButton>
-struct ZC_GUI__Click : public TButton
+class ZC_GUI__Click : public TButton
 {
+public:
     ZC_Function<void(float)> callback_button_down;
     ZC_Function<void(float)> callback_button_up;
+    ZC_Function<void(bool)> callback_focuse_changed;
 
-    ZC_GUI__Click(TButton&& button, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up);
+    ZC_GUI__Click(TButton&& button, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up,
+        ZC_Function<void(bool)>&& _callback_focuse_changed);
 
+private:
     void VLeftButtonDown(float time) override;
     void VLeftButtonUp(float time) override;
     void VKeyboardButtonDown(float time) override;
     void VKeyboardButtonUp(float time) override;
+    void VFocuseChanged(bool isFocused) override;
 };
 
 template <typename TButton>
-ZC_GUI__Click<TButton>::ZC_GUI__Click(TButton&& button, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up)
+ZC_GUI__Click<TButton>::ZC_GUI__Click(TButton&& button, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up,
+        ZC_Function<void(bool)>&& _callback_focuse_changed)
     : TButton(std::move(button)),
     callback_button_down(std::move(_callback_button_down)),
-    callback_button_up(std::move(_callback_button_up))
+    callback_button_up(std::move(_callback_button_up)),
+    callback_focuse_changed(std::move(_callback_focuse_changed))
 {}
 
 template <typename TButton>
@@ -47,6 +54,12 @@ void ZC_GUI__Click<TButton>::VKeyboardButtonUp(float time)
     if (callback_button_up) callback_button_up(time);
 }
 
+template <typename TButton>
+void ZC_GUI__Click<TButton>::VFocuseChanged(bool isFocused)
+{
+    if (callback_focuse_changed) callback_focuse_changed(isFocused);
+}
+
 
 #include "ZC_GUI__ButtonMouse.h"
     //  Button for left mouse button click controll.
@@ -61,7 +74,7 @@ struct ZC_GUI__ClickMouse : public ZC_GUI__Click<ZC_GUI__ButtonMouse>
     - _callback_button_up - the function is called when the left mouse button is up and the cursor is still above the button.
     */
     ZC_GUI__ClickMouse(float width, float height, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up,
-        const ZC_GUI_ColorsButton& _colorsButton = {});
+        ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsButton& _colorsButton = {});
 
     /*
     Params:
@@ -73,7 +86,7 @@ struct ZC_GUI__ClickMouse : public ZC_GUI__Click<ZC_GUI__ButtonMouse>
     - _callback_button_up - the function is called when the left mouse button is up and the cursor is still above the button.
     */
     ZC_GUI__ClickMouse(float width, float height, const ZC_GUI_UV& uv, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up,
-        const ZC_GUI_ColorsButton& _colorsButton = {});
+        ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsButton& _colorsButton = {});
 };
 
 
@@ -91,7 +104,7 @@ struct ZC_GUI__ClickMouseText : public ZC_GUI__Click<ZC_GUI__ButtonMouseText>
     - _callback_button_up - the function is called when the left mouse button is up and the cursor is still above the button.
     */
     ZC_GUI__ClickMouseText(float width, float height, ZC_GUI_TextForButton&& text, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up,
-        const ZC_GUI_ColorsButton& _colorsButton = {});
+        ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsButton& _colorsButton = {});
 
     /*
     Params:
@@ -104,7 +117,7 @@ struct ZC_GUI__ClickMouseText : public ZC_GUI__Click<ZC_GUI__ButtonMouseText>
     - _callback_button_up - the function is called when the left mouse button is up and the cursor is still above the button.
     */
     ZC_GUI__ClickMouseText(float width, float height, const ZC_GUI_UV& uv, ZC_GUI_TextForButton&& text, ZC_Function<void(float)>&& _callback_button_down,
-        ZC_Function<void(float)>&& _callback_button_up, const ZC_GUI_ColorsButton& _colorsButton = {});
+        ZC_Function<void(float)>&& _callback_button_up, ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsButton& _colorsButton = {});
 
     /*
     Params:
@@ -116,7 +129,7 @@ struct ZC_GUI__ClickMouseText : public ZC_GUI__Click<ZC_GUI__ButtonMouseText>
     - _callback_button_up - the function is called when the left mouse button is up and the cursor is still above the button.
     */
     ZC_GUI__ClickMouseText(float width, float height, const std::wstring& name, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up,
-        const ZC_GUI_ColorsButton& _colorsButton = {});
+        ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsButtonText& _colorsButtonText = {});
 
     /*
     Params:
@@ -129,7 +142,7 @@ struct ZC_GUI__ClickMouseText : public ZC_GUI__Click<ZC_GUI__ButtonMouseText>
     - _callback_button_up - the function is called when the left mouse button is up and the cursor is still above the button.
     */
     ZC_GUI__ClickMouseText(float width, float height, const ZC_GUI_UV& uv, const std::wstring& name, ZC_Function<void(float)>&& _callback_button_down,
-        ZC_Function<void(float)>&& _callback_button_up, const ZC_GUI_ColorsButton& _colorsButton = {});
+        ZC_Function<void(float)>&& _callback_button_up, ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsButtonText& _colorsButtonText = {});
 };
 
 
@@ -175,7 +188,7 @@ struct ZC_GUI__ClickMouseAndKeyboard : public ZC_GUI__Click<ZC_GUI__ButtonMouseA
     - _colorsButton - button colors (may stay default).
     */
     ZC_GUI__ClickMouseAndKeyboard(float width, float height, ZC_ButtonID _buttonId, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up,
-        const ZC_GUI_ColorsButton& _colorsButton = {});
+        ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsButton& _colorsButton = {});
 
     /*
     Params:
@@ -185,5 +198,5 @@ struct ZC_GUI__ClickMouseAndKeyboard : public ZC_GUI__Click<ZC_GUI__ButtonMouseA
     - _colorsButton - button colors (may stay default).
     */
     ZC_GUI__ClickMouseAndKeyboard(float width, float height, ZC_ButtonID _buttonId, const ZC_GUI_UV &uv, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up,
-        const ZC_GUI_ColorsButton& _colorsButton = {});
+        ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsButton& _colorsButton = {});
 };

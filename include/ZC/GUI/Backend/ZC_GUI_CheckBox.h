@@ -15,7 +15,7 @@ struct ZC_GUI_CheckBox : public ZC_GUI_ButtonMouseText
         ColorsCheckBox(uint _color_arrow = ZC_GUI_Colors::checkBox_arrow, uint _color_text = ZC_GUI_Colors::checkBox_text, const ColorsButton& _colorsButton =
                 ColorsButton(ZC_GUI_Colors::checkBox_button, ZC_GUI_Colors::checkBox_button_under_cursor, ZC_GUI_Colors::checkBox_button_pressed));
     };
-
+        //  REPLACE name to ZC_GUI_TextForButton as in ZC_GUI_ButtonMouse and ZC_GUI_ButtonNumberText
     ZC_GUI_CheckBox(const std::wstring& name, bool _isOn, ZC_Function<void(bool)> _callback, const ColorsCheckBox& colorsCheckBox = {});
 
     ZC_GUI_CheckBox(ZC_GUI_CheckBox&& chB);

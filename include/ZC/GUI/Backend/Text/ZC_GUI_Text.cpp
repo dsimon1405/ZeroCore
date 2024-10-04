@@ -71,6 +71,11 @@ float ZC_GUI_Text::VGetWidth_Obj()
     return actual_width;
 }
 
+float ZC_GUI_Text::VGetWidthComposite_Obj()
+{
+    return actual_width;
+}
+
 void ZC_GUI_Text::VConf_SetTextUV_Obj()
 {
     this->pObjData->uv = pText->uv;

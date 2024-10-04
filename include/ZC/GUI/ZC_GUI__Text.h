@@ -31,4 +31,5 @@ public:
     */
     bool UpdateText(const std::wstring& wstr, bool brootForceUpdate);
     const std::wstring& GetWStr();
+    void SetColor(uint color);
 };

@@ -13,7 +13,7 @@ bool ZC_SWindowHolder::MakeWindowHolder(int flags, int width, int height, const 
     if (!upWindowHolder) return false;
     upWindowHolder->LoadShProgs();
     upWindowHolder->AddZC_Render();
-    if (flags & ZC_SWindow::ZC_SW__GUI) upWindowHolder->upGUI = new ZC_GUI();
+    if (flags & ZC_SWF__GUI) upWindowHolder->upGUI = new ZC_GUI();
     return true;
 }
 // #elif defined(ZC_ANDROID_NATIVE_APP_GLUE)
@@ -31,15 +31,20 @@ ZC_SWindowHolder::~ZC_SWindowHolder()
     ZC_ShaderManager::Clear();
 }
 
+void ZC_SWindowHolder::CloseWindow()
+{
+    isDrawing = false;
+}
+
 void ZC_SWindowHolder::RunMainCycle()
 {
     if (upGUI) upGUI->Configure();
-    collision_manager.Configure();
     fps.StartNewFrame();    //  make prepearing call, to avoid false large information about frist frmae time
     while (true)
     {
         float time = fps.StartNewFrame();   //  time in nanoseconds (default) or in user's seted measure 
-        if (!(upEventsHolder->PollEvents(time))) break;
+        upEventsHolder->PollEvents(time);
+        if (!isDrawing) return;     //  check after polling events
         updater.Call(time);
         collision_manager.MakeCollision();
         renderer.Draw(upGUI ? upGUI.Get() : nullptr);
@@ -76,7 +81,7 @@ void ZC_SWindowHolder::SetFPSTimeMeasure(ZC_FPS_TimeMeasure timeMeasure)
     fps.ChangeTimeMeasure(timeMeasure);
 }
 
-ZC_EC ZC_SWindowHolder::ConnectUpdate(ZC_Function<void(float)>&& func, size_t level)
+ZC_EC ZC_SWindowHolder::ConnectToUpdater(ZC_Function<void(float)>&& func, size_t level)
 {
     return updater.Connect(std::move(func), level);
 }
@@ -86,10 +91,20 @@ unsigned long long ZC_SWindowHolder::GetCurrentFrameNumber() const
     return fps.GetCurrentFrameNumber();
 }
 
+void ZC_SWindowHolder::ChangeUpdaterState(bool needUpdate)
+{
+    updater.ChangeUpdaterState(needUpdate);
+}
+
+void ZC_SWindowHolder::ChangeUpdaterLevelState(size_t lvl, bool is_active)
+{
+    updater.ChangeLevelState(lvl, is_active);
+}
+
 ZC_SWindowHolder::ZC_SWindowHolder()
     : upEventsHolder(ZC_EventsHolder::MakeEventsHolder()),
 	fps(ZC_FPS_TimeMeasure::ZC_FPS_TM__Nanoseconds),
-    renderer({ &ZC_SWindowHolder::SwapBuffer, this })
+    renderer({ &ZC_SWindowHolder::VSwapBuffer, this })
 {}
 
 void ZC_SWindowHolder::LoadShProgs()

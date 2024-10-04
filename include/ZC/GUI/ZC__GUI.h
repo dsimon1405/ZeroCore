@@ -18,4 +18,6 @@ namespace ZC__GUI
     int CalculateWstrWidth(const std::wstring& wstr);
         //  Set gui state. If active true gui is drawing and processing events, otherwise not.
     void SetState(bool active);
+        //  Return pixel width of longest number charagter
+    int GetLongestNumberCharacterWidth();
 }

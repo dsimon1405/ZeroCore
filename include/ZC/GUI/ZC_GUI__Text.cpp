@@ -13,3 +13,8 @@ const std::wstring& ZC_GUI__Text::GetWStr()
 {
     return this->obj.GetWStr();
 }
+
+void ZC_GUI__Text::SetColor(uint color)
+{
+    this->obj.SetColor_Obj(color, true);
+}

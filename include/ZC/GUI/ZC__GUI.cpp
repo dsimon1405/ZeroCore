@@ -31,3 +31,8 @@ void ZC__GUI::SetState(bool active)
 {
     ZC_GUI::SetState(active);
 }
+
+int ZC__GUI::GetLongestNumberCharacterWidth()
+{
+    return ZC_GUI_TextManager::pTM->font.GetLongestNumberCharacterLendth();
+}

@@ -315,3 +315,10 @@ void ZC_GUI_Obj::MoveVec2(float rel_x, float rel_y, ZC_Vec2<float>& vec2)
     vec2[0] += rel_x;
     vec2[1] += rel_y;
 }
+
+void ZC_GUI_Obj::SetColor_Obj(unsigned int color, bool updateGPU)
+{
+    if (this->pObjData->color == color) return;
+    this->pObjData->color = color;
+    if (updateGPU) VMapObjData_Obj(this->pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
+}

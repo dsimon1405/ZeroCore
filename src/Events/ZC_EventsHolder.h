@@ -13,7 +13,7 @@ public:
     
     virtual ~ZC_EventsHolder();
 
-    virtual bool PollEvents(float previousFrameTime) = 0;
+    virtual void PollEvents(float previousFrameTime) = 0;
 
     void GetCursorPosition(float& posX, float& posY);
 
@@ -23,6 +23,7 @@ protected:
     ZC_ESignal<void(float)> sigHandleEventsEnd;
     ZC_ESignal<void(float,float)> sigWindowResize;
     ZC_ESignal<void(float)> sigHandleEventsStart;
+    ZC_Function<void()> funcWindowCloseButton;
 
     ZC_EventsHolder();
 

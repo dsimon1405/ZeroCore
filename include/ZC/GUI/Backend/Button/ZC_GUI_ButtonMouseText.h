@@ -5,9 +5,12 @@
 
 struct ZC_GUI_ButtonMouseText : public ZC_GUI_ButtonMouse
 {
-    ZC_GUI_ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_GUI_TextForButton&& text, const ColorsButton& _colorsButton = {});
+    ZC_GUI_TextForButton textForButton;
+
+    ZC_GUI_ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_GUI_TextForButton&& _textForButton, const ColorsButton& _colorsButton = {});
     
-    ZC_GUI_ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_GUI_TextForButton&& text, const ZC_GUI_UV& uv, const ColorsButton& _colorsButton = {});
+    ZC_GUI_ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_GUI_TextForButton&& _textForButton, const ZC_GUI_UV& uv,
+        const ColorsButton& _colorsButton = {});
 
     ZC_GUI_ButtonMouseText(ZC_GUI_ButtonMouseText&& bmt);
 
@@ -27,10 +30,8 @@ struct ZC_GUI_ButtonMouseText : public ZC_GUI_ButtonMouse
         //  Return current wstring.
     const std::wstring& GetWStr_BMT();
 
-protected:
-    ZC_GUI_TextForButton textForButton;
-
     void UpdateText_BMT(ZC_GUI_TextManager::Text* pText);
+    void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
     float VGetWidthComposite_Obj() override;
     void VConf_SetTextUV_Obj() override;
 };

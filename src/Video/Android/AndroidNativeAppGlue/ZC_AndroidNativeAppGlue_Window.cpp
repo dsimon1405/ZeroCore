@@ -54,7 +54,7 @@ bool ZC_AndroidNativeAppGlue_Window::HandleEvents()
     return true;
 }
 
-void ZC_AndroidNativeAppGlue_Window::SwapBuffer()
+void ZC_AndroidNativeAppGlue_Window::VSwapBuffer()
 {
 //    currentFrame++;
     eglSwapBuffers(display, surface);

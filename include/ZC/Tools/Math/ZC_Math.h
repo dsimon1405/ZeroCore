@@ -34,6 +34,11 @@ typedef double long ldouble;
 #define ZC_ToZeroOneRange(val) ((val + 1.0) / 2.0)  //  from range [-1,1] to range [0,1]
 #define ZC_ToMinusPlusOneRange(val) ((val * 2.0) - 1.0)  //  from range [0,1] to range [-1,1]
 
+const float ZC_angle_360f = 360.f;
+const int ZC_angle_360i = 360;
+
+uint ZC_PackColorFloatToUInt_RGB(const ZC_Vec3<float>& rgb) noexcept;
+
 /*
 Packs color from 3 float channels into one uint[32] indices -> [0-1] nothing, [2-11] red, [12-21] green, [22-31] blue.
 
@@ -65,6 +70,9 @@ uint ZC_PackColorUCharToUInt_RGB(uchar r, uchar g, uchar b) noexcept;
 uint ZC_PackColorUcharToUInt_RGBA(uchar r, uchar g, uchar b, uchar a) noexcept;
 
 ushort ZC_PackTexCoordFloatToUShort(float coord);
+
+//  Unpack color from uint packed (2x10x10x10) to vector of floats.
+ZC_Vec3<float> ZC_UnpackUINTtoFloat_RGB(uint rgb) noexcept;
 
 int ZC_Pack_INT_2_10_10_10_REV(float x, float y, float z);
 

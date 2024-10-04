@@ -11,15 +11,10 @@ ZC_TextWindow::ZC_TextWindow(ZC_FontData fontData, const std::string& _text, ZC_
     SetAlpha(1.f);
 }
 
-void ZC_TextWindow::SetIndentData(float windowIndentX, float windowIndentY, ZC_WindowOrthoIndentFlags indentFlags)
-{
-    this->SetNewIndentParams(windowIndentX, windowIndentY, indentFlags);
-}
-
 ZC_TextWindow ZC_TextWindow::MakeCopy(float windowIndentX, float windowIndentY, ZC_WindowOrthoIndentFlags indentFlags) const
 {
     ZC_TextWindow copy = { *this };
-    copy.SetIndentData(windowIndentX, windowIndentY, indentFlags);
+    copy.SetNewIndentParams(windowIndentX, windowIndentY, indentFlags);
     return copy;
 }
 
@@ -29,6 +24,12 @@ void ZC_TextWindow::SetAlpha(float alpha)
         : alpha > 1.f ? 1.f
         : alpha;
     dsController.SetUniformsData(ZC_UN_unAlpha, &alpha);
+}
+
+float ZC_TextWindow::GetAlpha() const noexcept
+{
+    const float* alpha = static_cast<const float*>(dsController.GetDataFromUniforms(ZC_UN_unAlpha));
+    return *alpha;
 }
 
 ZC_TextWindow::ZC_TextWindow(const ZC_TextWindow& tw)

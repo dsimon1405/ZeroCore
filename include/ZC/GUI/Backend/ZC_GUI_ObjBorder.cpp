@@ -337,8 +337,8 @@ void ZC_GUI_Row::CalculateObjs_bl(ZC_Vec2<float>& border_tl, float border_width)
             cur_x -= pObj == objs.front() ? rowParams.indent_x : rowParams.distance_x;
             float compositeHeight = pObj->VGetHeightComposite_Obj();
             if (compositeHeight > rowParams.height) rowParams.height = compositeHeight; //  update the row height to a higher one
-            pObj->VSet_pBL_Obj({ cur_x, border_tl[1] - compositeHeight });
             cur_x -= pObj->VGetWidthComposite_Obj();
+            pObj->VSet_pBL_Obj({ cur_x, border_tl[1] - compositeHeight });
         }
     } break;
     case Indent_XFlag::Center:

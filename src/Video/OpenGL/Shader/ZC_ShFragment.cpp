@@ -44,7 +44,11 @@ typename ZC_ShFragment1::Set ZC_ShFragment1::GetVAOAndUniformData(Name name)    
     }
     case Name::orthoTexture: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, ZC_Uniform::GetUniformVector({ ZC_UN_unAlpha, false }) };
 
-    case Name::game_sphere: return { .shader = GetShader(name), .texSets = { { new TName[]{ TName::texColor }, 1 } } };
+    case Name::game_sphere:
+    {
+        UnNT unoforms[]{ { .name = ZC_UN_unColor, .isPointer = true }, { .name = ZC_UN_unAlpha, .isPointer = true } };
+        return { .shader = GetShader(name), .texSets = { { new TName[]{ TName::texColor }, 1 } }, .uniforms = ZC_Uniform::GetUniformVector(unoforms, 2) };
+    }
     default: return {};
     }
 }

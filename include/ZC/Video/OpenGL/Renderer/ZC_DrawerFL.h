@@ -9,7 +9,8 @@ template<typename... T>
 class ZC_DrawerFL : public ZC_Drawer
 {
 public:
-    ZC_DrawerFL(uint clearMask, bool depthTest, bool stencilTest, ZC_GLBlend blend);
+    //  - _depthMask - depth test do, but don't rewrite results.
+    ZC_DrawerFL(uint clearMask, bool depthTest, bool _depthMask, bool stencilTest, ZC_GLBlend blend);
 
     void VAdd(ZC_DSController* pRSController) override;
     bool VErase(ZC_DSController* pRSController) override;
@@ -22,16 +23,18 @@ protected:
 
 private:
     GLbitfield clearMask;
-    bool depthTest,
-        stencilTest;
+    bool depthTest;
+    bool depthMask;
+    bool stencilTest;
     ZC_GLBlend blend;
 };
 
 
 template<typename... T>
-ZC_DrawerFL<T...>::ZC_DrawerFL(GLbitfield _clearMask, bool _depthTest, bool _stencilTest, ZC_GLBlend _blend)
+ZC_DrawerFL<T...>::ZC_DrawerFL(GLbitfield _clearMask, bool _depthTest, bool _depthMask, bool _stencilTest, ZC_GLBlend _blend)
     : clearMask(_clearMask),
     depthTest(_depthTest),
+    depthMask(_depthMask),
     stencilTest(_stencilTest),
     blend(_blend)
 {
@@ -54,7 +57,13 @@ template<typename... T>
 void ZC_DrawerFL<T...>::VDraw()
 {
     ZC_FBOBuffersController::GlClear(clearMask);
-    depthTest ? ZC_FBOBuffersController::GlEnable(GL_DEPTH_TEST) : ZC_FBOBuffersController::GlDisable(GL_DEPTH_TEST);
+    if (depthTest)
+    {
+        ZC_FBOBuffersController::GlEnable(GL_DEPTH_TEST);
+        ZC_FBOBuffersController::GLDepthMask(depthMask);
+    }
+    else ZC_FBOBuffersController::GlDisable(GL_DEPTH_TEST);
+
     stencilTest ? ZC_FBOBuffersController::GlEnable(GL_STENCIL_TEST) : ZC_FBOBuffersController::GlDisable(GL_STENCIL_TEST);
     blend.Use();
     VCallDraw();

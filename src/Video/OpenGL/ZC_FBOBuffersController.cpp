@@ -110,6 +110,26 @@ void ZC_FBOBuffersController::SetClearColor(const ZC_Vec4<float>& _clearColor)
     clearColor = _clearColor;
 }
 
+void ZC_FBOBuffersController::GLDepthMask(GLboolean flag)
+{
+    assert(!(flag == GL_TRUE) || !(flag == GL_FALSE));
+    assert(pActiveBufferController->haveDepthBuffer);
+    switch (flag)
+    {
+    case GL_TRUE:
+        if (pActiveBufferController->isDepthMask_TRUE) return;
+        glDepthMask(GL_TRUE);
+        pActiveBufferController->isDepthMask_TRUE = true;
+        break;
+    case GL_FALSE:
+        if (!pActiveBufferController->isDepthMask_TRUE) return;
+        glDepthMask(GL_FALSE);
+        pActiveBufferController->isDepthMask_TRUE = false;
+        break;
+    default: assert(false); break;
+    }
+}
+
 void ZC_FBOBuffersController::CheckClearColor()
 {
     static ZC_Vec4<float> currentColor;

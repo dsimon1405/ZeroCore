@@ -37,6 +37,9 @@ namespace ZC_GUI_Colors
     uint button = ZC_PackColorUCharToUInt_RGB(100, 100, 100);
     uint button_under_cursor = ZC_PackColorUCharToUInt_RGB(115, 115, 115);
     uint button_pressed = ZC_PackColorUCharToUInt_RGB(130, 130, 130);
+    uint button_not_active = ZC_PackColorUCharToUInt_RGB(70, 70, 70);
+    uint button_text = ZC_PackColorUCharToUInt_RGB(190, 190, 190);
+    uint button_text_not_active = ZC_PackColorUCharToUInt_RGB(140, 140, 140);
 
     //  CheckBox
     uint checkBox_button = button;

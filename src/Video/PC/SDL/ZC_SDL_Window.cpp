@@ -6,6 +6,9 @@
 #ifdef ZC_IMGUI
 #include <Video/imgui/ZC_ImGui.h>
 #endif
+#ifdef ZC_SDL_AUDIO
+#include <ZC/Audio/ZC_Audio.h>
+#endif
 
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_events.h>
@@ -26,13 +29,13 @@ ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, cons
     // if (SDL_GL_LoadLibrary(NULL) != 0) { ZC_ErrorLogger::Err("SDL_GL_LoadLibrary() faild! " + std::string(SDL_GetError()), __FILE__, __LINE__);}
 
     using namespace ZC_SWindow;
-	if (!SetOpenGLAttributes(flags & ZC_SW__Multisampling_4 ? 4
-							: flags & ZC_SW__Multisampling_3 ? 3
-							: flags & ZC_SW__Multisampling_2 ? 2
-							: flags & ZC_SW__Multisampling_1 ? 1
+	if (!SetOpenGLAttributes(flags & ZC_SWF__Multisampling_4 ? 4
+							: flags & ZC_SWF__Multisampling_3 ? 3
+							: flags & ZC_SWF__Multisampling_2 ? 2
+							: flags & ZC_SWF__Multisampling_1 ? 1
 							: 0)) return;
 
-	pWindow = !(flags & ZC_SW__Border) ? SDL_CreateWindow(name, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN)
+	pWindow = !(flags & ZC_SWF__Border) ? SDL_CreateWindow(name, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN)
 		: _width <= 0 || _height <= 0 ? SDL_CreateWindow(name, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED)
 			: SDL_CreateWindow(name, _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		
@@ -63,7 +66,7 @@ ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, cons
 	
 	if (gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
     // if (!LoadOpenGLFunctions()) return;
-	
+
 	SDL_StopTextInput();
 
 	ZC_OpenGLAssigneErrorCallback();
@@ -77,13 +80,16 @@ ZC_SDL_Window::~ZC_SDL_Window()
 {
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(pWindow);
+    #ifdef ZC_SDL_AUDIO
+    ZC_Audio::CloseAudioStream();
+    #endif
     SDL_Quit();
 #ifdef ZC_IMGUI
 	ZC_ImGui::Destroy();
 #endif
 }
 
-void ZC_SDL_Window::SwapBuffer()
+void ZC_SDL_Window::VSwapBuffer()
 {
     SDL_GL_SwapWindow(pWindow);
 }
@@ -121,6 +127,16 @@ void ZC_SDL_Window::VStartInputText()
 void ZC_SDL_Window::VStopInputText()
 {
 	SDL_StopTextInput();
+}
+
+void ZC_SDL_Window::VSetMaxSize(int x, int y)
+{
+	SDL_SetWindowMaximumSize(pWindow, x, y);
+}
+
+void ZC_SDL_Window::VSetMinSize(int x, int y)
+{
+	SDL_SetWindowMinimumSize(pWindow, x, y);
 }
 
 bool ZC_SDL_Window::SetOpenGLAttributes(int samplesCount)

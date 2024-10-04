@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ZC_Vec3.h"
+#include "ZC_Vec4.h"
 
 #include <cmath>
 #include <assert.h>
@@ -97,6 +97,7 @@ namespace ZC_Vec
     template<typename TValue>
     constexpr TValue Dot(const ZC_Vec3<TValue>& vec1, const ZC_Vec3<TValue>& vec2) noexcept
     {
+        if (vec1 == ZC_Vec3<float>() || vec2 == ZC_Vec3<float>()) return 0;
         return (vec1[0] * vec2[0]) + (vec1[1] * vec2[1]) + (vec1[2] * vec2[2]);
     }
 
@@ -112,6 +113,7 @@ namespace ZC_Vec
     template<typename TValue>
     constexpr TValue Length(const ZC_Vec3<TValue>& vec1) noexcept
     {
+        if (vec1 == ZC_Vec3<TValue>()) return TValue(0);
         return static_cast<TValue>(sqrt(vec1[0] * vec1[0] + vec1[1] * vec1[1] + vec1[2] * vec1[2]));
     }
 
@@ -129,6 +131,8 @@ namespace ZC_Vec
     template<typename TValue>
     ZC_Vec3<TValue> MoveByLength(const ZC_Vec3<TValue>& v, const ZC_Vec3<TValue>& direction, TValue length) noexcept
     {
+        assert(direction != ZC_Vec3<TValue>());
+        if (direction == ZC_Vec3<TValue>()) return v;
         return v + (direction * static_cast<TValue>(length / sqrt(direction[0] * direction[0] + direction[1] * direction[1] + direction[2] * direction[2])));
     }
 

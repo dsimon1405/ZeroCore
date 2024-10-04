@@ -141,4 +141,8 @@ struct ZC_GUI_Obj
         //  uses on scroll event
     virtual void VMoveBL_Obj(float rel_x, float rel_y, int& update_borders);
     void MoveVec2(float rel_x, float rel_y, ZC_Vec2<float>& vec2);
+
+        //  update color
+    void SetColor_Obj(unsigned int color, bool updateGPU);
+    virtual void VChangeObjectActivity_Obj(bool _isAvtive, bool changeGPU) {}
 };

@@ -8,6 +8,11 @@ bool ZC_SWindow::MakeWindow(ZC_WindowFlags flags, int width, int height, const c
     return ZC_SWindowHolder::MakeWindowHolder(flags, width, height, name);
 }
 
+void ZC_SWindow::CloseWindow()
+{
+    if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->CloseWindow();
+}
+
 void ZC_SWindow::GlClearColor(float red, float green, float blue, float alpha)
 {
     ZC_Renders::GetRender(ZC_RL_Default)->SetClearColor(red, green, blue, alpha);
@@ -88,12 +93,32 @@ void ZC_SWindow::SetFPSTimeMeasure(ZC_FPS_TimeMeasure timeMeasure)
     if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->SetFPSTimeMeasure(timeMeasure);
 }
 
-ZC_EC ZC_SWindow::ConnectUpdate(ZC_Function<void(float)>&& func, size_t level)
+ZC_EC ZC_SWindow::ConnectToUpdater(ZC_Function<void(float)>&& func, size_t level)
 {
-    return ZC_SWindowHolder::upWindowHolder ? ZC_SWindowHolder::upWindowHolder->ConnectUpdate(std::move(func), level) : ZC_EC();
+    return ZC_SWindowHolder::upWindowHolder ? ZC_SWindowHolder::upWindowHolder->ConnectToUpdater(std::move(func), level) : ZC_EC();
 }
 
 unsigned long long ZC_SWindow::GetCurrentFrameNumber()
 {
     return ZC_SWindowHolder::upWindowHolder ? ZC_SWindowHolder::upWindowHolder->GetCurrentFrameNumber() : 0;
+}
+
+void ZC_SWindow::SetMaxSize(int x, int y)
+{
+    if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->VSetMaxSize(x, y);
+}
+
+void ZC_SWindow::SetMinSize(int x, int y)
+{
+    if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->VSetMinSize(x, y);
+}
+
+void ZC_SWindow::ChangeUpdaterState(bool needUpdate)
+{
+    if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->ChangeUpdaterState(needUpdate);
+}
+
+void ZC_SWindow::ChangeUpdaterLevelState(size_t lvl, bool is_active)
+{
+    if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->ChangeUpdaterLevelState(lvl, is_active);
 }

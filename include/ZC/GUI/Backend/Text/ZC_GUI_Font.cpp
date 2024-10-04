@@ -31,6 +31,27 @@ int ZC_GUI_Font::GetLongestCharacterLength() const noexcept
     return longestLength;
 }
 
+int ZC_GUI_Font::GetLongestNumberCharacterLendth() const noexcept
+{
+    static int longestLength = 0;
+    if (longestLength == 0)
+    {
+        bool found = false;
+        for (const Character& ch : characters)
+        {
+            if (ch.character == L'0') found = true;
+            if (found)
+            {
+                float length = ch.left_offset + ch.width;
+                if (length > longestLength) longestLength = length;
+                
+                if (ch.character == L'9') break;
+            }
+        }
+    }
+    return longestLength;
+}
+
 void ZC_GUI_Font::AddSymbolData(std::vector<unsigned char>& data, int& rData_index, int data_width, const Character* pCh)
 {
     int data_i = rData_index + (pCh->start_row * data_width);     //  start index in data vector, miss white space rows in add vector

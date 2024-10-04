@@ -40,6 +40,7 @@ struct ZC_GUI_Text : public ZC_GUI_Obj
     void UpdateText(ZC_GUI_TextManager::Text* _pText);
     const std::wstring& GetWStr();
     float VGetWidth_Obj() override;
+    float VGetWidthComposite_Obj() override;
     void VConf_SetTextUV_Obj() override;
     void VSetWidth_Obj(float width) override;
     void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
@@ -47,6 +48,6 @@ struct ZC_GUI_Text : public ZC_GUI_Obj
 protected:
     bool isImmutable;
     typename ZC_GUI_TextManager::Text* pText;
-    float actual_width;     //  mutable texture can get Texts with different texture width. Object's width must be updated with Text width (to have don't wraped texture size). So actual_width is object width actual width. this->pObjData->width can have less or equal actual_width from new Text.
+    float actual_width;     //  mutable texture can get Texts with different texture width. Object's width must be updated with Text width (to have don't wraped texture size). So actual_width is object's full width. this->pObjData->width can have less or equal actual_width from new Text.
 
 };

@@ -25,6 +25,7 @@ struct ZC_GUI_Font
     const Character* GetCharacter(wchar_t ch);
     int GetHeight();
     int GetLongestCharacterLength() const noexcept;
+    int GetLongestNumberCharacterLendth() const noexcept;
 
     /*
     Fills concrete quad part part of 2d array, with some add data. Both data and add are in 1d arrays, but interprete as 2d arrays.

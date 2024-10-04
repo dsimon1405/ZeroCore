@@ -12,7 +12,6 @@ concept ZC_cBitsPerSample = std::same_as<T, int16_t> || std::same_as<T, int32_t>
 class ZC_SoundData
 {
 public:
-    
     ZC_SoundData() = default;
     ZC_SoundData(ZC_DA<char>&& _data, const ZC_AudioSet& _audioSet) noexcept;
 

@@ -14,7 +14,7 @@ public:
     ~ZC_AndroidNativeAppGlue_Window() override = default;
 
     bool HandleEvents() override;
-    void SwapBuffer() override;
+    void VSwapBuffer() override;
 
 private:
     EGLDisplay display = nullptr;

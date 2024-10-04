@@ -13,8 +13,6 @@ public:
     static void EraseFigure(ZC_CollisionObject* pFig);
         //  return true if collision in process
     static bool IsCollisionInProcess();
-        //  configure all figures
-    void Configure();
         //  make collision dynamic objects with static objects and with other dynamic objects
     void MakeCollision();
 

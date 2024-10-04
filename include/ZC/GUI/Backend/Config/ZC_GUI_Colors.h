@@ -39,6 +39,9 @@ namespace ZC_GUI_Colors
     extern uint button;
     extern uint button_under_cursor;
     extern uint button_pressed;
+    extern uint button_not_active;
+    extern uint button_text;
+    extern uint button_text_not_active;
 
     //  CheckBox
     extern uint checkBox_button;

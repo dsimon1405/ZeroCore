@@ -1,12 +1,11 @@
 #pragma once
 
 #include <ZC/GUI/Backend/ZC_GUI_Obj.h>
+#include <ZC/Tools/Function/ZC_Function.h>
 
 template <typename TObj>
 struct ZC_GUI__Obj
 {
-    ZC_GUI__Obj(TObj&& _obj);
-
     ZC_GUI__Obj(ZC_GUI__Obj&& _obj);
     
     virtual ~ZC_GUI__Obj() = default;
@@ -18,10 +17,28 @@ struct ZC_GUI__Obj
     bool IsDrawing();
         //  start/stop draw object into the window.
     void SetDrawState(bool needDraw);
+        //  return bottom left position of the texture into the window
+    ZC_Vec2<float> GetPositionBL();
 
 protected:
+    ZC_GUI__Obj(TObj&& _obj);
+
     TObj obj;
 };
+
+template <typename TObj>
+struct ZC_GUI__ObjFocuse : public ZC_GUI__Obj<TObj>    //  store focuse callback function
+{
+    ZC_GUI__ObjFocuse(TObj&& _obj, ZC_Function<void(bool)>&& _callback_focuse);
+
+private:
+    ZC_Function<void(bool)> callback_focuse;
+
+    void VFocuseChanged_BM(bool isFocused) override;
+};
+
+
+    //  ZC_GUI__Obj
 
 template <typename TObj>
 ZC_GUI__Obj<TObj>::ZC_GUI__Obj(TObj&& _obj)
@@ -60,5 +77,27 @@ bool ZC_GUI__Obj<TObj>::IsDrawing()
 template <typename TObj>
 void ZC_GUI__Obj<TObj>::SetDrawState(bool needDraw)
 {
-    obj.VSetDrawState_Obj(needDraw);
+    obj.VSetDrawState_Obj(needDraw, true);
+}
+
+template <typename TObj>
+ZC_Vec2<float> ZC_GUI__Obj<TObj>::GetPositionBL()
+{
+    return obj.Get_bl_Obj();
+}
+
+
+
+    //  ZC_GUI__ObjFocuse
+
+template <typename TObj>
+ZC_GUI__ObjFocuse<TObj>::ZC_GUI__ObjFocuse(TObj&& _obj, ZC_Function<void(bool)>&& _callback_focuse)
+    : ZC_GUI__Obj<TObj>(std::move(_obj)),
+    callback_focuse(std::move(_callback_focuse))
+{}
+
+template <typename TObj>
+void ZC_GUI__ObjFocuse<TObj>::VFocuseChanged_BM(bool isFocused)
+{
+    callback_focuse(isFocused);
 }

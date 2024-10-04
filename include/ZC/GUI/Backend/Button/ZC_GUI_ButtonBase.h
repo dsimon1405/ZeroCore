@@ -21,8 +21,10 @@ struct ZC_GUI_ButtonBase : public ZC_GUI_ObjComposite
         uint color_button;                  //  color adding to the texture of a button by default
         uint color_button_under_cursor;     //  color adding to the texture of a button if button under cursor
         uint color_button_pressed;          //  color adding to the texture of a button if button pressed
+        uint color_not_active;              //  color adding to the texture of a button if button not active (activity changes in method VChangeButtonActivity_BS())
 
-        ColorsButton(uint _color_button = ZC_GUI_Colors::button, uint _color_button_under_cursor = ZC_GUI_Colors::button_under_cursor, uint _color_button_pressed = ZC_GUI_Colors::button_pressed);
+        ColorsButton(uint _color_button = ZC_GUI_Colors::button, uint _color_button_under_cursor = ZC_GUI_Colors::button_under_cursor,
+            uint _color_button_pressed = ZC_GUI_Colors::button_pressed, uint _color_not_active = ZC_GUI_Colors::button_not_active);
     } colorsButton;
     
     enum ButtonState
@@ -39,6 +41,8 @@ struct ZC_GUI_ButtonBase : public ZC_GUI_ObjComposite
     long pressed_time = 0;
     static inline long waitPressLimit_nanosec = 300000000;   //  how long wait to start use VKeyboardButtonPressed_BK(), instead VKeyboardButtonDown_BK()
     static inline long pressedInterval_nanosec = 100000000;
+
+    bool isButtonActive = true;
 
     ZC_GUI_ButtonBase(const ZC_GUI_ObjData& od, ZC_GUI_ButtonFlags _b_flags, const ColorsButton& _colorsButton = {});
         
@@ -61,8 +65,8 @@ struct ZC_GUI_ButtonBase : public ZC_GUI_ObjComposite
 
         //  uses in method VStopEventActivity_Obj() from ZC_GUI_ButtonMouse and ZC_GUI_ButtonKeyboard
     void StopEventActivity_BS();
-        //  set color in pObjData and update gpu
-    void SetButtonColor_BS(uint color, bool updateGPU);
+        //  change the activity of the button (inactive does not process events and does not change color)
+    void VChangeObjectActivity_Obj(bool _isAvtive, bool changeGPU) override;
 };
 
 typedef typename ZC_GUI_ButtonBase::ColorsButton ZC_GUI_ColorsButton;

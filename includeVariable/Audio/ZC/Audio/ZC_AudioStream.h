@@ -6,21 +6,18 @@
 
 #include <vector>
 
+enum ZC_AS_State
+{
+    ZC_AS__None,        //  Stream does not exist.
+    ZC_AS__Active,     //  The stream will play sounds.
+    ZC_AS__Passive     //  The stream will not play sounds.
+};
+
 //  Audio stream class.
 class ZC_AudioStream
 {
     friend class ZC_Sound;
 public:
-    enum State
-    {
-        //  The stream will play sounds.
-        Active,
-        //  The stream will not play sounds.
-        Passive,
-        //  Stream does not exist.
-        Null
-    };
-
     ZC_AudioStream(const ZC_AudioStream&) = delete;
     ZC_AudioStream& operator = (const ZC_AudioStream&) = delete;
     ZC_AudioStream(ZC_AudioStream&&) = delete;
@@ -38,9 +35,9 @@ public:
     Helps to get the state of an audio stream.
 
     Return:
-    Current ZC_AudioStream::State.
+    Current ZC_AudioStream::ZC_AS_State.
     */
-    static typename ZC_AudioStream::State GetState() noexcept;
+    static ZC_AS_State GetState() noexcept;
 
     /*
     Helps to get the set of an audio stream.
@@ -59,7 +56,7 @@ protected:
     static void GetStreamData(void* pDataContainer, int bytesCount);
 
 private:
-    static inline typename ZC_AudioStream::State stateAudioStream = ZC_AudioStream::State::Null;
+    static inline ZC_AS_State stateAudioStream = ZC_AS__None;
     static inline ZC_Signal<ZC_StreamSound*()> sGetpZC_StreamSound { false };
 
     template <ZC_cBitsPerSample T>
@@ -71,7 +68,7 @@ void ZC_AudioStream::FillData(void* pDataContainer, int bytesCount, std::vector<
 {
     T* pData = static_cast<T*>(pDataContainer);
     int pDataSize = bytesCount / static_cast<int>(sizeof(T));
-    if (stateAudioStream == ZC_AudioStream::State::Passive)
+    if (stateAudioStream == ZC_AS__Passive)
     {
         std::fill(pData, pData + pDataSize, 0);
         return;

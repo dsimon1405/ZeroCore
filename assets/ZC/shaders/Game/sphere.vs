@@ -13,9 +13,13 @@ layout (std140, binding = 0) uniform Camera
 
 uniform mat4 unModel;
 
-
-out vec2 TexCoords;
-out float vColor_coef;
+    //  out
+layout (location = 0) out OutV
+{
+    vec2 tex_coords;
+    float color_coef;
+    
+} outV;
 
 void main()
 {
@@ -25,8 +29,6 @@ void main()
     // vec4 position = model * totalPosition;
     // gl_Position =  perspView * model * totalPosition;
 
-
-    vec3 colorGrey = vec3(0.5f, 0.5f, 0.5f);
 
     vec3 normal = normalize(mat3(unModel) * norm.xyz);   //  rotate and scale normals (wrong results for scaled object, but tolerable)
 
@@ -39,10 +41,7 @@ void main()
     // float cos = dot(dirPosToCam, normal); //  range (-1,1)
 
     float coef = (cos + 1.f) / 2.f;   //  from (-1,1) to (0,1)
-    colorGrey *= coef;
 
-    // vColor = vec4(colorGrey, 1.f);
-
-    vColor_coef = coef;
-	TexCoords = tex;
+    outV.color_coef = coef;
+	outV.tex_coords = tex;
 }

@@ -82,12 +82,12 @@ void ZC_GUI_DropDown::VCursorCollisionStart_Obj(float time)
             //  button under cursor and window don't drawn, start draw
         UpdatePos_ddWindow();
         ddWindow.VSetDrawState_W(true);
-        this->SetButtonColor_BS(this->colorsButton.color_button_pressed, true);   //  while drawing window make button's collor - pressed
+        this->SetColor_Obj(this->colorsButton.color_button_pressed, true);   //  while drawing window make button's collor - pressed
     }
     else    //  default behaviour
     {
         if (this->pObjData->color == colorsButton.color_button_pressed) return;     //  button pressed, wait while up
-        this->SetButtonColor_BS(this->colorsButton.color_button_under_cursor, true);
+        this->SetColor_Obj(this->colorsButton.color_button_under_cursor, true);
     }
 }
 
@@ -97,12 +97,12 @@ void ZC_GUI_DropDown::VCursorCollisionEnd_Obj(float time)
     {
         if (ddWindow.CheckCursorCollision_Obj()) return;    //  cursor abore ddWindow
         ddWindow.VSetDrawState_W(false);    //  cursor not above ddWidnow, stop drawing
-        this->SetButtonColor_BS(this->colorsButton.color_button, true);   //  while drawing window make button's collor - pressed
+        this->SetColor_Obj(this->colorsButton.color_button, true);   //  while drawing window make button's collor - pressed
     }
     else    //  default behaviour
     {
         if (this->pObjData->color == colorsButton.color_button_pressed) return;     //  button pressed, wait while up
-        this->SetButtonColor_BS(this->colorsButton.color_button, true);
+        this->SetColor_Obj(this->colorsButton.color_button, true);
     }
 }
 
@@ -112,7 +112,7 @@ bool ZC_GUI_DropDown::VMouseButtonLeftDown_Obj(float time)
     if (this->bs_mouseButton == BS_HoldUntilRelease) return false;  //  don't do anything while uses another button down event
     if (this->bs_mouseButton == BS_Released)
     {
-        this->SetButtonColor_BS(this->colorsButton.color_button_pressed, true);
+        this->SetColor_Obj(this->colorsButton.color_button_pressed, true);
         this->bs_mouseButton = BS_Pressed;
     }
     return true;
@@ -146,7 +146,7 @@ void ZC_GUI_DropDown::UpdatePos_ddWindow()
 
 void ZC_GUI_DropDown::VariantChoosed(ZC_GUI_DDVariant<ZC_GUI_DropDown>* pDDVariant_choosed)
 {
-    if (isUnderCursorFlag) this->SetButtonColor_BS(this->colorsButton.color_button, true);      //  if ZC_GUI_DDF__UnderCursor, set default color for button changed in VCursorCollisionStart_Obj()
+    if (isUnderCursorFlag) this->SetColor_Obj(this->colorsButton.color_button, true);      //  if ZC_GUI_DDF__UnderCursor, set default color for button changed in VCursorCollisionStart_Obj()
     ddWindow.VSetDrawState_W(false);
     callback(pDDVariant_choosed - &(ddVariants.front()));
 }

@@ -5,6 +5,9 @@
 
 struct ZC_CO_Figure
 {
+    bool is_center_actual = false;
+    bool is_points_normals_actual = false;
+
     float radius;   //  radius from figure's center to farest point of figure (include variant when figure points move in animation)
 
     ZC_Vec3<float> center_src;  //  center of a figure
@@ -25,8 +28,15 @@ struct ZC_CO_Figure
     - _surfaces - surfaces of a figure.
     */
     ZC_CO_Figure(ZC_Vec3<float> _center, float _radius, std::vector<ZC_CO_Surface<ZC_Vec3<float>>> _surfaces);
-            //  take all src data, multiply with mat_model and store to fact
-    void UpdateWithModelMatrix(const ZC_Mat4<float>& mat_model);
+
+        //  multiply vect3 on movel matrix
+    static ZC_Vec3<float> MultiplyWithModel(const ZC_Mat4<float>& model, const ZC_Vec3<float>& src);
+    
+        //  take src data of center, multiply with mat_model and store to fact
+    void UpdateCenter(const ZC_Mat4<float>& mat_model);
+        //  take src data of points and normals, multiply with mat_model and store to fact
+    void UpdatePointsAndNormals(const ZC_Mat4<float>& mat_model);
+
         //  return closest surface to a point
     const ZC_CO_Surface<ZC_Vec3<float>*>* GetClosesSurface(const ZC_Vec3<float>& point);
         //  return pointer on src point of fact point, if can't find nullptr

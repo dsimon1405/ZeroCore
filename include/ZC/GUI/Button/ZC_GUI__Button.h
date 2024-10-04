@@ -7,7 +7,7 @@ struct ZC_GUI__Button : public ZC_GUI__Obj<T>
 {
     ZC_GUI__Button(T&& t);
 
-    ZC_GUI__Button(ZC_GUI__Button&& b);
+    ZC_GUI__Button(ZC_GUI__Button<T>&& b);
 
     virtual void VScroll(float vertical, float time) {}
     virtual void VCursorMove(float rel_x, float rel_y) {}
@@ -15,9 +15,13 @@ struct ZC_GUI__Button : public ZC_GUI__Obj<T>
     virtual void VLeftButtonDoubleClick(float time) {}
     virtual void VLeftButtonPressed(float time) {}
     virtual void VLeftButtonUp(float time) {}
+    virtual void VFocuseChanged(bool isFocused) {}
     virtual void VKeyboardButtonDown(float time) {}
     virtual void VKeyboardButtonUp(float time) {}
     virtual void VKeyboardButtonPressed(float time) {}
+
+        //  change the activity of the button (if not active, does not process events)
+    void ChangeButtonActivity(bool _isActive);
 };
 
 
@@ -27,8 +31,14 @@ ZC_GUI__Button<T>::ZC_GUI__Button(T&& t)
 {}
 
 template <typename T>
-ZC_GUI__Button<T>::ZC_GUI__Button(ZC_GUI__Button&& b)
+ZC_GUI__Button<T>::ZC_GUI__Button(ZC_GUI__Button<T>&& b)
     : ZC_GUI__Obj<T>(dynamic_cast<ZC_GUI__Obj<T>&&>(b))
 {       //  pHolder can be ZC_GUI__BK::pHolder, or ZC_GUI___BM<TBM>::pHolder or other. Variables with different type but same name. It made to avoid typing move ctrs for each type to update pHolder variable. So all that variables updates here on move.
     this->obj.pHolder = this;
+}
+
+template <typename T>
+void ZC_GUI__Button<T>::ChangeButtonActivity(bool _isActive)
+{
+    this->obj.VChangeObjectActivity_Obj(_isActive, true);
 }

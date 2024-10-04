@@ -33,19 +33,22 @@ void ZC_GUI_ButtonMouse::VStopEventActivity_Obj()
 
 bool ZC_GUI_ButtonMouse::VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll)
 {
+    if (!this->isButtonActive) return false;
     return MakeCursorCollision_Obj(x, y, rpObj, rpScroll);
 }
 
 void ZC_GUI_ButtonMouse::VCursorCollisionStart_Obj(float time)
 {
-    if (this->pObjData->color == colorsButton.color_button_pressed) return;     //  button pressed, wait while up
-    this->SetButtonColor_BS(colorsButton.color_button_under_cursor, true);
+    if (!this->isButtonActive || this->pObjData->color == colorsButton.color_button_pressed) return;     //  button pressed, wait while up
+    this->SetColor_Obj(colorsButton.color_button_under_cursor, true);
+    VFocuseChanged_BM(true);
 }
 
 void ZC_GUI_ButtonMouse::VCursorCollisionEnd_Obj(float time)
 {
-    if (this->pObjData->color == colorsButton.color_button_pressed) return;     //  button pressed, wait while up
-    this->SetButtonColor_BS(colorsButton.color_button, true);
+    if (!this->isButtonActive || this->pObjData->color == colorsButton.color_button_pressed) return;     //  button pressed, wait while up
+    this->SetColor_Obj(colorsButton.color_button, true);
+    VFocuseChanged_BM(false);
 }
 
 bool ZC_GUI_ButtonMouse::VMouseButtonLeftDown_Obj(float time)
@@ -58,7 +61,7 @@ bool ZC_GUI_ButtonMouse::VMouseButtonLeftDown_Obj(float time)
     }
     if (this->bs_mouseButton == BS_Released)
     {
-        this->SetButtonColor_BS(this->colorsButton.color_button_pressed, true);
+        this->SetColor_Obj(this->colorsButton.color_button_pressed, true);
         this->bs_mouseButton = BS_Pressed;
         
         if (this->buttonFlags & ZC_GUI_BF_M__DoubleCLick)  //  call double click if in limit and restart double time in each case

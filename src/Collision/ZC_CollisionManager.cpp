@@ -33,18 +33,13 @@ bool ZC_CollisionManager::IsCollisionInProcess()
     return pCM->collision_in_process;
 }
 
-void ZC_CollisionManager::Configure()
-{
-    for (ZC_CollisionObject* pCF : static_figures) pCF->UpdateDataWithModelMatrix();
-    for (ZC_CollisionObject* pCF : static_solo_figures) pCF->UpdateDataWithModelMatrix();
-    for (ZC_CollisionObject* pCF : dynamic_figures) pCF->UpdateDataWithModelMatrix();
-}
-
 void ZC_CollisionManager::MakeCollision()
 {
     collision_in_process = true;
-
-    for (ZC_CollisionObject* pCF : dynamic_figures) pCF->UpdateDataWithModelMatrix();  //  update position and normal need only for dynamic objects
+        //  update data with model matrices if need
+    for (ZC_CollisionObject* pCF : static_figures) pCF->UpdateCenterWithModelMatrix();
+    for (ZC_CollisionObject* pCF : static_solo_figures) pCF->UpdateCenterWithModelMatrix();
+    for (ZC_CollisionObject* pCF : dynamic_figures) pCF->UpdateCenterWithModelMatrix();
 
         //  make collision each dynamic object with all others
     for (auto cur_iter = dynamic_figures.begin(); cur_iter != dynamic_figures.end(); ++cur_iter)
@@ -54,16 +49,16 @@ void ZC_CollisionManager::MakeCollision()
             (*cur_iter)->MakeCollision(*iter);
     }
         //  collision with static objects
-    for (ZC_CollisionObject* pCF_dynaic : dynamic_figures)
+    for (ZC_CollisionObject* pCF_dynamic : dynamic_figures)
     {
         for (ZC_CollisionObject* pCF_static : static_figures)
-            pCF_dynaic->MakeCollision(pCF_static);
+            pCF_dynamic->MakeCollision(pCF_static);
     }
         //   collision with solo stati cobjects
-    for (ZC_CollisionObject* pCF_dynaic : dynamic_figures)
+    for (ZC_CollisionObject* pCF_dynamic : dynamic_figures)
     {
         for (ZC_CollisionObject* pCF_solo_static : static_solo_figures)
-            if (pCF_dynaic->MakeCollision(pCF_solo_static)) break;    //  had collision with solo static object may finish
+            if (pCF_dynamic->MakeCollision(pCF_solo_static)) break;    //  had collision with solo static object may finish
     }
 
     collision_in_process = false;

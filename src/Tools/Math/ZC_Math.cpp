@@ -1,5 +1,10 @@
 #include <ZC/Tools/Math/ZC_Math.h>
 
+uint ZC_PackColorFloatToUInt_RGB(const ZC_Vec3<float>& rgb) noexcept
+{
+    return ZC_PackColorFloatToUInt_RGB(rgb[0], rgb[1], rgb[2]);
+}
+
 uint ZC_PackColorFloatToUInt_RGB(float r, float g, float b) noexcept
 {
     if (r < 0.f || r > 1.f || g < 0.f || g > 1.f || b < 0.f || b > 1.f) return 0;
@@ -25,6 +30,11 @@ uint ZC_PackColorUcharToUInt_RGBA(uchar r, uchar g, uchar b, uchar a) noexcept
 ushort ZC_PackTexCoordFloatToUShort(float coord)
 {
     return static_cast<ushort>(coord * USHRT_MAX);
+}
+
+ZC_Vec3<float> ZC_UnpackUINTtoFloat_RGB(uint rgb) noexcept
+{
+    return { (rgb >> 20) / 255.f, (rgb >> 10 & uint(1023)) / 255.f, (rgb & uint(1023)) / 255.f };
 }
 
 int ZC_Pack_INT_2_10_10_10_REV(float x, float y, float z)

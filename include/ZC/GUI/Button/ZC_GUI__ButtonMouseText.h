@@ -4,6 +4,14 @@
 #include "ZC_GUI__Button.h"
 #include <ZC/GUI/Backend/Button/ZC_GUI_ButtonMouseText.h>
 
+struct ZC_GUI_ColorsButtonText
+{
+    uint text_color;
+    ZC_GUI_ColorsButton colorsButton;
+
+    ZC_GUI_ColorsButtonText(uint _text_color = ZC_GUI_Colors::window_text, ZC_GUI_ColorsButton _colorsButton = {});
+};
+
 /*
 Creates button with mouse evetns.
 May be override:
@@ -35,7 +43,8 @@ public:
     - uv - custom uv if uses custom icons texture (not default).
     - _colorsButton - buttons collors (may stay default).
     */
-    ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_GUI_TextForButton&& text, const ZC_GUI_UV& uv, const ZC_GUI_ColorsButton& _colorsButton = {});
+    ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, ZC_GUI_TextForButton&& text, const ZC_GUI_UV& uv,
+        const ZC_GUI_ColorsButton& _colorsButton = {});
     /*
     Params:
     - width - width in pixels, if less then text pixels length, takes text pixels length.
@@ -44,7 +53,7 @@ public:
     - name - button name.
     - _colorsButton - buttons collors (may stay default).
     */
-    ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const std::wstring& name, const ZC_GUI_ColorsButton& _colorsButton = {});
+    ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const std::wstring& name, const ZC_GUI_ColorsButtonText& _colorsButtonText = {});
     /*
     Params:
     - width - width in pixels, if less then text pixels length, takes text pixels length.
@@ -54,7 +63,8 @@ public:
     - uv - custom uv if uses custom icons texture (not default).
     - _colorsButton - buttons collors (may stay default).
     */
-    ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const std::wstring& name, const ZC_GUI_UV& uv, const ZC_GUI_ColorsButton& _colorsButton = {});
+    ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const std::wstring& name, const ZC_GUI_UV& uv,
+        const ZC_GUI_ColorsButtonText& _colorsButtonText = {});
 
     /*
     Update text in wstring. Data updates only if pixel width of new string less or equal current width. Text width don't change in any case.

@@ -123,9 +123,14 @@ void ZC_Renderer::Draw(ZC_GUI* pGUI)
 // glDisable(GL_DEPTH_TEST);
     if (pGUI)
     {
-        glClear(GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
+            //  ZC_GUI uses modern openGL rendering, while total render system uses not fresh openGL, so no such
+        ZC_FBOBuffersController::GlClear(GL_DEPTH_BUFFER_BIT);
+        ZC_FBOBuffersController::GlEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
+
+        static ZC_GLBlend blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        blend.Use();
+
         pGUI->Draw();
     }
 

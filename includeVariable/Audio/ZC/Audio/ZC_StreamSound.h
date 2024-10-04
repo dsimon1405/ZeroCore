@@ -5,17 +5,17 @@
 
 #include <mutex>
 
+enum ZC_SoundState
+{
+    ZC_SS__Play,
+    ZC_SS__PlayLoop,
+    ZC_SS__Pause,
+    ZC_SS__Stop
+};
+
 class ZC_StreamSound
 {
 public:
-    enum SoundState
-    {
-        Play,
-        PlayLoop,
-        Pause,
-        Stop
-    };
-
     ZC_StreamSound() = delete;
 
     ZC_StreamSound(ZC_StreamSound&&) = delete;
@@ -29,7 +29,7 @@ public:
     bool Pop(T& value) noexcept;
 
 protected:
-    SoundState soundState = SoundState::Stop;
+    ZC_SoundState soundState = ZC_SS__Stop;
     const ZC_SoundData* soundData;
     unsigned long soundDataIndex = 0;
     float volume = 1.f;
@@ -44,7 +44,7 @@ bool ZC_StreamSound::Pop(T& value) noexcept
 {
     unsigned long soundDataSize = soundData->Size<T>();
     std::lock_guard<std::mutex> lock(soundStateMutex);
-    if (soundState == SoundState::Stop || soundState == SoundState::Pause || soundDataSize == 0)
+    if (soundState == ZC_SS__Stop || soundState == ZC_SS__Pause || soundDataSize == 0)
     {
         value = 0;
         return false;
@@ -54,9 +54,9 @@ bool ZC_StreamSound::Pop(T& value) noexcept
     if (soundDataIndex >= soundDataSize)
     {
         soundDataIndex = 0;
-        if (soundState != SoundState::PlayLoop)
+        if (soundState != ZC_SS__PlayLoop)
         {
-            soundState = SoundState::Stop;
+            soundState = ZC_SS__Stop;
             sconGetpZC_StreamSound.Disconnect();
             return false;
         }

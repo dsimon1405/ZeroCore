@@ -45,21 +45,26 @@ ZC_CO_Figure::ZC_CO_Figure(ZC_Vec3<float> _center, float _radius, std::vector<ZC
     }
 }
 
-void ZC_CO_Figure::UpdateWithModelMatrix(const ZC_Mat4<float>& mat_model)
+ZC_Vec3<float> ZC_CO_Figure::MultiplyWithModel(const ZC_Mat4<float>& model, const ZC_Vec3<float>& src)
 {
-    auto lamb_updateVec3 = [](const ZC_Mat4<float>& model, const ZC_Vec3<float>& src)
-    {
-        ZC_Vec4<float> center_4f = model * ZC_Vec4<float>(src, 1.f);
-        return ZC_Vec3<float>(center_4f[0], center_4f[1], center_4f[2]);
-    };
-        //  update center_fact
-    center_fact = lamb_updateVec3(mat_model, center_src);
+    return ZC_Vec::Vec4_to_Vec3(model * ZC_Vec4<float>(src, 1.f));
+}
+
+void ZC_CO_Figure::UpdateCenter(const ZC_Mat4<float>& mat_model)
+{
+    if (is_center_actual) return;
     
-    if (surfaces_fact.empty()) return;    //  collision object is sphere, no planes
+    center_fact = MultiplyWithModel(mat_model, center_src);
+    is_center_actual = true;
+}
+
+void ZC_CO_Figure::UpdatePointsAndNormals(const ZC_Mat4<float>& mat_model)
+{
+    if (is_points_normals_actual) return;
 
         //  update all_points_fact
     for (size_t i = 0; i < all_points_fact.size(); i++)
-        all_points_fact[i] = lamb_updateVec3(mat_model, all_points_src[i]);
+        all_points_fact[i] = MultiplyWithModel(mat_model, all_points_src[i]);
     
     if (mat_model[0][0] == 1.f && mat_model[0][1] == 0.f && mat_model[0][2] == 0.f
         && mat_model[1][0] == 0.f && mat_model[1][1] == 1.f && mat_model[1][2] == 0.f
@@ -72,7 +77,9 @@ void ZC_CO_Figure::UpdateWithModelMatrix(const ZC_Mat4<float>& mat_model)
     mrs[3][2] = 0.f;
         //  update all_normals_fact
     for (size_t i = 0; i < all_normals_fact.size(); i++)
-        all_normals_fact[i] = ZC_Vec::Normalize(lamb_updateVec3(mrs, all_normals_scr[i])); //  need normalize on case of scaling
+        all_normals_fact[i] = ZC_Vec::Normalize(MultiplyWithModel(mrs, all_normals_scr[i])); //  need normalize on case of scaling
+
+    is_points_normals_actual = true;
 }
 
 const ZC_CO_Surface<ZC_Vec3<float>*>* ZC_CO_Figure::GetClosesSurface(const ZC_Vec3<float>& point)

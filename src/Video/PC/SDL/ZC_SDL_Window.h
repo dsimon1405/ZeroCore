@@ -13,7 +13,7 @@ private:
     SDL_Window* pWindow = nullptr;
     SDL_GLContext glContext = nullptr;
 
-    void SwapBuffer() override;
+    void VSwapBuffer() override;
     void VGetSize(int& width, int& height) const noexcept override;
     void VHideCursor() override;
     void VShowCursor() override;
@@ -21,6 +21,8 @@ private:
     void VUnlimitCursor() override;
     void VStartInputText() override;
     void VStopInputText() override;
+    void VSetMaxSize(int x, int y) override;
+    void VSetMinSize(int x, int y) override;
 
     bool SetOpenGLAttributes(int samplesCount);
     // bool LoadOpenGLFunctions();

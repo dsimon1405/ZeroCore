@@ -45,7 +45,7 @@
 
 // #include <iostream>
 // std::cout<<"x = "<<event.motion.x<<"; y = "<<static_cast<float>(height) - event.motion.y<<"; rel_x = "<<event.motion.xrel<<"; rel_y = "<<(event.motion.yrel * -1.f)<<std::endl;
-bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
+void ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
 {
     static SDL_Event event;
 
@@ -55,7 +55,15 @@ bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
     {
         switch (event.type)
         {
-        case SDL_EVENT_QUIT: return false;
+        case SDL_EVENT_QUIT:
+        {
+            if (funcWindowCloseButton) funcWindowCloseButton();
+            else
+            {
+                ZC_SWindow::CloseWindow();
+                return;
+            }
+        } break;
         case SDL_EVENT_WINDOW_RESIZED: sigWindowResize(static_cast<float>(event.window.data1), static_cast<float>(event.window.data2)); break;
         case SDL_EVENT_KEY_DOWN: buttonHolder.ButtonDown(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
         case SDL_EVENT_KEY_UP: buttonHolder.ButtonUp(static_cast<ZC_ButtonID>(event.key.keysym.scancode), previousFrameTime); break;
@@ -74,5 +82,4 @@ bool ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
     }
     buttonHolder.buttonPressedDown.CallPressedButtons(previousFrameTime);
     sigHandleEventsEnd(previousFrameTime);
-    return true;
 }

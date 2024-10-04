@@ -24,7 +24,7 @@ public:
     struct NameType
     {
         ZC_UniformName name;
-        bool isPointer;
+        bool isPointer = true;
         int count = 1;
         bool transponse = false;
     };

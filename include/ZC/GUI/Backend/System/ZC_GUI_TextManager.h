@@ -27,7 +27,7 @@ struct ZC_GUI_TextManager
 
     struct Text
     {
-        enum Alignment
+        enum Alignment  //  alignment data into the texture
         {
             Left,
             Center,

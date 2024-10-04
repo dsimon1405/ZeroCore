@@ -158,7 +158,7 @@ void ZC_GUI_WinImmutable::VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC
 void ZC_GUI_WinImmutable::VCursorMove_Obj(float rel_x, float rel_y)
 {
     ZC_Vec2<float> rel(rel_x, rel_y);
-    for (GLuint i = 0; i < daic.count; ++i) *(pBL + i) += rel;
+    for (GLuint i = 0; i < this->objsCount; ++i) *(pBL + i) += rel;
     for (GLsizeiptr i = 0; i < this->bordersCount; ++i)
     {
         ZC_GUI_Border& rBorder = *(pBorder + i);

@@ -3,6 +3,11 @@
 #include "ZC_EventsHolder.h"
 #include <ZC/Objects/Camera/ZC_Camera.h>
 
+void ZC_Events::ConnectWindowCloseButton(ZC_Function<void()>&& function)
+{
+    ZC_EventsHolder::pEventsHolder->funcWindowCloseButton = std::move(function);
+}
+
 ZC_EC ZC_Events::ConnectButtonPressDown(ZC_ButtonID buttonId, ZC_Function<void(ZC_ButtonID, float)>&& function)
 {
     return ZC_EventsHolder::pEventsHolder->buttonHolder.buttonPressedDown.Connect(buttonId, std::move(function));

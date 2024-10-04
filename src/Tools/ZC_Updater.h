@@ -4,25 +4,21 @@
 
 #include <map>
 
-struct ZC_Updater
+class ZC_Updater
 {
-    // struct Pair
-    // {
-    //     size_t level;
-    //     ZC_ESignal<void(float)> eSig;
-
-    //     bool operator == (size_t _lvl) const noexcept;
-    // };
-
-    std::map<size_t, ZC_ESignal<void(float)>> updates;
-
+public:
     ZC_EC Connect(ZC_Function<void(float)>&& func, size_t level);
     void Call(float time);
+    void ChangeUpdaterState(bool needUpdate);
+    void ChangeLevelState(size_t lvl, bool is_acitve);
+
+private:
+    struct ESigActive
+    {
+        bool is_active;
+        ZC_ESignal<void(float)> esig;
+    };
+
+    bool isActive = true;
+    std::map<size_t, ESigActive> updates;
 };
-
-
-
-// bool ZC_Updater::Pair::operator == (size_t _lvl) const noexcept
-// {
-//     return level == _lvl;
-// }

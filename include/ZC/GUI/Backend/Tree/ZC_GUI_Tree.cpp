@@ -84,12 +84,12 @@ bool ZC_GUI_Tree::MakeActive(ZC_GUI_BranchSimple* pBranch)
 {
     if (pBranch == pActiveBranch)
     {
-        pBranch->SetButtonColor_BS(pBranch->colorsButton.color_button_pressed, true);
+        pBranch->SetColor_Obj(pBranch->colorsButton.color_button_pressed, true);
         return false;
     }
-    if (pActiveBranch) pActiveBranch->SetButtonColor_BS(pActiveBranch->colorsButton.color_button, true);
+    if (pActiveBranch) pActiveBranch->SetColor_Obj(pActiveBranch->colorsButton.color_button, true);
     pActiveBranch = pBranch;
-    if (pActiveBranch) pActiveBranch->SetButtonColor_BS(pActiveBranch->colorsButton.color_button_pressed, true);
+    if (pActiveBranch) pActiveBranch->SetColor_Obj(pActiveBranch->colorsButton.color_button_pressed, true);
     return true;
 }
 

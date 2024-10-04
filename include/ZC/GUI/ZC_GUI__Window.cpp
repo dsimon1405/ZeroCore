@@ -7,7 +7,7 @@ ZC_GUI__WinMutable::ZC_GUI__WinMutable(const ZC_WOIData& _woiData, ZC_GUI_WinFla
 {}
 
 ZC_GUI__WinMutable::ZC_GUI__WinMutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags, const ZC_GUI_ColorsWindow& colorsWindow)
-    : ZC_GUI__Window(_woiData, uv, _winFlags, colorsWindow)
+    : ZC_GUI_WindowWrap(_woiData, uv, _winFlags, colorsWindow)
 {}
 
 
@@ -18,7 +18,7 @@ ZC_GUI__WinImmutable::ZC_GUI__WinImmutable(const ZC_WOIData& _woiData, ZC_GUI_Wi
 {}
 
 ZC_GUI__WinImmutable::ZC_GUI__WinImmutable(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags, const ZC_GUI_ColorsWindow& colorsWindow)
-    : ZC_GUI__Window(_woiData, uv, _winFlags, colorsWindow)
+    : ZC_GUI_WindowWrap(_woiData, uv, _winFlags, colorsWindow)
 {}
 
 

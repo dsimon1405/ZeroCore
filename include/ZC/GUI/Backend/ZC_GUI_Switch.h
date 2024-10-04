@@ -173,9 +173,9 @@ template <ZC_GUI_cSwitch TSwitch>
 void ZC_GUI_Switch<TSwitch>::MakeActive(TSwitch* _pBM_active, bool use_callback)
 {
     if (pBM_active && pBM_active == _pBM_active) return;
-    if (pBM_active) pBM_active->SetButtonColor_BS(pBM_active->colorsButton.color_button, true);
+    if (pBM_active) pBM_active->SetColor_Obj(pBM_active->colorsButton.color_button, true);
     pBM_active = _pBM_active;
-    pBM_active->SetButtonColor_BS(pBM_active->colorsButton.color_button_pressed, true);
+    pBM_active->SetColor_Obj(pBM_active->colorsButton.color_button_pressed, true);
     if (use_callback) callback(pBM_active == this ? 0 : pBM_active - dynamic_cast<TSwitch*>(&(variants.front())) + 1);  //  first (0) variant is ZC_GUI_Switch, not into the vector
 }
 

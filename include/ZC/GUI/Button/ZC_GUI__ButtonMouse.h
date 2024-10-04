@@ -12,6 +12,7 @@ May be override:
 - void VLeftButtonDoubleClick(float time) {}
 - void VLeftButtonPressed(float time) {}
 - void VLeftButtonUp(float time) {}
+- void VFocuseChanged(bool isFocused) {};
 */
 class ZC_GUI__ButtonMouse : public ZC_GUI__Button<ZC_GUI__BM<ZC_GUI_ButtonMouse>>
 {

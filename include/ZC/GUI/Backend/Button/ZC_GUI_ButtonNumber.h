@@ -166,6 +166,7 @@ void ZC_GUI_ButtonNumber<TNum>::UpdateCallback(ZC_Function<void(TNum)>&& _callba
 template <ZC_GUI_Number::cNumber TNum>
 bool ZC_GUI_ButtonNumber<TNum>::VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll)
 {
+    if (!this->isButtonActive) return false;
     return buttonArrow_left.MakeCursorCollision_Obj(x, y, rpObj, rpScroll) || MakeCursorCollision_Obj(x, y, rpObj, rpScroll) || buttonArrow_right.MakeCursorCollision_Obj(x, y, rpObj, rpScroll);
 }
 

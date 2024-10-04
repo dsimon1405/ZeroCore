@@ -13,6 +13,7 @@ struct ZC_GUI_ButtonMouse : public virtual ZC_GUI_ButtonBase
     virtual void VLeftButtonDoubleClick_BM(float time) {}
     virtual void VLeftButtonPressed_BM(float time) {}
     virtual void VLeftButtonUp_BM(float time) {}
+    virtual void VFocuseChanged_BM(bool isFocused) {}
 
     ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ColorsButton& _colorsButton = {});
     ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV& uv, const ColorsButton& _colorsButton = {});

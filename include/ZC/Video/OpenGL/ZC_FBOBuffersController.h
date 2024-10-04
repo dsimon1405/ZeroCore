@@ -48,14 +48,17 @@ public:
 
     void SetClearColor(const ZC_Vec4<GLfloat>& _clearColor);
 
+    static void GLDepthMask(GLboolean flag);
+
 private:
     static inline ZC_FBOBuffersController* pActiveBufferController;
 
-    bool needClearColor,
-        needClearDepth,
-        needClearStencil,
-        isDepthEnable = false,
-        isStecncilEnable = false;
+    bool needClearColor;
+    bool needClearDepth;
+    bool needClearStencil;
+    bool isDepthEnable = false;
+    bool isDepthMask_TRUE = true;
+    bool isStecncilEnable = false;
     ZC_Vec4<GLfloat> clearColor { 0.f, 0.f, 0.f, 1.f };
 
     void CheckClearColor();

@@ -33,7 +33,7 @@ public:
     Return:
     Current sound state.
     */
-    typename ZC_StreamSound::SoundState GetState();
+    ZC_SoundState GetState();
 
     /*
     Set volume of the sound.
@@ -58,6 +58,9 @@ public:
     Unique pointer with the same sound data.
     */
     ZC_upSound GetSameSound() const;
+
+    //  Return audioset of the sound.
+    ZC_AudioSet GetAudioSet() const noexcept;
 
 private:
     ZC_StreamSound* GetpZC_StreamSound() noexcept;

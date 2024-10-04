@@ -29,17 +29,25 @@ void ZC_GUI_ButtonBase::StopEventActivity_BS()
     VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
 }
 
-void ZC_GUI_ButtonBase::SetButtonColor_BS(uint color, bool updateGPU)
+void ZC_GUI_ButtonBase::VChangeObjectActivity_Obj(bool _isAvtive, bool changeGPU)
 {
-    if (this->pObjData->color == color) return;
-    this->pObjData->color = color;
-    if (updateGPU) VMapObjData_Obj(this->pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
+    if (isButtonActive == _isAvtive) return;
+    isButtonActive = _isAvtive;
+    if (isButtonActive)
+    {
+        bs_mouseButton = BS_Released;
+        bs_keyboardButton = BS_Released;
+        this->SetColor_Obj(colorsButton.color_button, false);
+    }
+    for (ZC_GUI_Obj* pObj : this->objs) pObj->VChangeObjectActivity_Obj(_isAvtive, changeGPU);
+    if (changeGPU) VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData) * this->objs.size() + sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
 }
 
 
     //  ColorsButton
-ZC_GUI_ButtonBase::ColorsButton::ColorsButton(uint _color_button, uint _color_button_under_cursor, uint _color_button_pressed)
+ZC_GUI_ButtonBase::ColorsButton::ColorsButton(uint _color_button, uint _color_button_under_cursor, uint _color_button_pressed, uint _color_not_active)
     : color_button(_color_button),
     color_button_under_cursor(_color_button_under_cursor),
-    color_button_pressed(_color_button_pressed)
+    color_button_pressed(_color_button_pressed),
+    color_not_active(_color_not_active)
 {}

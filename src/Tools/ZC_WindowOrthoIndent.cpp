@@ -35,7 +35,7 @@ void ZC_WindowOrthoIndent::GetIndentParams(float& _indentX, float& _indentY, ZC_
 {
     _indentX = indentX;
     _indentY = indentY;
-    _indentFlags = _indentFlags;
+    _indentFlags = indentFlags;
 }
 
 const ZC_Vec2<float>& ZC_WindowOrthoIndent::GetIndents()

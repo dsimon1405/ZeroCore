@@ -28,8 +28,18 @@ void ZC_CollisionObject::UpdateModelMatrix(const ZC_Mat4<float>& mat)
 {
     mat_model_previous = mat_model_actual;
     mat_model_actual = mat;
-    mat_model_was_updated = true;
-    if (ZC_CollisionManager::IsCollisionInProcess()) UpdateDataWithModelMatrix();   //  collision in process need update data for correct collisions with rest objects
+    figure.is_center_actual = false;
+    figure.is_points_normals_actual = false;
+    if (ZC_CollisionManager::IsCollisionInProcess())   //  collision in process need update data for correct collisions with rest objects
+    {
+        UpdateCenterWithModelMatrix();
+        UpdatePointsAndNormalsWithModelMatrix();
+    }
+}
+
+void ZC_CollisionObject::UpdateRadius(float radius)
+{
+    figure.radius = radius;
 }
 
 const ZC_CO_Surface<ZC_Vec3<float>*>* ZC_CollisionObject::GetClosestSurface(const ZC_Vec3<float>& point)
@@ -57,11 +67,14 @@ void* ZC_CollisionObject::GetHolder()
     return pHolder;
 }
 
-void ZC_CollisionObject::UpdateDataWithModelMatrix()
+void ZC_CollisionObject::UpdateCenterWithModelMatrix()
 {
-    if (!mat_model_was_updated) return;
-    figure.UpdateWithModelMatrix(mat_model_actual);
-    mat_model_was_updated = false;
+    figure.UpdateCenter(mat_model_actual);
+}
+
+void ZC_CollisionObject::UpdatePointsAndNormalsWithModelMatrix()
+{
+    figure.UpdatePointsAndNormals(mat_model_actual);
 }
 
 bool ZC_CollisionObject::MakeCollision(ZC_CollisionObject* pCO)
@@ -70,6 +83,10 @@ bool ZC_CollisionObject::MakeCollision(ZC_CollisionObject* pCO)
         //  check fugures distances
     float length_between_figures = ZC_Vec::Length(figure.center_fact - figure_other.center_fact);
     if (figure.radius + figure_other.radius < length_between_figures) return false;     //  figures are to far apart
+
+        //  centers collision passed, update points and normals for collisoin if need for both objects (centers updates on start of collision in ZC_CollisionManager::MakeCollision())
+    UpdatePointsAndNormalsWithModelMatrix();
+    pCO->UpdatePointsAndNormalsWithModelMatrix();
         
         //  checks collision of the figures
     auto lamb_CallSimpleCollision = [this, pCO](std::vector<ZC_Vec3<float>>& points, std::vector<ZC_CO_Surface<ZC_Vec3<float>*>>& surfaces)

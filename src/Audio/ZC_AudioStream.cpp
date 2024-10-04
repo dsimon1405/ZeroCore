@@ -2,15 +2,15 @@
 
 void ZC_AudioStream::MakeActive() noexcept
 {
-    if (stateAudioStream == ZC_AudioStream::State::Passive) stateAudioStream = ZC_AudioStream::State::Active;
+    if (stateAudioStream == ZC_AS__Passive) stateAudioStream = ZC_AS__Active;
 }
 
 void ZC_AudioStream::MakePassive() noexcept
 {
-    if (stateAudioStream == ZC_AudioStream::State::Active) stateAudioStream = ZC_AudioStream::State::Passive;
+    if (stateAudioStream == ZC_AS__Active) stateAudioStream = ZC_AS__Passive;
 }
 
-typename ZC_AudioStream::State ZC_AudioStream::GetState() noexcept
+ZC_AS_State ZC_AudioStream::GetState() noexcept
 {
     return stateAudioStream;
 }
@@ -22,7 +22,7 @@ const ZC_AudioSet& ZC_AudioStream::GetAudioSet() noexcept
 
 ZC_AudioStream::ZC_AudioStream(const ZC_AudioSet& _audioSet) noexcept
 {
-    stateAudioStream = ZC_AudioStream::State::Active;
+    stateAudioStream = ZC_AS__Active;
     audioSet = _audioSet;
 }
 

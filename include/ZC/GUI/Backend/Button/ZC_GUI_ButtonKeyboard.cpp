@@ -29,7 +29,7 @@ void ZC_GUI_ButtonKeyboard::VStopEventActivity_Obj()
 
 bool ZC_GUI_ButtonKeyboard::VKeyboardButtonDown_Obj(float time)
 {
-    if (this->bs_keyboardButton == BS_HoldUntilRelease) return false;  //  don't do anything while uses another button down event
+    if (!this->isButtonActive || this->bs_keyboardButton == BS_HoldUntilRelease) return false;  //  don't do anything while uses another button down event
     if (this->bs_mouseButton != BS_Released)
     {
         this->bs_keyboardButton = BS_HoldUntilRelease;

@@ -8,7 +8,18 @@
 #include <ZC/Tools/Time/ZC_FPS_TimeMeasure.h>
 #include <ZC/Events/ZC_EC.h>
 
-typedef int ZC_WindowFlags;     //  ZC_SWindow::Flags
+enum ZC_SW_Flags
+{
+    ZC_SWF__None                 = 0,
+    ZC_SWF__Border               = 1 << 1,   //  if don't set - fullscreen; if set and (width or height <= 0) use fullscreen with border(reduced size will be 800x600), otherwise bordered with width and height windowю
+    ZC_SWF__Multisampling_1      = 1 << 2,   //  antialiasing with 1 sample on pixel (if Multisampling flags more than one, will take greatest).
+    ZC_SWF__Multisampling_2      = 1 << 3,   //  antialiasing with 2 samples on pixel (if Multisampling flags more than one, will take greatest).
+    ZC_SWF__Multisampling_3      = 1 << 4,   //  antialiasing with 3 samples on pixel (if Multisampling flags more than one, will take greatest).
+    ZC_SWF__Multisampling_4      = 1 << 5,   //  antialiasing with 4 samples on pixel (if Multisampling flags more than one, will take greatest).
+    ZC_SWF__GUI                  = 1 << 6,   //  creates ZC_GUI context
+};
+
+typedef int ZC_WindowFlags;     //  ZC_SWindow::ZC_SW_Flags
 /*
 System Window management namespace.
 Window coords shema:
@@ -21,17 +32,6 @@ Window coords shema:
 */
 namespace ZC_SWindow
 {
-    enum Flags
-    {
-        ZC_SW__None                 = 0,
-        ZC_SW__Border               = 1 << 1,   //  if don't set - fullscreen; if set and (width or height <= 0) use fullscreen with border(reduced size will be 800x600), otherwise bordered with width and height windowю
-        ZC_SW__Multisampling_1      = 1 << 2,   //  antialiasing with 1 sample on pixel (if Multisampling flags more than one, will take greatest).
-        ZC_SW__Multisampling_2      = 1 << 3,   //  antialiasing with 2 samples on pixel (if Multisampling flags more than one, will take greatest).
-        ZC_SW__Multisampling_3      = 1 << 4,   //  antialiasing with 3 samples on pixel (if Multisampling flags more than one, will take greatest).
-        ZC_SW__Multisampling_4      = 1 << 5,   //  antialiasing with 4 samples on pixel (if Multisampling flags more than one, will take greatest).
-        ZC_SW__GUI                  = 1 << 6,   //  creates ZC_GUI context
-    };
-
     /*
     Create window. Parameters have effect only in ZC_PC build.
 
@@ -44,7 +44,10 @@ namespace ZC_SWindow
     Return:
     On success unique pointer of ZC_SWindow, otherwise nullptr (in second case ZC_ErrorLogger::ErrorMessage() - for more information).
     */
-    bool MakeWindow(ZC_WindowFlags flags = ZC_SW__None, int width = 0, int height = 0, const char* name = "");
+    bool MakeWindow(ZC_WindowFlags flags = ZC_SWF__None, int width = 0, int height = 0, const char* name = "");
+    
+    //  Closing window.
+    void CloseWindow();
 
     /*
     Set the default context buffer clear color.
@@ -117,8 +120,20 @@ namespace ZC_SWindow
     Return:
     Event connection for disconnect.
     */
-    ZC_EC ConnectUpdate(ZC_Function<void(float)>&& func, size_t level);
+    ZC_EC ConnectToUpdater(ZC_Function<void(float)>&& func, size_t level);
 
     //  Returns number of current frame.
     unsigned long long GetCurrentFrameNumber();
+
+    //  Sets window maximun size in pixels.
+    void SetMaxSize(int x, int y);
+
+    //  Sets window maximun size in pixels.
+    void SetMinSize(int x, int y);
+
+    //  Stop or start updater activity. Default is on.
+    void ChangeUpdaterState(bool needUpdate);
+
+    //  Change activity of the concrete level of the updater.
+    void ChangeUpdaterLevelState(size_t lvl, bool is_active);
 };

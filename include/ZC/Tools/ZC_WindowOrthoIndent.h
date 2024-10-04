@@ -28,12 +28,24 @@ public:
     
     //  Return objects width and height.
     void GetSize(float& _width, float& _height);
-    //  Set new indent params and calls CalculateCurrentIndents().
+    
+    /*
+    Set new indent params and calls CalculateCurrentIndents().
+
+    Params:
+    - windowIndentX - value of horizontal indent from border of global window. If used IndentFlag:
+        ZC_WOIF__X_Left_Pixel, ZC_WOIF__X_Right_Pixel -> value must be not negative, otherwise sets 0.f;
+        ZC_WOIF__X_Left_Percent, ZC_WOIF__X_Right_Percent -> value must be 0.0f - 1.f (where 1.f is 100%);
+        ZC_WOIF__X_Center -> value no metter.
+    - windowIndentY - value of vertival indent from border of global window. If used IndentFlag: 
+        ZC_WOIF__Y_Top_Pixel, ZC_WOIF__Y_Bottom_Pixel -> value must be not negative, otherwise sets 0.f
+        ZC_WOIF__Y_Top_Percent, ZC_WOIF__Y_Bottom_Percent -> value must be 0.0f - 1.f (where 1.f is 100%);
+        ZC_WOIF__Y_Center -> value no metter.
+    - indentFlags - flags of indent horizontal(X) and vertical(Y) from border of global window to IGWindow. Must be set one flag for X and one flag for Y. Example: X_Left_Pixel | Y_Top_Pixel.
+    */
     void SetNewIndentParams(float _indentX, float _indentY, ZC_WindowOrthoIndentFlags _indentFlags);
     //  Return indent params.
     void GetIndentParams(float& _indentX, float& _indentY, ZC_WindowOrthoIndentFlags& _indentFlags);
-    //  Returns const reference on vector of X, Y indent.
-    const ZC_Vec2<float>& GetIndents();
 
 protected:
     ZC_Vec2<float> currentIndents;   //  indents into window from bottom left corner[0,0] -> currentIndents[0] - X, currentIndents[1] - Y 
@@ -67,6 +79,8 @@ protected:
     bool SetNewSize(float _width, float _height);
     //  Calculate currentIndentX, currentIndentY. Must be called to calculate indents onstart.
     void CalculateCurrentIndents();
+    //  Returns const reference on vector of X, Y indent.
+    const ZC_Vec2<float>& GetIndents();
 
 private:
     bool is_Y_ZeroPointOnTop;

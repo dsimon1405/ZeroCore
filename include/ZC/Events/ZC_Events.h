@@ -12,6 +12,15 @@ struct ZC_Events
     ZC_Events() = delete;
 
     /*
+    Binds a function to the click event of the window's close button. Only one function may be bind to event. To Disconnect call ConnectWindowCloseButton(nullptr).
+    If function not seted window will be closed.
+
+    Params:
+    - function - function which will be called on click event of the windows close button.
+    */
+    static void ConnectWindowCloseButton(ZC_Function<void()>&& function);
+
+    /*
     Binds the function to the button down event (will call function while the button is pressed). One down button can only connected once with this ConnectButtonPressDown(...),
     or once with ConnectButtonClick(...).
 
@@ -24,7 +33,8 @@ struct ZC_Events
     */
     static ZC_EC ConnectButtonPressDown(ZC_ButtonID buttonId, ZC_Function<void(ZC_ButtonID, float)>&& function);
     
-    /*Binds a function to a button click event. This event calls funcDown when the button is pressed (only called once, even if the button is pressed continuously),
+    /*
+    Binds a function to a button click event. This event calls funcDown when the button is pressed (only called once, even if the button is pressed continuously),
     and then calls funcUp when the button is released. One of connectiong fucntions can be missed, with {} constructor). One down button, can only connected once
     with this ConnectButtonPressDown(...), or once with ConnectButtonClick(...), or be the first button in a combination in the ConnectButtonCombination(...) function.
 

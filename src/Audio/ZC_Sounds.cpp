@@ -3,17 +3,17 @@
 #include "ZC_WAVHeader.h"
 #include <ZC/Tools/Container/ZC_DA.h>
 
-bool ZC_Sounds::LoadWAV(const std::string& name, const char* path)
+bool ZC_Sounds::LoadWAV(int id, const char* path)
 {
     std::unique_lock<std::shared_mutex> soundsULock(soundsSMutex);
-    auto soundsIter = sounds.find(name);
+    auto soundsIter = sounds.find(id);
     if (soundsIter != sounds.end())
     {
-        ZC_ErrorLogger::Err("Already exists sound: " + name, __FILE__, __LINE__);
+        ZC_ErrorLogger::Err("Already exists sound: " + id, __FILE__, __LINE__);
         return false;
     }
 
-    soundsIter = sounds.emplace(name, ZC_SoundData()).first;
+    soundsIter = sounds.emplace(id, ZC_SoundData()).first;
 
     soundsULock.unlock();
     soundsCVA.notify_all();
@@ -41,18 +41,18 @@ bool ZC_Sounds::LoadWAV(const std::string& name, const char* path)
     return true;
 }
 
-bool ZC_Sounds::LoadWAV(const std::string& name, const std::string& path)
+bool ZC_Sounds::LoadWAV(int id, const std::string& path)
 {
-    return LoadWAV(name, path.c_str());
+    return LoadWAV(id, path.c_str());
 }
 
-ZC_upSound ZC_Sounds::GetSound(const std::string& name)
+ZC_upSound ZC_Sounds::GetSound(int id)
 {
     std::shared_lock<std::shared_mutex> soundsSLock(soundsSMutex);
-    std::map<std::string, ZC_SoundData>::iterator soundsIter;
+    std::map<int, ZC_SoundData>::iterator soundsIter;
     soundsCVA.wait(soundsSLock, [&]
         {
-            soundsIter = sounds.find(name);
+            soundsIter = sounds.find(id);
             if (soundsIter == sounds.end()) return true;
             
             return soundsIter->second.GetAudioSet().frequency != 0;

@@ -51,6 +51,8 @@ struct ZC_CollisionObject
     ZC_Mat4<float>* GetModelMatrix();
         //  update model matrix and data dependent on it
     void UpdateModelMatrix(const ZC_Mat4<float>& mat);
+        //  update radius
+    void UpdateRadius(float radius);
         //  return closest surface to a point
     const ZC_CO_Surface<ZC_Vec3<float>*>* GetClosestSurface(const ZC_Vec3<float>& point);
         //  return pointer on src point of fact point, if can't find nullptr
@@ -73,7 +75,8 @@ private:
     unsigned long long last_collision_frame_number;     //  number of the frame in wich was last collision
 
         //  updates fact data with model matrix
-    void UpdateDataWithModelMatrix();
+    void UpdateCenterWithModelMatrix();
+    void UpdatePointsAndNormalsWithModelMatrix();
         //  make collision with other object and call collision_callback for both objects
     bool MakeCollision(ZC_CollisionObject* pCO);
     bool SimpleCollision(std::vector<ZC_Vec3<float>>& points, std::vector<ZC_CO_Surface<ZC_Vec3<float>*>>& surfaces);

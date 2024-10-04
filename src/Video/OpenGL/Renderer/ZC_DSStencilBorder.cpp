@@ -3,7 +3,7 @@
 #include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
 
 ZC_DSStencilBorder::ZC_DSStencilBorder()
-    : ZC_DrawerFL(GL_STENCIL_BUFFER_BIT, true, true, {})
+    : ZC_DrawerFL(GL_STENCIL_BUFFER_BIT, true, true, true, {})
 {}
 
 void ZC_DSStencilBorder::VCallDraw()
