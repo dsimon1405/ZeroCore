@@ -2,6 +2,7 @@
 
 #include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
 #include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
+#include <ZC/Video/ZC_SWindow.h>
 
 ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ColorsButton& _colorsButton)
     : ZC_GUI_ButtonMouse(width, height, _buttonFlags, ZC_GUI_IconUV::button, _colorsButton)
@@ -59,6 +60,9 @@ bool ZC_GUI_ButtonMouse::VMouseButtonLeftDown_Obj(float time)
         this->bs_mouseButton = BS_HoldUntilRelease;
         return false;
     }
+    
+    time = ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if time measure was changed. Need nanoseconds.
+    
     if (this->bs_mouseButton == BS_Released)
     {
         this->SetColor_Obj(this->colorsButton.color_button_pressed, true);
@@ -98,6 +102,8 @@ void ZC_GUI_ButtonMouse::VMouseButtonLeftUp_Obj(float time)
     {
         if (CheckCursorCollision_Obj())
         {
+            time = ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if time measure was changed. Need nanoseconds.
+            
             this->pObjData->color = colorsButton.color_button_under_cursor;
             VLeftButtonUp_BM(time);
         }

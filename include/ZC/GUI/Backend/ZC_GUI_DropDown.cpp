@@ -36,7 +36,7 @@ std::vector<ZC_GUI_DDVariant<ZC_GUI_DropDown>> ZC_GUI_DropDown::FillVariants(con
 {
     float text_indent_x = ZC_GUI_DropDownIcon::GetTextIndentX();
     float name_width = text_indent_x + ZC_GUI_TextManager::CalculateWstrWidth(name) + text_indent_x;      //  text_indent_x - distances from button border left and right to text
-    if (upDropDownIcon) name_width += text_indent_x + ZC_GUI_DropDownIcon::width;  //  uses drop down icon
+    if (upDropDownIcon) name_width += text_indent_x + ZC_GUI_DropDownIcon::GetWidth();  //  uses drop down icon
     if (width < name_width) width = name_width;
 
     for (const std::wstring& var : variants)    //  get longest of variants width

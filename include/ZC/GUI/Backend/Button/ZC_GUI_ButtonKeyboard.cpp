@@ -2,6 +2,7 @@
 
 #include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
 #include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
+#include <ZC/Video/ZC_SWindow.h>
 
 ZC_GUI_ButtonKeyboard::ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ColorsButton& _colorsButton)
     : ZC_GUI_ButtonKeyboard(_buttonId, width, height, _buttonFlags, ZC_GUI_IconUV::button, _colorsButton)
@@ -29,6 +30,8 @@ void ZC_GUI_ButtonKeyboard::VStopEventActivity_Obj()
 
 bool ZC_GUI_ButtonKeyboard::VKeyboardButtonDown_Obj(float time)
 {
+    time = ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if time measure was changed. Need nanoseconds.
+
     if (!this->isButtonActive || this->bs_keyboardButton == BS_HoldUntilRelease) return false;  //  don't do anything while uses another button down event
     if (this->bs_mouseButton != BS_Released)
     {
@@ -64,6 +67,8 @@ void ZC_GUI_ButtonKeyboard::VKeyboardButtonUp_Obj(float time)
 {
     if (this->bs_keyboardButton == BS_Pressed)
     {
+        time = ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if time measure was changed. Need nanoseconds.
+        
         this->pObjData->color = colorsButton.color_button;
         VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
         VKeyboardButtonUp_BK(time);

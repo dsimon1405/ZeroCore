@@ -19,6 +19,7 @@ struct ZC_GUI_TFB_Indent
         //  ZC_GUI_TFB_Indent from button border to texture with text.
     ZC_GUI_TFB_Indent(float _indent_x, Location _indentFlag_X);
 };
+typedef typename ZC_GUI_TFB_Indent::Location ZC_GUI_TFB_Indent_Location;
 
 struct ZC_GUI_TFB_Colors
 {

@@ -71,8 +71,14 @@ namespace ZC_SWindow
     */
     void SetFPS(long limit) noexcept;
 
-    //  Returns the creation time of the previous frame.
+    //  Return the time of the previous frame in setted timeasure setted with SetFPSTimeMeasure(). Default is ZC_FPS_TM__Nanoseconds.
     float GetPreviousFrameTime() noexcept;
+
+    //  Return the time of the previous frame in the specified time measure.
+    float GetPreviousFrameTime(ZC_FPS_TimeMeasure time_measure) noexcept;
+
+    //  Return setted time measure in fps system. Default is ZC_FPS_TM__Nanoseconds.
+    ZC_FPS_TimeMeasure GetFPSTimeMeasure() noexcept;
     
     //  Sets the width and height of the window in references.
     void GetSize(int& width, int& height);
@@ -136,4 +142,7 @@ namespace ZC_SWindow
 
     //  Change activity of the concrete level of the updater.
     void ChangeUpdaterLevelState(size_t lvl, bool is_active);
+
+    //  Change full screen mode. If full_screen is true, the window will be full screen.
+    void SetFullScreen(bool full_screen);
 };

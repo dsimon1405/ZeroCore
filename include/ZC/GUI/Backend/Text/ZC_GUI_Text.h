@@ -46,8 +46,11 @@ struct ZC_GUI_Text : public ZC_GUI_Obj
     void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
 
 protected:
-    bool isImmutable;
+    bool isImmutable;   //  ZC_GUI_Text state (if isImmutable false, may not equal ZC_GUI_TextManager::Text.isImmutable)
     typename ZC_GUI_TextManager::Text* pText;
     float actual_width;     //  mutable texture can get Texts with different texture width. Object's width must be updated with Text width (to have don't wraped texture size). So actual_width is object's full width. this->pObjData->width can have less or equal actual_width from new Text.
-
+    
+private:
+        //  overrides in ZC_GUI_TextForButton() to get width of the text, but width of the button
+    virtual float VGetTextWidth_T();
 };

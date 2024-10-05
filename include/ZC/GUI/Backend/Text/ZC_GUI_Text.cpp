@@ -91,3 +91,8 @@ void ZC_GUI_Text::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
 {
     *pBL = ZC_Vec2<float>(std::round(_bl[0]), std::round(_bl[1]));
 }
+
+float ZC_GUI_Text::VGetTextWidth_T()
+{
+    return this->VGetWidth_Obj();
+}

@@ -58,7 +58,17 @@ void ZC_SWindowHolder::SetFPS(long limit)
 
 float ZC_SWindowHolder::GetPreviousFrameTime() const noexcept
 {
-	return fps.PreviousFrameTime();
+	return fps.GetPreviousFrameTime(fps.GetTimeMeasure());
+}
+
+float ZC_SWindowHolder::GetPreviousFrameTime(ZC_FPS_TimeMeasure time_measure) const noexcept
+{
+	return fps.GetPreviousFrameTime(time_measure);
+}
+
+ZC_FPS_TimeMeasure ZC_SWindowHolder::GetFPSTimeMeasure() const noexcept
+{
+    return fps.GetTimeMeasure();
 }
 
 void ZC_SWindowHolder::NeedDrawFPS(bool needDraw)

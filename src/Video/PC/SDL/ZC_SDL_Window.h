@@ -23,6 +23,7 @@ private:
     void VStopInputText() override;
     void VSetMaxSize(int x, int y) override;
     void VSetMinSize(int x, int y) override;
+    void VSetFullScreen(bool full_screen) override;
 
     bool SetOpenGLAttributes(int samplesCount);
     // bool LoadOpenGLFunctions();

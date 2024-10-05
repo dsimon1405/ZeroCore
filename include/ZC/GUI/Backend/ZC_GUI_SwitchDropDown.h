@@ -20,6 +20,7 @@ struct ZC_GUI_SwitchDropDown : public ZC_GUI_ButtonMouseText
 
 private:
     ZC_GUI_DropDownIcon obj_dd_icon;
+    static inline std::vector<ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>> ddVariants_temp;     //  need to create ddVariant before this(current class), to make text in this immutable. Fills in CalculateWidth()
     std::vector<ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>> ddVariants;
     ZC_GUI_WinImmutable ddWindow;
     ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* pDDVariant_active = nullptr;

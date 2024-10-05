@@ -39,8 +39,11 @@ void ZC_GUI_ButtonBase::VChangeObjectActivity_Obj(bool _isAvtive, bool changeGPU
         bs_keyboardButton = BS_Released;
         this->SetColor_Obj(colorsButton.color_button, false);
     }
+    else this->SetColor_Obj(colorsButton.color_not_active, false);
+
     for (ZC_GUI_Obj* pObj : this->objs) pObj->VChangeObjectActivity_Obj(_isAvtive, changeGPU);
-    if (changeGPU) VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData) * this->objs.size() + sizeof(ZC_GUI_ObjData::color), &(this->pObjData->color));
+    if (changeGPU) VMapObjData_Obj(pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData) * this->objs.size() + sizeof(ZC_GUI_ObjData::color),
+        &(this->pObjData->color));
 }
 
 

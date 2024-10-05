@@ -33,7 +33,7 @@ ZC_GUI__Button<T>::ZC_GUI__Button(T&& t)
 template <typename T>
 ZC_GUI__Button<T>::ZC_GUI__Button(ZC_GUI__Button<T>&& b)
     : ZC_GUI__Obj<T>(dynamic_cast<ZC_GUI__Obj<T>&&>(b))
-{       //  pHolder can be ZC_GUI__BK::pHolder, or ZC_GUI___BM<TBM>::pHolder or other. Variables with different type but same name. It made to avoid typing move ctrs for each type to update pHolder variable. So all that variables updates here on move.
+{       //  pHolder can be ZC_GUI__BK::pHolder, or ZC_GUI__BM<TBM>::pHolder or other. Variables with different type but same name. It made to avoid typing move ctrs for each type to update pHolder variable. So all that variables updates here on move.
     this->obj.pHolder = this;
 }
 

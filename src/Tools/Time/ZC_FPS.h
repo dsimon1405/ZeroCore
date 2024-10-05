@@ -6,8 +6,8 @@
 
 struct ZC_FPS
 {
-    //  timeMeasure - defined in which time measure going to be returned all time results.
-    ZC_FPS(ZC_FPS_TimeMeasure timeMeasure);
+    //  _time_measure - defined in which time measure going to be returned all time results.
+    ZC_FPS(ZC_FPS_TimeMeasure _time_measure);
 
     /*
     Start count time of new frame.
@@ -25,13 +25,13 @@ struct ZC_FPS
     void SetLimit(long fps);
 
     //  Change time measure.
-    void ChangeTimeMeasure(ZC_FPS_TimeMeasure timeMeasure);
+    void ChangeTimeMeasure(ZC_FPS_TimeMeasure _time_measure);
 
-    /*
-    Return:
-    Previous framse time in selected measure.
-    */
-    float PreviousFrameTime() const noexcept;
+    // Return previous frame time in selected measure.
+    float GetPreviousFrameTime(ZC_FPS_TimeMeasure _time_measure) const noexcept;
+
+    //  Return current time measure.
+    ZC_FPS_TimeMeasure GetTimeMeasure() const noexcept;
 
     void NeedDraw(bool _needDraw);
     bool IsDrawing();
@@ -47,6 +47,7 @@ private:
     float nanosecondsDivisor;
 
     unsigned long long frame_counter = 0;
+    ZC_FPS_TimeMeasure time_measure = ZC_FPS_TM__Nanoseconds;
 
     bool needDraw = false;
     ZC_uptr<ZC_TextWindow> upTextFPS;

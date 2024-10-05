@@ -26,15 +26,18 @@ public:
     virtual void VStopInputText() {}
     virtual void VSetMaxSize(int x, int y) {}
     virtual void VSetMinSize(int x, int y) {}
+    virtual void VSetFullScreen(bool full_screen) {}
 
     void CloseWindow();
     void RunMainCycle();
     void SetFPS(long limit);
     float GetPreviousFrameTime() const noexcept;
+    float GetPreviousFrameTime(ZC_FPS_TimeMeasure time_measure) const noexcept;
+    ZC_FPS_TimeMeasure GetFPSTimeMeasure() const noexcept;
     void NeedDrawFPS(bool needDraw);
     bool IsFPSDrawing();
     void GetCursorPosition(float& posX, float& posY);
-    void SetFPSTimeMeasure(ZC_FPS_TimeMeasure timeMeasure);
+    void SetFPSTimeMeasure(ZC_FPS_TimeMeasure time_measure);
     ZC_EC ConnectToUpdater(ZC_Function<void(float)>&& func, size_t level);
     unsigned long long GetCurrentFrameNumber() const;
     void ChangeUpdaterState(bool needUpdate);

@@ -17,7 +17,8 @@ void ZC_GUI_TextInputWindow::SetColors(uint color_background, uint color_text, u
     pTIW->VSubDataObjData_Obj(pTIW->Get_pObjData_start(), pTIW->VGet_pObjData_end());
 }
 
-bool ZC_GUI_TextInputWindow::StartInputWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text)
+bool ZC_GUI_TextInputWindow::StartInputWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr,
+    ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text)
 {
     if (!pTIW->StartWindow(bl_x, bl_y, win_width, _max_symbols, wstr, highlight_text)) return false;
     funcChangedWstr = std::move(_callBack);
@@ -730,7 +731,7 @@ void ZC_GUI_TextInputWindow::Caret::TextButtonDown(const typename ZC_GUI_Font::C
 
 void ZC_GUI_TextInputWindow::Caret::BlinkingUpdate(float time)
 {
-    blinkTime += time;
+    blinkTime += ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if time measure was changed. Need nanoseconds.
     if (blinkTime >= blinkTime_limit)   //   time over
     {
         blinkTime -= blinkTime_limit;   //  update time
@@ -844,7 +845,7 @@ void ZC_GUI_TextInputWindow::EventHandler::ButtonUp(ZC_ButtonID buttonID, float 
 
 void ZC_GUI_TextInputWindow::EventHandler::CallPressedButton(float time, bool isLeft, void(ZC_GUI_TextInputWindow::Highlight::* pFuncMove)())
 {
-    wait_time += time;
+    wait_time += ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if time measure was changed. Need nanoseconds.
     if (buttonPressedStarted)
     {
         if (wait_time >= beteenCallsWhenPressedNanoseconds)

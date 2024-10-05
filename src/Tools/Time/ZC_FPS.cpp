@@ -5,9 +5,9 @@
 #include <thread>
 #include <format>
 
-ZC_FPS::ZC_FPS(ZC_FPS_TimeMeasure timeMeasure)
+ZC_FPS::ZC_FPS(ZC_FPS_TimeMeasure _time_measure)
 {
-    ChangeTimeMeasure(timeMeasure);
+    ChangeTimeMeasure(_time_measure);
 }
 
 float ZC_FPS::StartNewFrame()
@@ -33,20 +33,33 @@ void ZC_FPS::SetLimit(long fps)
     fpsTime = fps == 0 ? 0 : static_cast<long>(nanosecond) / (fps + 1);
 }
 
-void ZC_FPS::ChangeTimeMeasure(ZC_FPS_TimeMeasure timeMeasure)
+void ZC_FPS::ChangeTimeMeasure(ZC_FPS_TimeMeasure _time_measure)
 {
-    switch (timeMeasure)
+    switch (_time_measure)
     {
     case ZC_FPS_TimeMeasure::ZC_FPS_TM__Nanoseconds: nanosecondsDivisor = 1.f; break;
     case ZC_FPS_TimeMeasure::ZC_FPS_TM__Microseconds: nanosecondsDivisor = 1000.f; break;
     case ZC_FPS_TimeMeasure::ZC_FPS_TM__Milliseconds: nanosecondsDivisor = 1000000.f; break;
     case ZC_FPS_TimeMeasure::ZC_FPS_TM__Seconds: nanosecondsDivisor = 1000000000.f; break;
     }
+    time_measure = _time_measure;
 }
 
-float ZC_FPS::PreviousFrameTime() const noexcept
+float ZC_FPS::GetPreviousFrameTime(ZC_FPS_TimeMeasure _time_measure) const noexcept
 {
-    return static_cast<float>(previousFrameNanoseconds) / nanosecondsDivisor;
+    switch (_time_measure)
+    {
+    case ZC_FPS_TimeMeasure::ZC_FPS_TM__Nanoseconds: return float(previousFrameNanoseconds) / 1.f;
+    case ZC_FPS_TimeMeasure::ZC_FPS_TM__Microseconds: return float(previousFrameNanoseconds) / 1000.f;
+    case ZC_FPS_TimeMeasure::ZC_FPS_TM__Milliseconds: return float(previousFrameNanoseconds) / 1000000.f;
+    case ZC_FPS_TimeMeasure::ZC_FPS_TM__Seconds: return float(previousFrameNanoseconds) / 1000000000.f;
+    default: return 0.f;
+    }
+}
+
+ZC_FPS_TimeMeasure ZC_FPS::GetTimeMeasure() const noexcept
+{
+    return time_measure;
 }
 
 void ZC_FPS::NeedDraw(bool needDraw)

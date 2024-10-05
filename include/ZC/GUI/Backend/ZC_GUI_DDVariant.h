@@ -17,13 +17,11 @@ struct ZC_GUI_ColorsDropDown
 
 struct ZC_GUI_DropDownIcon : public ZC_GUI_Obj
 {
-    static inline const float width = 12.f;
-    static inline const float height = 6.f;
-
     ZC_GUI_DropDownIcon(uint color);
 
         //  indent from button's left border to text
     static float GetTextIndentX();
+    static float GetWidth();
 };
 
     //  ZC_GUI_SwitchDropDown::ColorsDropDownSwitch
@@ -45,7 +43,8 @@ struct ZC_GUI_DDVariant : public ZC_GUI_ButtonMouseText
 template <typename THolder>
 ZC_GUI_DDVariant<THolder>::ZC_GUI_DDVariant(THolder* _pHolder, float width, float height, const std::wstring& _wstr)
     : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None),
-    ZC_GUI_ButtonMouseText(width, height, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(ZC_GUI_DropDownIcon::GetTextIndentX(), ZC_GUI_TFB_Indent::Left),_wstr, true, 0, ZC_GUI_TextAlignment::Left)),
+    ZC_GUI_ButtonMouseText(width, height, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(ZC_GUI_DropDownIcon::GetTextIndentX(), ZC_GUI_TFB_Indent::Left),
+        _wstr, true, 0, ZC_GUI_TextAlignment::Left)),
     pHolder(_pHolder)
 {}
 

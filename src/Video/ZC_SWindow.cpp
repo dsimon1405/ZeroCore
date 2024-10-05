@@ -33,6 +33,16 @@ float ZC_SWindow::GetPreviousFrameTime() noexcept
     return ZC_SWindowHolder::upWindowHolder ? ZC_SWindowHolder::upWindowHolder->GetPreviousFrameTime() : 0.f;
 }
 
+float ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TimeMeasure time_measure) noexcept
+{
+    return ZC_SWindowHolder::upWindowHolder ? ZC_SWindowHolder::upWindowHolder->GetPreviousFrameTime(time_measure) : 0.f;
+}
+
+ZC_FPS_TimeMeasure ZC_SWindow::GetFPSTimeMeasure() noexcept
+{
+    return ZC_SWindowHolder::upWindowHolder ? ZC_SWindowHolder::upWindowHolder->GetFPSTimeMeasure() : ZC_FPS_TM__Nanoseconds;
+}
+
 void ZC_SWindow::GetSize(int& width, int& height)
 {
     if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->VGetSize(width, height);
@@ -121,4 +131,9 @@ void ZC_SWindow::ChangeUpdaterState(bool needUpdate)
 void ZC_SWindow::ChangeUpdaterLevelState(size_t lvl, bool is_active)
 {
     if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->ChangeUpdaterLevelState(lvl, is_active);
+}
+
+void ZC_SWindow::SetFullScreen(bool full_screen)
+{
+    if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->VSetFullScreen(full_screen);
 }

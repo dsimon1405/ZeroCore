@@ -91,10 +91,11 @@ typename ZC_GUI_TextManager::Text* ZC_GUI_TextManager::GetText(const std::wstrin
     if (!isImmutable && reserveWidth > wstr_width) wstr_width = reserveWidth;   //  reserveWidth more then wstr width (only for mutable texts)
 
     Text* pExisting_text = ZC_Find(pTM->immutable_texts, wstr);
-    if (pExisting_text && wstr_width == pExisting_text->width) return pExisting_text;
+    if (pExisting_text && (pExisting_text->alignment == alignment && (alignment == ZC_GUI_TextAlignment::Left || wstr_width == pExisting_text->width)))
+        return pExisting_text;
     
     if (isImmutable && pTM->IsConfigured()) return nullptr;   //  no adds after configuration (for immutable text)
-                                                                                                                                    //  immutable text could have only left alignment
+                                                            //  mutable text could have only left alignment (htey can't be changed, don't fill texture with empty spases on front)
     Text* pText = isImmutable ? &(pTM->immutable_texts.emplace_back(Text{ .isImmutable = isImmutable, .wstr = wstr, .width = wstr_width, .alignment = Text::Alignment::Left }))
         : &(pTM->mutable_texts.emplace_back(Text{ .isImmutable = isImmutable, .wstr = wstr, .width = wstr_width, .alignment = alignment }));
     
@@ -148,7 +149,6 @@ void ZC_GUI_TextManager::ProcessDeletableText(int wstr_width, Text* pText)
     }
 }
 
-    //  erase only deletable text (not stacionar), to free space in texture
 void ZC_GUI_TextManager::EraseText(Text* pText)
 {
     if (pText->isImmutable) return; //  delete only deletable
@@ -172,7 +172,7 @@ void ZC_GUI_TextManager::EraseText(Text* pText)
     if (adjacentPrevious && adjacentNext)   //  merge: prevIter, pText, nextIter
     {   //  all merge in prevIter
         prevIter->width += text_distance_pixel + pText->width + text_distance_pixel + nextIter->width;  //  3 spaces are adjacent, merge all
-        pTM->freeSpaces.erase(nextIter);    //  where merge in prevIter    
+        pTM->freeSpaces.erase(nextIter);    //  were merge in prevIter    
     }
     else if (adjacentPrevious) prevIter->width += text_distance_pixel + pText->width;     //  add pText to prevIter
     else if (adjacentNext)  //  add pText to nextIter
@@ -186,7 +186,6 @@ void ZC_GUI_TextManager::EraseText(Text* pText)
 bool ZC_GUI_TextManager::UpdateText(Text*& pText, int total_width, bool brootForceUpdate, const std::wstring& wstr)
 {
     int wstr_width = CalculateWstrWidth(wstr);
-    if (total_width < wstr_width) return false;   //  new length can't be longer then current
     if (pText->isImmutable) pText = GetText(wstr, false, total_width, pText->alignment, &wstr_width);     //  pText is immutable. Get new text
     else if (!brootForceUpdate) //  pText mutable and don't need broot force map
     {
@@ -198,6 +197,7 @@ bool ZC_GUI_TextManager::UpdateText(Text*& pText, int total_width, bool brootFor
         pText->wstr = wstr;
         MapTexture(pText->start_index, pText->width, CreateWstrData(pText, &wstr_width).data());   //  pText is mutable and need brootForceUpdate. Map part of existing texture
     }
+    static int counter = 0;
     return true;
 }
 
@@ -239,7 +239,7 @@ std::vector<unsigned char> ZC_GUI_TextManager::CreateWstrData(Text* pText, int* 
     int data_index = pText->alignment == ZC_GUI_TextAlignment::Center ? (pText->width - (pWSTR_width ? *pWSTR_width : CalculateWstrWidth(pText->wstr))) / 2.f
         : pText->alignment == ZC_GUI_TextAlignment::Right ? pText->width - (pWSTR_width ? *pWSTR_width : CalculateWstrWidth(pText->wstr))
         : 0;
-    for (wchar_t wch : pText->wstr)
+    for (wchar_t& wch : pText->wstr)
     {
         auto pCh = pTM->font.GetCharacter(wch);
         if (!pCh) continue;

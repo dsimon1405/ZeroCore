@@ -32,6 +32,8 @@ struct ZC_GUI_ButtonMouseText : public ZC_GUI_ButtonMouse
 
     void UpdateText_BMT(ZC_GUI_TextManager::Text* pText);
     void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
+        //  must call heirs wich override VSet_pBL_Obj()
+    void Set_pBL_BMT(const ZC_Vec2<float>& _bl);
     float VGetWidthComposite_Obj() override;
     void VConf_SetTextUV_Obj() override;
 };

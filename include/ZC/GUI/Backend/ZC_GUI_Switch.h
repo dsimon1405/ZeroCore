@@ -22,7 +22,6 @@ struct ZC_GUI_KeyboardUV
 template <ZC_GUI_cSwitch TSwitch>    //  TSwitch is ZC_GUI_ButtonMouse or ZC_GUI_ButtonMouseAndKeyboard
 struct ZC_GUI_Switch : public TSwitch
 {
-
     struct Variant : public TSwitch
     {
             //  ctr with ZC_GUI_ButtonMouse specialization
@@ -39,14 +38,14 @@ struct ZC_GUI_Switch : public TSwitch
     };
 
         //  ctr with ZC_GUI_ButtonMouse specialization
-    ZC_GUI_Switch(const std::vector<ZC_GUI_UV>& uvs, float width, float height, bool orientation_horizontal, float distance, ZC_Function<void(uint)>&& _callback, uint active_variant = UINT_MAX,
-        const ZC_GUI_ColorsButton& _colorsButton = {});
+    ZC_GUI_Switch(const std::vector<ZC_GUI_UV>& uvs, float width, float height, bool orientation_horizontal, float distance, ZC_Function<void(uint)>&& _callback,
+        uint active_variant = UINT_MAX, const ZC_GUI_ColorsButton& _colorsButton = {});
         //  ctr with ZC_GUI_ButtonMouseAndKeyboard specialization
-    ZC_GUI_Switch(const std::vector<ZC_GUI_KeyboardUV>& keyboardUVs, float width, float height, bool orientation_horizontal, float distance, ZC_Function<void(uint)>&& _callback, uint active_variant = UINT_MAX,
-        const ZC_GUI_ColorsButton& _colorsButton = {});
+    ZC_GUI_Switch(const std::vector<ZC_GUI_KeyboardUV>& keyboardUVs, float width, float height, bool orientation_horizontal, float distance,
+        ZC_Function<void(uint)>&& _callback, uint active_variant = UINT_MAX, const ZC_GUI_ColorsButton& _colorsButton = {});
         //  ctr with ZC_GUI_ButtonMouseText specialization
-    ZC_GUI_Switch(const std::vector<std::wstring>& names, float width, float height, bool orientation_horizontal, float distance, ZC_Function<void(uint)>&& _callback, uint active_variant = UINT_MAX,
-        const ZC_GUI_ColorsButton& _colorsButton = {}, uint _color_text = ZC_GUI_Colors::dropDownSwitch_text);
+    ZC_GUI_Switch(const std::vector<std::wstring>& names, float width, float height, bool orientation_horizontal, float distance, ZC_Function<void(uint)>&& _callback,
+        uint active_variant = UINT_MAX, const ZC_GUI_ColorsButton& _colorsButton = {}, uint _color_text = ZC_GUI_Colors::dropDownSwitch_text);
 
     ZC_GUI_Switch(ZC_GUI_Switch&& sw);
 
@@ -110,11 +109,11 @@ float ZC_GUI_Switch<TSwitch>::VGetHeightComposite_Obj()
 template <ZC_GUI_cSwitch TSwitch>
 void ZC_GUI_Switch<TSwitch>::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
 {       //  relative bl position seted in ctr, now only move all objects to concretete positoin 
-    *(this->pBL) += _bl;
     if constexpr (std::same_as<TSwitch, ZC_GUI_ButtonMouseText>)
     {
-        this->textForButton.VSet_pBL_Obj(this->Get_bl_Obj());
+        this->Set_pBL_BMT(_bl);
     }
+    else *(this->pBL) += _bl;
     for (Variant& var : variants) var.VSet_pBL_Obj(var.Get_bl_Obj() + _bl);
 }
 

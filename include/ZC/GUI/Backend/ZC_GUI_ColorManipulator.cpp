@@ -11,19 +11,19 @@ ZC_GUI_ColorManipulator::ZC_GUI_ColorManipulator(ZC_Function<void(float,float,fl
     result_triangle(ZC_GUI_ObjData(GetTriangleSize(), GetTriangleSize(), ZC_PackColorUcharToUInt_RGBA(255, 0, 0, 255), {}, ZC_GUI_Bindings::bind_ColorManipulator_resultTriangle)),
     alpha_triangle(ZC_GUI_ObjData(result_triangle.VGetWidth_Obj(), result_triangle.GetHeight(), 0, ZC_GUI_IconUV::background_alpha, ZC_GUI_Bindings::bind_ColorManipulator_alphaTrinalge)),
     saturation_triangle(GetTriangleSize()),
-    bnt_red_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 255, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr),
+    bnt_red_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 255, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
         ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"R"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"R", true, 0, ZC_GUI_TextAlignment::Left)),
-    bnt_green_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 0, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr),
+    bnt_green_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 0, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
         ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"G"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"G", true, 0, ZC_GUI_TextAlignment::Left)),
-    bnt_blue_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 0, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr),
+    bnt_blue_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 0, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
         ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"B"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"B", true, 0, ZC_GUI_TextAlignment::Left)),
-    bnt_red_float(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 1.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr),
+    bnt_red_float(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 1.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
         ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"R"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"R", true, 0, ZC_GUI_TextAlignment::Left)),
-    bnt_green_float(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 0.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr),
+    bnt_green_float(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 0.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
         ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"G"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"G", true, 0, ZC_GUI_TextAlignment::Left)),
-    bnt_blue_float(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 0.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr),
+    bnt_blue_float(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 0.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
         ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"B"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"B", true, 0, ZC_GUI_TextAlignment::Left)),
-    bnt_alpha(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 1.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr),
+    bnt_alpha(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 1.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
         ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"A"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"A", true, 0, ZC_GUI_TextAlignment::Left)),
     bmt_uchar(bnt_red_uchar.VGetWidthComposite_Obj() / 2.f, true),
     bmt_float(bnt_red_uchar.VGetWidthComposite_Obj() / 2.f, false),
@@ -108,13 +108,13 @@ void ZC_GUI_ColorManipulator::AddObjs()
 
     this->VAddObj_Obj(&bnt_alpha);
 
-    bnt_red_uchar.UpdateCallback(ZC_Function<void(uchar)>(&ZC_GUI_ColorManipulator::Callback_uchar, this));
-    bnt_green_uchar.UpdateCallback(ZC_Function<void(uchar)>(&ZC_GUI_ColorManipulator::Callback_uchar, this));
-    bnt_blue_uchar.UpdateCallback(ZC_Function<void(uchar)>(&ZC_GUI_ColorManipulator::Callback_uchar, this));
-    bnt_red_float.UpdateCallback(ZC_Function<void(float)>(&ZC_GUI_ColorManipulator::Callback_float, this));
-    bnt_green_float.UpdateCallback(ZC_Function<void(float)>(&ZC_GUI_ColorManipulator::Callback_float, this));
-    bnt_blue_float.UpdateCallback(ZC_Function<void(float)>(&ZC_GUI_ColorManipulator::Callback_float, this));
-    bnt_alpha.UpdateCallback(ZC_Function<void(float)>(&ZC_GUI_ColorManipulator::Callback_alpha, this));
+    bnt_red_uchar.UpdateCallbacks(ZC_Function<void(uchar)>(&ZC_GUI_ColorManipulator::Callback_uchar, this), nullptr);
+    bnt_green_uchar.UpdateCallbacks(ZC_Function<void(uchar)>(&ZC_GUI_ColorManipulator::Callback_uchar, this), nullptr);
+    bnt_blue_uchar.UpdateCallbacks(ZC_Function<void(uchar)>(&ZC_GUI_ColorManipulator::Callback_uchar, this), nullptr);
+    bnt_red_float.UpdateCallbacks(ZC_Function<void(float)>(&ZC_GUI_ColorManipulator::Callback_float, this), nullptr);
+    bnt_green_float.UpdateCallbacks(ZC_Function<void(float)>(&ZC_GUI_ColorManipulator::Callback_float, this), nullptr);
+    bnt_blue_float.UpdateCallbacks(ZC_Function<void(float)>(&ZC_GUI_ColorManipulator::Callback_float, this), nullptr);
+    bnt_alpha.UpdateCallbacks(ZC_Function<void(float)>(&ZC_GUI_ColorManipulator::Callback_alpha, this), nullptr);
 }
 
 float ZC_GUI_ColorManipulator::VGetHeightComposite_Obj()
@@ -250,7 +250,8 @@ void ZC_GUI_ColorManipulator::UpdateColorLineCursorPosition(const ZC_Vec2<float>
         SetCursorColorLinePosition(cursor_color_line_pos, true);
         saturation_triangle.SetColorTR(r, g, b);    //  update tr color
         saturation_triangle.UpdateResultColorByBarycenters(false);
-        this->VMapObjData_Obj(result_triangle.pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData) + sizeof(ZC_GUI_ObjData::color), &(result_triangle.pObjData->color));     //  updates from result_triangle->pObjData.color to saturation_triangle.pObjData->color
+        this->VMapObjData_Obj(result_triangle.pObjData, offsetof(ZC_GUI_ObjData, color), sizeof(ZC_GUI_ObjData) + sizeof(ZC_GUI_ObjData::color),
+            &(result_triangle.pObjData->color));     //  updates from result_triangle->pObjData.color to saturation_triangle.pObjData->color
         ValueChanged();
     };
         //  walk by round red-pink-blue-azure-green-yellow-red
@@ -373,7 +374,8 @@ void ZC_GUI_ColorManipulator::MakeActiveButtonType(bool makeActiveUChar)
         bmt_float.SetColor_Obj(bmt_float.colorsButton.color_button, false);   //  move active color
         bmt_uchar.SetColor_Obj(bmt_uchar.colorsButton.color_button_pressed, false);   //  set active color
     }
-    VMapObjData_Obj(bnt_red_uchar.Get_pObjData_start(), 0, (bmt_float.VGet_pObjData_end() - bnt_red_uchar.Get_pObjData_start()) * sizeof(ZC_GUI_ObjData), bnt_red_uchar.Get_pObjData_start());
+    VMapObjData_Obj(bnt_red_uchar.Get_pObjData_start(), 0, (bmt_float.VGet_pObjData_end() - bnt_red_uchar.Get_pObjData_start()) * sizeof(ZC_GUI_ObjData),
+        bnt_red_uchar.Get_pObjData_start());
 }
 
 void ZC_GUI_ColorManipulator::ValueChanged()

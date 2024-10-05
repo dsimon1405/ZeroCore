@@ -139,6 +139,11 @@ void ZC_SDL_Window::VSetMinSize(int x, int y)
 	SDL_SetWindowMinimumSize(pWindow, x, y);
 }
 
+void ZC_SDL_Window::VSetFullScreen(bool full_screen)
+{
+	SDL_SetWindowFullscreen(pWindow, full_screen);
+}
+
 bool ZC_SDL_Window::SetOpenGLAttributes(int samplesCount)
 {
 	if (SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE) != 0)
