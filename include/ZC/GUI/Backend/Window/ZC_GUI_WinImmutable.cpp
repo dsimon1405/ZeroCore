@@ -48,7 +48,7 @@ void ZC_GUI_WinImmutable::VSetDrawState_W(bool needDraw)
             ZC_GUI::pGUI->eventManager.SetMouseButtonDownWatcherObj(nullptr);
     }
     
-    bufDAICs.GLMapNamedBufferRange_Write(daicOffset + offsetof(ZC_DrawArraysIndirectCommand, instanceCount),
+    if (VIsConfigured_Obj()) bufDAICs.GLMapNamedBufferRange_Write(daicOffset + offsetof(ZC_DrawArraysIndirectCommand, instanceCount),
         sizeof(ZC_DrawArraysIndirectCommand::instanceCount), &(daic.instanceCount));
     ZC_GUI::UpdateWindowDrawState(this);
 }

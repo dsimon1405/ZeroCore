@@ -23,10 +23,7 @@ ZC_GUI_CheckBox::ZC_GUI_CheckBox(ZC_GUI_CheckBox&& chB)
     objArrow(std::move(chB.objArrow)),
     callback_state_changed(std::move(chB.callback_state_changed)),
     callback_focus_changed(std::move(chB.callback_focus_changed))
-{
-    this->VAddObj_Obj(&objArrow, nullptr);
-    if (!isOn) objArrow.VSetDrawState_Obj(false, false);
-}
+{}
 
 bool ZC_GUI_CheckBox::GetState_ChB()
 {

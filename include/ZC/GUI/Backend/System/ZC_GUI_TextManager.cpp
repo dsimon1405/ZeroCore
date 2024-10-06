@@ -197,7 +197,6 @@ bool ZC_GUI_TextManager::UpdateText(Text*& pText, int total_width, bool brootFor
         pText->wstr = wstr;
         MapTexture(pText->start_index, pText->width, CreateWstrData(pText, &wstr_width).data());   //  pText is mutable and need brootForceUpdate. Map part of existing texture
     }
-    static int counter = 0;
     return true;
 }
 

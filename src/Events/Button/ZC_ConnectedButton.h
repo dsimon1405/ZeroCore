@@ -9,7 +9,7 @@ struct ZC_ConnectedButton
 {
     ZC_ButtonID buttonId;
     TFunc func;   //  may be: ZC_Function<void(ZC_ButtonID,float)>, ZC_Function<void(ZC_ButtonID,float)>*
-    ZC_GUI_Obj* pGuiObj;    //  sets only on down in ZC_ButtonPressedDown::AddActiveDownButton(), and released in ZC_ButtonPressedDown::EraseActiveDownButton
+    ZC_GUI_Obj* pGuiObj = nullptr;    //  sets only on down in ZC_ButtonPressedDown::AddActiveDownButton(), and released in ZC_ButtonPressedDown::EraseActiveDownButton
 
     template<typename TObject>  //  may be pointer on gui object or pointer on function
     bool operator == (TObject pObject) const noexcept
@@ -24,7 +24,7 @@ struct ZC_ConnectedButton
         }
         else if constexpr (std::is_pointer<TFunc>())      //  ZC_Function<void(ZC_ButtonID,float)>*
         {
-            return (*func).GetPointerOnData() == pObject;
+            return func ? (*func).GetPointerOnData() == pObject : false;
         }
         else    //  ZC_Function<void(ZC_ButtonID,float)>
         {
@@ -36,7 +36,7 @@ struct ZC_ConnectedButton
     {
         if (pGuiObj)      //  if have gui obj pointer, calls his button down event
         {
-            pGuiObj->VButtonDown_Obj(buttonId, time);
+            if (pGuiObj) pGuiObj->VButtonDown_Obj(buttonId, time);
             return;
         }
         if constexpr (std::same_as<TFunc, ZC_Function<void(ZC_ButtonID, float)>*>)    //  ZC_Function<void(ZC_ButtonID,float)>*

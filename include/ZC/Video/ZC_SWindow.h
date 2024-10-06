@@ -131,10 +131,10 @@ namespace ZC_SWindow
     //  Returns number of current frame.
     unsigned long long GetCurrentFrameNumber();
 
-    //  Sets window maximun size in pixels.
+    //  Sets window max size in pixels.
     void SetMaxSize(int x, int y);
 
-    //  Sets window maximun size in pixels.
+    //  Sets window min size in pixels.
     void SetMinSize(int x, int y);
 
     //  Stop or start updater activity. Default is on.
