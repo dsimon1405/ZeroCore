@@ -69,7 +69,7 @@ ZC_SDL_AudioStream::~ZC_SDL_AudioStream()
 
 void SDLCALL ZC_SDL_AudioStream::AudioCallback(void *userdata, SDL_AudioStream *stream, int additional_amount, int total_amount)
 {
-    if (additional_amount < 0)
+    if (additional_amount <= 0)
     {
         ZC_ErrorLogger::Err("ZC_SDL_AudioStream::MyAudioCallback(){additional_amount < 0}: "
             + std::string(SDL_GetError()), __FILE__, __LINE__);

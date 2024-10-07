@@ -40,6 +40,16 @@ void ZC_TornToCamera::SetScale(float _scale)
     scale = _scale;
 }
 
+ZC_Vec3<float> ZC_TornToCamera::GetPosition() const noexcept
+{
+    return position;
+}
+
+float ZC_TornToCamera::GetScale() const noexcept
+{
+    return scale;
+}
+
 ZC_TornToCamera::ZC_TornToCamera(const ZC_Vec3<float>& _position, float _scale)
     : position(_position),
     scale(_scale)

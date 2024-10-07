@@ -20,6 +20,8 @@ public:
     void SetPosition(const ZC_Vec3<float>& pos);
     //  Changes scale. Default scaling creates letters with height near 2.f.
     void SetScale(float _scale);
+    ZC_Vec3<float> GetPosition() const noexcept;
+    float GetScale() const noexcept;
 
 protected:
     ZC_Mat4<float> model;   //  model matrix for heir

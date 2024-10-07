@@ -73,21 +73,24 @@ void ZC_AudioStream::FillData(void* pDataContainer, int bytesCount, std::vector<
         std::fill(pData, pData + pDataSize, 0);
         return;
     }
-    for (int pDataIndex = 0; pDataIndex < pDataSize; ++pDataIndex)
+    for (T pDataIndex = 0; pDataIndex < pDataSize; ++pDataIndex)
     {
         if (sounds.size() == 0)
         {
-            std::fill(pData + pDataIndex, pData + (pDataSize - pDataIndex), 0);
+            std::fill(pData + pDataIndex, pData + pDataSize, 0);
             return;
         }
-        T divisor = sounds.size() == 1 ? static_cast<T>(2) : static_cast<T>(sounds.size());
-        T result = 0;
-        for (auto soundsIter = sounds.begin(); soundsIter != sounds.end();)
+        else
         {
-            T data = 0;
-            soundsIter = (*soundsIter)->Pop(data) ? ++soundsIter : sounds.erase(soundsIter);
-            result += data / divisor;
+            T divisor = sounds.size() == 1 ? static_cast<T>(2) : static_cast<T>(sounds.size());
+            T result = 0;
+            for (auto soundsIter = sounds.begin(); soundsIter != sounds.end();)
+            {
+                T data = 0;
+                soundsIter = (*soundsIter)->Pop(data) ? ++soundsIter : sounds.erase(soundsIter);
+                result += data / divisor;
+            }
+            pData[pDataIndex] = result;
         }
-        pData[pDataIndex] = result;
     }
 }

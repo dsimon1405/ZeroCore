@@ -34,8 +34,16 @@ typedef double long ldouble;
 #define ZC_ToZeroOneRange(val) ((val + 1.0) / 2.0)  //  from range [-1,1] to range [0,1]
 #define ZC_ToMinusPlusOneRange(val) ((val * 2.0) - 1.0)  //  from range [0,1] to range [-1,1]
 
-const float ZC_angle_360f = 360.f;
-const int ZC_angle_360i = 360;
+constexpr int ZC_angle_0f = 0.f;
+constexpr int ZC_angle_0i = 0;
+constexpr float ZC_angle_90f = 90.f;
+constexpr int ZC_angle_90i = 90;
+constexpr float ZC_angle_180f = 180.f;
+constexpr int ZC_angle_180i = 180;
+constexpr float ZC_angle_270f = 270.f;
+constexpr int ZC_angle_270i = 270;
+constexpr float ZC_angle_360f = 360.f;
+constexpr int ZC_angle_360i = 360;
 
 uint ZC_PackColorFloatToUInt_RGB(const ZC_Vec3<float>& rgb) noexcept;
 

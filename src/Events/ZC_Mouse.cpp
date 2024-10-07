@@ -50,9 +50,11 @@ void ZC_Mouse::MouseScroll(float horizontal, float vertical, float time)
 {
     scrolledHorizontal += horizontal;
     scrolledVertical += vertical;
-    if (!ZC_GUI::pGUI) sigScroll.CallLastConnected(horizontal, vertical, time);     //  no gui, call signal
+    if (!ZC_GUI::pGUI) sigScroll(horizontal, vertical, time);     //  no gui, call signal
+    // if (!ZC_GUI::pGUI) sigScroll.CallLastConnected(horizontal, vertical, time);     //  no gui, call signal
     else if (ZC_GUI::pGUI->eventManager.ScrollWheel())  //  gui calls scroll wheel
-        sigScroll.CallLastConnected(horizontal, vertical, time);    //  if gui don't need cursor move event, call signal
+        sigScroll(horizontal, vertical, time);    //  if gui don't need cursor move event, call signal
+        // sigScroll.CallLastConnected(horizontal, vertical, time);    //  if gui don't need cursor move event, call signal
 }
 
 void ZC_Mouse::MoveOnceInFrame(float time)
@@ -71,9 +73,11 @@ void ZC_Mouse::ScrollOnceInFrame(float time)
 {
     if (scrolledHorizontal != 0.f || scrolledVertical != 0.f)
     {
-        if (!ZC_GUI::pGUI) sigScrollOnceInFrame.CallLastConnected(scrolledHorizontal, scrolledVertical, time);     //  no gui, call signal
+        if (!ZC_GUI::pGUI) sigScrollOnceInFrame(scrolledHorizontal, scrolledVertical, time);     //  no gui, call signal
+        // if (!ZC_GUI::pGUI) sigScrollOnceInFrame.CallLastConnected(scrolledHorizontal, scrolledVertical, time);     //  no gui, call signal
         else if (ZC_GUI::pGUI->eventManager.ScrollWheelOnceInFrame(scrolledVertical, time))  //  gui calls scroll wheel
-            sigScrollOnceInFrame.CallLastConnected(scrolledHorizontal, scrolledVertical, time);    //  if gui don't need cursor move event, call signal
+            sigScrollOnceInFrame(scrolledHorizontal, scrolledVertical, time);    //  if gui don't need cursor move event, call signal
+            // sigScrollOnceInFrame.CallLastConnected(scrolledHorizontal, scrolledVertical, time);    //  if gui don't need cursor move event, call signal
         scrolledHorizontal = 0.f;
         scrolledVertical = 0.f;
     }
