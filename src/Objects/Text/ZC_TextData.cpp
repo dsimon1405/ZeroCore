@@ -29,7 +29,7 @@ void ZC_TextData::SetColorUInt(uint packedColor)
     UpdateColor(packedColor);
 }
 
-void ZC_TextData::SetText(const std::string& _text)
+void ZC_TextData::SetText(const std::wstring& _text)
 {
     if (spTextSharedData->text == _text) return;
     spTextSharedData->text = _text;
@@ -52,7 +52,7 @@ void ZC_TextData::SetAlignment(ZC_TextAlignment _alignment)
         spTextSharedData->text, spTextSharedData->alignment);
 }
 
-void ZC_TextData::SetTextAndAlignment(const std::string& _text, ZC_TextAlignment _alignment)
+void ZC_TextData::SetTextAndAlignment(const std::wstring& _text, ZC_TextAlignment _alignment)
 {
     bool recalculateText = false;
     if (spTextSharedData->text != _text)
@@ -102,12 +102,12 @@ float ZC_TextData::GetHeight() const noexcept
     return textHeight;
 }
 
-std::string ZC_TextData::GetText() const noexcept
+std::wstring ZC_TextData::GetText() const noexcept
 {
     return spTextSharedData->text;
 }
 
-ZC_TextData::ZC_TextData(typename ZC_ShProgs::ShPInitSet* pShPIS, ZC_FontOrigin _fontOrigin, const ZC_FontData& fontData, const std::string& _text,
+ZC_TextData::ZC_TextData(typename ZC_ShProgs::ShPInitSet* pShPIS, ZC_FontOrigin _fontOrigin, const ZC_FontData& fontData, const std::wstring& _text,
         ZC_TextAlignment _alignment, ZC_DrawerLevel _rendererLevel, bool needDraw)
     : pFont(ZC_Fonts::GetFont(fontData)),
     fontOrigin(_fontOrigin),
@@ -131,7 +131,7 @@ ZC_TextData::ZC_TextData(const ZC_TextData& td)
     drawerLevel(td.drawerLevel)
 {}
 
-ZC_DrawerSet ZC_TextData::CreateDrawerSet(typename ZC_ShProgs::ShPInitSet* pShPIS, const std::string& _text, ZC_TextAlignment _alignment)
+ZC_DrawerSet ZC_TextData::CreateDrawerSet(typename ZC_ShProgs::ShPInitSet* pShPIS, const std::wstring& _text, ZC_TextAlignment _alignment)
 {
     ZC_Buffer vbo(GL_ARRAY_BUFFER);
     ZC_Buffer ebo(GL_ELEMENT_ARRAY_BUFFER);
@@ -147,7 +147,7 @@ ZC_DrawerSet ZC_TextData::CreateDrawerSet(typename ZC_ShProgs::ShPInitSet* pShPI
     return ZC_DrawerSet(pShPIS, std::move(vao), std::move(upGLDraw), std::move(buffers));
 }
 
-ZC_DrawElements ZC_TextData::CalculateAndSetTextData(ZC_Buffer& rVBO, ZC_Buffer& rEBO, const std::string& text, ZC_TextAlignment alignment)
+ZC_DrawElements ZC_TextData::CalculateAndSetTextData(ZC_Buffer& rVBO, ZC_Buffer& rEBO, const std::wstring& text, ZC_TextAlignment alignment)
 {
     textWidth = 0;
     textHeight = 0;

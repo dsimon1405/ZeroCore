@@ -24,7 +24,7 @@ public:
     - indentFlags - flags of indent horizontal(X) and vertical(Y) from border of global window to IGWindow. Must be set one flag for X and one flag for Y. Example: X_Left_Pixel | Y_Top_Pixel.
     - needDraw - if true, adds to renderer after creatioin.
     */
-    ZC_TextWindow(ZC_FontData fontData, const std::string& _text, ZC_TextAlignment _alignment,
+    ZC_TextWindow(ZC_FontData fontData, const std::wstring& _text, ZC_TextAlignment _alignment,
             float windowIndentX, float windowIndentY, ZC_WindowOrthoIndentFlags indentFlags, bool needDraw);
 
     /*

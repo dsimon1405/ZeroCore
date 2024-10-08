@@ -30,6 +30,12 @@ private:
         bool operator == (const ZC_FontData& fontData) const noexcept;
     };
 
+    struct UnicodeRange
+    {
+        unsigned long start_index;      //  first index (unicode)
+        unsigned long end_index;        //  last index (unicode)
+    };
+
     static inline std::forward_list<FontData> fonts;
     static const uint texMaxW = 1024,
         pixelPadding = 2;
@@ -38,5 +44,6 @@ private:
 
     static std::string GetPath(ZC_FontName name);
     static ZC_Font MakeFont(void* ft_face);
-    static void CalculateTextureSize(uint& texW, uint& texH, void* ft_face);
+    static std::vector<UnicodeRange> CalculateTextureSize(uint& texW, uint& texH, void* ft_face);
+    static std::vector<UnicodeRange> GetunicodeRanges();
 };

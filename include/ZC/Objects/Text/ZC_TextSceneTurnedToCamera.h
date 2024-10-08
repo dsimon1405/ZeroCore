@@ -16,7 +16,7 @@ public:
     - scale - default scaling(parameter = 0.f) creates letters with height near 2.f.
     - needDraw - if true, adds to renderer after creatioin.
     */
-    ZC_TextSceneTurnedToCamera(ZC_FontData fontData, const std::string& _text, ZC_TextAlignment _alignment,
+    ZC_TextSceneTurnedToCamera(ZC_FontData fontData, const std::wstring& _text, ZC_TextAlignment _alignment,
             const ZC_Vec3<float>& _position, bool needDraw, float _scale = 0.f);
 
     /*

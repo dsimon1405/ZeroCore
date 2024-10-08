@@ -1,6 +1,6 @@
 #include <ZC/Objects/Text/ZC_TextWindow.h>
 
-ZC_TextWindow::ZC_TextWindow(ZC_FontData fontData, const std::string& _text, ZC_TextAlignment _alignment,
+ZC_TextWindow::ZC_TextWindow(ZC_FontData fontData, const std::wstring& _text, ZC_TextAlignment _alignment,
         float windowIndentX, float windowIndentY, ZC_WindowOrthoIndentFlags indentFlags, bool needDraw)
     : ZC_WindowOrthoIndent(false, 0, 0, windowIndentX, windowIndentY, indentFlags),
     ZC_TextData(ZC_ShProgs::Get(ShPN_ZC_TextWindow), ZC_FO_bottomLeft, fontData, _text, _alignment, ZC_DrawerLevels::OrthoBlend, needDraw)

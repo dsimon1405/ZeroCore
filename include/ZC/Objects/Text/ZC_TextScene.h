@@ -14,7 +14,7 @@ public:
     _alignment - alignment across text, consisting of several lines of different lengths.
     - needDraw - if true, adds to renderer after creatioin.
     */
-    ZC_TextScene(ZC_FontData fontData, const std::string& _text, ZC_TextAlignment _alignment, bool needDraw);
+    ZC_TextScene(ZC_FontData fontData, const std::wstring& _text, ZC_TextAlignment _alignment, bool needDraw);
 
     //  Changes position.
     void SetPosition(const ZC_Vec3<float>& pos) noexcept;

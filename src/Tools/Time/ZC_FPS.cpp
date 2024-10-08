@@ -84,7 +84,7 @@ ZC_uptr<ZC_TextWindow> ZC_FPS::CreateText()
     ZC_FontData fontData{ ZC_F_Arial, textHeight };
     ZC_Fonts::Load(&fontData, 1);
 
-    return { new ZC_TextWindow({ ZC_F_Arial, textHeight }, "FPS: 0 ()", ZC_TA_Left, 0.f, 0.f, ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel, true) };
+    return { new ZC_TextWindow({ ZC_F_Arial, textHeight }, L"FPS: 0 ()", ZC_TA_Left, 0.f, 0.f, ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel, true) };
 }
 
 void ZC_FPS::UpdateText(long timeFromPreviousRestart)
@@ -96,8 +96,8 @@ void ZC_FPS::UpdateText(long timeFromPreviousRestart)
     clock.Start();
 
     float limitedFPS = static_cast<float>(nanosecond) / static_cast<float>(previousFrameNanoseconds);   //  or factical fps
-    fpsTime == 0 ? upTextFPS->SetText(std::format("fps: {:.1f}", limitedFPS))
-        : upTextFPS->SetText(std::format("fps: {:.1f}({:.1f})", limitedFPS, static_cast<float>(nanosecond) / static_cast<float>(timeFromPreviousRestart)));
+    fpsTime == 0 ? upTextFPS->SetText(std::format(L"fps: {:.1f}", limitedFPS))
+        : upTextFPS->SetText(std::format(L"fps: {:.1f}({:.1f})", limitedFPS, static_cast<float>(nanosecond) / static_cast<float>(timeFromPreviousRestart)));
 
     limitedFPS < 45.f ? upTextFPS->SetColorUChar(192, 0, 0)
         : limitedFPS < 55.f ? upTextFPS->SetColorUChar(192, 128, 0)

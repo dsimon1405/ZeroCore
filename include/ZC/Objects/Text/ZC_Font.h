@@ -37,6 +37,8 @@ class ZC_Font
 public:
     struct Character
     {
+        wchar_t symbol;
+
         float advX; 	// advance.x
         float advY;	    // advance.y
 
@@ -62,7 +64,7 @@ public:
 
     ZC_Font(ZC_Texture&& _texture, std::vector<Character>&& characters);
 
-    std::vector<Point> FillCoords(const std::string& text, ZC_FontOrigin origin, ZC_TextAlignment alignment, float& rTextWidth, float& rTextHeight) const;
+    std::vector<Point> FillCoords(const std::wstring& text, ZC_FontOrigin origin, ZC_TextAlignment alignment, float& rTextWidth, float& rTextHeight) const;
     const ZC_Texture* GetTexture() const noexcept;
 
 private:
@@ -79,7 +81,7 @@ private:
             width;
     };
 
-    void FillCoordsAndLines(const std::string& text, std::vector<Point>& rCoords, std::vector<LineData>& rLinesData, float& rTotalWidth, float& rTotalHeight) const;
+    void FillCoordsAndLines(const std::wstring& text, std::vector<Point>& rCoords, std::vector<LineData>& rLinesData, float& rTotalWidth, float& rTotalHeight) const;
     void CalcutateXYOriginBottomLeft(std::vector<LineData>& rLinesData, std::vector<Point>& rCoords, ZC_TextAlignment alignment, float textWidth) const;
     void CalcutateXYOriginCenter(std::vector<LineData>& rLinesData, std::vector<Point>& rCoords, ZC_TextAlignment alignment, float textWidth, float textHeight) const;
     void CalcutateXYOriginBottomCenter(std::vector<LineData>& rLinesData, std::vector<Point>& rCoords, ZC_TextAlignment alignment, float textWidth) const;

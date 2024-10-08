@@ -20,23 +20,23 @@ public:
     //  For packing may be used ZC_PackColorFloatToUInt(...) or ZC_PackColorUCharToUInt(...) from <ZC/Tools/Math/ZC_Math.h>.
     void SetColorUInt(uint packedColor);
     //  Resets text.
-    void SetText(const std::string& _text);
+    void SetText(const std::wstring& _text);
     //  Changes alignment.
     void SetAlignment(ZC_TextAlignment _alignment);
     //  If need to change text and alignment at the same time, use this function. Calling SetText() and SetAlignment() separately is less effective.
-    void SetTextAndAlignment(const std::string& _text, ZC_TextAlignment _alignment);
+    void SetTextAndAlignment(const std::wstring& _text, ZC_TextAlignment _alignment);
     //  Changes the level at which text will be added to the ZC_Render. If the text is not currently at the ZC_DL_None level, it will switch to a new level.
     void SetDrawerLevel(ZC_DrawerLevel _drawLevel);
     //  Adds new freameBuffer for drawing on it's drawing levels. Needs call NeedDraw(true) for start drawing on new render level.
     void SetFrameBuffer(ZC_RenderLevel _renderBuffer);
     float GetWidth() const noexcept;
     float GetHeight() const noexcept;
-    std::string GetText() const noexcept;
+    std::wstring GetText() const noexcept;
 
 protected:
     struct SharedData
     {
-        std::string text;
+        std::wstring text;
         ZC_TextAlignment alignment;
         ZC_DrawerSet drawerSet;
         uint color = 1;    //  packed color
@@ -52,7 +52,7 @@ protected:
     ZC_DrawerLevel drawerLevel;
     static inline float startHeightInScene = 2.f;
 
-    ZC_TextData(typename ZC_ShProgs::ShPInitSet* pShPIS, ZC_FontOrigin _fontOrigin, const ZC_FontData& fontData, const std::string& _text,
+    ZC_TextData(typename ZC_ShProgs::ShPInitSet* pShPIS, ZC_FontOrigin _fontOrigin, const ZC_FontData& fontData, const std::wstring& _text,
             ZC_TextAlignment _alignment, ZC_DrawerLevel _rendererLevel, bool needDraw);
 
     ZC_TextData(const ZC_TextData& td);
@@ -60,7 +60,7 @@ protected:
 private:
     virtual void SetNewTextSize() {};
     
-    ZC_DrawerSet CreateDrawerSet(typename ZC_ShProgs::ShPInitSet* pShPIS, const std::string& _text, ZC_TextAlignment _alignment);
-    ZC_DrawElements CalculateAndSetTextData(ZC_Buffer& rVBO, ZC_Buffer& rEBO, const std::string& text, ZC_TextAlignment alignment);
+    ZC_DrawerSet CreateDrawerSet(typename ZC_ShProgs::ShPInitSet* pShPIS, const std::wstring& _text, ZC_TextAlignment _alignment);
+    ZC_DrawElements CalculateAndSetTextData(ZC_Buffer& rVBO, ZC_Buffer& rEBO, const std::wstring& text, ZC_TextAlignment alignment);
     void UpdateColor(uint color);
 };

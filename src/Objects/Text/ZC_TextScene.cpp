@@ -1,6 +1,6 @@
 #include <ZC/Objects/Text/ZC_TextScene.h>
 
-ZC_TextScene::ZC_TextScene(ZC_FontData fontData, const std::string& _text, ZC_TextAlignment _alignment, bool needDraw)
+ZC_TextScene::ZC_TextScene(ZC_FontData fontData, const std::wstring& _text, ZC_TextAlignment _alignment, bool needDraw)
     : ZC_TextData(ZC_ShProgs::Get(ShPN_ZC_TextScene), ZC_FO_center, fontData, _text, _alignment, ZC_DrawerLevels::TextScene, needDraw),
     scale(startHeightInScene / fontData.pixelsHeight)
 {

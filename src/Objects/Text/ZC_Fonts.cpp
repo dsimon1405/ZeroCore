@@ -65,7 +65,7 @@ ZC_Font ZC_Fonts::MakeFont(void* ft_face)
     FT_Face face = static_cast<FT_Face>(ft_face);
     uint texW = 0,
         texH = 0;
-    CalculateTextureSize(texW, texH, ft_face);
+    std::vector<UnicodeRange> unicode_ranges = CalculateTextureSize(texW, texH, ft_face);
 
     ZC_Texture texture = ZC_Texture::TextureStorage2D(GL_R8, 0, texW, texH, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR);
 
@@ -74,76 +74,108 @@ ZC_Font ZC_Fonts::MakeFont(void* ft_face)
     unsigned rowH = 0;
     FT_GlyphSlot glyph = face->glyph;
 
+    size_t characters_count = 0;
+    for (UnicodeRange& ur : unicode_ranges) characters_count += ur.end_index - ur.start_index + 1;
+
     typedef typename ZC_Font::Character FCharacter;
     std::vector<FCharacter> characters;
+    characters.reserve(characters_count);
 
-    for (auto symbol = firstASCII; symbol < lastASCII; ++symbol)
+    for (UnicodeRange& ur : unicode_ranges)
     {
-        if (FT_Load_Char(face, symbol, FT_LOAD_RENDER)) continue;
-
-        if (texX + glyph->bitmap.width + pixelPadding > texMaxW)
+        for (ulong symbol = ur.start_index; symbol < ur.end_index + 1; ++symbol)
         {
-            texY += rowH + pixelPadding;
-            rowH = 0;
-            texX = 0;
-        }
-        
-        if (glyph->bitmap.width != 0 && glyph->bitmap.rows != 0)
-            texture.GLTextureSubImage2D(static_cast<int>(texX), static_cast<int>(texY), glyph->bitmap.width, glyph->bitmap.rows,
-                GL_RED, GL_UNSIGNED_BYTE, glyph->bitmap.buffer);
-            
-        float texX_left = texX / static_cast<float>(texW),
-            texY_bottom = texY / static_cast<float>(texH);
-        characters.emplace_back(FCharacter
-            {
-                static_cast<float>(glyph->advance.x >> 6),
-                static_cast<float>(glyph->advance.y >> 6),
-                static_cast<float>(glyph->bitmap.width),
-                static_cast<float>(glyph->bitmap.rows),
-                static_cast<float>(glyph->bitmap_left),
-                static_cast<float>(glyph->bitmap_top),
-                texX_left,
-                texY_bottom,
-                texX_left + (static_cast<float>(glyph->bitmap.width) / texW),
-                texY_bottom + (static_cast<float>(glyph->bitmap.rows) / texH)
-            });
+            if (FT_Load_Char(face, symbol, FT_LOAD_RENDER)) continue;
 
-        texX += glyph->bitmap.width + pixelPadding;
-        rowH = std::max<uint>(glyph->bitmap.rows, rowH);
+            if (texX + glyph->bitmap.width + pixelPadding > texMaxW)
+            {
+                texY += rowH + pixelPadding;
+                rowH = 0;
+                texX = 0;
+            }
+            
+            if (glyph->bitmap.width != 0 && glyph->bitmap.rows != 0)
+                texture.GLTextureSubImage2D(static_cast<int>(texX), static_cast<int>(texY), glyph->bitmap.width, glyph->bitmap.rows,
+                    GL_RED, GL_UNSIGNED_BYTE, glyph->bitmap.buffer);
+                
+            float texX_left = texX / static_cast<float>(texW),
+                texY_bottom = texY / static_cast<float>(texH);
+            characters.emplace_back(FCharacter
+                {
+                    .symbol = static_cast<wchar_t>(symbol),
+                    .advX = static_cast<float>(glyph->advance.x >> 6),
+                    .advY = static_cast<float>(glyph->advance.y >> 6),
+                    .bitmapW = static_cast<float>(glyph->bitmap.width),
+                    .bitmapH = static_cast<float>(glyph->bitmap.rows),
+                    .bitmapLeft = static_cast<float>(glyph->bitmap_left),
+                    .bitmapTop = static_cast<float>(glyph->bitmap_top),
+                    .texX_left = texX_left,
+                    .texY_bottom = texY_bottom,
+                    .texX_right = texX_left + (static_cast<float>(glyph->bitmap.width) / texW),
+                    .texY_top = texY_bottom + (static_cast<float>(glyph->bitmap.rows) / texH)
+                });
+
+            texX += glyph->bitmap.width + pixelPadding;
+            rowH = std::max<uint>(glyph->bitmap.rows, rowH);
+        }
     }
 
     return { std::move(texture), std::move(characters) };
 }
 
-void ZC_Fonts::CalculateTextureSize(uint& texW, uint& texH, void* ft_face)
+std::vector<ZC_Fonts::UnicodeRange> ZC_Fonts::CalculateTextureSize(uint& texW, uint& texH, void* ft_face)
 {
+    std::vector<UnicodeRange> unicode_ranges = GetunicodeRanges();
+
     FT_Face face = static_cast<FT_Face>(ft_face);
     unsigned rowW = 0,
         rowH = 0;
     FT_GlyphSlot glyph = face->glyph;
 
-    for (auto symbol = firstASCII; symbol < lastASCII; ++symbol)
+    for (UnicodeRange& ur : unicode_ranges)
     {
-        if (FT_Load_Char(face, symbol, FT_LOAD_RENDER))
+        for (auto symbol = ur.start_index; symbol < ur.end_index + 1; ++symbol)
         {
-            ZC_ErrorLogger::Err("Fail FT_Load_Char()!", __FILE__, __LINE__);
-            continue;
-        }
+            if (FT_Load_Char(face, symbol, FT_LOAD_RENDER))
+            {
+                ZC_ErrorLogger::Err("Fail FT_Load_Char()!", __FILE__, __LINE__);
+                continue;
+            }
 
-        if (rowW + glyph->bitmap.width + pixelPadding > texMaxW)
-        {
-            texW = std::max<uint>(rowW, texW);
-            texH += rowH + pixelPadding;
-            rowW = 0;
-            rowH = 0;
-        }
+            if (rowW + glyph->bitmap.width + pixelPadding > texMaxW)
+            {
+                texW = std::max<uint>(rowW, texW);
+                texH += rowH + pixelPadding;
+                rowW = 0;
+                rowH = 0;
+            }
 
-        rowW += glyph->bitmap.width + pixelPadding;
-        rowH = std::max<uint>(rowH, glyph->bitmap.rows);
+            rowW += glyph->bitmap.width + pixelPadding;
+            rowH = std::max<uint>(rowH, glyph->bitmap.rows);
+        }
     }
 
     texW = std::max<uint>(texW, rowW);
     texH += rowH + pixelPadding;
+
+    return unicode_ranges;
+}
+
+std::vector<ZC_Fonts::UnicodeRange> ZC_Fonts::GetunicodeRanges()
+{
+    return
+    {       //  symbols
+        { .start_index = 32, .end_index = 64 },
+        { .start_index = 91, .end_index = 96 },
+        { .start_index = 123, .end_index = 126 },
+            //  english
+        { .start_index = 65, .end_index = 90 },
+        { .start_index = 97, .end_index = 122 },
+            //  russian
+        { .start_index = 0x410, .end_index = 0x44F },   //  alphabet
+        { .start_index = 0x401, .end_index = 0x401 },   //  Ё
+        { .start_index = 0x451, .end_index = 0x451 }    //  ё
+    };
 }
 
 

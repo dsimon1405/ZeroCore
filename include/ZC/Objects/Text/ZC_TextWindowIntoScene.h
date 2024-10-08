@@ -18,7 +18,7 @@ public:
     - position - position in the scene.
     - needDraw - if true, adds to renderer after creatioin.
     */
-    ZC_TextWindowIntoScene(ZC_FontData fontData, ZC_FontOrigin fontOrigin, const std::string &_text, ZC_TextAlignment _alignment,
+    ZC_TextWindowIntoScene(ZC_FontData fontData, ZC_FontOrigin fontOrigin, const std::wstring &_text, ZC_TextAlignment _alignment,
         const ZC_Vec3<float>& position, bool needDraw);
 
     //  Changes position.

@@ -7,7 +7,7 @@ ZC_Font::ZC_Font(ZC_Texture&& _texture, std::vector<Character>&& _characters)
     characters(std::move(_characters))
 {}
 
-std::vector<typename ZC_Font::Point> ZC_Font::FillCoords(const std::string& text, ZC_FontOrigin origin, ZC_TextAlignment alignment, float& rTextWidth, float& rTextHeight) const
+std::vector<typename ZC_Font::Point> ZC_Font::FillCoords(const std::wstring& text, ZC_FontOrigin origin, ZC_TextAlignment alignment, float& rTextWidth, float& rTextHeight) const
 {
     auto newLineCount = std::count(text.begin(), text.end(), '\n');
     std::vector<LineData> linesData;
@@ -33,7 +33,7 @@ const ZC_Texture* ZC_Font::GetTexture() const noexcept
     return &texture;
 }
 
-void ZC_Font::FillCoordsAndLines(const std::string& text, std::vector<Point>& rCoords, std::vector<LineData>& rLinesData, float& rTotalWidth, float& rTotalHeight) const
+void ZC_Font::FillCoordsAndLines(const std::wstring& text, std::vector<Point>& rCoords, std::vector<LineData>& rLinesData, float& rTotalWidth, float& rTotalHeight) const
 {
     float startX = 0,
         startY = 0,
@@ -42,9 +42,9 @@ void ZC_Font::FillCoordsAndLines(const std::string& text, std::vector<Point>& rC
     ulong coordsStartIndex = 0,
         coordsCount = 0;
     bool isFirstLine = true;
-    for (auto c : text)
+    for (wchar_t symbol : text)
     {
-        if (c == '\n')
+        if (symbol == '\n')
         {
             AddLine(lineHeightBottomTail, lineHeightWithoughtBottomTail, rLinesData, coordsStartIndex, coordsCount, startX, rTotalWidth, rTotalHeight, isFirstLine);
             startX = 0;
@@ -55,34 +55,39 @@ void ZC_Font::FillCoordsAndLines(const std::string& text, std::vector<Point>& rC
             isFirstLine = false;
             continue;
         }
+        
+        for (const Character& ch : characters)
+        {
+            if (ch.symbol == wchar_t(symbol))
+            {
+                float x = startX + ch.bitmapLeft,
+                    y = startY + (ch.bitmapH - (ch.bitmapH - ch.bitmapTop)),
+                    w = ch.bitmapW,
+                    h = ch.bitmapH;
 
-        const Character& ch = characters[static_cast<ulong>(c) - firstASCII];
-        float x = startX + ch.bitmapLeft,
-            y = startY + (ch.bitmapH - (ch.bitmapH - ch.bitmapTop)),
-            w = ch.bitmapW,
-            h = ch.bitmapH;
+                startX += ch.advX;
 
-        startX += ch.advX;
+                float mustBeUp = h - y;
+                if (mustBeUp > lineHeightBottomTail) lineHeightBottomTail = mustBeUp;
 
-        float mustBeUp = h - y;
-        if (mustBeUp > lineHeightBottomTail) lineHeightBottomTail = mustBeUp;
+                float symbolsHeightWithoughtDownTail = h - mustBeUp;
+                if (lineHeightWithoughtBottomTail < symbolsHeightWithoughtDownTail) lineHeightWithoughtBottomTail = symbolsHeightWithoughtDownTail;
 
-        float symbolsHeightWithoughtDownTail = h - mustBeUp;
-        if (lineHeightWithoughtBottomTail < symbolsHeightWithoughtDownTail) lineHeightWithoughtBottomTail = symbolsHeightWithoughtDownTail;
+                if (!w || !h) continue;   //  whitespace
 
-        if (!w || !h) continue;   //  whitespace
+                ushort texCoord_l = ZC_PackTexCoordFloatToUShort(ch.texX_left);
+                ushort texCoord_r = ZC_PackTexCoordFloatToUShort(ch.texX_right);
+                ushort texCoord_t = ZC_PackTexCoordFloatToUShort(ch.texY_top);
+                ushort texCoord_b = ZC_PackTexCoordFloatToUShort(ch.texY_bottom);
 
-        ushort texCoord_l = ZC_PackTexCoordFloatToUShort(ch.texX_left);
-        ushort texCoord_r = ZC_PackTexCoordFloatToUShort(ch.texX_right);
-        ushort texCoord_t = ZC_PackTexCoordFloatToUShort(ch.texY_top);
-        ushort texCoord_b = ZC_PackTexCoordFloatToUShort(ch.texY_bottom);
+                rCoords.emplace_back(Point{ x, y, texCoord_l, texCoord_b });            //  bl  full texture of symbols is Y inversed!
+                rCoords.emplace_back(Point{ x + w, y - h, texCoord_r, texCoord_t });    //  tr  full texture of symbols is Y inversed!
+                rCoords.emplace_back(Point{ x, y - h, texCoord_l, texCoord_t });        //  tl  full texture of symbols is Y inversed!
+                rCoords.emplace_back(Point{ x + w, y, texCoord_r, texCoord_b });        //  br  full texture of symbols is Y inversed!
 
-        rCoords.emplace_back(Point{ x, y, texCoord_l, texCoord_b });            //  bl  full texture of symbols is Y inversed!
-        rCoords.emplace_back(Point{ x + w, y - h, texCoord_r, texCoord_t });    //  tr  full texture of symbols is Y inversed!
-        rCoords.emplace_back(Point{ x, y - h, texCoord_l, texCoord_t });        //  tl  full texture of symbols is Y inversed!
-        rCoords.emplace_back(Point{ x + w, y, texCoord_r, texCoord_b });        //  br  full texture of symbols is Y inversed!
-
-        coordsCount += 4;
+                coordsCount += 4;
+            }
+        }
     }
 
     AddLine(lineHeightBottomTail, lineHeightWithoughtBottomTail, rLinesData, coordsStartIndex, coordsCount, startX, rTotalWidth, rTotalHeight, isFirstLine);

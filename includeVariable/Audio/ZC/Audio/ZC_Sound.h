@@ -13,7 +13,7 @@ class ZC_Sound : protected ZC_StreamSound
 public:
     ZC_Sound(const ZC_SoundData* _sound);
 
-    ~ZC_Sound() noexcept override;
+    ~ZC_Sound();
     
     //  Begins transferring audio data to an existing audio stream.
     void Play();
