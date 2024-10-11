@@ -53,7 +53,11 @@ typename ZC_ShProgs::ShNames ZC_ShProgs::GetShNames(ZC_ShPName name) const noexc
 
     case ShPN_Game_PlayerSphere: return ShNames{ .vName = VName::Game_PlayerSphere, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_3_0__I_2_10_10_10_REV_1_1_N__US_2_2_N,
         .usingFormatsPacker = VAOPack(0).Pack(1).Pack(2) }, .fName = FName::game_sphere, .gName = GName::none };
-    default: return {};
+    case ShPN_Game_CubeMap: return ShNames{ .vName = VName::Game_CubeMap, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_3_0, .usingFormatsPacker = VAOPack(0) },
+        .fName = FName::game_cubeMap, .gName = GName::none };
+    case SHPN_Game_Particle: return ShNames{ .vName = VName::Game_Particle, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_4_0__UB_3_1_N,
+        .usingFormatsPacker = VAOPack(0).Pack(1) }, .fName = FName::color, .gName = GName::none };
+    default: assert(false); return {};
     }
 }
 

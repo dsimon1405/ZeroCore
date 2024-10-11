@@ -6,5 +6,6 @@ out vec4 FragColor;
 
 void main()
 {
+    if (vColor.a <= 0) discard;
     FragColor = vColor;
 }

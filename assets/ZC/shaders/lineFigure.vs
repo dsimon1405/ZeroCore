@@ -6,6 +6,7 @@ layout (std140, binding = 0) uniform Camera
 {
     mat4 ortho;
     mat4 perspView;
+    mat4 perspViewSkybox;
     vec3 camPos;
 };
 

@@ -60,7 +60,7 @@ struct ZC_DSController   //  stores data of object of ZC_DrawerSet for search in
     const void* GetDataFromUniforms(ZC_UniformName unName) const;
     ZC_DSController MakeCopy() const;
     bool IsDrawing(ZC_RenderLevel renderLevel);
-    ZC_RenderLevel GetDrawingLevel(ZC_RenderLevel renderLevel);
+    ZC_DrawerLevel GetDrawingLevel(ZC_RenderLevel renderLevel);
     void AddRender(ZC_RenderLevel renderLevel);
     void SetTexturesHolder(const ZC_TexturesHolder& _texturesHolder);
 

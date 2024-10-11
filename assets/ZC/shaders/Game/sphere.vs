@@ -8,6 +8,7 @@ layout (std140, binding = 0) uniform Camera
 {
     mat4 ortho;
     mat4 perspView;
+    mat4 perspViewSkybox;
     vec3 camPos;
 };
 
@@ -32,7 +33,7 @@ void main()
 
     vec3 normal = normalize(mat3(unModel) * norm.xyz);   //  rotate and scale normals (wrong results for scaled object, but tolerable)
 
-    vec3 light_pos = vec3(0, 0, 50);
+    vec3 light_pos = vec3(0, 0,30);
 
     vec3 dirPosToLight = normalize(light_pos - position.xyz);
     float cos = dot(dirPosToLight, normal); //  range (-1,1)

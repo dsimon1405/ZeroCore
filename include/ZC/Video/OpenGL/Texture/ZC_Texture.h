@@ -2,6 +2,9 @@
 
 #include <glad/glad.h>
 
+#include <vector>
+#include <string>
+
 class ZC_Texture
 {
 public:
@@ -16,7 +19,11 @@ public:
     //     GLenum wrapT, GLenum filterMin, GLenum filterMag);
      GLenum wrapS = GL_CLAMP_TO_EDGE,   // wrapS = wrapT = GL_REPEAT
         GLenum wrapT = GL_CLAMP_TO_EDGE, GLenum filterMin = GL_LINEAR_MIPMAP_LINEAR, GLenum filterMag = GL_LINEAR);
-    // static ZC_Texture* LoadCubeMap(const char** filePaths);
+    
+    static ZC_Texture LoadCubeMap(const std::vector<std::string>&  filePaths);
+    //  Cube map ctr
+    ZC_Texture(GLenum internalformat, GLenum format, int _width, int _height, unsigned char** data);
+    void BindCubeMap();
     
     /*
     Creates -> no resizable texture 2D.
@@ -63,9 +70,6 @@ public:
     - internalFormat - number of color components in texture. Most used: GL_R8, GL_RGB8, GL_RGBA8, GL_DEPTH_COMPONENT24. Table 1: Sized Internal Format -> https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexStorage2DMultisample.xhtml
     */
     static ZC_Texture TextureStorage2DMultisample(GLsizei samples, GLsizei width, GLsizei height, GLenum internalFormat);
-
-    // //  Cube map ctr
-    // ZC_Texture(int width, int height, unsigned char** data);
 
     ZC_Texture() = default;
     

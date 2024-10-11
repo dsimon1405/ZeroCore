@@ -9,6 +9,8 @@ void ZC_TexSets::Uniformli(ZC_ShProg& shProg)
         switch (texSets[texSetsI])
         {
         case TextureName::texColor: glUniform1i(shProg.GetUniformLocation("texColor"), static_cast<GLint>(texSetsI)); break;
+        
+        case TextureName::game_cubeMap: glUniform1i(shProg.GetUniformLocation("cubeMap"), static_cast<GLint>(texSetsI)); break;
         }
     }
 }

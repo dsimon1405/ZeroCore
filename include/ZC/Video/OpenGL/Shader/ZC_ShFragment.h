@@ -16,7 +16,8 @@ struct ZC_ShFragment1
         textWindow,     //  shader same as text, but different uniform configuration
         orthoTexture,
 
-        game_sphere
+        game_sphere,
+        game_cubeMap
     };
 
     struct Set

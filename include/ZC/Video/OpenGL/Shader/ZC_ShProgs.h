@@ -23,6 +23,8 @@ enum ZC_ShPName
     ShPN_ZC_OrthoTexture,
 
     ShPN_Game_PlayerSphere,
+    ShPN_Game_CubeMap,
+    SHPN_Game_Particle,
     
     ShPN_LoadAll,    //  must be last
 };

@@ -23,6 +23,7 @@ enum ZC_VAOLayout
     ZC_VAOL__F_3_0__F_2_1,
     ZC_VAOL__F_3_0__F_2_3,
     ZC_VAOL__F_3_0__UB_3_1_N,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
+    ZC_VAOL__F_3_0__UB_4_1_N,
     ZC_VAOL__F_4_0__UB_3_1_N,  //  UB_3_1 -> vec3 of normalized (255 -> 1.f) bytes
     ZC_VAOL__F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N,     //  I_2_10_10_10_REV_1 one int32 in code and vec4 of floats in GLSL
     ZC_VAOL__F_4_0,

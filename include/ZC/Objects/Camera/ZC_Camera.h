@@ -28,6 +28,7 @@ private:
     {
         ZC_Mat4<float> ortho;
         ZC_Mat4<float> perspView;
+        ZC_Mat4<float> perspViewSkybox;
         ZC_Vec3<float> position;
     };
 

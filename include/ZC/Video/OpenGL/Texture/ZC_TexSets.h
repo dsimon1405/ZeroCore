@@ -11,6 +11,8 @@ struct ZC_TexSets
     enum TextureName
     {
         texColor,
+
+        game_cubeMap,
     };
 
     ZC_DA<TextureName> texSets;

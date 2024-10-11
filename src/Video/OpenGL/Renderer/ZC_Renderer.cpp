@@ -121,6 +121,9 @@ void ZC_Renderer::Draw(ZC_GUI* pGUI)
     // int w,h;
     // ZC_SWindow::GetSize(w,h);
 // glDisable(GL_DEPTH_TEST);
+
+
+
     if (pGUI)
     {
             //  ZC_GUI uses modern openGL rendering, while total render system uses not fresh openGL, so no such

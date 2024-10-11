@@ -10,8 +10,8 @@ enum ZC_RenderLevels
 enum ZC_DrawerLevels
 {
     None = -1,
-    Drawing = 0,    //  ZC_Drawer.cpp
-    StencilBorder = 1,        //  ZC_DSStencilBorder.cpp
+    Drawing = 100,    //  ZC_Drawer.cpp
+    StencilBorder = 200,        //  ZC_DSStencilBorder.cpp
     TextScene = Drawing + 1000,     //  ZC_Drawer.cpp
     TextWindowIntoScene = TextScene + 1000,     //  ZC_Drawer.cpp
     OrthoBlend = TextWindowIntoScene + 1000,    //  ZC_Drawer.cpp

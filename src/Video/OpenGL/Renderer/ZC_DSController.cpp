@@ -105,7 +105,7 @@ bool ZC_DSController::IsDrawing(ZC_RenderLevel renderLevel)
     return pRenderSet->drawerLevel != ZC_DL_None;
 }
 
-ZC_RenderLevel ZC_DSController::GetDrawingLevel(ZC_RenderLevel renderLevel)
+ZC_DrawerLevel ZC_DSController::GetDrawingLevel(ZC_RenderLevel renderLevel)
 {
     auto pRenderSet = ZC_Find(renderSets, renderLevel);
     assert(pRenderSet);     //  tries to add on render's level, wich was not add while ZC_DSController created.
