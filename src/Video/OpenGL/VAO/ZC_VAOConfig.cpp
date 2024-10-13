@@ -27,7 +27,13 @@ ZC_VAOConfig::ZC_VAOConfig(ZC_VAOConfig&& vaoConfig) noexcept
 
 void ZC_VAOConfig::Config(GLuint startOffset, GLuint verticesCount)
 {
-    ZC_DA<StrideOffset> so = CalculateStrideAndOffset(startOffset, verticesCount);
+    std::vector<StrideOffset> so = CalculateStrideAndOffset(startOffset, verticesCount);
+    // std::vector<ZC_VAOConfig::Format> f;
+    // for (size_t i = 0; i < formats.size; i++)
+    // {
+    //     f.emplace_back(ZC_VAOConfig::Format(formats[i].attribIndex, formats[i].size, formats[i].type, formats[i].normalized));
+    // }
+    
     uchar useCounter = useCount;
     for (ulong i = 0; i < formats.size && useCounter != 0; ++i)
     {
@@ -40,9 +46,9 @@ void ZC_VAOConfig::Config(GLuint startOffset, GLuint verticesCount)
     }
 }
 
-ZC_DA<typename ZC_VAOConfig::StrideOffset> ZC_VAOConfig::CalculateStrideAndOffset(GLuint startOffset, GLuint verticesCount)
+std::vector<typename ZC_VAOConfig::StrideOffset> ZC_VAOConfig::CalculateStrideAndOffset(GLuint startOffset, GLuint verticesCount)
 {
-    ZC_DA<StrideOffset> so(formats.size);
+    std::vector<StrideOffset> so(formats.size);
     if (verticesCount == 0)    //  VNCVNC
     {
         GLint localStartOffset = 0;

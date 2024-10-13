@@ -2,14 +2,15 @@
 
 #include <ZC/Video/OpenGL/Buffer/ZC_Buffer.h>
 
+enum ZC_UBO_BindingPoint
+{
+	ZC_UBO_BP__Camera = 0,
+	ZC_UBO_BP__
+};
+
 struct ZC_UBO
 {
-	enum BindingPoint
-	{
-		Camera = 0,
-	};
-	
-    ZC_UBO(BindingPoint _bindingPoint);
+    ZC_UBO(ZC_UBO_BindingPoint _bindingPoint);
 
 	ZC_UBO(ZC_UBO&& vbo) noexcept;
 	ZC_UBO& operator = (ZC_UBO&& vbo);

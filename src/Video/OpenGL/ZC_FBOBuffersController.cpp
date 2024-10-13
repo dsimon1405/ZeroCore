@@ -113,7 +113,7 @@ void ZC_FBOBuffersController::SetClearColor(const ZC_Vec4<float>& _clearColor)
 void ZC_FBOBuffersController::GLDepthMask(GLboolean flag)
 {
     assert(!(flag == GL_TRUE) || !(flag == GL_FALSE));
-    assert(pActiveBufferController->haveDepthBuffer);
+    // assert(pActiveBufferController->haveDepthBuffer);
     switch (flag)
     {
     case GL_TRUE:

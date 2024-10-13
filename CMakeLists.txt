@@ -218,6 +218,7 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_CO_Figure.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_CollisionManager.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_CollisionObject.cpp
+	${PROJECT_SOURCE_DIR}/src/Collision/ZC_CO_FigureSphere.cpp
 	
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/System/ZC_GUI_DrawManager.cpp
 	${PROJECT_SOURCE_DIR}/include/ZC/GUI/Backend/System/ZC_GUI_EventManager.cpp

@@ -6,6 +6,8 @@
 
 #include <glad/glad.h>
 
+#include <vector>
+
 /*
 Example => S_3_0_N:
 S - type short
@@ -96,7 +98,7 @@ private:
         GLuint relativeOffset = 0;
     };
 
-    ZC_DA<StrideOffset> CalculateStrideAndOffset(GLuint startOffset, GLuint vertsCount);
+    std::vector<StrideOffset> CalculateStrideAndOffset(GLuint startOffset, GLuint vertsCount);
     GLint TypeSize(GLenum type) const noexcept;
     ZC_DA<Format> GetFormats(ZC_VAOLayout shPFormat);
 };

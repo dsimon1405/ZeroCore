@@ -6,18 +6,19 @@
 
 #include <list>
 
-ZC_CO_Figure::ZC_CO_Figure(ZC_Vec3<float> _center, float _radius, std::vector<ZC_CO_Surface<ZC_Vec3<float>>> _surfaces)
-    : radius(_radius),
-    center_src(_center)
+ZC_CO_Figure::ZC_CO_Figure(const ZC_Vec3<float>& _center, float _radius, const std::vector<ZC_CO_Surface<ZC_Vec3<float>>>& _surfaces)
+    : ZC_CO_FigureSphere(_center, _radius)
+    // : radius(_radius),
+    // center_src(_center)
 {
-    all_normals_scr.reserve(_surfaces.size());  //  each durface have only one normal, normals of collision figure can't be dublicated!
+    all_normals_scr.reserve(_surfaces.size());  //  each surface have only one normal, normals of collision figure can't be dublicated!
 
     std::list<ZC_Vec3<float>> list_points;    //  will contain non duplicate points (don't know how much non duplicate points in figure, so to avoid lost memory in vector, make list at first)
         //  fill list_points and all_normals_scr
-    for (ZC_CO_Surface<ZC_Vec3<float>>& surf : _surfaces)
+    for (const ZC_CO_Surface<ZC_Vec3<float>>& surf : _surfaces)
     {
         all_normals_scr.emplace_back(surf.normal);
-        for (ZC_Vec3<float>& point : surf.points)
+        for (const ZC_Vec3<float>& point : surf.points)
         {
             if (!ZC_Find(list_points, point)) list_points.emplace_back(point);    //  if point not in list yet add it
         }
@@ -34,29 +35,29 @@ ZC_CO_Figure::ZC_CO_Figure(ZC_Vec3<float> _center, float _radius, std::vector<ZC
         //  fill surfaces with pointer from all_points_fact and all_normals_fact
     surfaces_fact.reserve(_surfaces.size());
     size_t normal_i = 0;
-    for (ZC_CO_Surface<ZC_Vec3<float>>& surf : _surfaces)
+    for (const ZC_CO_Surface<ZC_Vec3<float>>& surf : _surfaces)
     {
         std::vector<ZC_Vec3<float>*> points;    //  pointers on points from all_points
         points.reserve(surf.points.size());
-        for (ZC_Vec3<float>& point : surf.points)
+        for (const ZC_Vec3<float>& point : surf.points)
             points.emplace_back(ZC_Find(all_points_fact, point));
         
         surfaces_fact.emplace_back(ZC_CO_Surface<ZC_Vec3<float>*>(std::move(points), &(all_normals_fact[normal_i++])));    //  normals in surfaces_fact have same order with _surfaces and all_normals_fact, so normal can be taken with index
     }
 }
 
-ZC_Vec3<float> ZC_CO_Figure::MultiplyWithModel(const ZC_Mat4<float>& model, const ZC_Vec3<float>& src)
-{
-    return ZC_Vec::Vec4_to_Vec3(model * ZC_Vec4<float>(src, 1.f));
-}
+// ZC_Vec3<float> ZC_CO_Figure::MultiplyWithModel(const ZC_Mat4<float>& model, const ZC_Vec3<float>& src)
+// {
+//     return ZC_Vec::Vec4_to_Vec3(model * ZC_Vec4<float>(src, 1.f));
+// }
 
-void ZC_CO_Figure::UpdateCenter(const ZC_Mat4<float>& mat_model)
-{
-    if (is_center_actual) return;
+// void ZC_CO_Figure::UpdateCenter(const ZC_Mat4<float>& mat_model)
+// {
+//     if (is_center_actual) return;
     
-    center_fact = MultiplyWithModel(mat_model, center_src);
-    is_center_actual = true;
-}
+//     center_fact = MultiplyWithModel(mat_model, center_src);
+//     is_center_actual = true;
+// }
 
 void ZC_CO_Figure::UpdatePointsAndNormals(const ZC_Mat4<float>& mat_model)
 {
@@ -98,8 +99,22 @@ const ZC_CO_Surface<ZC_Vec3<float>*>* ZC_CO_Figure::GetClosesSurface(const ZC_Ve
     return pSurf_closest;
 }
 
-const ZC_Vec3<float>* ZC_CO_Figure::GetSourcePoint(const ZC_Vec3<float>* pPoint_fact) const
+// const ZC_Vec3<float>* ZC_CO_Figure::GetSourcePoint(const ZC_Vec3<float>* pPoint_fact) const
+// {
+//     size_t index = pPoint_fact - all_points_fact.data();
+//     return index < all_points_src.size() ? &all_points_src[index] : nullptr;
+// }
+const std::vector<ZC_Vec3<float>>* ZC_CO_Figure::GetAllPointsFact() const
 {
-    size_t index = pPoint_fact - all_points_fact.data();
-    return index < all_points_src.size() ? &all_points_src[index] : nullptr;
+    return &all_points_fact;
+}
+
+const std::vector<ZC_Vec3<float>>* ZC_CO_Figure::GetAllNormalsFact() const
+{
+    return &all_normals_fact;
+}
+
+const std::vector<ZC_CO_Surface<ZC_Vec3<float>*>>* ZC_CO_Figure::GetSurfacesFact() const
+{
+    return &surfaces_fact;
 }

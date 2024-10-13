@@ -96,7 +96,7 @@ T& ZC_uptr<T>::operator * () noexcept
 template<typename T>
 const T& ZC_uptr<T>::operator * () const noexcept
 {
-    return const_cast<const T&>(pData);
+    return const_cast<const T&>(*pData);
 }
 
 template<typename T>

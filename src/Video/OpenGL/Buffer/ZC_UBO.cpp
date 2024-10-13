@@ -1,6 +1,6 @@
 #include <ZC/Video/OpenGL/Buffer/ZC_UBO.h>
 
-ZC_UBO::ZC_UBO(BindingPoint _bindingPoint)
+ZC_UBO::ZC_UBO(ZC_UBO_BindingPoint _bindingPoint)
 	: buffer(GL_UNIFORM_BUFFER),
 	bindingPoint(static_cast<GLuint>(_bindingPoint))
 {}

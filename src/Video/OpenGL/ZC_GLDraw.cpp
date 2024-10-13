@@ -35,16 +35,16 @@ void ZC_DrawArrays::VDraw() const
 }
 
 
-// //  ZC_DrawArraysInstanced
+//  ZC_DrawArraysInstanced
 
-// ZC_DrawArraysInstanced::ZC_DrawArraysInstanced(GLenum _mode, int _first, int _count, int _instancecount)
-//     : mode(_mode),
-//     first(_first),
-//     count(_count),
-//     instancecount(_instancecount)
-// {}
+ZC_DrawArraysInstanced::ZC_DrawArraysInstanced(GLenum _mode, int _first, int _count, int _instancecount)
+    : mode(_mode),
+    first(_first),
+    count(_count),
+    instancecount(_instancecount)
+{}
 
-// void ZC_DrawArraysInstanced::VDraw() const
-// {
-//     glDrawArraysInstanced(mode, first, count, instancecount);
-// }
+void ZC_DrawArraysInstanced::VDraw() const
+{
+    glDrawArraysInstanced(mode, first, count, instancecount);
+}

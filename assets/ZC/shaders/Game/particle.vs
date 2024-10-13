@@ -17,8 +17,8 @@ out vec4 vColor;
 
 void main()
 {
-    gl_PointSize = 3;   //  ZC_SWindow::GLEnablePointSize()
-    // gl_PointSize = 1.5;   //  ZC_SWindow::GLEnablePointSize()
+    gl_PointSize = 6;   //  ZC_SWindow::GLEnablePointSize()
+    // gl_PointSize = 3;   //  ZC_SWindow::GLEnablePointSize()
     vColor = vec4(inColor, inPosition.a * unAlpha);
     gl_Position = perspView * vec4(inPosition.xyz, 1.0);    //  exclude alpha from vertex
 }

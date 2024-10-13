@@ -60,9 +60,10 @@ void ZC_DrawerFL<T...>::VDraw()
     if (depthTest)
     {
         ZC_FBOBuffersController::GlEnable(GL_DEPTH_TEST);
-        ZC_FBOBuffersController::GLDepthMask(depthMask);
+        // ZC_FBOBuffersController::GLDepthMask(depthMask);
     }
     else ZC_FBOBuffersController::GlDisable(GL_DEPTH_TEST);
+    ZC_FBOBuffersController::GLDepthMask(depthMask);
 
     stencilTest ? ZC_FBOBuffersController::GlEnable(GL_STENCIL_TEST) : ZC_FBOBuffersController::GlDisable(GL_STENCIL_TEST);
     blend.Use();
