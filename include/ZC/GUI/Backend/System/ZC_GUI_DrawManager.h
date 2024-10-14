@@ -19,6 +19,8 @@ struct ZC_GUI_DrawManager
     ZC_Pipeline* pPipeline = nullptr;
     ZC_Texture texture;
 
+    static inline std::string path_to_custom_icon_texture;
+
     ZC_GUI_DrawManager();
 
     void AddWindow(ZC_GUI_Window* pWindow);
@@ -29,4 +31,6 @@ struct ZC_GUI_DrawManager
 
     void Draw();
     void UpdateWindowDrawState(ZC_GUI_Window* pWindow);
+        //  must be called before ZC_SWindow creation. Texture coords must be defined user.
+    static void SetPathToCustomIconTexture(std::string&& path);
 };

@@ -16,6 +16,7 @@ enum ZC_UniformName
     ZC_UN_unPositionScene,
     ZC_UN_unAlpha,
     ZCR_UN_unUseLight,
+    G_UN_unPointSize,
 };
 
 class ZC_Uniform

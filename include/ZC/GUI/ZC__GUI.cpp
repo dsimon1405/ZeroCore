@@ -36,3 +36,8 @@ int ZC__GUI::GetLongestNumberCharacterWidth()
 {
     return ZC_GUI_TextManager::pTM->font.GetLongestNumberCharacterLendth();
 }
+
+void ZC__GUI::SetPathToCustomIconTexture(std::string&& path)
+{
+    ZC_GUI_DrawManager::SetPathToCustomIconTexture(std::move(path));
+}

@@ -6,11 +6,13 @@
 
 ZC_GUI_SwitchDropDown::ZC_GUI_SwitchDropDown(const std::vector<std::wstring>& variants, uint active_variant, float width, float height,
         ZC_Function<void(uint)>&& _callback, const ZC_GUI_ColorsDropDown& colorsDropDownSwitch)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(CalculateWidth(variants, width), height, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None,
-        colorsDropDownSwitch.colorsButton),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(CalculateWidth(variants, width, colorsDropDownSwitch.colorsButton, colorsDropDownSwitch.color_text),
+        height, 0, ZC_GUI_IconUV::quad,
+        ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None, colorsDropDownSwitch.colorsButton),
     ZC_GUI_ButtonMouseText(this->VGetWidth_Obj(), this->GetHeight(), ZC_GUI_BF__None,
         ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(ZC_GUI_DropDownIcon::GetTextIndentX(), ZC_GUI_TFB_Indent::Left), variants[active_variant], false,
-            this->VGetWidth_Obj() - (ZC_GUI_DropDownIcon::GetTextIndentX() * 2.f) - ZC_GUI_DropDownIcon::GetWidth(), ZC_GUI_TextAlignment::Left, colorsDropDownSwitch.color_text)),
+            this->VGetWidth_Obj() - (ZC_GUI_DropDownIcon::GetTextIndentX() * 2.f) - ZC_GUI_DropDownIcon::GetWidth(), ZC_GUI_TextAlignment::Left,
+            colorsDropDownSwitch.color_text), colorsDropDownSwitch.colorsButton),
     obj_dd_icon(colorsDropDownSwitch.color_arrow),
     ddVariants(std::move(ddVariants_temp)),
     ddWindow(ZC_WOIData(this->VGetWidth_Obj(), this->GetHeight() * (variants.size() - 1), 0.f, 0.f, ZC_WOIF__X_Right_Pixel | ZC_WOIF__Y_Top_Pixel),
@@ -75,7 +77,8 @@ void ZC_GUI_SwitchDropDown::VMoveBL_Obj(float rel_x, float rel_y, int& update_bo
     ddWindow.VSetDrawState_W(false);
 }
 
-float ZC_GUI_SwitchDropDown::CalculateWidth(const std::vector<std::wstring>& variants, float width)
+float ZC_GUI_SwitchDropDown::CalculateWidth(const std::vector<std::wstring>& variants, float width, const ZC_GUI_ColorsButton& colorsButton,
+    uint text_color)
 {
     float total_width = 0.f;
     float text_indent_X = ZC_GUI_DropDownIcon::GetTextIndentX();
@@ -88,7 +91,7 @@ float ZC_GUI_SwitchDropDown::CalculateWidth(const std::vector<std::wstring>& var
     float final_width = width > total_width ? width : total_width;
     ddVariants_temp.clear();
     ddVariants_temp.reserve(variants.size());
-    for (const std::wstring& var : variants) ddVariants_temp.emplace_back(this, final_width, 0, var);
+    for (const std::wstring& var : variants) ddVariants_temp.emplace_back(this, final_width, 0, var, colorsButton, text_color);
 
     return final_width;
 }

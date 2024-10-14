@@ -18,6 +18,7 @@ void ZC_Uniform::GetUniformLocation(ZC_ShProg& shP)  //  add here new
         case ZC_UN_unPositionScene: location = shP.GetUniformLocation("unPositionScene"); break;
         case ZC_UN_unAlpha: location = shP.GetUniformLocation("unAlpha"); break;
         case ZCR_UN_unUseLight: location = shP.GetUniformLocation("unUseLight"); break;
+        case G_UN_unPointSize: location = shP.GetUniformLocation("unPointSize"); break;
     }
 }
 
@@ -40,6 +41,7 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_Uniform::GetUniformVector(typename ZC_Unifor
             case ZC_UN_unPositionScene: uniforms.emplace_back(GetUpUniform(FT_glUniform3fv, pNameType[i])); break;
             case ZC_UN_unAlpha: uniforms.emplace_back(GetUpUniform(FT_glUniform1f, pNameType[i])); break;
             case ZCR_UN_unUseLight: uniforms.emplace_back(GetUpUniform(FT_glUniform1i, pNameType[i])); break;
+            case G_UN_unPointSize: uniforms.emplace_back(GetUpUniform(FT_glUniform1i, pNameType[i])); break;
         }
     }
     return uniforms;

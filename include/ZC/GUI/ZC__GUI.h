@@ -20,4 +20,6 @@ namespace ZC__GUI
     void SetState(bool active);
         //  Return pixel width of longest number charagter
     int GetLongestNumberCharacterWidth();
+        //  Set path to user icon texture. Must be called before ZC_SWindow creation. Texture coords must be defined user.
+    void SetPathToCustomIconTexture(std::string&& path);
 }

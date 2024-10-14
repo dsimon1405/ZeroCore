@@ -12,13 +12,14 @@ layout (std140, binding = 0) uniform Camera
 };
 
 uniform float unAlpha;  //  total alpha of the object (wind particles for example)
+uniform int unPointSize = 3;
 
 out vec4 vColor;
 
 void main()
 {
-    gl_PointSize = 6;   //  ZC_SWindow::GLEnablePointSize()
-    // gl_PointSize = 3;   //  ZC_SWindow::GLEnablePointSize()
+    // gl_PointSize = 6;   //  ZC_SWindow::GLEnablePointSize()
+    gl_PointSize = unPointSize;   //  ZC_SWindow::GLEnablePointSize()
     vColor = vec4(inColor, inPosition.a * unAlpha);
     gl_Position = perspView * vec4(inPosition.xyz, 1.0);    //  exclude alpha from vertex
 }

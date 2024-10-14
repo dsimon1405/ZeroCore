@@ -10,7 +10,8 @@ index from vector of the selected variant in new_variant.
 */
 struct ZC_GUI_SwitchDropDown : public ZC_GUI_ButtonMouseText
 {
-    ZC_GUI_SwitchDropDown(const std::vector<std::wstring>& variants, uint active_variant, float width, float height, ZC_Function<void(uint)>&& _callback, const ZC_GUI_ColorsDropDown& colorsDropDownSwitch = {});
+    ZC_GUI_SwitchDropDown(const std::vector<std::wstring>& variants, uint active_variant, float width, float height, ZC_Function<void(uint)>&& _callback,
+        const ZC_GUI_ColorsDropDown& colorsDropDownSwitch = {});
 
     ZC_GUI_SwitchDropDown(ZC_GUI_SwitchDropDown&& dds);
     
@@ -30,7 +31,7 @@ private:
     void VLeftButtonUp_BM(float time) override;
     void VMoveBL_Obj(float rel_x, float rel_y, int& update_borders) override;
 
-    float CalculateWidth(const std::vector<std::wstring>& variants, float width);
+    float CalculateWidth(const std::vector<std::wstring>& variants, float width, const ZC_GUI_ColorsButton& colorsButton, uint text_color);
     std::vector<ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>> Fill_variants(const std::vector<std::wstring> variants);
     void SetActiveBMTDrawState(bool needDraw);
     void UpdatePos_ddWindow();

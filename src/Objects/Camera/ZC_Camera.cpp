@@ -17,7 +17,7 @@ ZC_Camera::ZC_Camera(const ZC_Vec3<float>& _camPos, const ZC_Vec3<float>& _lookO
     if (first)
     {
         first = false;
-        upUbo = new ZC_UBO(ZC_UBO::Camera);
+        upUbo = new ZC_UBO(ZC_UBO_BP__Camera);
         upUbo->GLNamedBufferStorage(sizeof(uboSet), nullptr, GL_DYNAMIC_STORAGE_BIT);
         pActiveUBO = this + 1; // set in current ubo some random data, to set in update this object data and don't have in activeUBO nullptr
     }
@@ -67,7 +67,7 @@ const ZC_Mat4<float>* ZC_Camera::GetOrtho()
     this->OrthoUpdate();
     return &(uboSet.ortho);
 }
-#include <iostream>
+
 void ZC_Camera::UboUpdate()
 {
     bool perspNeedUpdate = this->PerspectiveUpdate(),

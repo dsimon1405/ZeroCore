@@ -91,9 +91,13 @@ bool ZC_CollisionObject::MakeCollision(ZC_CollisionObject* pCO)
         float push_back_dist = radiuses_sum - length_between_figures;   //  if equal 0, need recalculate previous poses and make pushback from them (HAVE NO TIME TO DO...)
         last_collision_frame_number = ZC_SWindow::GetCurrentFrameNumber();
         pCO->last_collision_frame_number = last_collision_frame_number;
-        if (collision_callback) collision_callback(ZC_CO_CollisionResult{ .pObj = pCO, .pushback = (collision_type != ZC_COT__DynamicPushback ? ZC_Vec3<float>()
-            : ZC_Vec::MoveByLength({}, upFigSphere->center_fact - pCO->upFigSphere->center_fact, push_back_dist)) });
-        if (pCO->collision_callback) collision_callback(ZC_CO_CollisionResult{ .pObj = this, .pushback = (pCO->collision_type != ZC_COT__DynamicPushback ? ZC_Vec3<float>()
+        if (collision_callback)
+        {
+            ZC_Vec3<float> dir_dist = upFigSphere->center_fact - pCO->upFigSphere->center_fact;
+            if (dir_dist != ZC_Vec3<float>()) collision_callback(ZC_CO_CollisionResult{ .pObj = pCO, .pushback = (collision_type != ZC_COT__DynamicPushback ? ZC_Vec3<float>()
+            :  ZC_Vec::MoveByLength({}, dir_dist, push_back_dist)) });
+        }
+        if (pCO->collision_callback) pCO->collision_callback(ZC_CO_CollisionResult{ .pObj = this, .pushback = (pCO->collision_type != ZC_COT__DynamicPushback ? ZC_Vec3<float>()
             : ZC_Vec::MoveByLength({}, pCO->upFigSphere->center_fact - upFigSphere->center_fact, push_back_dist)) });
         return true;
     }

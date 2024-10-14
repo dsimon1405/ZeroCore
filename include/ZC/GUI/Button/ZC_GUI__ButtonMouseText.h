@@ -9,7 +9,7 @@ struct ZC_GUI_ColorsButtonText
     uint text_color;
     ZC_GUI_ColorsButton colorsButton;
 
-    ZC_GUI_ColorsButtonText(uint _text_color = ZC_GUI_Colors::window_text, ZC_GUI_ColorsButton _colorsButton = {});
+    ZC_GUI_ColorsButtonText(uint _text_color = ZC_GUI_Colors::button_text, ZC_GUI_ColorsButton _colorsButton = {});
 };
 
 /*

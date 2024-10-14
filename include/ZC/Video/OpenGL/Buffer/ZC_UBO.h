@@ -4,8 +4,8 @@
 
 enum ZC_UBO_BindingPoint
 {
-	ZC_UBO_BP__Camera = 0,
-	ZC_UBO_BP__
+	ZC_UBO_BP__Camera 	= 0,
+	ZC_UBO_BP__Light 	= 1,
 };
 
 struct ZC_UBO

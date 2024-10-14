@@ -17,7 +17,6 @@ struct ZC_ShFragment1
         orthoTexture,
 
         game_sphere,
-        game_cubeMap
     };
 
     struct Set
