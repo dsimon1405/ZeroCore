@@ -25,6 +25,8 @@ enum ZC_ShPName
     ShPN_Game_PlayerSphere,
     SHPN_Game_Particle,
     ShPN_Game_Star,
+
+    ShPN_Test_Skelet,
     
     ShPN_LoadAll,    //  must be last
 };

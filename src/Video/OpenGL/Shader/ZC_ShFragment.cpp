@@ -22,6 +22,8 @@ ZC_Shader* ZC_ShFragment1::GetShader(Name name)    //  add here new
     case Name::orthoTexture: path = ZC_FSPath(shadersPath).append("orthoTexture.fs").string(); break;
 
     case Name::game_sphere: path = ZC_FSPath(shadersPath).append("Game/sphere.fs").string(); break;
+
+    case Name::Test_skelet: path =  ZC_FSPath(shadersPath).append("test_skelet/skelet.fs").string(); break;
     default: break;
     }
 
@@ -49,6 +51,9 @@ typename ZC_ShFragment1::Set ZC_ShFragment1::GetVAOAndUniformData(Name name)    
         UnNT unoforms[]{ { .name = ZC_UN_unColor, .isPointer = true }, { .name = ZC_UN_unAlpha, .isPointer = true } };
         return { .shader = GetShader(name), .texSets = { { new TName[]{ TName::texColor }, 1 } }, .uniforms = ZC_Uniform::GetUniformVector(unoforms, 2) };
     }
+
+    case Name::Test_skelet: return { GetShader(name) };
+    // case Name::Test_skelet: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, {} };
     default: return {};
     }
 }

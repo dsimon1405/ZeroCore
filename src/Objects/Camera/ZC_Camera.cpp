@@ -84,11 +84,11 @@ void ZC_Camera::UboUpdate()
         // std::cout<<std::endl;
 
 
-        // ZC_Mat4<float> view_skybox = this->view;
-        // view_skybox[3][0] = 0.f;
-        // view_skybox[3][1] = 0.f;
-        // view_skybox[3][2] = 0.f;
-        // uboSet.perspViewSkybox = this->perspective * view_skybox;
+        ZC_Mat4<float> view_skybox = this->view;
+        view_skybox[3][0] = 0.f;
+        view_skybox[3][1] = 0.f;
+        view_skybox[3][2] = 0.f;
+        uboSet.perspViewSkybox = this->perspective * view_skybox;
     }
 
     bool orthoNeedUpdate = this->OrthoUpdate();
@@ -101,7 +101,8 @@ void ZC_Camera::UboUpdate()
     }
 
     if (perspViewNeedUpdate && orthoNeedUpdate) upUbo->GLNamedBufferSubData(0, sizeof(uboSet), &uboSet);
-    else if (perspViewNeedUpdate) upUbo->GLNamedBufferSubData(sizeof(uboSet.ortho), sizeof(uboSet.perspView) + sizeof(uboSet.position), &(uboSet.perspView));      //  if need update perspective view hight probability that camPos need too
+    else if (perspViewNeedUpdate)
+        upUbo->GLNamedBufferSubData(sizeof(uboSet.ortho), sizeof(uboSet.perspView) + sizeof(uboSet.perspViewSkybox) + sizeof(uboSet.position), &(uboSet.perspView));      //  if need update perspective view hight probability that camPos need too
     else if (orthoNeedUpdate) upUbo->GLNamedBufferSubData(0, sizeof(uboSet.ortho), &(uboSet.ortho));
 }
 

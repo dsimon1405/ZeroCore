@@ -30,6 +30,8 @@ ZC_Shader* ZC_ShVertex1::GetShader(Name name)    //  add here new
     case Name::Game_PlayerSphere: path = ZC_FSPath(shadersPath).append("Game/sphere.vs").string(); break;
     case Name::Game_Particle: path =  ZC_FSPath(shadersPath).append("Game/particle.vs").string(); break;
     case Name::Game_Star: path =  ZC_FSPath(shadersPath).append("Game/star.vs").string(); break;
+
+    case Name::Test_skelet: path =  ZC_FSPath(shadersPath).append("test_skelet/skelet.vs").string(); break;
     }
 
     return &(shaders.emplace(name, ZC_Shader(ZC_Shader::ReadShaderFile(path.c_str(), GL_VERTEX_SHADER).pHead, GL_VERTEX_SHADER)).first->second);
@@ -65,6 +67,13 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_ShVertex1::GetUniformData(Name name)    //  
         return ZC_Uniform::GetUniformVector(uniforms, 2);
     }
     case Name::Game_Star: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
+
+    // case Name::Test_skelet: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
+    case Name::Test_skelet:
+    {
+        UnNT uniforms[]{ { ZC_UN_unModel, true }, { T_UN_unFinalBonesMatrices, true, 100 }, };
+        return ZC_Uniform::GetUniformVector(uniforms, 2);
+    }
     default: return std::vector<ZC_uptr<ZC_Uniform>>{};
     }
 }

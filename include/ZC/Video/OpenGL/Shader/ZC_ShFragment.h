@@ -17,6 +17,8 @@ struct ZC_ShFragment1
         orthoTexture,
 
         game_sphere,
+
+        Test_skelet
     };
 
     struct Set

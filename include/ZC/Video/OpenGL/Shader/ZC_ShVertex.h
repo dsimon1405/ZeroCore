@@ -22,7 +22,9 @@ struct ZC_ShVertex1
 
         Game_PlayerSphere,
         Game_Particle,
-        Game_Star
+        Game_Star,
+
+        Test_skelet
     };
 
     struct Set

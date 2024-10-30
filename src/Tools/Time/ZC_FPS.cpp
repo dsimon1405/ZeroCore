@@ -3,7 +3,6 @@
 #include <ZC/Objects/Text/ZC_Fonts.h>
 
 #include <thread>
-#include <format>
 
 ZC_FPS::ZC_FPS(ZC_FPS_TimeMeasure _time_measure)
 {
@@ -95,9 +94,15 @@ void ZC_FPS::UpdateText(long timeFromPreviousRestart)
     if (clock.Time<ZC_Nanoseconds>() < limit) return;
     clock.Start();
 
+    auto lamb_FloatToWStr = [](float number)
+    {
+        std::wstring wstr = std::to_wstring(number);
+        return wstr.substr(0, wstr.find(L'.') + 3);
+    };
+
     float limitedFPS = static_cast<float>(nanosecond) / static_cast<float>(previousFrameNanoseconds);   //  or factical fps
-    fpsTime == 0 ? upTextFPS->SetText(std::format(L"fps: {:.1f}", limitedFPS))
-        : upTextFPS->SetText(std::format(L"fps: {:.1f}({:.1f})", limitedFPS, static_cast<float>(nanosecond) / static_cast<float>(timeFromPreviousRestart)));
+    fpsTime == 0 ? upTextFPS->SetText(L"FPS: " + lamb_FloatToWStr(limitedFPS))
+        : upTextFPS->SetText(L"FPS: " + lamb_FloatToWStr(limitedFPS) + L"(" + lamb_FloatToWStr(static_cast<float>(nanosecond) / static_cast<float>(timeFromPreviousRestart)) + L")");
 
     limitedFPS < 45.f ? upTextFPS->SetColorUChar(192, 0, 0)
         : limitedFPS < 55.f ? upTextFPS->SetColorUChar(192, 128, 0)

@@ -18,7 +18,10 @@ void ZC_Uniform::GetUniformLocation(ZC_ShProg& shP)  //  add here new
         case ZC_UN_unPositionScene: location = shP.GetUniformLocation("unPositionScene"); break;
         case ZC_UN_unAlpha: location = shP.GetUniformLocation("unAlpha"); break;
         case ZCR_UN_unUseLight: location = shP.GetUniformLocation("unUseLight"); break;
+
         case G_UN_unPointSize: location = shP.GetUniformLocation("unPointSize"); break;
+    
+        case T_UN_unFinalBonesMatrices: location = shP.GetUniformLocation("unFinalBonesMatrices[0]"); break;
     }
 }
 
@@ -41,7 +44,10 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_Uniform::GetUniformVector(typename ZC_Unifor
             case ZC_UN_unPositionScene: uniforms.emplace_back(GetUpUniform(FT_glUniform3fv, pNameType[i])); break;
             case ZC_UN_unAlpha: uniforms.emplace_back(GetUpUniform(FT_glUniform1f, pNameType[i])); break;
             case ZCR_UN_unUseLight: uniforms.emplace_back(GetUpUniform(FT_glUniform1i, pNameType[i])); break;
+
             case G_UN_unPointSize: uniforms.emplace_back(GetUpUniform(FT_glUniform1i, pNameType[i])); break;
+
+            case T_UN_unFinalBonesMatrices: uniforms.emplace_back(GetUpUniform(FT_glUniformMatrix4fv, pNameType[i])); break;
         }
     }
     return uniforms;
@@ -114,7 +120,8 @@ ZC_uptr<ZC_Uniform> ZC_Uniform::GetUpUniform(FunctionType functionType, NameType
                 : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCount<ZC_Vec4<uint>>>(nameType.name, functionType, nameType.count);
     // case FT_glUniformMatrix2fv: 
     // case FT_glUniformMatrix3fv: 
-    case FT_glUniformMatrix4fv: return nameType.isPointer ? ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCTransponse<ZC_Mat4<float>*>>(nameType.name, functionType, nameType.count, nameType.transponse)
+    case FT_glUniformMatrix4fv: return nameType.isPointer ?
+                ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCTransponse<ZC_Mat4<float>*>>(nameType.name, functionType, nameType.count, nameType.transponse)
                 : ZC_uptrMakeFromChild<ZC_Uniform, ZC_UDCTransponse<ZC_Mat4<float>>>(nameType.name, functionType, nameType.count, nameType.transponse);
     // case FT_glUniformMatrix2x3fv: 
     // case FT_glUniformMatrix3x2fv: 
