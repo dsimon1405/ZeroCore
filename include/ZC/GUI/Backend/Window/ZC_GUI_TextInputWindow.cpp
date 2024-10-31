@@ -185,7 +185,7 @@ bool ZC_GUI_TextInputWindow::MoveChDataAfterErase(std::list<ZC_GUI_ChData>::iter
     //  Highlight
 
 ZC_GUI_TextInputWindow::Highlight::Highlight(float fontHeight)
-    : ZC_GUI_Obj(0.f, fontHeight, 0.f, ZC_GUI_Colors::texInput_highlight, ZC_GUI_IconUV::quad, 0, ZC_GUI_Bindings::bind_tex_Icons)
+    : ZC_GUI_Obj(0.f, fontHeight, 0.f, ZC_GUI_Colors::texInput_highlight, ZC_GUI_IconUV::quad, 0, ZC_GUI_Bindings::location_tex_Icons)
 {}
 
 void ZC_GUI_TextInputWindow::Highlight::MBL_DoubleClick()
@@ -459,7 +459,7 @@ bool ZC_GUI_TextInputWindow::Highlight::IsContainCharacter(wchar_t character)
     //  Caret
 
 ZC_GUI_TextInputWindow::Caret::Caret(float fontHeight)
-    : ZC_GUI_Obj(1.f, fontHeight, 0.f, ZC_GUI_Colors::textInput_caret, ZC_GUI_IconUV::quad, 0, ZC_GUI_Bindings::bind_tex_Icons)
+    : ZC_GUI_Obj(1.f, fontHeight, 0.f, ZC_GUI_Colors::textInput_caret, ZC_GUI_IconUV::quad, 0, ZC_GUI_Bindings::location_tex_Icons)
 {}
 
 bool ZC_GUI_TextInputWindow::Caret::IsCaretOnStart()

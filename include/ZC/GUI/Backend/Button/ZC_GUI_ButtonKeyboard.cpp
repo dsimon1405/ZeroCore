@@ -9,7 +9,7 @@ ZC_GUI_ButtonKeyboard::ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width,
 {}
 
 ZC_GUI_ButtonKeyboard::ZC_GUI_ButtonKeyboard(ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV &uv, const ColorsButton& _colorsButton)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::bind_tex_Icons), _buttonFlags, _colorsButton),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::location_tex_Icons), _buttonFlags, _colorsButton),
     buttonId(_buttonId)
 {}
 

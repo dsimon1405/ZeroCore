@@ -17,6 +17,7 @@ ZC_Shader* ZC_ShVertex1::GetShader(Name name)    //  add here new
     std::string path;
     switch (name)
     {
+    case Name::gui: path = ZC_FSPath(shadersPath).append("GUI/gui.vs").string(); break;
     case Name::colorFigure: path = ZC_FSPath(shadersPath).append("colorFigure.vs").string(); break;
     case Name::point: path = ZC_FSPath(shadersPath).append("point.vs").string(); break;
     case Name::lineFigure: path = ZC_FSPath(shadersPath).append("lineFigure.vs").string(); break;
@@ -42,6 +43,7 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_ShVertex1::GetUniformData(Name name)    //  
     typedef typename ZC_Uniform::NameType UnNT;
     switch (name)
     {
+    case Name::gui: return {};
     case Name::colorFigure:
     {
         UnNT uniforms[]{ { ZC_UN_unModel, true }, { ZC_UN_unAlpha, true }, { ZCR_UN_unUseLight, true } };

@@ -97,7 +97,7 @@ bool ZC_ShaderPrograms::CompilationTest(const char* v, const char* tc, const cha
     glLinkProgram(prog);
     //	link check
     int success = 0;
-    glGetProgramiv(prog, GL_LINK_STATUS, &success);
+    glGetProgramiv(prog, GL_LINK_STATUS, &success);     //  on success return GL_TRUE = 1
     if (success == GL_FALSE)
     {
         char infoLog[1024];
@@ -107,6 +107,7 @@ bool ZC_ShaderPrograms::CompilationTest(const char* v, const char* tc, const cha
     // glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &uniforms);
 
     lambDeleteShaders();
+    glDeleteProgram(prog);
     return success;
 }
 

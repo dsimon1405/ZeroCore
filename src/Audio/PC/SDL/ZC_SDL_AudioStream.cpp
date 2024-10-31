@@ -76,8 +76,8 @@ void SDLCALL ZC_SDL_AudioStream::AudioCallback(void *userdata, SDL_AudioStream *
         return;
     }
 #if _WIN32
-    ZC_DynamicArray<char> dynamicData(static_cast<unsigned long>(additional_amount));
-    char* pData = dynamicData.pArray;
+    ZC_DA<char> dynamicData(static_cast<unsigned long>(additional_amount));
+    char* pData = dynamicData.pHead;
 #else
     char pData[additional_amount];
 #endif

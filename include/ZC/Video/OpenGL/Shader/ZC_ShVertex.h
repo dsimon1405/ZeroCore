@@ -10,6 +10,7 @@ struct ZC_ShVertex1
 {
     enum Name
     {
+        gui,
         colorFigure,
         point,
         lineFigure,

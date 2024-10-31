@@ -10,7 +10,7 @@ layout (std430, binding = 0) readonly buffer InBorder { ZC_GUI_Border borders[];
 
 layout (location = 0) in InF
 {
-    flat int borderIndex;       //  if -1, don't need border check
+    flat int tex_location;       //  if -1, don't need border check
     flat uint tex_binding;     //  0 is tex_Icon, 1 is tex_Text(alpha)
     vec2 uv;
         //  colors
@@ -20,8 +20,11 @@ layout (location = 0) in InF
     float alpha;     //  alpha sets only in color pack uint32 -> 8x8x8x8 in ZC_GUI_ColorManipulator
 } inF;
 
-layout (location = 0, binding = 0) uniform sampler2D tex_Icon;
-layout (location = 1, binding = 1) uniform sampler2D tex_Text;
+layout (location = 0) uniform sampler2D tex_Icon;
+layout (location = 1) uniform sampler2D tex_Text;
+    //  must be used, but win10 ARB glBindTextureUnit() don't work...
+// layout (location = 0, binding = 0) uniform sampler2D tex_Icon;
+// layout (location = 1, binding = 1) uniform sampler2D tex_Text;
     
 //  out
 layout (location = 0) out vec4 FragColor;
@@ -30,9 +33,9 @@ void AddColorsToTexture();
 
 void main()
 {
-    if (inF.borderIndex != -1)   //  gl_FragCoord.x = window's width, gl_FragCoord.y = window's height, in pixels
+    if (inF.tex_location != -1)   //  gl_FragCoord.x = window's width, gl_FragCoord.y = window's height, in pixels
     {
-        ZC_GUI_Border border = inBorder.borders[inF.borderIndex];
+        ZC_GUI_Border border = inBorder.borders[inF.tex_location];
         if (border.bl.x > gl_FragCoord.x || border.bl.y > gl_FragCoord.y || border.tr.x < gl_FragCoord.x || border.tr.y < gl_FragCoord.y) discard; 
     }
 

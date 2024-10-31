@@ -27,7 +27,7 @@ struct ZC_GUI_ObjData
     uint color;
     float uv[4];    //  bl, tr
     int borderIndex;
-    uint tex_binding;
+    uint tex_location;
 };
 layout (std430, binding = 2) readonly buffer InObjData { ZC_GUI_ObjData objDatas[]; } inObjData;
 
@@ -35,6 +35,7 @@ layout (std140, binding = 0) uniform Camera
 {
     mat4 ortho;
     mat4 perspView;
+    mat4 perspViewSkybox;
     vec3 camPos;
 };
 
@@ -42,7 +43,7 @@ layout (std140, binding = 0) uniform Camera
 layout (location = 0) out OutG
 {
     int borderIndex;    //  if -1, don't need border check
-    uint tex_binding;
+    uint tex_location;
     vec2 uv;
         //  colors
     float red;
@@ -146,9 +147,9 @@ void main()
     // if (vertexID != 0) depth += inObjData.objDatas[baseInstance].depth;
     
         //  texture index
-    outG.tex_binding = objData.tex_binding;
+    outG.tex_location = objData.tex_location;
 
-    switch (outG.tex_binding)    //  classification in ZC_GUI_Bindings.h
+    switch (outG.tex_location)    //  classification in ZC_GUI_Bindings.h
     {
     case 10:     //  result triangle, don't have texture, just a color RGBA packed uint32 -> 8x8x8x8 (look ZC_GUI_ColorManipulator)
     {

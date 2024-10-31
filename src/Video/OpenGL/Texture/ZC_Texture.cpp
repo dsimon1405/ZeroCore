@@ -172,11 +172,17 @@ ZC_Texture::~ZC_Texture()
     if (id != 0) glDeleteTextures(1, &id);
 }
 
-void ZC_Texture::GLBindTextureUnit(GLuint DELETE_BINDING) const
+void ZC_Texture::GLActivateAndBind(GLenum active) const
 {
-    if (DELETE_BINDING == 1000000) glBindTextureUnit(binding, id);
-    else glBindTextureUnit(DELETE_BINDING, id);
+    glActiveTexture(active);
+    glBindTexture(GL_TEXTURE_2D, id);
 }
+
+// void ZC_Texture::GLBindTextureUnit(GLuint DELETE_BINDING) const
+// {
+//     if (DELETE_BINDING == 1000000) glBindTextureUnit(binding, id);
+//     else glBindTextureUnit(DELETE_BINDING, id);
+// }
 
 GLuint ZC_Texture::GetId() const noexcept
 {

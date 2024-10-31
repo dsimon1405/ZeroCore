@@ -9,6 +9,7 @@ struct ZC_ShGeometry1
 {
     enum Name
     {
+        gui,
         none,
     };
 

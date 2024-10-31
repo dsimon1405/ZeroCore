@@ -5,11 +5,11 @@
 #include <ZC/Video/ZC_SWindow.h>
 
 ZC_GUI_ColorManipulator::ZC_GUI_ColorManipulator(ZC_Function<void(float,float,float,float)>&& _callback, bool _range_255)
-    : ZC_GUI_ObjComposite(ZC_GUI_ObjData(0.f, 20.f, 0, ZC_GUI_IconUV::quad_colored, ZC_GUI_Bindings::bind_tex_Icons)),      //  wisth sets in VSet_pBL_Obj()
+    : ZC_GUI_ObjComposite(ZC_GUI_ObjData(0.f, 20.f, 0, ZC_GUI_IconUV::quad_colored, ZC_GUI_Bindings::location_tex_Icons)),      //  wisth sets in VSet_pBL_Obj()
     range_255(_range_255),
-    cursor_color_line(ZC_GUI_ObjData(2.f, this->GetHeight(), 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons)),
-    result_triangle(ZC_GUI_ObjData(GetTriangleSize(), GetTriangleSize(), ZC_PackColorUcharToUInt_RGBA(255, 0, 0, 255), {}, ZC_GUI_Bindings::bind_ColorManipulator_resultTriangle)),
-    alpha_triangle(ZC_GUI_ObjData(result_triangle.VGetWidth_Obj(), result_triangle.GetHeight(), 0, ZC_GUI_IconUV::background_alpha, ZC_GUI_Bindings::bind_ColorManipulator_alphaTrinalge)),
+    cursor_color_line(ZC_GUI_ObjData(2.f, this->GetHeight(), 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons)),
+    result_triangle(ZC_GUI_ObjData(GetTriangleSize(), GetTriangleSize(), ZC_PackColorUcharToUInt_RGBA(255, 0, 0, 255), {}, ZC_GUI_Bindings::location_ColorManipulator_resultTriangle)),
+    alpha_triangle(ZC_GUI_ObjData(result_triangle.VGetWidth_Obj(), result_triangle.GetHeight(), 0, ZC_GUI_IconUV::background_alpha, ZC_GUI_Bindings::location_ColorManipulator_alphaTrinalge)),
     saturation_triangle(GetTriangleSize()),
     bnt_red_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 255, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
         ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"R"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"R", true, 0, ZC_GUI_TextAlignment::Left)),
@@ -415,8 +415,8 @@ void ZC_GUI_ColorManipulator::Callback_alpha(float alpha)
     //  Saturation
 
 ZC_GUI_ColorManipulator::Saturation::Saturation(float size)
-    : ZC_GUI_ObjComposite(ZC_GUI_ObjData(size, size, ZC_PackColorUCharToUInt_RGB(255, 0, 0), {}, ZC_GUI_Bindings::bind_ColorManipulator_saturationTrianlge)),
-    cursor_saturation(ZC_GUI_ObjData(3.f, 3.f, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons))
+    : ZC_GUI_ObjComposite(ZC_GUI_ObjData(size, size, ZC_PackColorUCharToUInt_RGB(255, 0, 0), {}, ZC_GUI_Bindings::location_ColorManipulator_saturationTrianlge)),
+    cursor_saturation(ZC_GUI_ObjData(3.f, 3.f, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons))
 {
     this->VAddObj_Obj(&cursor_saturation);
 }
@@ -597,7 +597,7 @@ void ZC_GUI_ColorManipulator::Saturation::GetTriangleCoords(ZC_Vec2<float>& tl, 
     //  TypeSwitcher
 
 ZC_GUI_ColorManipulator::TypeSwitcher::TypeSwitcher(float width, bool _isUChar)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, ZC_GUI_TextManager::GetFontHeight(), 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_ButtonFlag::ZC_GUI_BF__None),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, ZC_GUI_TextManager::GetFontHeight(), 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_ButtonFlag::ZC_GUI_BF__None),
     ZC_GUI_ButtonMouseText(width, ZC_GUI_TextManager::GetFontHeight(), 0, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Location::Center),
         _isUChar ? L"255" : L"1.0", true, 0, ZC_GUI_TextAlignment::Center)),
     isUChar(_isUChar)

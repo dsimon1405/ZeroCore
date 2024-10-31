@@ -55,8 +55,8 @@ struct ZC_GUI_TextManager
     ~ZC_GUI_TextManager();
 
     bool IsConfigured() const noexcept;
-    void BindTextureUnit();
     void Configure(bool doubleWidth);
+    const ZC_Texture& GetTexture() const noexcept;
 
     static int GetFontHeight();
 

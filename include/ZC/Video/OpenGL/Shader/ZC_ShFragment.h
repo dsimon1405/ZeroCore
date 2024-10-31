@@ -10,6 +10,7 @@ struct ZC_ShFragment1
 {
     enum Name
     {
+        gui,
         color,
         colorTex,
         text,

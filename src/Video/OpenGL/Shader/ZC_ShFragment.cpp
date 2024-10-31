@@ -16,6 +16,7 @@ ZC_Shader* ZC_ShFragment1::GetShader(Name name)    //  add here new
     std::string path;
     switch (name)
     {
+    case Name::gui: path = ZC_FSPath(shadersPath).append("GUI/gui.fs").string(); break;
     case Name::color: path = ZC_FSPath(shadersPath).append("color.fs").string(); break;
     case Name::colorTex: path = ZC_FSPath(shadersPath).append("colorTex.fs").string(); break;
     case Name::text: path = ZC_FSPath(shadersPath).append("text.fs").string(); break;
@@ -36,6 +37,7 @@ typename ZC_ShFragment1::Set ZC_ShFragment1::GetVAOAndUniformData(Name name)    
     typedef typename ZC_Uniform::NameType UnNT;
     switch (name)
     {
+    case Name::gui: return { GetShader(name) };
     case Name::color: return { GetShader(name), {}, {} };
     case Name::colorTex: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, {} };
     case Name::text: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, ZC_Uniform::GetUniformVector({ZC_UN_unColor, false}) };

@@ -227,7 +227,7 @@ ZC_SoundData ZC_Sounds::ReadWAV(const char* path)
 
 bool ZC_Sounds::ConstCharEqual(const char* first, char* second) noexcept
 {
-    for (ulong i = 0; ; ++i)
+    for (unsigned long i = 0; ; ++i)
     {
         if (first[i] == '\0')
         {

@@ -21,11 +21,6 @@ bool ZC_GUI_TextManager::IsConfigured() const noexcept
     return texture.GetId() != 0;
 }
 
-void ZC_GUI_TextManager::BindTextureUnit()
-{
-    texture.GLBindTextureUnit();
-}
-
 void ZC_GUI_TextManager::Configure(bool doubleWidth)
 {
     if (!pTM) return;
@@ -67,7 +62,7 @@ void ZC_GUI_TextManager::Configure(bool doubleWidth)
     bool isConfigured = IsConfigured();
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    texture = ZC_Texture::TextureStorage2DFill(GL_R8, ZC_GUI_Bindings::bind_tex_Text, total_width,
+    texture = ZC_Texture::TextureStorage2DFill(GL_R8, ZC_GUI_Bindings::location_tex_Text, total_width,
         font_height, data.data(), GL_RED, GL_UNSIGNED_BYTE, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
         //  update freeSpaces
@@ -76,6 +71,12 @@ void ZC_GUI_TextManager::Configure(bool doubleWidth)
         freeSpaces.emplace_back(FreeSpace{ .start_index = data_index, .width = total_width - data_index + 1 });
         //  if allready configured, reconfigure - update uv in text objs
     if (isConfigured) ZC_GUI::pGUI->drawManager.Reconf_UpdateTextUV();
+
+}
+
+const ZC_Texture& ZC_GUI_TextManager::GetTexture() const noexcept
+{
+    return texture;
 }
 
 int ZC_GUI_TextManager::GetFontHeight()

@@ -33,7 +33,7 @@ set(ZC_INCLUDE_DIRS ${ZC_INCLUDE_DIRS}
     PARENT_SCOPE)
     
 set(ZC_LINK_LIBS ${ZC_LINK_LIBS}
-    PRIVATE $<$<BOOL:${ZC_SDL_VIDEO}>:$<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/SDL3/lib/libSDL3.so,SDL3::SDL3>>
+    PRIVATE $<$<BOOL:${ZC_SDL_VIDEO}>:$<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/SDL3/lib/libSDL3.o,SDL3::SDL3>>
     PRIVATE $<$<AND:$<BOOL:${ZC_IMGUI}>,$<BOOL:${ZC_MY_DEBUG}>>:/home/dmitry/projects/external/imgui/lib/libimgui.a>
 	PRIVATE $<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/freetype/lib/libfreetype.so,freetype>
 	# PUBLIC $<IF:${ZC_MY_DEBUG},/home/dmitry/projects/external/sqlite3/lib/libsqlite3.so,sqlite3>

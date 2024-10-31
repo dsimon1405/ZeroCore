@@ -25,9 +25,9 @@ struct ZC_GUI_WinImmutable : public ZC_GUI_Window
         //  object data
     struct ZC_DrawArraysIndirectCommand
     {
-        GLuint count = 0;
-        GLuint instanceCount = 0;
-        GLuint first = 0;
+        GLuint count = 0;   //  count of drawing vertices (in that case GL_POINTS, one point on one element)
+        GLuint instanceCount = 0;   //  if 1 instnce is drawn, if 0 not 
+        GLuint first = 0;   //  index of the first drawn vertex (in window case 0 is background, if first 0 background drawn, if more than 0 not)
         GLuint baseInstance = 0;   //  store start index of bl and objData (both have same index) for all elements in command
     } daic;
     size_t daicOffset;    //  offset in bufDAICs

@@ -40,6 +40,7 @@ typename ZC_ShProgs::ShNames ZC_ShProgs::GetShNames(ZC_ShPName name) const noexc
     typedef ZC_VAOConfig::LayoutPacker VAOPack;
     switch (name)
     {
+    // case ShPN_ZCR_GUI: return 
     case ShPN_ZCR_ColorFigure: return { VName::colorFigure, { ZC_VAOL__F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N, VAOPack(0).Pack(2) }, FName::color, GName::none };
     case ShPN_ZCR_Point: return { VName::point, { ZC_VAOL__F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N, VAOPack(0).Pack(1) }, FName::color, GName::none };
     case ShPN_ZCR_LineFigure: return { VName::lineFigure, { ZC_VAOL__F_3_0__UB_3_1_N__I_2_10_10_10_REV_1_2_N, VAOPack(0).Pack(1) }, FName::color, GName::none };

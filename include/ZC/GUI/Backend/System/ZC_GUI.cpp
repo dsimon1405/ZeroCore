@@ -16,8 +16,7 @@ void ZC_GUI::Configure()
 
 void ZC_GUI::Draw()
 {
-    textManager.BindTextureUnit();
-    drawManager.Draw();
+    drawManager.Draw(textManager.GetTexture());
 }
 
 void ZC_GUI::SetState(bool active)

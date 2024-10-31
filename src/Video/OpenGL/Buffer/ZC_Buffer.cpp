@@ -75,6 +75,7 @@ void ZC_Buffer::GLNamedBufferSubData(GLintptr offset, GLsizeiptr bytesSize, cons
 
 void ZC_Buffer::GLBindBufferBase()
 {
+    assert(type == GL_ATOMIC_COUNTER_BUFFER || type == GL_TRANSFORM_FEEDBACK_BUFFER || type == GL_UNIFORM_BUFFER || type == GL_SHADER_STORAGE_BUFFER);
     glBindBufferBase(type, binding, id);
 }
 

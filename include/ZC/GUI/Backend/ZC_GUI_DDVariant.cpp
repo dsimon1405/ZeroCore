@@ -10,7 +10,7 @@ ZC_GUI_ColorsDropDown::ZC_GUI_ColorsDropDown(const ZC_GUI_ColorsButton& _colorsB
 
 
 ZC_GUI_DropDownIcon::ZC_GUI_DropDownIcon(uint color)
-    : ZC_GUI_Obj(GetWidth(), ZC__GUI::GetFontHeight() / 3.f, 0.f, color, ZC_GUI_IconUV::arrow_down, 0, ZC_GUI_Bindings::bind_tex_Icons)
+    : ZC_GUI_Obj(GetWidth(), ZC__GUI::GetFontHeight() / 3.f, 0.f, color, ZC_GUI_IconUV::arrow_down, 0, ZC_GUI_Bindings::location_tex_Icons)
 {}
 
 float ZC_GUI_DropDownIcon::GetTextIndentX()

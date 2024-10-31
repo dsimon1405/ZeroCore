@@ -6,7 +6,7 @@
     //  ZC_GUI__BK
 
 ZC_GUI__BK::ZC_GUI__BK(ZC_GUI__Button<ZC_GUI__BK>* _pHolder, ZC_ButtonID _buttonId, float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV& uv, const ZC_GUI_ColorsButton& _colorsButton)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::bind_tex_Icons), _buttonFlags, _colorsButton),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::location_tex_Icons), _buttonFlags, _colorsButton),
     ZC_GUI_ButtonKeyboard(_buttonId, width, height, _buttonFlags, colorsButton),
     pHolder(_pHolder)
 {}

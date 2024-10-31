@@ -1,8 +1,9 @@
 #pragma once
 
-#include <ZC/Video/OpenGL/Shader/ZC_Pipeline.h>
+// #include <ZC/Video/OpenGL/Shader/ZC_Pipeline.h>
 #include <ZC/Video/OpenGL/Texture/ZC_Texture.h>
 #include <ZC/GUI/Backend/Window/ZC_GUI_Window.h>
+#include <ZC/Video/OpenGL/Shader/ZC_ShProg.h>
 
 #include <list>
 
@@ -16,7 +17,8 @@ struct ZC_GUI_DrawManager
         //  DELETE
     uint vao;
 
-    ZC_Pipeline* pPipeline = nullptr;
+    ZC_ShProg shProg;
+    // ZC_Pipeline* pPipeline = nullptr;
     ZC_Texture texture;
 
     static inline std::string path_to_custom_icon_texture;
@@ -29,8 +31,11 @@ struct ZC_GUI_DrawManager
         //  reset uv in text objs (calls from ZC_GUI_TextManager::Configure())
     void Reconf_UpdateTextUV();
 
-    void Draw();
+    void Draw(const ZC_Texture& text_texture);
     void UpdateWindowDrawState(ZC_GUI_Window* pWindow);
         //  must be called before ZC_SWindow creation. Texture coords must be defined user.
     static void SetPathToCustomIconTexture(std::string&& path);
+
+private:
+    ZC_ShProg CreateShProg();
 };

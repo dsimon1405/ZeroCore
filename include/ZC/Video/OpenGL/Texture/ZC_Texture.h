@@ -78,8 +78,10 @@ public:
 
     ~ZC_Texture();
 
-        //  activates texture, DELETE_BINDING parameter must be deleted in future uses from ZC_TexturesHolder::ActivateOpenGL() from ZC_DSController.cpp
-    void GLBindTextureUnit(GLuint DELETE_BINDING = 1000000) const;
+        //  - active - GL_TEXTURE0, GL_TEXTURE1...
+    void GLActivateAndBind(GLenum active) const;
+    //     //  activates texture, DELETE_BINDING parameter must be deleted in future uses from ZC_TexturesHolder::ActivateOpenGL() from ZC_DSController.cpp
+    // void GLBindTextureUnit(GLuint DELETE_BINDING = 1000000) const;
     GLuint GetId() const noexcept;
 
     /*
@@ -100,7 +102,7 @@ public:
 
 private:
     GLuint id = 0;
-    GLuint binding = 0;
+    GLuint binding = 0;     //  used in GLBindTextureUnit(), useless -> thanks win10 driver withought ARB support
     int width = 0;
     int height = 0;
 

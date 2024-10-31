@@ -180,27 +180,73 @@
 
 
 
-//                          //      glMultiDrawElementsIndirect
+// //                          //      glMultiDrawElementsIndirect
+// #version 460 core
+
+// //  in
+// struct Vertex
+// {
+//     float x, y;
+//     float u, v;
+// };
+// layout (std430, binding = 0) buffer InVertex { Vertex vert[]; } inV;
+
+// struct Data
+// {
+//     float posX, posY;
+// };
+// layout (std430, binding = 1) buffer InData { Data data[]; } inD;
+
+// layout (std140, binding = 0) uniform Camera
+// {
+//     mat4 ortho;
+//     mat4 perspView;
+//     mat4 perspViewSkybox;
+//     vec3 camPos;
+// };
+
+// //  out
+// layout (location = 0) out OutV
+// {
+//     vec2 uv;
+// } outV;
+
+
+// void main()
+// {
+//     Vertex vert = inV.vert[gl_VertexID];
+//     Data d = inD.data[abs(gl_VertexID / 6)];
+//     // gl_Position = ortho * vec4(vert.x, vert.y, 0, 1);
+//     gl_Position = ortho * vec4(vert.x + d.posX, vert.y + d.posY, 0, 1);
+//     outV.uv = vec2(vert.u, vert.v);
+// }
+
+
+
+
+//                          //      glMultiDrawElementsIndirect (GL_POINTS)
 #version 460 core
-
 //  in
-struct Vertex
-{
-    float x, y;
-    float u, v;
-};
-layout (std430, binding = 0) buffer InVertex { Vertex vert[]; } inV;
+layout (location = 0) in vec2 in_pos;
+layout (location = 1) in vec2 in_uv;
 
-struct Data
-{
-    float posX, posY;
-};
-layout (std430, binding = 1) buffer InData { Data data[]; } inD;
+// struct Vertex
+// {
+//     float x, y;
+// };
+// layout (std430, binding = 0) buffer InVertex { Vertex vert[]; } inV;
+
+// struct Data
+// {
+//     float u, v;
+// };
+// layout (std430, binding = 1) buffer InData { Data data[]; } inD;
 
 layout (std140, binding = 0) uniform Camera
 {
     mat4 ortho;
     mat4 perspView;
+    mat4 perspViewSkybox;
     vec3 camPos;
 };
 
@@ -210,12 +256,12 @@ layout (location = 0) out OutV
     vec2 uv;
 } outV;
 
-
 void main()
 {
-    Vertex vert = inV.vert[gl_VertexID];
-    Data d = inD.data[abs(gl_VertexID / 6)];
+    // Vertex vert = inV.vert[gl_VertexID];
+    // Data d = inD.data[gl_VertexID];
     // gl_Position = ortho * vec4(vert.x, vert.y, 0, 1);
-    gl_Position = ortho * vec4(vert.x + d.posX, vert.y + d.posY, 0, 1);
-    outV.uv = vec2(vert.u, vert.v);
+    // outV.uv = vec2(d.u, d.v);
+    gl_Position = ortho * vec4(in_pos, 0.f, 1.f);
+    outV.uv = in_uv;
 }

@@ -5,7 +5,7 @@
 #include "ZC_GUI_Tree.h"
 
 ZC_GUI_BranchSimple::ZC_GUI_BranchSimple(const std::wstring& name, const ColorsBranch& colorsBranch)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(0.f, 0.f, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None, colorsBranch.colorsBranchButton),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(0.f, 0.f, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None, colorsBranch.colorsBranchButton),
     ZC_GUI_ButtonMouseText(0.f, 0.f, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Left), name, false, 0, ZC_GUI_TextAlignment::Left, colorsBranch.color_text))
 {}
 

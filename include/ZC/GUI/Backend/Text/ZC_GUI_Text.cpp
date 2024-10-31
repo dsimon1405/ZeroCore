@@ -6,7 +6,7 @@
 #include <cmath>
 
 ZC_GUI_Text::ZC_GUI_Text(const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment, unsigned int color)
-    : ZC_GUI_Obj(ZC_GUI_ObjData(0.f, 0.f, color, {}, ZC_GUI_Bindings::bind_tex_Text)),
+    : ZC_GUI_Obj(ZC_GUI_ObjData(0.f, 0.f, color, {}, ZC_GUI_Bindings::location_tex_Text)),
     isImmutable(_isImmutable),
     pText(ZC_GUI_TextManager::GetText(wstr, isImmutable, reserveWidth, textAlignment)),
     actual_width(pText ? pText->width : 0)

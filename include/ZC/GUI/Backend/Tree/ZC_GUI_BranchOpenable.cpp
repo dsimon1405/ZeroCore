@@ -5,7 +5,7 @@
 #include "ZC_GUI_Tree.h"
 
 ZC_GUI_BranchOpenable::ZC_GUI_BranchOpenable(const std::wstring& name, bool isOpen, const ColorsBranchOpenable& branchOpenableColors)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(0.f, 0.f, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF_M__DoubleCLick, branchOpenableColors.colorsBranch.colorsBranchButton),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(0.f, 0.f, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF_M__DoubleCLick, branchOpenableColors.colorsBranch.colorsBranchButton),
     ZC_GUI_BranchSimple(name, branchOpenableColors.colorsBranch),
     arrowButton(float(ZC_GUI_TextManager::GetFontHeight() / 1.5f), isOpen, branchOpenableColors.colorsArrowButton)
 {
@@ -60,7 +60,7 @@ ZC_GUI_BranchOpenable::ColorsBranchOpenable::ColorsBranchOpenable(const ZC_GUI_B
     //  ZC_GUI_BranchOpenable::ArrowButton
 
 ZC_GUI_BranchOpenable::ArrowButton::ArrowButton(float size, bool isOpen, const ZC_GUI_ButtonBase::ColorsButton& colorsArrowButton)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(size, size, 0, isOpen ? ZC_GUI_IconUV::arrow_down : ZC_GUI_IconUV::arrow_right, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__None, colorsArrowButton),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(size, size, 0, isOpen ? ZC_GUI_IconUV::arrow_down : ZC_GUI_IconUV::arrow_right, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None, colorsArrowButton),
     ZC_GUI_ButtonMouse(size, size, ZC_GUI_BF__None)
 {}
 

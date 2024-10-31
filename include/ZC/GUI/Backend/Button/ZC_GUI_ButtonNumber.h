@@ -181,7 +181,7 @@ bool ZC_GUI_ButtonNumber<TNum>::VMakeCursorCollision_Obj(float x, float y, ZC_GU
 template <ZC_GUI_Number::cNumber TNum>
 ZC_GUI_ButtonBase ZC_GUI_ButtonNumber<TNum>::GetButtonBase_BN(float width, float height, const ZC_GUI_ButtonBase::ColorsButton& _colorsbutton)
 {
-    return ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::bind_tex_Icons),
+    return ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::location_tex_Icons),
         ZC_GUI_BF_M__CursorMoveOnMBLPress | ZC_GUI_BF_M__Scroll | ZC_GUI_BF_M__DoubleCLick, _colorsbutton);
 }
 
@@ -360,7 +360,7 @@ float ZC_GUI_ButtonNumber<TNum>::CalculateNumberMaxWidth(TNum _number, TNum _num
 template <ZC_GUI_Number::cNumber TNum>
 ZC_GUI_ButtonNumber<TNum>::ButtonArrow::ButtonArrow(float size, bool _leftAarrow, const ColorsButton& colors)
     : ZC_GUI_ButtonBase(ZC_GUI_ObjData(size, size, 0,
-        _leftAarrow ? GetArrowLeftUV() : ZC_GUI_IconUV::arrow_right, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF__MBLPress, colors),
+        _leftAarrow ? GetArrowLeftUV() : ZC_GUI_IconUV::arrow_right, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__MBLPress, colors),
     ZC_GUI_ButtonMouse(0.f, 0.f, 0),
     leftArrow(_leftAarrow)
 {}

@@ -369,7 +369,7 @@ ZC_GUI_RowParams::RowParams(float _indent_x, Indent_X _indentFlag_X, float _inde
     //  ZC_GUI_ObjBorder::Scroll
 
 ZC_GUI_ObjBorder::Scroll::Scroll(float height, const ColorsScroll& colorsScroll)
-    : ZC_GUI_ObjComposite(ZC_GUI_ObjData(scroll_width, height, colorsScroll.color_scroll_background, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons)),
+    : ZC_GUI_ObjComposite(ZC_GUI_ObjData(scroll_width, height, colorsScroll.color_scroll_background, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons)),
     caret(colorsScroll)
 {
     this->VAddObj_Obj(&caret, nullptr);
@@ -541,7 +541,7 @@ ZC_GUI_ObjBorder::Scroll::ColorsScroll::ColorsScroll(uint _color_scroll_backgrou
     //  ZC_GUI_ObjBorder::Scroll::Caret
 
 ZC_GUI_ObjBorder::Scroll::Caret::Caret(const ColorsScroll& colorsScroll)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(Scroll::scroll_width, 0.f, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons), ZC_GUI_BF_M__CursorMoveOnMBLPress, colorsScroll.colors_caret_scroll),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(Scroll::scroll_width, 0.f, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF_M__CursorMoveOnMBLPress, colorsScroll.colors_caret_scroll),
     ZC_GUI_ButtonMouse(Scroll::scroll_width, 0.f, ZC_GUI_BF_M__CursorMoveOnMBLPress)
 {}
 
@@ -578,10 +578,10 @@ ZC_GUI_ObjBorder::ColorsObjBorder::ColorsObjBorder(const Scroll::ColorsScroll& _
     //  ZC_GUI_ObjBorder::Frame
 
 ZC_GUI_ObjBorder::Frame::Frame(float frame_width, float objBorder_width, float objBorder_height, uint color)
-    : ZC_GUI_ObjComposite(ZC_GUI_ObjData(frame_width, objBorder_height, color, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons)),
-    top(ZC_GUI_ObjData(objBorder_width, frame_width, color, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons)),
-    right(ZC_GUI_ObjData(frame_width, objBorder_height, color, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons)),
-    bottom(ZC_GUI_ObjData(objBorder_width, frame_width, color, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::bind_tex_Icons))
+    : ZC_GUI_ObjComposite(ZC_GUI_ObjData(frame_width, objBorder_height, color, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons)),
+    top(ZC_GUI_ObjData(objBorder_width, frame_width, color, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons)),
+    right(ZC_GUI_ObjData(frame_width, objBorder_height, color, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons)),
+    bottom(ZC_GUI_ObjData(objBorder_width, frame_width, color, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons))
 {
     this->VAddObj_Obj(&top, nullptr);
     this->VAddObj_Obj(&right, nullptr);

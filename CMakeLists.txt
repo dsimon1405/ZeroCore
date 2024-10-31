@@ -6,7 +6,7 @@ project(ZeroCore)
 option(ZC_PC "ON - build for PC version" ON)
 # option(ZC_ANDROID "ON - build for Android version" OFF)
 
-# set ZC_PARANT_BIN_DIR for copy assets
+# set ZC_PARANT_BIN_DIR to copy assets
 
 option(ZC_AUDIO "ON - audio support" ON)
 option(ZC_IMGUI "ON - build with imgui lib files (only for ZC_PC)" OFF)
@@ -14,7 +14,7 @@ option(ZC_STATIC "ON - build static library, else build shared" ON)
 
 message(STATUS "========================= ZERO CORE START ========================")
 
-if(ZC_MY_DEBUG)		#	top project must set preferred ZC_MY_DEBUG, or will be set ZC_MU_DEBUG 0
+if(ZC_MY_DEBUG)		#	top project must set preferred ZC_MY_DEBUG, or will be set ZC_MY_DEBUG 0
 	set(ZC_MY_DEBUG 1)     #	1 true, 0 false   =>  use if(ZCR_MY_DEBUG EQUAL 1) - true; if(NOT ZCR_MY_DEBUG) - false
 else()
 	set(ZC_MY_DEBUG 0)
@@ -279,13 +279,13 @@ target_include_directories(${PROJECT_NAME} ${ZC_INCLUDE_DIRS}
 
 #========================= link libs
 target_link_libraries(${PROJECT_NAME} ${ZC_LINK_LIBS}
-	PUBLIC $<$<BOOL:${ZC_MY_DEBUG}>:/home/dmitry/projects/external/glad/lib/libglad.so>
+	PUBLIC $<$<BOOL:${ZC_MY_DEBUG}>:$<IF:${WIN32},C:/Users/simon007/source/repos/Source/glad/lib/glad.lib,/home/dmitry/projects/external/glad/lib/libglad.so>>
 	)
 	
 #========================= compiler params
 target_compile_options(${PROJECT_NAME}
 	PRIVATE	
-			$<$<CONFIG:Debug>:$<IF:$<BOOL:${WIN32}>,-W3,-Wall>>
+			# $<$<CONFIG:Debug>:$<IF:$<BOOL:${WIN32}>,-W3,-Wall>>
 			$<$<CONFIG:Release>:-O3>
 	)
 

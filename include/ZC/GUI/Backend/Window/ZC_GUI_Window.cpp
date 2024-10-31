@@ -5,14 +5,11 @@
 #include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 
-// #include <cassert>
-
 ZC_GUI_Window::ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags _winFlags, const ColorsWindow& colorsWindow)
     : ZC_WindowOrthoIndent1(false, _winFlags & ZC_GUI_WF__Movable ?
-        ZC_WOIData(_woiData.width, _woiData.height, 0.f, 0.f, ZC_WOIF__X_Center | ZC_WOIF__Y_Center)
-        : _woiData),
-    ZC_GUI_ObjBorder(ZC_GUI_ObjData(_woiData.width, _woiData.height, _winFlags & ZC_GUI_WF__Stacionar ? GetStacionarDepth() : 1.f, colorsWindow.color_window, uv, 0, ZC_GUI_Bindings::bind_tex_Icons),
-        _winFlags & ZC_GUI_WF__Scrollable, _winFlags & ZC_GUI_WF__Frame ? 2.f : 0.f, colorsWindow.colorsObjBorder),
+        ZC_WOIData(_woiData.width, _woiData.height, 0.f, 0.f, ZC_WOIF__X_Center | ZC_WOIF__Y_Center) : _woiData),
+    ZC_GUI_ObjBorder(ZC_GUI_ObjData(_woiData.width, _woiData.height, _winFlags & ZC_GUI_WF__Stacionar ? GetStacionarDepth() : 1.f, colorsWindow.color_window, uv, 0,
+        ZC_GUI_Bindings::location_tex_Icons), _winFlags & ZC_GUI_WF__Scrollable, _winFlags & ZC_GUI_WF__Frame ? 2.f : 0.f, colorsWindow.colorsObjBorder),
     color_window(colorsWindow.color_window),
     color_window_focused(colorsWindow.color_window_focused),
     winFlags(_winFlags)

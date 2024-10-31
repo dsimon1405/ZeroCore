@@ -27,7 +27,7 @@ ZC_Shader::ZC_Shader(ZC_Shader&& sh)
 
 ZC_Shader::~ZC_Shader()
 {
-    glDeleteShader(id);
+    if (id != 0) glDeleteShader(id);
 }
 
 ZC_DA<char> ZC_Shader::ReadShaderFile(const char* path, GLenum type)
@@ -101,7 +101,6 @@ ZC_DA<char> ZC_Shader::ReadShaderFile(const char* path, GLenum type)
     //         FillShaderStart(fileData.pHead, geometryStart);
     //         break;
     // }
-
     return fileData;
 }
 

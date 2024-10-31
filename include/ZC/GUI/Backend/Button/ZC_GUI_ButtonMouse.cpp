@@ -9,7 +9,7 @@ ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonF
 {}
 
 ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_UV& uv, const ColorsButton& _colorsButton)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::bind_tex_Icons), _buttonFlags, _colorsButton)
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, uv, ZC_GUI_Bindings::location_tex_Icons), _buttonFlags, _colorsButton)
 {}
 
 void ZC_GUI_ButtonMouse::SetDoubleClickLimit_BM(long _doubleClickLimit_nanosec)

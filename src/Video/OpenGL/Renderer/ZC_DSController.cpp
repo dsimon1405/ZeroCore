@@ -16,7 +16,7 @@ bool ZC_TexturesHolder::operator == (const ZC_TexturesHolder& th) const noexcept
 
 void ZC_TexturesHolder::ActivateOpenGL() const
 {
-    for (uint i = 0; i < texturesCount; i++) pTexture->GLBindTextureUnit(i);
+    for (unsigned int i = 0; i < texturesCount; ++i) pTexture->GLActivateAndBind(GL_TEXTURE0 + i);
 }
 
 
