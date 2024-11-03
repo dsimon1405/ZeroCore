@@ -21,10 +21,11 @@ ZC_EC ZC_ButtonPressedDown::Connect(ZC_ButtonID buttonId, ZC_Function<void(ZC_Bu
 
 void ZC_ButtonPressedDown::Disconnect(const void* pFunc)
 {
-    ZC_ForwardListErase(connectedButtonDowns, pFunc);
         //  if disconnected button active, make pointer on active function = nullptr
     auto pActiveButtonDown = ZC_Find(pressedButtonDowns, pFunc);
     if (pActiveButtonDown) pActiveButtonDown->func = nullptr;
+    
+    ZC_ForwardListErase(connectedButtonDowns, pFunc);
 }
 
 bool ZC_ButtonPressedDown::AddActiveDownButton(ZC_ButtonID buttonId, bool& isConnected)

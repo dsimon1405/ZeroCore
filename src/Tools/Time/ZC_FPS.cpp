@@ -11,7 +11,7 @@ ZC_FPS::ZC_FPS(ZC_FPS_TimeMeasure _time_measure)
 
 float ZC_FPS::StartNewFrame()
 {
-    long timeFromPreviousRestart = 0;
+    long long timeFromPreviousRestart = 0;
     if (fpsTime != 0)
     {
         timeFromPreviousRestart = clock.Time<ZC_Nanoseconds>();
@@ -26,10 +26,10 @@ float ZC_FPS::StartNewFrame()
     return static_cast<float>(previousFrameNanoseconds) / nanosecondsDivisor;
 }
 
-void ZC_FPS::SetLimit(long fps)
+void ZC_FPS::SetLimit(long long fps)
 {
-    if (fps < 0) fps = 0;
-    fpsTime = fps == 0 ? 0 : static_cast<long>(nanosecond) / (fps + 1);
+    if (fps < 0ll) fps = 0ll;
+    fpsTime = fps == 0ll ? 0ll : static_cast<long long>(nanosecond) / (fps + 1ll);
 }
 
 void ZC_FPS::ChangeTimeMeasure(ZC_FPS_TimeMeasure _time_measure)
@@ -79,17 +79,17 @@ unsigned long long ZC_FPS::GetCurrentFrameNumber() const
 
 ZC_uptr<ZC_TextWindow> ZC_FPS::CreateText()
 {
-    const ulong textHeight = 30;
+    const ulong textHeight(30ul);
     ZC_FontData fontData{ ZC_F_Arial, textHeight };
     ZC_Fonts::Load(&fontData, 1);
 
     return { new ZC_TextWindow({ ZC_F_Arial, textHeight }, L"FPS: 0 ()", ZC_TA_Left, 0.f, 0.f, ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel, true) };
 }
 
-void ZC_FPS::UpdateText(long timeFromPreviousRestart)
+void ZC_FPS::UpdateText(long long timeFromPreviousRestart)
 {
     static ZC_Clock clock;
-    static const long limit = nanosecond / 2;   //  update upTextDPF every 1/2 of a second
+    static const long long limit = nanosecond / 2.f;   //  update upTextDPF every 1/2 of a second
     
     if (clock.Time<ZC_Nanoseconds>() < limit) return;
     clock.Start();
@@ -97,12 +97,12 @@ void ZC_FPS::UpdateText(long timeFromPreviousRestart)
     auto lamb_FloatToWStr = [](float number)
     {
         std::wstring wstr = std::to_wstring(number);
-        return wstr.substr(0, wstr.find(L'.') + 3);
+        return wstr.substr(0, wstr.find(L'.') + 3ul);
     };
 
-    float limitedFPS = static_cast<float>(nanosecond) / static_cast<float>(previousFrameNanoseconds);   //  or factical fps
-    fpsTime == 0 ? upTextFPS->SetText(L"FPS: " + lamb_FloatToWStr(limitedFPS))
-        : upTextFPS->SetText(L"FPS: " + lamb_FloatToWStr(limitedFPS) + L"(" + lamb_FloatToWStr(static_cast<float>(nanosecond) / static_cast<float>(timeFromPreviousRestart)) + L")");
+    float limitedFPS = nanosecond / static_cast<float>(previousFrameNanoseconds);   //  or factical fps
+    fpsTime == 0ll ? upTextFPS->SetText(L"FPS: " + lamb_FloatToWStr(limitedFPS))
+        : upTextFPS->SetText(L"FPS: " + lamb_FloatToWStr(limitedFPS) + L"(" + lamb_FloatToWStr(nanosecond / static_cast<float>(timeFromPreviousRestart)) + L")");
 
     limitedFPS < 45.f ? upTextFPS->SetColorUChar(192, 0, 0)
         : limitedFPS < 55.f ? upTextFPS->SetColorUChar(192, 128, 0)

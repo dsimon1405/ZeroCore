@@ -60,7 +60,7 @@ void ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
             if (funcWindowCloseButton) funcWindowCloseButton();
             else
             {
-                ZC_SWindow::CloseWindow();
+                ZC_SWindow::BreakMainCycle();
                 return;
             }
         } break;

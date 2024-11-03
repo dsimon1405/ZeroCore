@@ -10,8 +10,8 @@ layout (std430, binding = 0) readonly buffer InBorder { ZC_GUI_Border borders[];
 
 layout (location = 0) in InF
 {
-    flat int tex_location;       //  if -1, don't need border check
-    flat uint tex_binding;     //  0 is tex_Icon, 1 is tex_Text(alpha)
+    flat int borderIndex;       //  if -1, don't need border check
+    flat uint tex_location;     //  0 is tex_Icon, 1 is tex_Text(alpha)
     vec2 uv;
         //  colors
     float red;
@@ -33,13 +33,13 @@ void AddColorsToTexture();
 
 void main()
 {
-    if (inF.tex_location != -1)   //  gl_FragCoord.x = window's width, gl_FragCoord.y = window's height, in pixels
+    if (inF.borderIndex != -1)   //  gl_FragCoord.x = window's width, gl_FragCoord.y = window's height, in pixels
     {
-        ZC_GUI_Border border = inBorder.borders[inF.tex_location];
+        ZC_GUI_Border border = inBorder.borders[inF.borderIndex];
         if (border.bl.x > gl_FragCoord.x || border.bl.y > gl_FragCoord.y || border.tr.x < gl_FragCoord.x || border.tr.y < gl_FragCoord.y) discard; 
     }
 
-    switch (inF.tex_binding)    //  classification in ZC_GUI_Bindings.h
+    switch (inF.tex_location)    //  classification in ZC_GUI_Bindings.h
     {
     case 0:     //  icons texture
     {

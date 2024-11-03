@@ -8,9 +8,9 @@ bool ZC_SWindow::MakeWindow(ZC_WindowFlags flags, int width, int height, const c
     return ZC_SWindowHolder::MakeWindowHolder(flags, width, height, name);
 }
 
-void ZC_SWindow::CloseWindow()
+void ZC_SWindow::BreakMainCycle()
 {
-    if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->CloseWindow();
+    if (ZC_SWindowHolder::upWindowHolder) ZC_SWindowHolder::upWindowHolder->BreakMainCycle();
 }
 
 void ZC_SWindow::GlClearColor(float red, float green, float blue, float alpha)

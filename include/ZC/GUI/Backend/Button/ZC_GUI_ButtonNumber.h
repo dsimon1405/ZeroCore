@@ -13,13 +13,13 @@
 struct ZC_GUI_ColorsButtonNumber
 {
     ZC_GUI_ColorsButton colorsButton;
-    uint color_text;
+    uint color_text_number;
     ZC_GUI_ColorsButton colorsArrow;
 
     ZC_GUI_ColorsButtonNumber(const ZC_GUI_ColorsButton& _colorsButton = ZC_GUI_ColorsButton(ZC_GUI_Colors::number_button, ZC_GUI_Colors::number_button_under_cursor, ZC_GUI_Colors::number_button_pressed),
-            uint _color_text = ZC_GUI_Colors::number_text, const ZC_GUI_ColorsButton& _colorsArrow = ZC_GUI_ColorsButton(ZC_GUI_Colors::number_arrow, ZC_GUI_Colors::number_arrow_under_cursor, ZC_GUI_Colors::number_arrow_pressed))
+            uint _color_text_number = ZC_GUI_Colors::number_text_number, const ZC_GUI_ColorsButton& _colorsArrow = ZC_GUI_ColorsButton(ZC_GUI_Colors::number_arrow, ZC_GUI_Colors::number_arrow_under_cursor, ZC_GUI_Colors::number_arrow_pressed))
         : colorsButton(_colorsButton),
-        color_text(_color_text),
+        color_text_number(_color_text_number),
         colorsArrow(_colorsArrow)
     {}
 };
@@ -120,7 +120,7 @@ ZC_GUI_ButtonNumber<TNum>::ZC_GUI_ButtonNumber(float width, float height, TNum _
     : ZC_GUI_ButtonBase(GetButtonBase_BN(width, height, colorsButtonNumber.colorsButton)),
     ZC_GUI_ButtonMouseText(width, height, 0,
         ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Center), ZC_GUI_Number::NumberToWstr(number, afterDot_count), false,
-            CalculateNumberMaxWidth(_number, _number_min, _number_max, _afterDot_count), textAlignment, colorsButtonNumber.color_text)),
+            CalculateNumberMaxWidth(_number, _number_min, _number_max, _afterDot_count), textAlignment, colorsButtonNumber.color_text_number)),
     step(_step < 0 ? - _step : _step),    //  must be positive
     step_fast(_step_fast < 0 ? - _step_fast : _step_fast),    //  must be positive
     buttonArrow_left(this->GetHeight(), true, colorsButtonNumber.colorsArrow),

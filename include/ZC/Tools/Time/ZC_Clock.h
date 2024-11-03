@@ -52,11 +52,11 @@ public:
     Time in TTimeMeasue, since the previous Start or Restart call.
     */
     template<ZC_cTimeMeasure TTimeMeasue>
-    long Restart();
+    long long Restart();
 
     //  Returns time in TTimeMeasue, since the previous Start or Restart call
     template<ZC_cTimeMeasure TTimeMeasue>
-    long Time();
+    long long Time();
 
 private:
     typedef typename std::chrono::high_resolution_clock Clock;
@@ -66,16 +66,16 @@ private:
 };
 
 template<ZC_cTimeMeasure TTimeMeasue>
-long ZC_Clock::Restart()
+long long ZC_Clock::Restart()
 {
     TimePoint now = Clock::now();
-    long result = static_cast<long>(std::chrono::duration_cast<TTimeMeasue>(now - start).count());
+    long long result = static_cast<long long>(std::chrono::duration_cast<TTimeMeasue>(now - start).count());
     start = std::move(now);
     return result;
 }
 
 template<ZC_cTimeMeasure TTimeMeasue>
-long ZC_Clock::Time()
+long long ZC_Clock::Time()
 {
-    return static_cast<long>(std::chrono::duration_cast<TTimeMeasue>(Clock::now() - start).count());
+    return static_cast<long long>(std::chrono::duration_cast<TTimeMeasue>(Clock::now() - start).count());
 }

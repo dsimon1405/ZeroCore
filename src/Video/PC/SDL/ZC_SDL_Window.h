@@ -13,6 +13,7 @@ private:
     SDL_Window* pWindow = nullptr;
     SDL_GLContext glContext = nullptr;
 
+    void VDestroy() override;
     void VSwapBuffer() override;
     void VGetSize(int& width, int& height) const noexcept override;
     void VHideCursor() override;

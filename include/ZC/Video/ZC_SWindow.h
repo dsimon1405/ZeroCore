@@ -45,9 +45,9 @@ namespace ZC_SWindow
     On success unique pointer of ZC_SWindow, otherwise nullptr (in second case ZC_ErrorLogger::ErrorMessage() - for more information).
     */
     bool MakeWindow(ZC_WindowFlags flags = ZC_SWF__None, int width = 0, int height = 0, const char* name = "");
-    
-    //  Closing window.
-    void CloseWindow();
+
+    //  Break from fucntion RunMainCycle(), destroy ZC_SWindow and ZC_AudioSteram. 
+    void BreakMainCycle();
 
     /*
     Set the default context buffer clear color.
@@ -101,7 +101,15 @@ namespace ZC_SWindow
     //  Stop processing press keyboard keys in unicode (that function used by ZC_GUI). Don't call it without necessarily!
     void StopInputText();
 
-    //  Run cycle (handle events => OpenGL draw).
+    /*
+    Run main cycle. At first configure ZC_GUI if it is, then start cycle. To break cycle call BreakMainCycle().
+    Cycle shama:
+    - upadte fps data.
+    - poll events (call functions connected to events).
+    - call updater.
+    - call collision manager.
+    - render scene.
+    */
     void RunMainCycle();
 
     //  Displays or not the number of frames per second.

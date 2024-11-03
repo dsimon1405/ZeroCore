@@ -22,7 +22,7 @@ struct ZC_FPS
 
     fps - limit. If 0 - unlimit. If < 0 than will set 0.
     */
-    void SetLimit(long fps);
+    void SetLimit(long long fps);
 
     //  Change time measure.
     void ChangeTimeMeasure(ZC_FPS_TimeMeasure _time_measure);
@@ -42,8 +42,8 @@ private:
     ZC_Clock clock;
     // 1 sec = 1 000 000 000 nanosec.
     const float nanosecond = 1000000000.f;
-    long previousFrameNanoseconds = 0;
-    long fpsTime = static_cast<long>(nanosecond / 61.f);
+    long long previousFrameNanoseconds = 0;
+    long long fpsTime = static_cast<long long>(nanosecond / 61.f);
     float nanosecondsDivisor;
 
     unsigned long long frame_counter = 0;
@@ -53,5 +53,5 @@ private:
     ZC_uptr<ZC_TextWindow> upTextFPS;
 
     ZC_uptr<ZC_TextWindow> CreateText();
-    void UpdateText(long timeFromPreviousrestart);
+    void UpdateText(long long timeFromPreviousrestart);
 };

@@ -57,8 +57,9 @@ namespace ZC_GUI_Colors
     extern uint number_button;
     extern uint number_button_under_cursor;
     extern uint number_button_pressed;
-        //  text
-    extern uint number_text;
+    extern uint number_text_number;
+        //  name
+    extern uint number_text_name;
         //  arrows
     extern uint number_arrow;
     extern uint number_arrow_under_cursor;

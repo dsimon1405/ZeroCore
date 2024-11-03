@@ -17,6 +17,7 @@ public:
 
     virtual ~ZC_SWindowHolder();
 
+    virtual void VDestroy() = 0;
     virtual void VGetSize(int& width, int& height) const noexcept = 0;
     virtual void VHideCursor() {}
     virtual void VShowCursor() {}
@@ -28,7 +29,7 @@ public:
     virtual void VSetMinSize(int x, int y) {}
     virtual void VSetFullScreen(bool full_screen) {}
 
-    void CloseWindow();
+    void BreakMainCycle();
     void RunMainCycle();
     void SetFPS(long limit);
     float GetPreviousFrameTime() const noexcept;

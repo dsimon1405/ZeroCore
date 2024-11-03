@@ -55,8 +55,9 @@ namespace ZC_GUI_Colors
     uint number_button = button;
     uint number_button_under_cursor = ZC_PackColorUCharToUInt_RGB(110, 110, 110);
     uint number_button_pressed = ZC_PackColorUCharToUInt_RGB(120, 120, 120);;
+    uint number_text_number = ZC_PackColorUCharToUInt_RGB(200, 200, 200);
         //  text
-    uint number_text = ZC_PackColorUCharToUInt_RGB(200, 200, 200);
+    uint number_text_name = ZC_PackColorUCharToUInt_RGB(200, 200, 200);
         //  arrows
     uint number_arrow = ZC_PackColorUCharToUInt_RGB(140, 140, 140);
     uint number_arrow_under_cursor = ZC_PackColorUCharToUInt_RGB(180, 180, 180);
@@ -72,7 +73,7 @@ namespace ZC_GUI_Colors
     uint dropDownSwitch_button = number_button;
     uint dropDownSwitch_button_under_cursor = number_button_under_cursor;
     uint dropDownSwitch_button_pressed = number_button_pressed;
-    uint dropDownSwitch_text = number_text;
+    uint dropDownSwitch_text = number_text_name;
     uint dropDownSwitch_arrow = ZC_PackColorUCharToUInt_RGB(170, 170, 170);
 
     // const unsigned int  = ZC_PackColorUCharToUInt(, , );

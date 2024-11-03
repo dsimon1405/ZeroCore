@@ -76,7 +76,7 @@ ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, cons
 #endif
 }
 
-ZC_SDL_Window::~ZC_SDL_Window()
+void ZC_SDL_Window::VDestroy()
 {
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(pWindow);
@@ -87,6 +87,19 @@ ZC_SDL_Window::~ZC_SDL_Window()
 #ifdef ZC_IMGUI
 	ZC_ImGui::Destroy();
 #endif
+}
+
+ZC_SDL_Window::~ZC_SDL_Window()
+{
+//     SDL_GL_DeleteContext(glContext);
+//     SDL_DestroyWindow(pWindow);
+//     #ifdef ZC_SDL_AUDIO
+//     ZC_Audio::CloseAudioStream();
+//     #endif
+//     SDL_Quit();
+// #ifdef ZC_IMGUI
+// 	ZC_ImGui::Destroy();
+// #endif
 }
 
 void ZC_SDL_Window::VSwapBuffer()

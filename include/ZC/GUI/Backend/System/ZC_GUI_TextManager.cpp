@@ -162,21 +162,21 @@ void ZC_GUI_TextManager::EraseText(Text* pText)
     typename std::list<FreeSpace>::iterator iter = pTM->freeSpaces.begin();     //  iter on next element, to emplace() before iter
     for ( ; iter != pTM->freeSpaces.end(); ++iter)
         if (pText->start_index < iter->start_index) break;
-
+        
     auto nextIter = iter;   //  iter is next iter (nextIter uses for emplace in freeSpaces). Only nextIter have correct itertor from list
-    auto prevIter = --iter;  //  now iter is prev iter
+    auto prevIter = nextIter == pTM->freeSpaces.begin() ? pTM->freeSpaces.begin() : --iter;  //  if nextIter is begin(can't get iter before begin)
         //  if nextIter is begin, no data in prevIter
-    bool adjacentPrevious = nextIter != pTM->freeSpaces.begin() && (prevIter->start_index + prevIter->width + text_distance_pixel == pText->start_index);
+    bool prevIter_adjacent_pText = nextIter != pTM->freeSpaces.begin() && (prevIter->start_index + prevIter->width + text_distance_pixel == pText->start_index);
         //  if nextIter is end, no data in nextIter
-    bool adjacentNext = nextIter != pTM->freeSpaces.end() && (pText->start_index + pText->width + text_distance_pixel == nextIter->start_index);
+    bool pText_adjacent_nextIter = nextIter != pTM->freeSpaces.end() && (pText->start_index + pText->width + text_distance_pixel == nextIter->start_index);
 
-    if (adjacentPrevious && adjacentNext)   //  merge: prevIter, pText, nextIter
+    if (prevIter_adjacent_pText && pText_adjacent_nextIter)   //  merge: prevIter, pText, nextIter
     {   //  all merge in prevIter
         prevIter->width += text_distance_pixel + pText->width + text_distance_pixel + nextIter->width;  //  3 spaces are adjacent, merge all
         pTM->freeSpaces.erase(nextIter);    //  were merge in prevIter    
     }
-    else if (adjacentPrevious) prevIter->width += text_distance_pixel + pText->width;     //  add pText to prevIter
-    else if (adjacentNext)  //  add pText to nextIter
+    else if (prevIter_adjacent_pText) prevIter->width += text_distance_pixel + pText->width;     //  add pText to prevIter
+    else if (pText_adjacent_nextIter)  //  add pText to nextIter
     {
         nextIter->start_index = pText->start_index;
         nextIter->width += pText->width + text_distance_pixel;

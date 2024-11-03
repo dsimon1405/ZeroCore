@@ -62,8 +62,10 @@ ZC_SDL_AudioStream::ZC_SDL_AudioStream(const ZC_AudioSet& _audioSet)
     ZC_ErrorLogger::Clear();
 }
 
+#include <iostream>
 ZC_SDL_AudioStream::~ZC_SDL_AudioStream()
 {
+    std::cout<<"destroyd"<<std::endl;
     SDL_DestroyAudioStream(audioStream);
 }
 

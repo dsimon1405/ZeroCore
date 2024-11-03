@@ -39,8 +39,8 @@ struct ZC_GUI_ButtonBase : public ZC_GUI_ObjComposite
 
     ZC_Clock clock; //  uses for ZC_GUI_BF_M__DoubleCLick, ZC_GUI_MB__MBLPress events
     long pressed_time = 0;
-    static inline long waitPressLimit_nanosec = 300000000;   //  how long wait to start use VKeyboardButtonPressed_BK(), instead VKeyboardButtonDown_BK()
-    static inline long pressedInterval_nanosec = 100000000;
+    static inline long long waitPressLimit_nanosec = 300000000;   //  how long wait to start use VKeyboardButtonPressed_BK(), instead VKeyboardButtonDown_BK()
+    static inline long long pressedInterval_nanosec = 100000000;
 
     bool isButtonActive = true;
 
@@ -53,7 +53,7 @@ struct ZC_GUI_ButtonBase : public ZC_GUI_ObjComposite
     Params:
     - _waitPressLimit_nanosec - must be more then 0.
     */
-    static void SetWaitPressLimit_BS(long _waitPressLimit_nanosec);
+    static void SetWaitPressLimit_BS(long long _waitPressLimit_nanosec);
 
     /*
     Sets nanosecond interval between calls ZC_GUI_ButtonKeyboard::VKeyboardButtonPressed_BK() or ZC_GUI_ButtonMouse::VLeftButtonPressed_BM(). Default 100000000 nanoseconds (uses for all objects).
@@ -61,7 +61,7 @@ struct ZC_GUI_ButtonBase : public ZC_GUI_ObjComposite
     Params:
     - _pressedInterval_nanosec - must be more then 0.
     */
-    static void SetPressedInterval_BS(long _pressedInterval_nanosec);
+    static void SetPressedInterval_BS(long long _pressedInterval_nanosec);
 
         //  uses in method VStopEventActivity_Obj() from ZC_GUI_ButtonMouse and ZC_GUI_ButtonKeyboard
     void StopEventActivity_BS();

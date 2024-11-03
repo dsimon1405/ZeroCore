@@ -61,8 +61,6 @@ bool ZC_GUI_ButtonMouse::VMouseButtonLeftDown_Obj(float time)
         return false;
     }
     
-    time = ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if time measure was changed. Need nanoseconds.
-    
     if (this->bs_mouseButton == BS_Released)
     {
         this->SetColor_Obj(this->colorsButton.color_button_pressed, true);
@@ -72,21 +70,21 @@ bool ZC_GUI_ButtonMouse::VMouseButtonLeftDown_Obj(float time)
         {
             this->clock.Time<ZC_Nanoseconds>() <= doubleClickLimit_nanosec ? VLeftButtonDoubleClick_BM(time) : VLeftButtonDown_BM(time);
             this->clock.Start();
-            if (this->buttonFlags & ZC_GUI_BF__MBLPress) pressed_time += time;
+            if (this->buttonFlags & ZC_GUI_BF__MBLPress) pressed_time += ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if user changed time measure. Need nanoseconds.
         }
         else
         {
             VLeftButtonDown_BM(time);   //  call event in each case on released button
             if (this->buttonFlags & ZC_GUI_BF__MBLPress)
             {
-                pressed_time += time;
+                pressed_time += ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if user changed time measure. Need nanoseconds.
                 this->clock.Start();    //  if uses bml press event start (restart) time
             }
         }
     }
     else if (this->buttonFlags & ZC_GUI_BF__MBLPress && this->clock.Time<ZC_Nanoseconds>() >= waitPressLimit_nanosec)
     {
-        pressed_time += time;
+        pressed_time += ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if user changed time measure. Need nanoseconds.
         if (pressed_time >= pressedInterval_nanosec)
         {
             VLeftButtonPressed_BM(time);  //  if uses mbl press event and it's time, call them
@@ -102,8 +100,6 @@ void ZC_GUI_ButtonMouse::VMouseButtonLeftUp_Obj(float time)
     {
         if (CheckCursorCollision_Obj())
         {
-            time = ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if time measure was changed. Need nanoseconds.
-            
             this->pObjData->color = colorsButton.color_button_under_cursor;
             VLeftButtonUp_BM(time);
         }

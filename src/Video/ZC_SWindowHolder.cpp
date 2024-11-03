@@ -31,7 +31,7 @@ ZC_SWindowHolder::~ZC_SWindowHolder()
     ZC_ShaderManager::Clear();
 }
 
-void ZC_SWindowHolder::CloseWindow()
+void ZC_SWindowHolder::BreakMainCycle()
 {
     isDrawing = false;
 }
@@ -44,7 +44,11 @@ void ZC_SWindowHolder::RunMainCycle()
     {
         float time = fps.StartNewFrame();   //  time in nanoseconds (default) or in user's seted measure 
         upEventsHolder->PollEvents(time);
-        if (!isDrawing) return;     //  check after polling events
+        if (!isDrawing)
+        {
+            upWindowHolder->VDestroy();
+            return;     //  check after polling events
+        }
         updater.Call(time);
         collision_manager.MakeCollision();
         renderer.Draw(upGUI ? upGUI.Get() : nullptr);
