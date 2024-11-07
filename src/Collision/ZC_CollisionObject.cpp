@@ -2,7 +2,7 @@
 
 #include <Collision/ZC_CollisionManager.h>
 #include <ZC/Tools/Math/ZC_Math.h>
-#include <ZC/Video/ZC_SWindow.h>
+#include <ZC/ZC__System.h>
 
 ZC_CollisionObject::ZC_CollisionObject(ZC_uptr<ZC_CO_FigureSphere>&& _figure, ZC_C0_Type _collision_type, void* _pHolder,
         ZC_Function<void(const ZC_CO_CollisionResult&)>&& _collision_callback, const ZC_Mat4<float>& mat_model)
@@ -60,7 +60,7 @@ const ZC_CO_FigureSphere& ZC_CollisionObject::GetFigure() const
 
 bool ZC_CollisionObject::IsCurrentFrameCollision() const
 {
-    return ZC_SWindow::GetCurrentFrameNumber() == last_collision_frame_number;
+    return ZC__FPS::GetCurrentFrameNumber() == last_collision_frame_number;
 }
 
 void* ZC_CollisionObject::GetHolder()
@@ -89,7 +89,7 @@ bool ZC_CollisionObject::MakeCollision(ZC_CollisionObject* pCO)
     if (!(upFigSphere->GetAllPointsFact()) || !(figure_other.GetAllPointsFact()))    //  one of the object have only radius fo collision, so collision happens only by radius (WRONG WAY)
     {
         float push_back_dist = radiuses_sum - length_between_figures;   //  if equal 0, need recalculate previous poses and make pushback from them (HAVE NO TIME TO DO...)
-        last_collision_frame_number = ZC_SWindow::GetCurrentFrameNumber();
+        last_collision_frame_number = ZC__FPS::GetCurrentFrameNumber();
         pCO->last_collision_frame_number = last_collision_frame_number;
         if (collision_callback)
         {
@@ -112,7 +112,7 @@ bool ZC_CollisionObject::MakeCollision(ZC_CollisionObject* pCO)
         assert(points && surfaces);
         if (SimpleCollision(points, surfaces))   //  both object need simple collision
         {
-            last_collision_frame_number = ZC_SWindow::GetCurrentFrameNumber();
+            last_collision_frame_number = ZC__FPS::GetCurrentFrameNumber();
             pCO->last_collision_frame_number = last_collision_frame_number;
             if (collision_callback) collision_callback(ZC_CO_CollisionResult{ .pObj = pCO, });
             if (pCO->collision_callback) collision_callback(ZC_CO_CollisionResult{ .pObj = this });

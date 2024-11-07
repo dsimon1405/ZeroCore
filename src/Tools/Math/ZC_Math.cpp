@@ -1,5 +1,7 @@
 #include <ZC/Tools/Math/ZC_Math.h>
 
+#include <cmath>
+
 uint ZC_PackColorFloatToUInt_RGB(const ZC_Vec3<float>& rgb) noexcept
 {
     return ZC_PackColorFloatToUInt_RGB(rgb[0], rgb[1], rgb[2]);
@@ -37,7 +39,7 @@ ZC_Vec3<float> ZC_UnpackUINTtoFloat_RGB(uint rgb) noexcept
     return { (rgb >> 20) / 255.f, (rgb >> 10 & uint(1023)) / 255.f, (rgb & uint(1023)) / 255.f };
 }
 
-int ZC_Pack_INT_2_10_10_10_REV(float x, float y, float z)
+int ZC_Pack_INT_2_10_10_10_REV(float x, float y, float z, char bytes_2)
 {
     //  pack float in signed byte array[10]:
     //  array[0] - sign (0 is pluss, 1 is minus);
@@ -45,11 +47,11 @@ int ZC_Pack_INT_2_10_10_10_REV(float x, float y, float z)
     //  512(min), 511(max) signed byte[9] values.
     auto packIn10Bytes = [](float val) -> int
     {
-        return  val < 0 ?
-        512 | static_cast<int>(ZC_ROUND(512.f + val * 512.f))
-        : static_cast<int>(ZC_ROUND(val * 511.f));
+        return val < 0 ?
+            512 | static_cast<int>(std::round((val * 511.f) + 511.f))
+            : static_cast<int>(std::round(val * 511.f));
     };
-    return ((packIn10Bytes(z) << 20) | (packIn10Bytes(y) << 10)) | packIn10Bytes(x);
+    return (((bytes_2 << 30) | packIn10Bytes(z) << 20) | (packIn10Bytes(y) << 10)) | packIn10Bytes(x);
 }
 
 bool ZC_IsPointBelongTriangle_2D(const ZC_Vec2<float>& a, const ZC_Vec2<float>& b, const ZC_Vec2<float>& c, const ZC_Vec2<float>& p)

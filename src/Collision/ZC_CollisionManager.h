@@ -15,6 +15,8 @@ public:
     static bool IsCollisionInProcess();
         //  make collision dynamic objects with static objects and with other dynamic objects
     void MakeCollision();
+    void ChangeState(bool make_collision);
+    bool GetState() const noexcept;
 
 private:
     static inline ZC_CollisionManager* pCM;
@@ -23,4 +25,5 @@ private:
     std::list<ZC_CollisionObject*> static_figures;  //  not movable
     std::list<ZC_CollisionObject*> static_solo_figures; //  dynamic figures may have collision only with one of those not movable object at a time (for exaple parts of the earth)
     bool collision_in_process;
+    bool is_active = true;
 };

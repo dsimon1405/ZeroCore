@@ -1,8 +1,7 @@
 #include <ZC/GUI/Backend/ZC_GUI_Obj.h>
 
-#include <ZC/Video/ZC_SWindow.h>
+#include <ZC/ZC__System.h>
 #include <ZC/GUI/Backend/System/ZC_GUI.h>
-#include <ZC/Video/ZC_SWindow.h>
 
 #include <cmath>
 
@@ -249,7 +248,7 @@ bool ZC_GUI_Obj::CheckCursorCollision_Obj()
 {
     float x = 0.f;
     float y = 0.f;
-    ZC_SWindow::GetCursorPosition(x, y);
+    ZC__Window::GetCursorPosition(x, y);
     return VCheckCursorCollision_Obj(x, y);
 }
 

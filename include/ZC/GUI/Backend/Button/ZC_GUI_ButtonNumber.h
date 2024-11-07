@@ -225,7 +225,7 @@ void ZC_GUI_ButtonNumber<TNum>::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
 template <ZC_GUI_Number::cNumber TNum>
 void ZC_GUI_ButtonNumber<TNum>::VScroll_Obj(float vertical, float time)
 {
-    ChangeAndUpdateNumber(vertical);
+    ChangeAndUpdateNumber(step * vertical);
 }
 
 template <ZC_GUI_Number::cNumber TNum>
@@ -251,8 +251,8 @@ void ZC_GUI_ButtonNumber<TNum>::VFocuseChanged_BM(bool isFocused)
 template <ZC_GUI_Number::cNumber TNum>
 void ZC_GUI_ButtonNumber<TNum>::ChangeAndUpdateNumber(ldouble offset)
 {
-    ldouble new_number = ldouble(number) + (offset * ldouble(step));
-    offset > 0 ? SetNumber(ldouble(number_max) > new_number ? TNum(new_number) : number_max, true)
+    ldouble new_number = ldouble(number) + offset;
+    offset > 0.l ? SetNumber(ldouble(number_max) > new_number ? TNum(new_number) : number_max, true)
         : SetNumber(ldouble(number_min) < new_number ? TNum(new_number) : number_min, true);
 }
 

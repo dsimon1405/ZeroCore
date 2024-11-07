@@ -1,6 +1,6 @@
 #include "ZC_SDL_EventsHolder.h"
 
-#include <ZC/Video/ZC_SWindow.h>
+#include <ZC/ZC__System.h>
 // #ifdef ZC_IMGUI
 // #include <Video/imgui/ZC_ImGui.h>
 // #include <ZC_IGWindow.h>
@@ -60,7 +60,7 @@ void ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
             if (funcWindowCloseButton) funcWindowCloseButton();
             else
             {
-                ZC_SWindow::BreakMainCycle();
+                ZC__System::BreakMainCycle();
                 return;
             }
         } break;
@@ -72,7 +72,7 @@ void ZC_SDL_EventsHolder::PollEvents(float previousFrameTime)
         case SDL_EVENT_MOUSE_MOTION:
         {
             int widht, height;
-            ZC_SWindow::GetSize(widht, height);
+            ZC__Window::GetSize(widht, height);
             //  sdl window have coords with Y start at the top left corner, but in all ZC system trying to make as in opengl Y start at the buttom left corner, so recalculate Y params to buttom left corner
             mouse.MouseMove(event.motion.x, static_cast<float>(height) - event.motion.y, event.motion.xrel, event.motion.yrel * -1.f, previousFrameTime);
         } break;

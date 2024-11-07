@@ -69,7 +69,8 @@ template<typename TVal, typename... TParams>
 void ZC_ESignal<TVal(TParams...)>::operator () (TParams... params)
 {
     MakeReconnection();
-    for (auto& function : functions) function(params...);
+    for (auto& function : functions)
+        function(params...);
 }
 
 template<typename TVal, typename... TParams>

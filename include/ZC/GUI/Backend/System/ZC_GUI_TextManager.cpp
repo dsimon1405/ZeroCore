@@ -107,6 +107,8 @@ typename ZC_GUI_TextManager::Text* ZC_GUI_TextManager::GetText(const std::wstrin
 
 void ZC_GUI_TextManager::ProcessDeletableText(int wstr_width, Text* pText)
 {       //  find free space in texture
+    if (!pTM) return;
+
     const std::list<FreeSpace>::iterator emptyIter;
     typename std::list<FreeSpace>::iterator freeSpaceIter = emptyIter;
     for (auto iter = pTM->freeSpaces.begin(); iter != pTM->freeSpaces.end(); ++iter)    //  try to find free space with a width as close as possible to wstr_width
@@ -152,6 +154,8 @@ void ZC_GUI_TextManager::ProcessDeletableText(int wstr_width, Text* pText)
 
 void ZC_GUI_TextManager::EraseText(Text* pText)
 {
+    if (!pTM) return;
+
     if (pText->isImmutable) return; //  delete only deletable
     if (pTM->freeSpaces.empty())    //  first empty space
     {
@@ -186,6 +190,8 @@ void ZC_GUI_TextManager::EraseText(Text* pText)
 
 bool ZC_GUI_TextManager::UpdateText(Text*& pText, int total_width, bool brootForceUpdate, const std::wstring& wstr)
 {
+    if (!pTM) return false;
+
     int wstr_width = CalculateWstrWidth(wstr);
     if (pText->isImmutable) pText = GetText(wstr, false, total_width, pText->alignment, &wstr_width);     //  pText is immutable. Get new text
     else if (!brootForceUpdate) //  pText mutable and don't need broot force map
@@ -203,6 +209,8 @@ bool ZC_GUI_TextManager::UpdateText(Text*& pText, int total_width, bool brootFor
 
 bool ZC_GUI_TextManager::UpdateText(Text* pText, const std::list<ZC_GUI_ChData>& chDatas)
 {
+    if (!pTM) return false;
+
     if (pText->width < CalculateChDataWidth(chDatas)) return false;   //  new length can't be longer then current
     MapTexture(pText->start_index, pText->width, CreateChDataData(chDatas, pText).data());
     return true;
@@ -210,6 +218,8 @@ bool ZC_GUI_TextManager::UpdateText(Text* pText, const std::list<ZC_GUI_ChData>&
 
 int ZC_GUI_TextManager::CalculateWstrWidth(const std::wstring& wstr)
 {
+    if (!pTM) return 0;
+
     int wstr_width = 0;
     for (const wchar_t& wch : wstr)
     {
@@ -223,6 +233,8 @@ int ZC_GUI_TextManager::CalculateWstrWidth(const std::wstring& wstr)
 
 int ZC_GUI_TextManager::CalculateChDataWidth(const std::list<ZC_GUI_ChData>& chDatas)
 {
+    if (!pTM) return 0;
+
     int chDatas_width = 0;
     for (const ZC_GUI_ChData& chData : chDatas)
     {

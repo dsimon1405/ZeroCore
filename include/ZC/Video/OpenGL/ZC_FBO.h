@@ -7,11 +7,11 @@
 #include "ZC_FBOBuffersController.h"
 #include <ZC/Events/ZC_EC.h>
 
-class ZC_SWindowHolder;
+class ZC_System;
 
 struct ZC_FBO
 {
-    friend class ZC_SWindowHolder;
+    friend class ZC_System;
     //  specifies FBO's color format (or attachs renderbuffer of the main window to FBO)
     enum ColorInternalFormat
     {

@@ -35,6 +35,8 @@ bool ZC_CollisionManager::IsCollisionInProcess()
 
 void ZC_CollisionManager::MakeCollision()
 {
+    if (!is_active) return;
+
     collision_in_process = true;
         //  update data with model matrices if need
     for (ZC_CollisionObject* pCF : static_figures) pCF->UpdateCenterWithModelMatrix();
@@ -62,4 +64,14 @@ void ZC_CollisionManager::MakeCollision()
     }
 
     collision_in_process = false;
+}
+
+void ZC_CollisionManager::ChangeState(bool make_collision)
+{
+    is_active = make_collision;
+}
+
+bool ZC_CollisionManager::GetState() const noexcept
+{
+    return is_active;
 }

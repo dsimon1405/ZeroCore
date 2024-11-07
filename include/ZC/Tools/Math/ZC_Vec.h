@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ZC_Vec2.h"
 #include "ZC_Vec4.h"
 
 #include <cmath>
@@ -111,10 +112,26 @@ namespace ZC_Vec
     Vector length.
     */
     template<typename TValue>
-    constexpr TValue Length(const ZC_Vec3<TValue>& vec1) noexcept
+    constexpr TValue Length(const ZC_Vec3<TValue>& vec) noexcept
     {
-        if (vec1 == ZC_Vec3<TValue>()) return TValue(0);
-        return static_cast<TValue>(sqrt(vec1[0] * vec1[0] + vec1[1] * vec1[1] + vec1[2] * vec1[2]));
+        if (vec == ZC_Vec3<TValue>()) return TValue(0);
+        return static_cast<TValue>(sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]));
+    }
+
+    /*
+    Vector length.
+
+    Params:
+    - vec1 - vector.
+
+    Return:
+    Vector length.
+    */
+    template<typename TValue>
+    constexpr TValue Length(const ZC_Vec2<TValue>& vec) noexcept
+    {
+        if (vec == ZC_Vec2<TValue>()) return TValue(0);
+        return static_cast<TValue>(sqrt(vec[0] * vec[0] + vec[1] * vec[1]));
     }
 
     /*
@@ -136,9 +153,34 @@ namespace ZC_Vec
         return v + (direction * static_cast<TValue>(length / sqrt(direction[0] * direction[0] + direction[1] * direction[1] + direction[2] * direction[2])));
     }
 
+    /*
+    Moves a vector in a specified direction (may not be normalized) by a specified length.
+
+    Params:
+    - v - vector to move.
+    - direction - where to move.
+    - length - on what length to move.
+
+    Return:
+    Vector with new position.
+    */
+    template<typename TValue>
+    ZC_Vec2<TValue> MoveByLength(const ZC_Vec2<TValue>& v, const ZC_Vec2<TValue>& direction, TValue length) noexcept
+    {
+        assert(direction != ZC_Vec2<TValue>());
+        if (direction == ZC_Vec2<TValue>()) return v;
+        return v + (direction * static_cast<TValue>(length / sqrt(direction[0] * direction[0] + direction[1] * direction[1])));
+    }
+
     template<typename TValue>
     ZC_Vec3<TValue> Vec4_to_Vec3(const ZC_Vec4<TValue>& v) noexcept
     {
         return { v[0], v[1], v[2] };
+    }
+
+    template<typename TValue>
+    ZC_Vec2<TValue> Vec3_to_Vec2(const ZC_Vec3<TValue>& v) noexcept
+    {
+        return { v[0], v[1] };
     }
 }

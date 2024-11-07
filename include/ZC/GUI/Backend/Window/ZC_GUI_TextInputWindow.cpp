@@ -4,7 +4,7 @@
 #include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 #include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
 #include <ZC/GUI/Backend/Config/ZC_GUI_Colors.h>
-#include <ZC/Video/ZC_SWindow.h>
+#include <ZC/ZC__System.h>
 #include <ZC/Events/ZC_Events.h>
 
 void ZC_GUI_TextInputWindow::SetColors(uint color_background, uint color_text, uint color_caret, uint color_highlight)
@@ -92,7 +92,7 @@ void ZC_GUI_TextInputWindow::VSetDrawState_W(bool needDraw)
         caret.SetDrawState(ZC_GUI_TextInputWindow::Caret::DrawState::NotDisplay);    //  stop drawing caret (actualy no need to stop drawing caret, do this to stop calling (disconnect) caret blinking event)
         funcChangedWstr = nullptr;     //  free callback (if it is)
         upINumberInput = nullptr;   //  free number interfafe (if it is)
-        ZC_SWindow::StopInputText();
+        ZC__Window::StopInputText();
     }
     eventHandler.mbl_click = ZC_GUI_TextInputWindow::EventHandler::First;
 
@@ -139,7 +139,7 @@ bool ZC_GUI_TextInputWindow::StartWindow(float bl_x, float bl_y, int win_width, 
 
     this->VSetDrawState_W(true);
 
-    ZC_SWindow::StartInputText();
+    ZC__Window::StartInputText();
 
     if (highlight_text)
     {
@@ -535,7 +535,7 @@ void ZC_GUI_TextInputWindow::Caret::SetPositionOfMouseCursor()
 {
     float x = 0,
         y = 0;
-    ZC_SWindow::GetCursorPosition(x, y);
+    ZC__Window::GetCursorPosition(x, y);
     int cursor_x = x;
 
     pChData_pos = nullptr;
@@ -731,7 +731,7 @@ void ZC_GUI_TextInputWindow::Caret::TextButtonDown(const typename ZC_GUI_Font::C
 
 void ZC_GUI_TextInputWindow::Caret::BlinkingUpdate(float time)
 {
-    blinkTime += ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if time measure was changed. Need nanoseconds.
+    blinkTime += ZC__FPS::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if time measure was changed. Need nanoseconds.
     if (blinkTime >= blinkTime_limit)   //   time over
     {
         blinkTime -= blinkTime_limit;   //  update time
@@ -845,7 +845,7 @@ void ZC_GUI_TextInputWindow::EventHandler::ButtonUp(ZC_ButtonID buttonID, float 
 
 void ZC_GUI_TextInputWindow::EventHandler::CallPressedButton(float time, bool isLeft, void(ZC_GUI_TextInputWindow::Highlight::* pFuncMove)())
 {
-    wait_time += ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if time measure was changed. Need nanoseconds.
+    wait_time += ZC__FPS::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if time measure was changed. Need nanoseconds.
     if (buttonPressedStarted)
     {
         if (wait_time >= beteenCallsWhenPressedNanoseconds)

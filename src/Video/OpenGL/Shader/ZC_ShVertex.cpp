@@ -28,9 +28,10 @@ ZC_Shader* ZC_ShVertex1::GetShader(Name name)    //  add here new
     case Name::textScene: path = ZC_FSPath(shadersPath).append("textScene.vs").string(); break;
     case Name::textWindowIntoScene: path = ZC_FSPath(shadersPath).append("textWindowIntoScene.vs").string(); break;
     
-    case Name::Game_PlayerSphere: path = ZC_FSPath(shadersPath).append("Game/sphere.vs").string(); break;
-    case Name::Game_Particle: path =  ZC_FSPath(shadersPath).append("Game/particle.vs").string(); break;
-    case Name::Game_Star: path =  ZC_FSPath(shadersPath).append("Game/star.vs").string(); break;
+    case Name::game_sphere: path = ZC_FSPath(shadersPath).append("Game/sphere.vs").string(); break;
+    // case Name::Game_platform: path = ZC_FSPath(shadersPath).append("Game/platform.vs").string(); break;
+    case Name::game_particle: path =  ZC_FSPath(shadersPath).append("Game/particle.vs").string(); break;
+    case Name::game_star: path =  ZC_FSPath(shadersPath).append("Game/star.vs").string(); break;
 
     case Name::Test_skelet: path =  ZC_FSPath(shadersPath).append("test_skelet/skelet.vs").string(); break;
     }
@@ -62,13 +63,22 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_ShVertex1::GetUniformData(Name name)    //  
     case Name::textScene: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
     case Name::textWindowIntoScene: return ZC_Uniform::GetUniformVector({ ZC_UN_unPositionScene, true });
 
-    case Name::Game_PlayerSphere: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
-    case Name::Game_Particle:
+    case Name::game_sphere:
+    {
+        UnNT uniforms[]{ { ZC_UN_unModel, true }, { ZC_UN_unColor, true } };
+        return ZC_Uniform::GetUniformVector(uniforms, 2);
+    }
+    // case Name::Game_platform:
+    // {
+    //     UnNT uniforms[]{ { ZC_UN_unModel, true }, { ZC_UN_unColor, true } };
+    //     return ZC_Uniform::GetUniformVector(uniforms, 2);
+    // }
+    case Name::game_particle:
     {
         UnNT uniforms[]{ { ZC_UN_unAlpha, true }, { G_UN_unPointSize, false } };
         return ZC_Uniform::GetUniformVector(uniforms, 2);
     }
-    case Name::Game_Star: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
+    case Name::game_star: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
 
     // case Name::Test_skelet: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
     case Name::Test_skelet:

@@ -24,7 +24,7 @@ ZC_Camera::ZC_Camera(const ZC_Vec3<float>& _camPos, const ZC_Vec3<float>& _lookO
 
     UboUpdate();
 
-    ZC_UBOs::AddUpdateFunction(upUbo.Get(), { &ZC_Camera::UboUpdate, this }, renderLevel);
+    ZC_UBOs::AddUpdateFunctionToUBOs(upUbo.Get(), { &ZC_Camera::UboUpdate, this }, renderLevel);
 }
 
 ZC_Camera::ZC_Camera(ZC_Camera&& c)

@@ -16,7 +16,8 @@ struct ZC_GUI
     ZC_GUI_TextInputWindow textInputWindow{ float(textManager.font.GetHeight()) };
 
     ZC_GUI();
-
+    ~ZC_GUI();
+    
     void Configure();
 
     void Draw();

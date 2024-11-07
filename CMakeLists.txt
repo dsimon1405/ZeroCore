@@ -126,6 +126,8 @@ endif()
 #========================= add lib
 add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	$<$<NOT:${ZC_MY_DEBUG}>:${PROJECT_SOURCE_DIR}/external/glad/src/glad.c>
+    ${PROJECT_SOURCE_DIR}/src/ZC__System.cpp
+    ${PROJECT_SOURCE_DIR}/src/ZC_System.cpp		
 	$<IF:$<CONFIG:Debug>,
 		${PROJECT_SOURCE_DIR}/src/ErrorLogger/Exception/ZC_ErrorLogger.cpp,
 		${PROJECT_SOURCE_DIR}/src/ErrorLogger/Message/ZC_ErrorLogger.cpp>
@@ -137,8 +139,7 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 		${PROJECT_SOURCE_DIR}/src/Audio/ZC_SoundData.cpp
 		${PROJECT_SOURCE_DIR}/src/Audio/ZC_Sounds.cpp
 		${PROJECT_SOURCE_DIR}/src/Audio/ZC_StreamSound.cpp>
-    ${PROJECT_SOURCE_DIR}/src/Video/ZC_SWindow.cpp
-    ${PROJECT_SOURCE_DIR}/src/Video/ZC_SWindowHolder.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/ZC_IWindow.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_FBO.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_FBOBuffersController.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_Framebuffer.cpp
@@ -279,7 +280,7 @@ target_include_directories(${PROJECT_NAME} ${ZC_INCLUDE_DIRS}
 
 #========================= link libs
 target_link_libraries(${PROJECT_NAME} ${ZC_LINK_LIBS}
-	PUBLIC $<$<BOOL:${ZC_MY_DEBUG}>:$<IF:${WIN32},C:/Users/simon007/source/repos/Source/glad/lib/glad.lib,/home/dmitry/projects/external/glad/lib/libglad.so>>
+	PUBLIC $<$<BOOL:${ZC_MY_DEBUG}>:$<IF:$<BOOL:${WIN32}>,C:/Users/simon007/source/repos/Source/glad/lib/glad.lib,/home/dmitry/projects/external/glad/lib/libglad.so>>
 	)
 	
 #========================= compiler params

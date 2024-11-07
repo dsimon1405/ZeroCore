@@ -1,13 +1,12 @@
 #pragma once
 
-#include <Video/ZC_SWindowHolder.h>
+#include <Video/ZC_IWindow.h>
 
 #include <SDL3/SDL_video.h>
 
-struct ZC_SDL_Window : public ZC_SWindowHolder
+struct ZC_SDL_Window : public ZC_IWindow
 {
     ZC_SDL_Window(int flags, int _width, int _height, const char* name);
-    ~ZC_SDL_Window() override;
 
 private:
     SDL_Window* pWindow = nullptr;

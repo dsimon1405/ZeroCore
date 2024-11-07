@@ -5,7 +5,7 @@
 #include <ZC/Video/OpenGL/Renderer/ZC_Renderer.h>
 #include <ZC/Video/OpenGL/Renderer/ZC_Renders.h>
 
-void ZC_UBOs::AddUpdateFunction(ZC_UBO* pUbo, ZC_Function<void()>&& fUpdate, ZC_RenderLevel renderLevel)
+void ZC_UBOs::AddUpdateFunctionToUBOs(ZC_UBO* pUbo, ZC_Function<void()>&& fUpdate, ZC_RenderLevel renderLevel)
 {
     renderLevel == ZC_AddToRenderer ? ZC_Renderer::AddUBOs(pUbo, std::move(fUpdate)) : ZC_Renders::GetRender(renderLevel)->AddUBO(pUbo, std::move(fUpdate));
 }

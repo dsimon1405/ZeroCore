@@ -14,7 +14,7 @@ void ZC_Updater::Call(float time)
         if (pair.second.is_active) pair.second.esig(time);
 }
 
-void ZC_Updater::ChangeUpdaterState(bool needUpdate)
+void ZC_Updater::ChangeState(bool needUpdate)
 {
     isActive = needUpdate;
 }

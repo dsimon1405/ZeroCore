@@ -22,7 +22,8 @@ enum ZC_ShPName
     ShPN_ZC_TextWindowIntoScene,
     ShPN_ZC_OrthoTexture,
 
-    ShPN_Game_PlayerSphere,
+    ShPN_Game_Sphere,
+    // ShPN_Game_Platform,
     SHPN_Game_Particle,
     ShPN_Game_Star,
 

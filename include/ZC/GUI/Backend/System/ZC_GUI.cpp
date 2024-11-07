@@ -7,6 +7,11 @@ ZC_GUI::ZC_GUI()
     eventManager.AddWindow(dynamic_cast<ZC_GUI_Window*>(&textInputWindow));     //  here adds only ZC_GUI_TextInputWinodw caurse pGUI unseted while it trys to add from ZC_GUI_WinImmutable ctr
 }
 
+ZC_GUI::~ZC_GUI()
+{
+    pGUI = nullptr;
+}
+
 void ZC_GUI::Configure()
 {
     textManager.Configure(false);    //  must be before drawManager.Configure(), must calculate uv for ZC_GUI_Text objects

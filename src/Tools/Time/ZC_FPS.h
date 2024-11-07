@@ -25,7 +25,7 @@ struct ZC_FPS
     void SetLimit(long long fps);
 
     //  Change time measure.
-    void ChangeTimeMeasure(ZC_FPS_TimeMeasure _time_measure);
+    void SetTimeMeasure(ZC_FPS_TimeMeasure _time_measure);
 
     // Return previous frame time in selected measure.
     float GetPreviousFrameTime(ZC_FPS_TimeMeasure _time_measure) const noexcept;

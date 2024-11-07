@@ -30,7 +30,6 @@ typedef long long llong;
 typedef unsigned long long ullong;
 typedef double long ldouble;
 
-#define ZC_ROUND(val) (val + 0.5)   //  round float or double to integer value
 #define ZC_ToZeroOneRange(val) ((val + 1.0) / 2.0)  //  from range [-1,1] to range [0,1]
 #define ZC_ToMinusPlusOneRange(val) ((val * 2.0) - 1.0)  //  from range [0,1] to range [-1,1]
 
@@ -82,7 +81,7 @@ ushort ZC_PackTexCoordFloatToUShort(float coord);
 //  Unpack color from uint packed (2x10x10x10) to vector of floats.
 ZC_Vec3<float> ZC_UnpackUINTtoFloat_RGB(uint rgb) noexcept;
 
-int ZC_Pack_INT_2_10_10_10_REV(float x, float y, float z);
+int ZC_Pack_INT_2_10_10_10_REV(float x, float y, float z, char bytes_2 = 0);
 
 /*
 Params:

@@ -12,12 +12,12 @@ ZC_GUI_ButtonBase::ZC_GUI_ButtonBase(const ZC_GUI_ObjData& od, ZC_GUI_ButtonFlag
 
 void ZC_GUI_ButtonBase::SetWaitPressLimit_BS(long long _waitPressLimit_nanosec)
 {
-    if (_waitPressLimit_nanosec > long long(0)) waitPressLimit_nanosec = _waitPressLimit_nanosec;
+    if (_waitPressLimit_nanosec > 0ll) waitPressLimit_nanosec = _waitPressLimit_nanosec;
 }
 
 void ZC_GUI_ButtonBase::SetPressedInterval_BS(long long _pressedInterval_nanosec)
 {
-    if (_pressedInterval_nanosec > long long (0)) pressedInterval_nanosec = _pressedInterval_nanosec;
+    if (_pressedInterval_nanosec > 0ll) pressedInterval_nanosec = _pressedInterval_nanosec;
 }
 
 void ZC_GUI_ButtonBase::StopEventActivity_BS()

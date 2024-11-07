@@ -21,7 +21,7 @@ public:
 	- fUpdate - function for update.
 	- renderLevel - one of the ZC_Render or set ZC_AddToRenderer to add in ZC_Renderer.
 	*/
-	static void AddUpdateFunction(ZC_UBO* pUbo, ZC_Function<void()>&& fUpdate, ZC_RenderLevel renderLevel);
+	static void AddUpdateFunctionToUBOs(ZC_UBO* pUbo, ZC_Function<void()>&& fUpdate, ZC_RenderLevel renderLevel);
 	void AddUBO(ZC_UBO* pUbo, ZC_Function<void()>&& fUpdate);
 	void EraseUBO(ZC_UBO* pUbo);
 

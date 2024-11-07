@@ -1,8 +1,9 @@
 #include "ZC_SDL_Window.h"
 
-#include <ZC/Video/ZC_SWindow.h>
+#include <ZC/ZC__System.h>
 #include <Video/OpenGL/ZC_OpenGLConfig.h>
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
+#include <glad/glad.h>
 #ifdef ZC_IMGUI
 #include <Video/imgui/ZC_ImGui.h>
 #endif
@@ -28,7 +29,7 @@ ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, cons
 	
     // if (SDL_GL_LoadLibrary(NULL) != 0) { ZC_ErrorLogger::Err("SDL_GL_LoadLibrary() faild! " + std::string(SDL_GetError()), __FILE__, __LINE__);}
 
-    using namespace ZC_SWindow;
+    using namespace ZC__System;
 	if (!SetOpenGLAttributes(flags & ZC_SWF__Multisampling_4 ? 4
 							: flags & ZC_SWF__Multisampling_3 ? 3
 							: flags & ZC_SWF__Multisampling_2 ? 2
@@ -87,19 +88,6 @@ void ZC_SDL_Window::VDestroy()
 #ifdef ZC_IMGUI
 	ZC_ImGui::Destroy();
 #endif
-}
-
-ZC_SDL_Window::~ZC_SDL_Window()
-{
-//     SDL_GL_DeleteContext(glContext);
-//     SDL_DestroyWindow(pWindow);
-//     #ifdef ZC_SDL_AUDIO
-//     ZC_Audio::CloseAudioStream();
-//     #endif
-//     SDL_Quit();
-// #ifdef ZC_IMGUI
-// 	ZC_ImGui::Destroy();
-// #endif
 }
 
 void ZC_SDL_Window::VSwapBuffer()

@@ -21,9 +21,10 @@ struct ZC_ShVertex1
         textScene,
         textWindowIntoScene,
 
-        Game_PlayerSphere,
-        Game_Particle,
-        Game_Star,
+        game_sphere,
+        // Game_platform,
+        game_particle,
+        game_star,
 
         Test_skelet
     };

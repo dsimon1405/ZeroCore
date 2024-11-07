@@ -2,7 +2,7 @@
 
 #include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 #include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
-#include <ZC/Video/ZC_SWindow.h>
+#include <ZC/ZC__System.h>
 
 ZC_GUI_ColorManipulator::ZC_GUI_ColorManipulator(ZC_Function<void(float,float,float,float)>&& _callback, bool _range_255)
     : ZC_GUI_ObjComposite(ZC_GUI_ObjData(0.f, 20.f, 0, ZC_GUI_IconUV::quad_colored, ZC_GUI_Bindings::location_tex_Icons)),      //  wisth sets in VSet_pBL_Obj()
@@ -213,7 +213,7 @@ bool ZC_GUI_ColorManipulator::VMouseButtonLeftDown_Obj(float time)
     isMBL_pressed = true;
     
     float mouse_x, mouse_y;
-    ZC_SWindow::GetCursorPosition(mouse_x, mouse_y);
+    ZC__Window::GetCursorPosition(mouse_x, mouse_y);
     ZC_Vec2<float> cursor_color_line_pos = GetCursorColorLinePosition();
     if (cursor_color_line_pos[0] == mouse_x) return true;  //  mouse cursor pos_x equal color line cursor pos_x
 
@@ -454,7 +454,7 @@ bool ZC_GUI_ColorManipulator::Saturation::VMouseButtonLeftDown_Obj(float time)
 
     float cursor_x = 0.f;
     float cursor_y = 0.f;
-    ZC_SWindow::GetCursorPosition(cursor_x, cursor_y);
+    ZC__Window::GetCursorPosition(cursor_x, cursor_y);
     ZC_Vec2<float> cursor_pos(cursor_x, cursor_y);
     if (cursor_pos == GetSaturationCursorPosition()) return true;    //  same pos
 

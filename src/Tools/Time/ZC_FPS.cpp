@@ -6,7 +6,7 @@
 
 ZC_FPS::ZC_FPS(ZC_FPS_TimeMeasure _time_measure)
 {
-    ChangeTimeMeasure(_time_measure);
+    SetTimeMeasure(_time_measure);
 }
 
 float ZC_FPS::StartNewFrame()
@@ -32,7 +32,7 @@ void ZC_FPS::SetLimit(long long fps)
     fpsTime = fps == 0ll ? 0ll : static_cast<long long>(nanosecond) / (fps + 1ll);
 }
 
-void ZC_FPS::ChangeTimeMeasure(ZC_FPS_TimeMeasure _time_measure)
+void ZC_FPS::SetTimeMeasure(ZC_FPS_TimeMeasure _time_measure)
 {
     switch (_time_measure)
     {

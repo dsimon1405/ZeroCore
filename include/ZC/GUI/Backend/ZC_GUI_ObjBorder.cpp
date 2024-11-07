@@ -2,7 +2,7 @@
 
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 #include <ZC/GUI/Backend/System/ZC_GUI.h>
-#include <ZC/Video/ZC_SWindow.h>
+#include <ZC/ZC__System.h>
 #include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
 #include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 
@@ -525,7 +525,7 @@ float ZC_GUI_ObjBorder::Scroll::GetCursor_Y()
 {
     float x = 0,
         y = 0;
-    ZC_SWindow::GetCursorPosition(x, y);
+    ZC__Window::GetCursorPosition(x, y);
     return y;
 }
 

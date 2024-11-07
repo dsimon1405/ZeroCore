@@ -2,7 +2,7 @@
 
 #include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
 #include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
-#include <ZC/Video/ZC_SWindow.h>
+#include <ZC/ZC__System.h>
 
 ZC_GUI_ButtonMouse::ZC_GUI_ButtonMouse(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ColorsButton& _colorsButton)
     : ZC_GUI_ButtonMouse(width, height, _buttonFlags, ZC_GUI_IconUV::button, _colorsButton)
@@ -70,21 +70,21 @@ bool ZC_GUI_ButtonMouse::VMouseButtonLeftDown_Obj(float time)
         {
             this->clock.Time<ZC_Nanoseconds>() <= doubleClickLimit_nanosec ? VLeftButtonDoubleClick_BM(time) : VLeftButtonDown_BM(time);
             this->clock.Start();
-            if (this->buttonFlags & ZC_GUI_BF__MBLPress) pressed_time += ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if user changed time measure. Need nanoseconds.
+            if (this->buttonFlags & ZC_GUI_BF__MBLPress) pressed_time += ZC__FPS::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if user changed time measure. Need nanoseconds.
         }
         else
         {
             VLeftButtonDown_BM(time);   //  call event in each case on released button
             if (this->buttonFlags & ZC_GUI_BF__MBLPress)
             {
-                pressed_time += ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if user changed time measure. Need nanoseconds.
+                pressed_time += ZC__FPS::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if user changed time measure. Need nanoseconds.
                 this->clock.Start();    //  if uses bml press event start (restart) time
             }
         }
     }
     else if (this->buttonFlags & ZC_GUI_BF__MBLPress && this->clock.Time<ZC_Nanoseconds>() >= waitPressLimit_nanosec)
     {
-        pressed_time += ZC_SWindow::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if user changed time measure. Need nanoseconds.
+        pressed_time += ZC__FPS::GetPreviousFrameTime(ZC_FPS_TM__Nanoseconds);    //  on case if user changed time measure. Need nanoseconds.
         if (pressed_time >= pressedInterval_nanosec)
         {
             VLeftButtonPressed_BM(time);  //  if uses mbl press event and it's time, call them

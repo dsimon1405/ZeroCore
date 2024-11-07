@@ -1,7 +1,7 @@
 #include <ZC/Tools/ZC_WindowOrthoIndent.h>
 
 #include <ZC/Events/ZC_Events.h>
-#include <ZC/Video/ZC_SWindow.h>
+#include <ZC/ZC__System.h>
 
 #include <cassert>
 
@@ -79,7 +79,7 @@ ZC_WindowOrthoIndent::ZC_WindowOrthoIndent(const ZC_WindowOrthoIndent& woi)
 void ZC_WindowOrthoIndent::CalculateCurrentIndents()
 {
     int windowWidth, windowHeight;
-    ZC_SWindow::GetSize(windowWidth, windowHeight);
+    ZC__Window::GetSize(windowWidth, windowHeight);
     CalculateIndents(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
 }
 
@@ -231,7 +231,7 @@ ZC_WindowOrthoIndent1::ZC_WindowOrthoIndent1(const ZC_WindowOrthoIndent1& woi)
 void ZC_WindowOrthoIndent1::CalculateCurrentIndents()
 {
     int windowWidth, windowHeight;
-    ZC_SWindow::GetSize(windowWidth, windowHeight);
+    ZC__Window::GetSize(windowWidth, windowHeight);
     CalculateIndents(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
 }
 

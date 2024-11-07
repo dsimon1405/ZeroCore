@@ -1,6 +1,6 @@
 #include <ZC/Video/OpenGL/ZC_Viewport.h>
 
-#include "ZC/Video/ZC_SWindow.h"
+#include "ZC/ZC__System.h"
 
 ZC_Viewport::ZC_Viewport(int _startX, int _startY, int _width, int _height)
     : startX(_startX),
@@ -13,7 +13,7 @@ ZC_Viewport ZC_Viewport::CreateStandardWindowViewport()
 {
     int width,
         height;
-    ZC_SWindow::GetSize(width, height);
+    ZC__Window::GetSize(width, height);
     return { 0, 0, width, height };
 }
 

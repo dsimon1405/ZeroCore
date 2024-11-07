@@ -265,7 +265,7 @@ void ZC_GUI_TextInputWindow::NumberInput<TNum>::Call_Callback()
 {
     std::wstring wstr = pTIW->text.GetWStr();
     if (wstr.size() == 0) return;   //  wstr is empty, don't call funcChangedNumber()
-    else if (wstr.size() == 1 && wstr[0] == L'-') funcChangedNumber(TNum(0));    //  in wstr only -> minus
+    else if (wstr.size() == 1 && (wstr[0] == L'-' || wstr[0] == L'.')) funcChangedNumber(TNum(0));    //  in wstr only -> minus
     else if (std::same_as<TNum, float>) funcChangedNumber(std::stof(wstr));
     else if (std::same_as<TNum, double>) funcChangedNumber(std::stod(wstr));
     else if (std::same_as<TNum, long double>) funcChangedNumber(std::stold(wstr));

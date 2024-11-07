@@ -1,6 +1,6 @@
 #include "ZC_GUI_EventManager.h"
 
-#include <ZC/Video/ZC_SWindow.h>
+#include <ZC/ZC__System.h>
 #include <Events/Button/ZC_ButtonPressedDown.h>
 
 #include <cassert>
@@ -125,7 +125,7 @@ void ZC_GUI_EventManager::StopObjEventActivity(ZC_GUI_Obj*& rpObj)
 void ZC_GUI_EventManager::UpdateCursorCollision()
 {
     float x = 0.f, y = 0.f;
-    ZC_SWindow::GetCursorPosition(x, y);
+    ZC__Window::GetCursorPosition(x, y);
     CursorMove(x, y, 0.f, 0.f, 1.f);
 }
 

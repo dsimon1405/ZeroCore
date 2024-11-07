@@ -18,6 +18,8 @@ struct ZC_ShFragment1
         orthoTexture,
 
         game_sphere,
+        game_star,
+        // game_platform,
 
         Test_skelet
     };
