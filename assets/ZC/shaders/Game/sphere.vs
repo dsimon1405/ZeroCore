@@ -51,6 +51,8 @@ layout (location = 0) out OutV
     float attenuation_quadratic;
 
     vec3 light_color[2];
+
+    bool normal_aligned_to_cam;
 } outV;
 
 
@@ -65,8 +67,12 @@ void main()
     vec4 frag_pos_v4 = unModel * vec4(pos, 1.f);
     outV.frag_pos = vec3(frag_pos_v4);
     outV.normal = normalize(mat3(transpose(inverse(unModel))) * vec3(norm));
+    
+    gl_Position = perspView * frag_pos_v4;
 
-    gl_Position =  perspView * frag_pos_v4;
+    // outV.normal_aligned_to_cam = dot(normalize(outV.frag_pos - camPos), outV.normal) > 0.f;
+    outV.normal_aligned_to_cam = false;                                                                         //  TEST MODE
+    if (outV.normal_aligned_to_cam) return;     //  cam look at the face from the back, will be discard in fs
     
         //  unpack adding color
     outV.add_color_packed = unColor;
@@ -86,10 +92,7 @@ void main()
         attenuation_linear_start = 0.014f;
         attenuation_quadratic_start = 0.00007f;
         if (light[Light_Platform].color != 0)
-        {
             outV.light_color[Light_Platform] = Uint_2_10_10_10_To_vec3(light[Light_Platform].color);
-            // CalculateLightPlatformPos();
-        }
     } break;
     case 0:     //  platform
     {

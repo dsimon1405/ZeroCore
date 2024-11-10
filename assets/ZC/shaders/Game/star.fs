@@ -9,5 +9,7 @@ out vec4 FragColor;
 void main()
 {
     vec4 texColor = texture(texColor, vTexCoords);
-    FragColor = vec4(texColor.xyz + vec3(0.5f, 0.5f, 0.5f), 0.3);
+    // float offset = 100.f;
+    float offset = 0.5f;
+    FragColor = vec4(texColor.xyz + vec3(offset, offset, offset), 0.3);
 }

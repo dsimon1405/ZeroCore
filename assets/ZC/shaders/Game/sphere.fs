@@ -46,6 +46,8 @@ layout (location = 0) in InF
     float attenuation_quadratic;
 
     vec3 light_color[2];
+
+    flat bool normal_aligned_to_cam;
 } inF;
 
 
@@ -62,11 +64,20 @@ float CalcAttenuationRealistic(vec3 light_pos, float attenuation_linear, float a
 vec3 CalculateCombineFragColor(vec3 frag_color, vec3 light_pos, vec3 light_color, bool interpolate_light_color, float attenuation,
     float ambient_power, float diffuse_power, float specular_power, bool use_specular, vec3 dir_frag_to_cam, float specular_pow);
 
+
+// float TestAttenuationLinear(vec3 light_pos)
+// {
+//     const float light_range = ;
+//     const float light_start_offset = 3.f;   //  for platforms light pos further, then lightning must be start (to improve diffuse effect). Loock G_Platform::CalculateLightPos()
+//     float dist_frag_to_light = length(light_pos - inF.frag_pos);
+//     return 1.f - (dist_frag_to_light / light_range);
+// }
+
 #define SPECULAR_POW 16.f
 
 void main()
-{
-    if (unAlpha == 0.f) discard;
+{       //  if inF.normal_aligned_to_cam true -> cam look at the face from the back
+    if (inF.normal_aligned_to_cam || unAlpha == 0.f) discard;
 
     vec3 frag_color = texture(texColor, inF.tex_coords).rgb;
     if (frag_color == vec3(0.f, 0.f, 0.f))
@@ -74,6 +85,16 @@ void main()
         FragColor = vec4(0.f, 0.f, 0.f, unAlpha);
         return;
     }
+
+
+
+        //  TEST MODE
+FragColor = vec4(frag_color, unAlpha);
+return;
+
+
+
+
 
     switch (inF.object_id)    //  look -> layout(location = 1) in vec4 norm ...
     {
