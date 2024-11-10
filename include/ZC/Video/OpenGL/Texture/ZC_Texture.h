@@ -9,8 +9,8 @@ class ZC_Texture
 {
 public:
     /*
-    - wrapS - GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER (default GL_REPEAT). Texture axis S (as X).
-    - wrapT - GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER (default GL_REPEAT). Texture axis T (as Y).
+    - wrapS - GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER (default GL_CLAMP_TO_EDGE). Texture axis S (as X).
+    - wrapT - GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER (default GL_CLAMP_TO_EDGE). Texture axis T (as Y).
     - filterMin - GL_NEAREST, GL_LINEAR (default GL_NEAREST).
     - filterMag - GL_NEAREST, GL_LINEAR (default GL_NEAREST).
     */

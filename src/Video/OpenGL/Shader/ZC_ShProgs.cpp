@@ -52,10 +52,10 @@ typename ZC_ShProgs::ShNames ZC_ShProgs::GetShNames(ZC_ShPName name) const noexc
     case ShPN_ZC_TextWindowIntoScene: return { VName::textWindowIntoScene, { ZC_VAOL__F_2_0__US_2_1_N, VAOPack(0).Pack(1) }, FName::text, GName::none };
     case ShPN_ZC_OrthoTexture: return { VName::textWindow, { ZC_VAOL__F_2_0__US_2_1_N, VAOPack(0).Pack(1) }, FName::orthoTexture, GName::none };
 
-    case ShPN_Game_Sphere: return ShNames{ .vName = VName::game_sphere, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_3_0__I_2_10_10_10_REV_1_1_N__US_2_2_N,
+    case ShPN_Game_Sphere: return ShNames{ .vName = VName::game_sphere, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_3_0__I_2_10_10_10_REV_1_1_N__F_2_2,
         .usingFormatsPacker = VAOPack(0).Pack(1).Pack(2) }, .fName = FName::game_sphere, .gName = GName::none };
-    // case ShPN_Game_Platform: return ShNames{ .vName = VName::Game_platform, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_3_0__I_2_10_10_10_REV_1_1_N__US_2_2_N,
-    //     .usingFormatsPacker = VAOPack(0).Pack(1).Pack(2) }, .fName = FName::game_platform, .gName = GName::none };
+    // case ShPN_Game_Sphere: return ShNames{ .vName = VName::game_sphere, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_3_0__I_2_10_10_10_REV_1_1_N__US_2_2_N,
+    //     .usingFormatsPacker = VAOPack(0).Pack(1).Pack(2) }, .fName = FName::game_sphere, .gName = GName::none };
     case SHPN_Game_Particle: return ShNames{ .vName = VName::game_particle, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_4_0__UB_3_1_N,
         .usingFormatsPacker = VAOPack(0).Pack(1) }, .fName = FName::color, .gName = GName::none };
     case ShPN_Game_Star: return ShNames{ .vName = VName::game_star, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_3_0__I_2_10_10_10_REV_1_1_N__US_2_2_N,

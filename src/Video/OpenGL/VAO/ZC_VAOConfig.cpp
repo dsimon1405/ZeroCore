@@ -146,6 +146,8 @@ ZC_DA<typename ZC_VAOConfig::Format> ZC_VAOConfig::GetFormats(ZC_VAOLayout spf)
     case ZC_VAOL__F_4_0: return { new Format[]{ { 0, 4, GL_FLOAT, GL_FALSE } }, 1 };
     case ZC_VAOL__F_3_0__I_2_10_10_10_REV_1_1_N__US_2_2_N: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 4, GL_INT_2_10_10_10_REV, GL_TRUE },
         { 2, 2, GL_UNSIGNED_SHORT, GL_TRUE } }, 3 };
+    case ZC_VAOL__F_3_0__I_2_10_10_10_REV_1_1_N__F_2_2: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 4, GL_INT_2_10_10_10_REV, GL_TRUE },
+        { 2, 2, GL_FLOAT, GL_FALSE } }, 3 };
     case ZC_VAOL__F_3_0__F_3_1__F_2_2__I_4_3__F_4_4: return { new Format[]{ { 0, 3, GL_FLOAT, GL_FALSE }, { 1, 3, GL_FLOAT, GL_FALSE },
         { 2, 2, GL_FLOAT, GL_FALSE }, { 3, 4, GL_INT, GL_FALSE }, { 4, 4, GL_FLOAT, GL_FALSE } }, 5 };
     default: return {};
