@@ -14,10 +14,20 @@ layout (std140, binding = 0) uniform Camera
 
 uniform mat4 unModel;
 
-out vec2 vTexCoords;
+    //  out
+layout (location = 0) out OutV
+{
+    vec2 tex_coords;
+    bool normal_aligned_to_cam;
+} outV;
 
 void main()
 {
-    vTexCoords = tex;
-    gl_Position =  perspView * unModel * vec4(pos, 1);
+    outV.tex_coords = tex;
+
+    vec4 frag_pos_v4 = unModel * vec4(pos, 1.f);
+    gl_Position =  perspView * frag_pos_v4;
+    
+    vec3 normal = normalize(mat3(transpose(inverse(unModel))) * vec3(norm));
+    outV.normal_aligned_to_cam = dot(normalize(frag_pos_v4.xyz - camPos), normal) > 0.f;
 }

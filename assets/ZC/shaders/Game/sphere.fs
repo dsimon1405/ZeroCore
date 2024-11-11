@@ -88,9 +88,9 @@ void main()
 
 
 
-        //  TEST MODE
-FragColor = inF.object_id == 1 ? vec4(0.f, 0.f, 0.f, 1.f) : vec4(frag_color, unAlpha);
-return;
+//         //  TEST MODE
+// FragColor = vec4(frag_color, unAlpha);
+// return;
 
 
 
