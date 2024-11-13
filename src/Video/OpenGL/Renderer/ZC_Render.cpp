@@ -62,7 +62,8 @@ bool ZC_Render::Draw()
 {
     this->UpdateUBO();
     fbo.Activate();
-    for (auto& upRendererLevelDrawerPair : renderLevelDrawers) upRendererLevelDrawerPair.second->VDraw();
+    for (auto& upRendererLevelDrawerPair : renderLevelDrawers)
+        upRendererLevelDrawerPair.second->VDraw();
     fbo.Deactivate();
     
     if (drawState == DS_OneFrame) drawState = DS_None;

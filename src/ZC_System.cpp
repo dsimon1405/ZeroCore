@@ -25,14 +25,60 @@ bool ZC_System::Init(int system_flags, int win_flags, int win_width, int win_hei
     return true;
 }
 
+// #define ZC_SystemRunMainCycle_timer
+#ifdef ZC_SystemRunMainCycle_timer
+#include <ZC/Tools/Time/ZC_Timer.h>
+#include <iostream>
+#include <ZC/Events/ZC_Events.h>
+#endif 
+
 void ZC_System::RunMainCycle()
 {
     if (!upIWindow) return;
     if (upGUI) upGUI->Configure();
     fps.StartNewFrame();    //  make prepearing call, to avoid false large information about frist frmae time
+#ifdef ZC_SystemRunMainCycle_timer
+
+    double time_secs = 2.;
+    ZC_Timer timer_poll_events(ZC_TR__seconds, time_secs, ZC_TRO__average, "poll events");
+    ZC_Timer timer_updater(ZC_TR__seconds, time_secs, ZC_TRO__average, "updater");
+    ZC_Timer timer_collision(ZC_TR__seconds, time_secs, ZC_TRO__average, "collision");
+    ZC_Timer timer_draw(ZC_TR__seconds, time_secs, ZC_TRO__average, "draw");
+    static bool timer_active = true;
+    auto lamb_change_timer_activity = [](ZC_ButtonID, float) { timer_active = !timer_active; };
+    ZC_Events::ConnectButtonClick(ZC_ButtonID::K_P, { lamb_change_timer_activity }, nullptr);
     while (true)
     {
-        float time = fps.StartNewFrame();   //  time in nanoseconds (default) or in user's seted measure 
+        timer_poll_events.ChangeActivity(timer_active);
+        timer_updater.ChangeActivity(timer_active);
+        timer_collision.ChangeActivity(timer_active);
+        timer_draw.ChangeActivity(timer_active);
+
+        float time = fps.StartNewFrame();   //  time in nanoseconds (default) or in user's seted measure
+        timer_poll_events.StartPoint();
+        upEventsHolder->PollEvents(time);
+        if (!is_main_cycle_run)
+        {
+            upIWindow->VDestroy();
+            return;     //  check after polling events
+        }
+        timer_poll_events.EndPoint();
+        timer_updater.StartPoint();
+        if (upUpdater) upUpdater->Call(time);
+        timer_updater.EndPoint();
+        timer_collision.StartPoint();
+        if (upCollision_manager) upCollision_manager->MakeCollision();
+        timer_collision.EndPoint();
+        timer_draw.StartPoint();
+        renderer.Draw(upGUI ? upGUI.Get() : nullptr);
+        timer_draw.EndPoint();
+
+        if (timer_active && timer_poll_events.GetValuesCount() == 0ul) std::cout<<std::endl;
+    }
+#else
+    while (true)
+    {
+        float time = fps.StartNewFrame();   //  time in nanoseconds (default) or in user's seted measure
         upEventsHolder->PollEvents(time);
         if (!is_main_cycle_run)
         {
@@ -43,6 +89,7 @@ void ZC_System::RunMainCycle()
         if (upCollision_manager) upCollision_manager->MakeCollision();
         renderer.Draw(upGUI ? upGUI.Get() : nullptr);
     }
+#endif
 }
 
 void ZC_System::BreakMainCycle()

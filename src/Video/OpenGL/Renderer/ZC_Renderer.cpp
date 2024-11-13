@@ -8,6 +8,8 @@
 // #endif
 #include <ZC/GUI/Backend/System/ZC_GUI.h>
 
+#include <ZC/Video/OpenGL/ZC_GLDepth.h>
+
 #include <cassert>
 
 ZC_Renderer::ZC_Renderer(ZC_Function<void()>&& _funcSwapBuffer)
@@ -126,25 +128,130 @@ void ZC_Renderer::Draw(ZC_GUI* pGUI)
 
     if (pGUI)
     {
-            //  ZC_GUI uses modern openGL rendering, while total render system uses not fresh openGL, so no such
-        ZC_FBOBuffersController::GlClear(GL_DEPTH_BUFFER_BIT);
-        ZC_FBOBuffersController::GlEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
+            //  ZC_GUI uses modern openGL rendering, while total render system uses not fresh openGL =(
+        ZC_GLDepth::GLDepthMask(GL_TRUE);
+        ZC_GLDepth::GLEnableDisable(true);
+        ZC_GLDepth::GLDepthFunc(GL_LEQUAL);
 
-        static ZC_GLBlend blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        blend.Use();
+        if (!ZC_GLBlend::global_state_const.use_blend) ZC_GLBlend::GLEnableDisable(true);
+        if (ZC_GLBlend::global_state_const.sfactor != GL_SRC_ALPHA || ZC_GLBlend::global_state_const.dfactor != GL_ONE_MINUS_SRC_ALPHA)
+            ZC_GLBlend::GLBendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        ZC_FBOBuffersController::GlClear(GL_DEPTH_BUFFER_BIT);
 
         pGUI->Draw();
+        ZC_FBOBuffersController::UsingGLDraw();     //  glMultiDrawArraysIndirect haven't ZC_Draw wrap, so call here
     }
 
     //  my rendering finished, make openGL state default
     ZC_ShProg::SetDefault();
     ZC_VAO::UnbindVertexArray();
-    ZC_GLBlend::Disable();
     ZC_Framebuffer::Unbind();
+    ZC_FBOBuffersController::BufferSwaped();
     
     funcSwapBuffer();
 }
+
+
+    // ZC_FBOBuffersController::GlClear(GL_DEPTH_BUFFER_BIT);
+    // ZC_GLDepth::GLEnableDisable(true);
+    // ZC_GLDepth::GLDepthFunc(GL_LEQUAL);
+    // ZC_GLDepth::GLDepthMask(GL_TRUE);
+// glClear(GL_COLOR_BUFFER_BIT     )
+// Start: G_DL_CubeMap
+// glDisable(GL_DEPTH_TEST)
+// Start: G_DL_AlphaBlending_ParticleStar
+// Start: Drawing
+// glEnable(GL_DEPTH_TEST)
+// Start: TextScene
+// Start: OrthoBlend
+// glDisable(GL_DEPTH_TEST)
+// Start: GUI
+// glClear(GL_DEPTH_BUFFER_BIT     )
+// glEnable(GL_DEPTH_TEST)
+
+// glClear(GL_COLOR_BUFFER_BIT     )
+// Start: G_DL_CubeMap
+// glDisable(GL_DEPTH_TEST)
+// Start: G_DL_AlphaBlending_ParticleStar
+// Start: Drawing
+// glEnable(GL_DEPTH_TEST)
+// Start: TextScene
+// Start: G_DL_AlphaBlending_PlatformDisappear
+// glDepthMask(GL_FALSE)
+// Start: OrthoBlend
+// glDisable(GL_DEPTH_TEST)
+// Start: GUI
+// glClear(GL_DEPTH_BUFFER_BIT     )
+// glEnable(GL_DEPTH_TEST)
+// glDepthMask(GL_TRUE)
+
+// glClear(GL_COLOR_BUFFER_BIT     )
+// Start: G_DL_CubeMap
+// glDisable(GL_DEPTH_TEST)
+// Start: G_DL_AlphaBlending_ParticleStar
+// Start: Drawing
+// glEnable(GL_DEPTH_TEST)
+// Start: TextScene
+// Start: G_DL_AlphaBlending_PlatformDisappear
+// glDepthMask(GL_FALSE)
+// Start: OrthoBlend
+// glDisable(GL_DEPTH_TEST)
+// Start: GUI
+// glClear(GL_DEPTH_BUFFER_BIT     )
+// glEnable(GL_DEPTH_TEST)
+// glDepthMask(GL_TRUE)
+
+
+
+
+    // ZC_FBOBuffersController::UsingGLDraw();
+// glClear(GL_COLOR_BUFFER_BIT     GL_DEPTH_BUFFER_BIT     )
+// Start: G_DL_CubeMap
+// glDisable(GL_DEPTH_TEST)
+// Start: G_DL_AlphaBlending_ParticleStar
+// Start: Drawing
+// glEnable(GL_DEPTH_TEST)
+// Start: TextScene
+// Start: OrthoBlend
+// glDisable(GL_DEPTH_TEST)
+// Start: GUI
+// glClear(GL_DEPTH_BUFFER_BIT     )
+// glEnable(GL_DEPTH_TEST)
+
+// glClear(GL_COLOR_BUFFER_BIT     GL_DEPTH_BUFFER_BIT     )
+// Start: G_DL_CubeMap
+// glDisable(GL_DEPTH_TEST)
+// Start: G_DL_AlphaBlending_ParticleStar
+// Start: Drawing
+// glEnable(GL_DEPTH_TEST)
+// Start: TextScene
+// Start: G_DL_AlphaBlending_PlatformDisappear
+// glDepthMask(GL_FALSE)
+// Start: OrthoBlend
+// glDisable(GL_DEPTH_TEST)
+// Start: GUI
+// glClear(GL_DEPTH_BUFFER_BIT     )
+// glEnable(GL_DEPTH_TEST)
+// glDepthMask(GL_TRUE)
+
+// glClear(GL_COLOR_BUFFER_BIT     GL_DEPTH_BUFFER_BIT     )
+// Start: G_DL_CubeMap
+// glDisable(GL_DEPTH_TEST)
+// Start: G_DL_AlphaBlending_ParticleStar
+// Start: Drawing
+// glEnable(GL_DEPTH_TEST)
+// Start: TextScene
+// Start: G_DL_AlphaBlending_PlatformDisappear
+// glDepthMask(GL_FALSE)
+// Start: OrthoBlend
+// glDisable(GL_DEPTH_TEST)
+// Start: GUI
+// glClear(GL_DEPTH_BUFFER_BIT     )
+// glEnable(GL_DEPTH_TEST)
+// glDepthMask(GL_TRUE)
+
+
 
 
 

@@ -47,7 +47,7 @@ layout (location = 0) in InF
 
     vec3 light_color[2];
 
-    flat bool normal_aligned_to_cam;
+    // flat bool normal_aligned_to_cam;
 } inF;
 
 
@@ -77,7 +77,7 @@ vec3 CalculateCombineFragColor(vec3 frag_color, vec3 light_pos, vec3 light_color
 
 void main()
 {       //  if inF.normal_aligned_to_cam true -> cam look at the face from the back
-    if (inF.normal_aligned_to_cam || unAlpha == 0.f) discard;
+    // if (inF.normal_aligned_to_cam || unAlpha == 0.f) discard;
 
     vec3 frag_color = texture(texColor, inF.tex_coords).rgb;
     if (frag_color == vec3(0.f, 0.f, 0.f))

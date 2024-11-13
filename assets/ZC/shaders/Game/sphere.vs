@@ -52,7 +52,7 @@ layout (location = 0) out OutV
 
     vec3 light_color[2];
 
-    bool normal_aligned_to_cam;
+    // bool normal_aligned_to_cam;
 } outV;
 
 
@@ -70,9 +70,9 @@ void main()
     
     gl_Position = perspView * frag_pos_v4;
 
-    outV.normal_aligned_to_cam = dot(normalize(outV.frag_pos - camPos), outV.normal) > 0.f;
-    // outV.normal_aligned_to_cam = false;                                                                         //  TEST MODE
-    if (outV.normal_aligned_to_cam) return;     //  cam look at the face from the back, will be discard in fs
+    // outV.normal_aligned_to_cam = dot(normalize(outV.frag_pos - camPos), outV.normal) > 0.f;
+    // // outV.normal_aligned_to_cam = false;                                                                         //  TEST MODE
+    // if (outV.normal_aligned_to_cam) return;     //  cam look at the face from the back, will be discard in fs
     
         //  unpack adding color
     outV.add_color_packed = unColor;

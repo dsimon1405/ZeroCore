@@ -4,13 +4,15 @@
 #include "ZC_DrawerForwardList.h"
 #include <ZC/Video/OpenGL/ZC_FBOBuffersController.h>
 #include <ZC/Video/OpenGL/ZC_GLBlend.h>
+#include <ZC/Video/OpenGL/ZC_GLCullFace.h>
+#include <ZC/Video/OpenGL/ZC_GLDepth.h>
+#include <ZC/Video/OpenGL/ZC_GLStencil.h>
 
 template<typename... T>
 class ZC_DrawerFL : public ZC_Drawer
 {
 public:
-    //  - _depthMask - depth test do, but don't rewrite results.
-    ZC_DrawerFL(uint clearMask, bool depthTest, bool _depthMask, bool stencilTest, ZC_GLBlend blend);
+    ZC_DrawerFL(uint clearMask, ZC_GLDepth _depth, ZC_GLStencil _stencil, ZC_GLBlend _blend, ZC_GLCullFace _cull_face);
 
     void VAdd(ZC_DSController* pRSController) override;
     bool VErase(ZC_DSController* pRSController) override;
@@ -23,22 +25,22 @@ protected:
 
 private:
     GLbitfield clearMask;
-    bool depthTest;
-    bool depthMask;
-    bool stencilTest;
+    ZC_GLDepth depth;
+    ZC_GLStencil stencil;
     ZC_GLBlend blend;
+    ZC_GLCullFace cull_face;
 };
 
 
 template<typename... T>
-ZC_DrawerFL<T...>::ZC_DrawerFL(GLbitfield _clearMask, bool _depthTest, bool _depthMask, bool _stencilTest, ZC_GLBlend _blend)
+ZC_DrawerFL<T...>::ZC_DrawerFL(GLbitfield _clearMask, ZC_GLDepth _depth, ZC_GLStencil _stencil, ZC_GLBlend _blend, ZC_GLCullFace _cull_face)
     : clearMask(_clearMask),
-    depthTest(_depthTest),
-    depthMask(_depthMask),
-    stencilTest(_stencilTest),
-    blend(_blend)
+    depth(_depth),
+    stencil(_stencil),
+    blend(_blend),
+    cull_face(_cull_face)
 {
-    assert((clearMask & (~(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT))) == 0);
+    assert((clearMask & (~(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT))) == 0u);
 }
 
 template<typename... T>
@@ -56,17 +58,11 @@ bool ZC_DrawerFL<T...>::VErase(ZC_DSController* pRSController)
 template<typename... T>
 void ZC_DrawerFL<T...>::VDraw()
 {
-    ZC_FBOBuffersController::GlClear(clearMask);
-    if (depthTest)
-    {
-        ZC_FBOBuffersController::GlEnable(GL_DEPTH_TEST);
-        // ZC_FBOBuffersController::GLDepthMask(depthMask);
-    }
-    else ZC_FBOBuffersController::GlDisable(GL_DEPTH_TEST);
-    ZC_FBOBuffersController::GLDepthMask(depthMask);
-
-    stencilTest ? ZC_FBOBuffersController::GlEnable(GL_STENCIL_TEST) : ZC_FBOBuffersController::GlDisable(GL_STENCIL_TEST);
+    depth.Use();
+    stencil.Use();
     blend.Use();
+    cull_face.Use();
+    ZC_FBOBuffersController::GlClear(clearMask);    //  make clear after changing buffer's state, remember GUI glDepthMask(GL_FALSE);
     VCallDraw();
 }
 

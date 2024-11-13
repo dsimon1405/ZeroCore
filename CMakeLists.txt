@@ -148,7 +148,10 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_Viewport.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_GLBlend.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_GLDraw.cpp
-	
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_GLCullFace.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_GLDepth.cpp
+    ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/ZC_GLStencil.cpp
+	 
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_Pipeline.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShaderManager.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Shader/ZC_ShaderProgram.cpp
@@ -185,6 +188,7 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Tools/Exception/ZC_Exception.cpp
     ${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_Clock.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_FPS.cpp
+	${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_Timer.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/Math/ZC_Math.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_OrthoSquare.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_TornToCamera.cpp
