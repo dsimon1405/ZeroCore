@@ -27,9 +27,11 @@ private:
     struct UboSet   //  structure for ubo sub data
     {
         ZC_Mat4<float> ortho;
+        ZC_Mat4<float> perspective;
         ZC_Mat4<float> perspView;
         ZC_Mat4<float> perspViewSkybox;
-        ZC_Vec3<float> position;
+        ZC_Mat4<float> view;
+        ZC_Vec3<float> position;    //  if make UboSet array, must be vec4 for gpu aligne
     };
 
     static inline ZC_uptr<ZC_UBO> upUbo;

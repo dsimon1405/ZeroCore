@@ -20,6 +20,7 @@ struct ZC_ShFragment1
         game_sphere,
         game_star,
         // game_platform,
+        game_flame,
 
         Test_skelet
     };

@@ -25,6 +25,7 @@ struct ZC_ShVertex1
         // Game_platform,
         game_particle,
         game_star,
+        game_flame,
 
         Test_skelet
     };

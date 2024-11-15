@@ -7,8 +7,10 @@ layout(location = 2) in vec2 tex;
 layout (std140, binding = 0) uniform Camera
 {
     mat4 ortho;
+    mat4 perspective;
     mat4 perspView;
     mat4 perspViewSkybox;
+    mat4 view;
     vec3 camPos;
 };
 
@@ -56,7 +58,7 @@ layout (location = 0) out OutV
 } outV;
 
 
-    //  methods
+    //  functions
 vec3 Uint_2_10_10_10_To_vec3(uint val);
 // vec2 MoveByLengthXY(vec2 v, vec2 direction, float length);
 // void CalculateLightPlatformPos();

@@ -19,7 +19,7 @@ public:
     const ZC_Mat4<float>* GetPerspective();
 
 protected:
-    ZC_Mat4<float> perspective;
+    ZC_Mat4<float>* pPerspective = nullptr;
     
     //  returns true if where updated.
     bool PerspectiveUpdate();

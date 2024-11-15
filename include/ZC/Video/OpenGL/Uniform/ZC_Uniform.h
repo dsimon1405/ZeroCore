@@ -18,7 +18,8 @@ enum ZC_UniformName
     ZCR_UN_unUseLight,
     
     G_UN_unPointSize,
-
+    G_UN_unData,
+    
     T_UN_unFinalBonesMatrices,
 };
 

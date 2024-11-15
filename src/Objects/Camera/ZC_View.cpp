@@ -60,7 +60,7 @@ ZC_Vec3<float> ZC_View::GetUp() const noexcept
 const ZC_Mat4<float>* ZC_View::GetView()
 {
     ActualizeViewMatrix();
-    return &view;
+    return pView;
 }
 
 bool ZC_View::ViewUpdate()
@@ -82,5 +82,5 @@ void ZC_View::ActualizeViewMatrix()
     if (isViewActual) return;
     
     isViewActual = true;
-    view = ZC_Mat::LookAt(*position, lookOn, up);
+    *pView = ZC_Mat::LookAt(*position, lookOn, up);
 }

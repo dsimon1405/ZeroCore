@@ -115,9 +115,9 @@ ZC_TextData::ZC_TextData(typename ZC_ShProgs::ShPInitSet* pShPIS, ZC_FontOrigin 
     dsController(spTextSharedData->drawerSet.MakeZC_DSController()),
     drawerLevel(_rendererLevel)
 {
-    dsController.SetTexturesHolder(ZC_TexturesHolder{ pFont->GetTexture(), 1 });
+    dsController.SetTexturesHolder(ZC_TexturesHolder{ pFont->GetTexture(), 1u });
 
-    SetColorUInt(0);    //  white color default
+    SetColorUInt(0u);    //  white color default
     if (needDraw) NeedDraw(true);
 }
 
@@ -136,7 +136,7 @@ ZC_DrawerSet ZC_TextData::CreateDrawerSet(typename ZC_ShProgs::ShPInitSet* pShPI
     ZC_Buffer vbo(GL_ARRAY_BUFFER);
     ZC_Buffer ebo(GL_ELEMENT_ARRAY_BUFFER);
     ZC_VAO vao;
-    vao.Config(pShPIS->vaoConfigData, vbo, &ebo, 0, 0);
+    vao.Config(pShPIS->vaoConfigData, vbo, &ebo, 0u, 0u);
 
     auto upGLDraw = ZC_uptrMakeFromChild<ZC_GLDraw, ZC_DrawElements>(CalculateAndSetTextData(vbo, ebo, _text, _alignment));
 
@@ -149,19 +149,19 @@ ZC_DrawerSet ZC_TextData::CreateDrawerSet(typename ZC_ShProgs::ShPInitSet* pShPI
 
 ZC_DrawElements ZC_TextData::CalculateAndSetTextData(ZC_Buffer& rVBO, ZC_Buffer& rEBO, const std::wstring& text, ZC_TextAlignment alignment)
 {
-    textWidth = 0;
-    textHeight = 0;
+    textWidth = 0.f;
+    textHeight = 0.f;
     auto pointsCoords = pFont->FillCoords(text, fontOrigin, alignment, textWidth, textHeight);
 
     rVBO.GLNamedBufferData(static_cast<long>(pointsCoords.size() * sizeof(typename ZC_Font::Point)), &(pointsCoords[0]), GL_STATIC_DRAW);
 
-    ulong elementsCount = 0;
-    GLenum elementsType = 0;
-    ZC_DA<uchar> elements = ZC_Buffer::GetTriangleElements(elementsCount, elementsType, static_cast<ulong>(pointsCoords.size() / 4), 0);
+    ulong elementsCount = 0ul;
+    GLenum elementsType = 0u;
+    ZC_DA<uchar> elements = ZC_Buffer::GetTriangleElements(elementsCount, elementsType, static_cast<ulong>(pointsCoords.size() / 4ul), 0ul);
 
     rEBO.GLNamedBufferData(elements.size, elements.Begin(), GL_STATIC_DRAW);
     //  creates on stack ZC_DrawElements cause in CreateDrawerSet() will created in heap ZC_uptr<ZC GLDraw>, in other functions updates data created in CreateDrawerSet()
-    return { GL_TRIANGLES, static_cast<int>(elementsCount), elementsType, 0 };
+    return { GL_TRIANGLES, static_cast<int>(elementsCount), elementsType, 0u };
 }
 
 void ZC_TextData::UpdateColor(uint color)

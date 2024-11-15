@@ -20,6 +20,7 @@ void ZC_Uniform::GetUniformLocation(ZC_ShProg& shP)  //  add here new
         case ZCR_UN_unUseLight: location = shP.GetUniformLocation("unUseLight"); break;
 
         case G_UN_unPointSize: location = shP.GetUniformLocation("unPointSize"); break;
+        case G_UN_unData: location = 0; break;  //  locatoin hard coded in Game/flame.vs
     
         case T_UN_unFinalBonesMatrices: location = shP.GetUniformLocation("unFinalBonesMatrices[0]"); break;
     }
@@ -46,6 +47,7 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_Uniform::GetUniformVector(typename ZC_Unifor
             case ZCR_UN_unUseLight: uniforms.emplace_back(GetUpUniform(FT_glUniform1i, pNameType[i])); break;
 
             case G_UN_unPointSize: uniforms.emplace_back(GetUpUniform(FT_glUniform1i, pNameType[i])); break;
+            case G_UN_unData: uniforms.emplace_back(GetUpUniform(FT_glUniformMatrix4fv, pNameType[i])); break;
 
             case T_UN_unFinalBonesMatrices: uniforms.emplace_back(GetUpUniform(FT_glUniformMatrix4fv, pNameType[i])); break;
         }

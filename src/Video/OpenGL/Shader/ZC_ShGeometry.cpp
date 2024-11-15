@@ -11,8 +11,11 @@ ZC_Shader* ZC_ShGeometry1::GetShader(Name name)    //  add here new
     std::string path;
     switch (name)
     {
-    case Name::gui: path = ZC_FSPath(shadersPath).append("GUI/gui.fs").string();
+    case Name::gui: path = ZC_FSPath(shadersPath).append("GUI/gui.fs").string(); break;
     // case Name::lineOrientation3D: path = ZC_FSPath(shadersPath).append("lineOrientation3D.gs").string(); break;
+    
+    case Name::game_flame: path = ZC_FSPath(shadersPath).append("Game/flame.glsl").string(); break;
+    
     case Name::none: return nullptr;
     }
 

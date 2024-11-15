@@ -26,6 +26,7 @@ enum ZC_ShPName
     // ShPN_Game_Platform,
     SHPN_Game_Particle,
     ShPN_Game_Star,
+    ShPN_Game_Flame,
 
     ShPN_Test_Skelet,
     

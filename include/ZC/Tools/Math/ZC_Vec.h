@@ -24,7 +24,7 @@ namespace ZC_Vec
     ZC_Vec3<TValue> Normalize(const ZC_Vec3<TValue>& vec)
     {
         assert(vec != ZC_Vec3<TValue>());
-        ZC_Vec3<float> result = vec * static_cast<TValue>(1.0 / sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]));
+        ZC_Vec3<float> result = vec * static_cast<TValue>(TValue(1) / sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]));
             //  some times normalization calculates wrong, can give value more than 1 (example vector { 0.83473891f, 0.f, 0.f } => 1,000000012), or less than -1, fix that...
         if (result[0] > 1.f) result[0] = 1.f;
         else if (result[0] < -1.f) result[0] = -1.f;

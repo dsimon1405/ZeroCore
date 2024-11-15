@@ -64,7 +64,7 @@ float ZC_Perspective::GetFarPlane() const noexcept
 const ZC_Mat4<float>* ZC_Perspective::GetPerspective()
 {
     ActualizePerspective();
-    return &perspective;
+    return pPerspective;
 }
 
 bool ZC_Perspective::PerspectiveUpdate()
@@ -81,5 +81,5 @@ void ZC_Perspective::ActualizePerspective()
     if (isPerspectiveActual) return;
 
     isPerspectiveActual = true;
-    perspective = ZC_Mat::Perspective(fovy, aspect, nearPlane, farPlane);
+    *pPerspective = ZC_Mat::Perspective(fovy, aspect, nearPlane, farPlane);
 }

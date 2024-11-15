@@ -22,7 +22,7 @@ public:
     const ZC_Mat4<float>* GetView();
 
 protected:
-    ZC_Mat4<float> view;
+    ZC_Mat4<float>* pView = nullptr;
 
     //  returns true if where updated.
     bool ViewUpdate();
