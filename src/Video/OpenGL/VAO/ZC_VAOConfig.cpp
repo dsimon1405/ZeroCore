@@ -31,7 +31,7 @@ void ZC_VAOConfig::Config(GLuint startOffset, GLuint verticesCount)
     // std::vector<ZC_VAOConfig::Format> f;
     // for (size_t i = 0; i < formats.size; i++)
     // {
-    //     f.emplace_back(ZC_VAOConfig::Format(formats[i].attribIndex, formats[i].size, formats[i].type, formats[i].normalized));
+    //     f.emplace_back(ZC_VAOConfig::Format(formats[i].attribIndex, formats[i].size, formats[i].type, formats[i].normalized)).isUsing = formats[i].isUsing;
     // }
 
     uchar useCounter = useCount;

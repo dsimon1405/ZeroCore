@@ -10,8 +10,8 @@ typedef unsigned short ush_zc;      //  unsigned short 2 bytes [0, 65 535]
 typedef int i_zc;                   //  int 4 bytes [-2 147 483 648, 2 147 483 647]
 typedef unsigned int ui_zc;         //  unsigned int 4 bytes [0, 4 294 967 295]
 
-typedef long long l_zc;             //  long 4 bytes [-9 223 372 036 854 775 808, 9 223 372 036 854 775 807]
-typedef unsigned long long ul_zc;   //  unsigned long 4 bytes [0, 18 446 744 073 709 551 615] 
+typedef long long l_zc;             //  long 8 bytes [-9 223 372 036 854 775 808, 9 223 372 036 854 775 807]
+typedef unsigned long long ul_zc;   //  unsigned long 8 bytes [0, 18 446 744 073 709 551 615] 
 
 typedef float f_zc;                 //  float 4 bytes (3.4E +/- 38 (seven numbers))
 typedef double d_zc;                //  double 8 bytes (1.7E +/- 308 (fifteen numbers))

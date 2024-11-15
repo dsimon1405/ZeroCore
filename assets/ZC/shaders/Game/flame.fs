@@ -13,5 +13,7 @@ out vec4 FragColor;
 
 void main()
 {
-    FragColor = vec4(texture(texColor, inF.tex_coords).xyz, inF.life_time_alpha);
+    vec3 color = texture(texColor, inF.tex_coords).xyz;
+    float alpha = (color.x + color.y + color.z) / 3.f;
+    FragColor = vec4(color, alpha * inF.life_time_alpha);
 }
