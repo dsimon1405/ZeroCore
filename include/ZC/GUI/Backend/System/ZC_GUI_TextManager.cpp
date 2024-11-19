@@ -4,7 +4,8 @@
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 #include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 
-ZC_GUI_TextManager::ZC_GUI_TextManager()
+ZC_GUI_TextManager::ZC_GUI_TextManager(ZC_Texture* _pTexture)
+    : pTexture(_pTexture)
 {
     if (font_path.empty()) font_path = ZC_GUI_FontLoader::GetPath(ZC_GUI_FontLoader::FontName::Arial);
     font = ZC_GUI_FontLoader::LoadFont(font_path.c_str(), font_height, font_elements);
@@ -18,7 +19,7 @@ ZC_GUI_TextManager::~ZC_GUI_TextManager()
 
 bool ZC_GUI_TextManager::IsConfigured() const noexcept
 {
-    return texture.GetId() != 0;
+    return pTexture->GetId() != 0;
 }
 
 void ZC_GUI_TextManager::Configure(bool doubleWidth)
@@ -62,7 +63,7 @@ void ZC_GUI_TextManager::Configure(bool doubleWidth)
     bool isConfigured = IsConfigured();
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    texture = ZC_Texture::TextureStorage2DFill(GL_R8, ZC_GUI_Bindings::location_tex_Text, total_width,
+    *pTexture = ZC_Texture::TextureStorage2DFill(GL_R8, ZC_GUI_Bindings::location_tex_Text, total_width,
         font_height, data.data(), GL_RED, GL_UNSIGNED_BYTE, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
         //  update freeSpaces
@@ -76,7 +77,7 @@ void ZC_GUI_TextManager::Configure(bool doubleWidth)
 
 const ZC_Texture& ZC_GUI_TextManager::GetTexture() const noexcept
 {
-    return texture;
+    return *pTexture;
 }
 
 int ZC_GUI_TextManager::GetFontHeight()
@@ -133,8 +134,8 @@ void ZC_GUI_TextManager::ProcessDeletableText(int wstr_width, Text* pText)
             //  add start index
         pText->start_index = freeSpaceIter->start_index;
             //  update uv
-        pText->uv = ZC_GUI_UV{ .bl{ (float)freeSpaceIter->start_index / float(pTM->texture.GetWidth()), 0.f },
-            .tr{ float(freeSpaceIter->start_index + pText->width) / float(pTM->texture.GetWidth()), 1.f } };
+        pText->uv = ZC_GUI_UV{ .bl{ (float)freeSpaceIter->start_index / float(pTM->pTexture->GetWidth()), 0.f },
+            .tr{ float(freeSpaceIter->start_index + pText->width) / float(pTM->pTexture->GetWidth()), 1.f } };
     };
 
     if (freeSpaceIter == emptyIter) pTM->Configure(true);     //  can't find freespace, need reconfig and double texture size
@@ -281,7 +282,7 @@ void ZC_GUI_TextManager::MapTexture(int start_index, int width, const unsigned c
 {
     if (!pTM->IsConfigured()) return;
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    pTM->texture.GLTextureSubImage2D(start_index, 0, width, pTM->font.GetHeight(), GL_RED,  GL_UNSIGNED_BYTE, data);
+    pTM->pTexture->GLTextureSubImage2D(start_index, 0, width, pTM->font.GetHeight(), GL_RED,  GL_UNSIGNED_BYTE, data);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
 

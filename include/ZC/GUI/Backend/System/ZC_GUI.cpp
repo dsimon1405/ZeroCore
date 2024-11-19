@@ -1,6 +1,8 @@
 #include "ZC_GUI.h"
 
 ZC_GUI::ZC_GUI()
+    : drawManager(),
+    textManager(drawManager.GetTextTexture())
 {
     pGUI = this;
     drawManager.AddWindow(dynamic_cast<ZC_GUI_Window*>(&textInputWindow));     //  here adds only ZC_GUI_TextInputWinodw caurse pGUI unseted while it trys to add from ZC_GUI_WinImmutable ctr
@@ -19,16 +21,16 @@ void ZC_GUI::Configure()
     drawManager.Configure();
 }
 
-void ZC_GUI::Draw()
-{
-    drawManager.Draw(textManager.GetTexture());
-}
-
 void ZC_GUI::SetState(bool active)
 {
     if (!pGUI || pGUI->drawManager.isActive == active) return;
     pGUI->drawManager.isActive = active;
     pGUI->eventManager.isActive = active;
+}
+
+bool ZC_GUI::GetState()
+{
+    return pGUI->drawManager.isActive;
 }
 
 void ZC_GUI::AddWindow(ZC_GUI_Window* pWindow)

@@ -16,8 +16,13 @@ namespace ZC__GUI
     int GetFontHeight();
         //  Return width in pixels of wstring.
     int CalculateWstrWidth(const std::wstring& wstr);
-        //  Set gui state. If active true gui is drawing and processing events, otherwise not.
-    void SetState(bool active);
+
+        //  GUI ADDED TO RENDER, TO STOP RENDERING NEED TO ADD SOME MECHANIZM IN RENDER SYSTEM, MAY BE LATER...
+    //     //  Set gui state. If active true gui is drawing and processing events, otherwise not.
+    // void SetState(bool active);
+    //     //  Return gui state. If true active (srawing and process events), otherwise not.
+    // bool GetState();
+
         //  Return pixel width of longest number charagter
     int GetLongestNumberCharacterWidth();
         //  Set path to user icon texture. Must be called before ZC_SWindow creation. Texture coords must be defined user.

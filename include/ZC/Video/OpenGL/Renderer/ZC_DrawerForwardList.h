@@ -168,7 +168,8 @@ bool ZC_DrawerForwardList<TRLData>::Erase(const TRLData& data)
 template<typename TRLData>
 void ZC_DrawerForwardList<TRLData>::Draw()
 {
-    for (auto& data : datas) data.Draw();
+    for (auto& data : datas) 
+        data.Draw();
 }
 
 template<typename TRLData>

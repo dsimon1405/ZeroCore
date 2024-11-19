@@ -40,7 +40,7 @@ typename ZC_ShFragment1::Set ZC_ShFragment1::GetVAOAndUniformData(Name name)    
     typedef typename ZC_Uniform::NameType UnNT;
     switch (name)
     {
-    case Name::gui: return { GetShader(name) };
+    case Name::gui: return ZC_ShFragment1::Set{ .shader = GetShader(name), .texSets = { { new TName[]{ TName::tex_Icon, TName::tex_Text }, 2 } }, .uniforms = {} };
     case Name::color: return { GetShader(name), {}, {} };
     case Name::colorTex: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, {} };
     case Name::text: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, ZC_Uniform::GetUniformVector({ZC_UN_unColor, false}) };

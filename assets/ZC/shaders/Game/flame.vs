@@ -2,17 +2,22 @@
     //  in
 layout (location = 0) in vec4 inPosition;   //  inPositin.w is life time
 
-/*
-data[0].x - cur time in seconds
-data[0].y - tiles per second
-data[0].z - particle widht
-data[0].w - particle height
+    /*
+    data[0].x - cur time in seconds
+    data[0].y - tiles per second
+    data[0].z - particle widht
+    data[0].w - particle height
 
-data[1].x - appear/disappear seconds. other time particle have alpha 1.f
-data[1].y - lighten_r
-data[1].z - lighten_g
-data[1].w - lighten_b
-*/
+    data[1].x - appear/disappear seconds. other time particle have alpha 1.f
+    data[1].y - pos x
+    data[1].z - pos y
+    data[1].y - pos z
+
+    data[2].x - move to x
+    data[2].y - move to y
+    data[2].z - move to z
+    data[2].w - move speed
+    */
 layout (location = 0) uniform mat4 unData;
 
 
@@ -24,6 +29,10 @@ layout (location = 0) out OutV
     float tex_right_x;
     float tex_bottom_y;
 } outV;
+
+
+    //  function
+vec3 MoveByLength(vec3 v, vec3 direction, float length);
 
 void main()
 {
@@ -54,15 +63,33 @@ void main()
     outV.tex_right_x /= tex_widht;
     outV.tex_bottom_y /= tex_height;
 
-        //  particle alpha
+        //  cur life time
     const float particle_life_time = inPosition.w;
     float lives_passed = floor(cur_time_seconds / particle_life_time);
     float cur_life_time_seconds = cur_time_seconds - (particle_life_time * lives_passed);
+
+        //  particle alpha
     const float appear_disappear_seconds = unData[1].x;
     const float disappear_start_seconds = particle_life_time - appear_disappear_seconds;
     float life_time_alpha = 1.f;
     if (cur_life_time_seconds < appear_disappear_seconds) life_time_alpha = cur_life_time_seconds / appear_disappear_seconds;  //  particle appear (life start)
     else if (disappear_start_seconds < cur_life_time_seconds) life_time_alpha = 1.f - (cur_life_time_seconds - disappear_start_seconds) / appear_disappear_seconds;  //  particle dissapear (life end)
+    
+        //  move pos
+    const vec3 start_pos = inPosition.xyz;
+    const vec3 move_to = vec3(unData[2].x, unData[2].y, unData[2].z);
+    vec3 dir_pos_to_move_to = move_to - start_pos;
+    const float move_speed_seconds = unData[2].w;
+    float dist_pos_to_move_to = move_speed_seconds * cur_life_time_seconds;
+    vec3 pos = MoveByLength(start_pos, dir_pos_to_move_to, dist_pos_to_move_to);
 
-    gl_Position = vec4(inPosition.xyz, life_time_alpha);
+    gl_Position = vec4(pos, life_time_alpha);
+
+
+    // gl_Position = vec4(inPosition.xyz, life_time_alpha);
+}
+
+vec3 MoveByLength(vec3 v, vec3 direction, float length)
+{
+    return v + (direction * (length / sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z)));
 }

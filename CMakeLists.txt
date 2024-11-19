@@ -184,6 +184,7 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_DSController.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_RSPersonalData.cpp
     ${PROJECT_SOURCE_DIR}/src/Video/OpenGL/Renderer/ZC_DSStencilBorder.cpp
+
     ${PROJECT_SOURCE_DIR}/src/Tools/Signal/ZC_SConnection.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/Exception/ZC_Exception.cpp
     ${PROJECT_SOURCE_DIR}/src/Tools/Time/ZC_Clock.cpp
@@ -196,9 +197,12 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_ButtonManipulator.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_Updater.cpp
 	${PROJECT_SOURCE_DIR}/src/Tools/ZC_Random.cpp
+
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_MakeErrorString.cpp
-	${PROJECT_SOURCE_DIR}/src/File/Read/ZC_FileReader.cpp
 	${PROJECT_SOURCE_DIR}/src/ErrorLogger/ZC_ErrorLogger.cpp
+
+	${PROJECT_SOURCE_DIR}/src/File/Read/ZC_FileReader.cpp
+
 	${PROJECT_SOURCE_DIR}/src/Events/Button/ZC_ButtonHolder.cpp
 	${PROJECT_SOURCE_DIR}/src/Events/Button/ZC_ButtonPressedDown.cpp
 	${PROJECT_SOURCE_DIR}/src/Events/Button/ZC_ButtonClick.cpp
@@ -207,6 +211,7 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
     ${PROJECT_SOURCE_DIR}/src/Events/ZC_Events.cpp
     ${PROJECT_SOURCE_DIR}/src/Events/ZC_EventsHolder.cpp
 	${PROJECT_SOURCE_DIR}/src/Events/ZC_Mouse.cpp
+
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/ZC_Camera.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/ZC_Ortho.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Camera/ZC_Perspective.cpp
@@ -218,6 +223,7 @@ add_library(${PROJECT_NAME} ${ZC_LIB_TYPE} ${ZC_SRC_FILES}
 	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_TextSceneTurnedToCamera.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_TextWindow.cpp
 	${PROJECT_SOURCE_DIR}/src/Objects/Text/ZC_TextWindowIntoScene.cpp
+
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindow.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_MouseCollisionWindowController.cpp
 	${PROJECT_SOURCE_DIR}/src/Collision/ZC_CO_Figure.cpp

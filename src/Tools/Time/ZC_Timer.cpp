@@ -1,6 +1,7 @@
 #include <ZC/Tools/Time/ZC_Timer.h>
 
 #include <ZC/Tools/Container/ZC_ContFunc.h>
+#include <ZC/Tools/ZC_NumberToString.h>
 
 #include <cassert>
 #include <iostream>
@@ -42,7 +43,8 @@ void ZC_Timer::EndPoint()
 
 void ZC_Timer::Report()
 {
-    std::cout<<name<<":";
+    static const ui_zc after_dot_count = 10u;
+    std::cout << name << ":";
     double total_time = 0.;
     double points_count = 0.;
     std::string caret = " ";   //  white space or new line
@@ -53,7 +55,7 @@ void ZC_Timer::Report()
         {
             if (point.end_nanosecs < point.start_nanosecs) continue;    //  end is default -1 or time long long is overflow
             double point_time = double(point.end_nanosecs - point.start_nanosecs) / nanosecond;
-            std::cout<<"\n"<<id++<<". "<<point_time;
+            std::cout << "\n" << id++ << ". " << ZC_NumberToString::ToStr(point_time, after_dot_count, true);
             total_time += point_time;
             ++points_count;
         }
@@ -70,15 +72,16 @@ void ZC_Timer::Report()
                 ++points_count;
             }
         }
-        std::cout<<caret<<"avg: "<<(points_count == 0. ? 0. : (total_time / points_count));
+        std::cout << caret << "avg: " << (points_count == 0. ? "0." : ZC_NumberToString::ToStr(total_time / points_count, after_dot_count, true));
         caret = "       ";
     }
     if (output_mask & ZC_TRO__values_count)
     {
-        std::cout<<caret<<"vals: "<<points_count;
+        std::cout << caret << "vals: " << points_count;
         caret = "       ";
     }
-    if (output_mask & ZC_TRO__seconds_total) std::cout<<caret<<"total time: "<<(double(clock.Time<ZC_Nanoseconds>() - points.front().start_nanosecs) / nanosecond);
+    if (output_mask & ZC_TRO__seconds_total) std::cout << caret << "total time: "
+        << ZC_NumberToString::ToStr(double(clock.Time<ZC_Nanoseconds>() - points.front().start_nanosecs) / nanosecond, after_dot_count, true);
     std::cout<<std::endl;
     points.clear();
 }

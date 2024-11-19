@@ -9,8 +9,8 @@ struct ZC_GUI
 {
     static inline ZC_GUI* pGUI = nullptr;
 
-    ZC_GUI_TextManager textManager;
     ZC_GUI_DrawManager drawManager;
+    ZC_GUI_TextManager textManager;
     ZC_GUI_EventManager eventManager;
 
     ZC_GUI_TextInputWindow textInputWindow{ float(textManager.font.GetHeight()) };
@@ -20,9 +20,8 @@ struct ZC_GUI
     
     void Configure();
 
-    void Draw();
-
     static void SetState(bool active);
+    static bool GetState();
 
     static void AddWindow(ZC_GUI_Window* pWindow);
     static void EraseWindow(ZC_GUI_Window* pWindow);

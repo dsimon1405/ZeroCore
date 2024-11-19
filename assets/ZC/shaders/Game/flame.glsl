@@ -14,7 +14,7 @@ layout (std140, binding = 0) uniform Camera
     vec3 camPos;
 };
 
-layout (location = 0) in InG
+layout (location = 0) in InG    //  ALL VARIABLES MUST BE INVOLVED INTO THE SOME FUCNTION OR GONNA BE PROBLEM WITH ALIGNMENT (I THOUGHT THAT WITH ALIGNMENT. DATA AFTER NOT INVOLVED FIELD IS NOT CORRECT)
 {
     float tex_left_x;
     float tex_top_y;
@@ -22,14 +22,24 @@ layout (location = 0) in InG
     float tex_bottom_y;
 } inG[];
 
-/*
-data[0].x - cur time in seconds
-data[0].y - change tiles in second (like frames in second fps)
-data[0].z - particle widht
-data[0].w - particle height
+    /*
+    data[0].x - cur time in seconds
+    data[0].y - tiles per second
+    data[0].z - particle widht
+    data[0].w - particle height
 
-data[1].x - appear/disappear seconds. other time particle have alpha 1.f
-*/
+    data[1].x - appear/disappear seconds. other time particle have alpha 1.f
+    data[1].y - pos x
+    data[1].z - pos y
+    data[1].y - pos z
+
+    data[2].x - move to x
+    data[2].y - move to y
+    data[2].z - move to z
+    data[3].w - move speed min secs
+
+    data[3].x - move speed max secs
+    */
 layout (location = 0) uniform mat4 unData;
 
 
@@ -45,13 +55,15 @@ layout (location = 0) out OutG
 void SetVertexData(vec3 quad_corner, vec2 tex_coords)
 {
     outG.tex_coords = tex_coords;
-    gl_Position = perspView * vec4(gl_in[gl_PrimitiveIDIn].gl_Position.xyz + quad_corner, 1.f);
+    vec3 particles_origin_pos = unData[1].yzw;
+    gl_Position = perspView * vec4(particles_origin_pos + gl_in[0].gl_Position.xyz + quad_corner, 1.f);
     EmitVertex();
 }
 
+    //  drawing from points to quads need to take ID = 0, NOT gl_PrimitiveIDIn! For gl_in[0] and in block inG[0]
 void main()
 {
-    outG.life_time_alpha = gl_in[gl_PrimitiveIDIn].gl_Position.w;   //  in gs putt alpha to w
+    outG.life_time_alpha = gl_in[0].gl_Position.w;   //  in gs put alpha to .w
 
         //  calculate particle's corners positions
     float particle_half_width = unData[0].z / 2.f;
@@ -66,16 +78,16 @@ void main()
     const vec2 corner_tr = vec2( 1.f,  1.f);
     
     vec3 bl = (cam_right * corner_bl.x * particle_half_width) + (cam_up * corner_bl.y * particle_half_height);    //  rotate corner in origin face to cam
-    SetVertexData(bl, vec2(inG[gl_PrimitiveIDIn].tex_left_x, inG[gl_PrimitiveIDIn].tex_bottom_y));
+    SetVertexData(bl, vec2(inG[0].tex_left_x, inG[0].tex_bottom_y));
 
     vec3 br = (cam_right * corner_br.x * particle_half_width) + (cam_up * corner_br.y * particle_half_height);    //  rotate corner in origin face to cam
-    SetVertexData(br, vec2(inG[gl_PrimitiveIDIn].tex_right_x, inG[gl_PrimitiveIDIn].tex_bottom_y));
+    SetVertexData(br, vec2(inG[0].tex_right_x, inG[0].tex_bottom_y));
 
     vec3 tl = (cam_right * corner_tl.x * particle_half_width) + (cam_up * corner_tl.y * particle_half_height);    //  rotate corner in origin face to cam
-    SetVertexData(tl, vec2(inG[gl_PrimitiveIDIn].tex_left_x, inG[gl_PrimitiveIDIn].tex_top_y));
+    SetVertexData(tl, vec2(inG[0].tex_left_x, inG[0].tex_top_y));
 
     vec3 tr = (cam_right * corner_tr.x * particle_half_width) + (cam_up * corner_tr.y * particle_half_height);    //  rotate corner in origin face to cam
-    SetVertexData(tr, vec2(inG[gl_PrimitiveIDIn].tex_right_x, inG[gl_PrimitiveIDIn].tex_top_y));
+    SetVertexData(tr, vec2(inG[0].tex_right_x, inG[0].tex_top_y));
 
     EndPrimitive();
 }

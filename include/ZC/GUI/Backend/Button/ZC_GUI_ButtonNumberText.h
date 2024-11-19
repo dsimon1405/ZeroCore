@@ -3,7 +3,7 @@
 #include "ZC_GUI_ButtonNumber.h"
 #include <ZC/GUI/Backend/Text/ZC_GUI_TextForButton.h>
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 struct ZC_GUI_ButtonNumberText : public ZC_GUI_ButtonNumber<TNum>
 {
     ZC_GUI_TextForButton tfb_name;
@@ -34,7 +34,7 @@ struct ZC_GUI_ButtonNumberText : public ZC_GUI_ButtonNumber<TNum>
 
 
     
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumber<TNum>&& buttonNumber, ZC_GUI_TextForButton&& _tfb_name)
     : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(buttonNumber)),
     ZC_GUI_ButtonNumber<TNum>(std::move(buttonNumber)),
@@ -44,32 +44,32 @@ ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumber<TNum>
         tfb_name.indent.indentFlag_X = ZC_GUI_TFB_Indent::OutOfButtonLeft;
 }
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumberText&& bnt)
     : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(bnt)),
     ZC_GUI_ButtonNumber<TNum>(static_cast<ZC_GUI_ButtonNumber<TNum>&&>(bnt)),
     tfb_name(std::move(bnt.tfb_name))
 {}
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 const std::wstring& ZC_GUI_ButtonNumberText<TNum>::GetName_BNT()
 {
     return tfb_name.GetWStr();
 }
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 bool ZC_GUI_ButtonNumberText<TNum>::UpdateText_BNT(const std::wstring& wstr, bool brootForceUpdate)
 {
     return tfb_name.UpdateText(wstr, brootForceUpdate);
 }
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 float ZC_GUI_ButtonNumberText<TNum>::VGetWidthComposite_Obj()
 {
     return tfb_name.VGetWidthComposite_Obj() + this->GetWidthComposite_BN();
 }
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 void ZC_GUI_ButtonNumberText<TNum>::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
 {       //  set here to avoid reset in move ctr
     this->VAddObj_Obj(&tfb_name, nullptr);
@@ -86,7 +86,7 @@ void ZC_GUI_ButtonNumberText<TNum>::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
     }
 }
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 void ZC_GUI_ButtonNumberText<TNum>::VConf_SetTextUV_Obj()
 {
     this->textForButton.VConf_SetTextUV_Obj();  //  texture of number

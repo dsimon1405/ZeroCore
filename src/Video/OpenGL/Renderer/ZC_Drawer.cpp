@@ -19,6 +19,8 @@ ZC_uptr<ZC_Drawer> ZC_Drawer::GetRendererLevelDrawer(ZC_DrawerLevel lvl)
     case ZC_DrawerLevels::OrthoBlend: return
         { new ZC_DrawerFL<const ZC_ShProg*, ZC_TexturesHolder, const ZC_VAO*, ZC_RLDData_Uniforms_GLDraw>(0u, ZC_GLDepth(false), ZC_GLStencil(false),
             ZC_GLBlend(true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA), ZC_GLCullFace(false)) };
+    case ZC_DrawerLevels::Gui: return { new ZC_DrawerFL<const ZC_ShProg*, ZC_TexturesHolder, const ZC_VAO*, ZC_SSBOActivator, ZC_RLDData_Uniforms_GLDraw>
+        (GL_DEPTH_BUFFER_BIT, ZC_GLDepth(true, GL_TRUE, GL_LEQUAL), ZC_GLStencil(false), ZC_GLBlend(true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA), ZC_GLCullFace(false)) };
     default:
     {
         if (funcUsers_GetDrawer)

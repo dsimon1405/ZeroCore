@@ -48,3 +48,20 @@ void ZC_DrawArraysInstanced::VDraw() const
 {
     glDrawArraysInstanced(mode, first, count, instancecount);
 }
+
+
+//  ZC_MultiDrawArraysIndirect
+
+ZC_MultiDrawArraysIndirect::ZC_MultiDrawArraysIndirect(ZC_Buffer* _pBuf_daic, GLenum _mode, void* _indirect, GLsizei _drawcount, GLsizei _stride)
+    : pBuf_daic(_pBuf_daic),
+    mode(_mode),
+    indirect(_indirect),
+    drawcount(_drawcount),
+    stride(_stride)
+{}
+
+void ZC_MultiDrawArraysIndirect::VDraw() const
+{
+    pBuf_daic->BindBuffer();
+    glMultiDrawArraysIndirect(mode, indirect, drawcount, stride);
+}

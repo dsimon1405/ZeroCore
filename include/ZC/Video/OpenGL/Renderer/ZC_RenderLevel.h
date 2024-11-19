@@ -15,6 +15,7 @@ enum ZC_DrawerLevels
     TextScene = Drawing + 1000,     //  ZC_Drawer.cpp
     TextWindowIntoScene = TextScene + 1000,     //  ZC_Drawer.cpp
     OrthoBlend = TextWindowIntoScene + 1000,    //  ZC_Drawer.cpp
+    Gui = OrthoBlend + 1000,
 };
 
 typedef int ZC_DrawerLevel;   //  Draw Levels for user

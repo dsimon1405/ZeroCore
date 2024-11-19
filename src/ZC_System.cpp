@@ -39,7 +39,7 @@ void ZC_System::RunMainCycle()
     fps.StartNewFrame();    //  make prepearing call, to avoid false large information about frist frmae time
 #ifdef ZC_SystemRunMainCycle_timer
 
-    double time_secs = 2.;
+    double time_secs = 10.;
     ZC_Timer timer_poll_events(ZC_TR__seconds, time_secs, ZC_TRO__average, "poll events");
     ZC_Timer timer_updater(ZC_TR__seconds, time_secs, ZC_TRO__average, "updater");
     ZC_Timer timer_collision(ZC_TR__seconds, time_secs, ZC_TRO__average, "collision");

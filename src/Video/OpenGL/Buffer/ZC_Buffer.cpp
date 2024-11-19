@@ -51,6 +51,11 @@ void ZC_Buffer::UnbindBuffer()
     glBindBuffer(type, 0);
 }
 
+GLenum ZC_Buffer::GetType() const noexcept
+{
+    return type;
+}
+
 ZC_Buffer ZC_Buffer::CreateAndFillStorage(GLuint _binding, GLsizeiptr bytesSize, const void* pData, GLbitfield flags)
 {
     ZC_Buffer buf(GL_SHADER_STORAGE_BUFFER, _binding);
@@ -73,7 +78,7 @@ void ZC_Buffer::GLNamedBufferSubData(GLintptr offset, GLsizeiptr bytesSize, cons
     glNamedBufferSubData(id, offset, bytesSize, pData);
 }
 
-void ZC_Buffer::GLBindBufferBase()
+void ZC_Buffer::GLBindBufferBase() const
 {
     assert(type == GL_ATOMIC_COUNTER_BUFFER || type == GL_TRANSFORM_FEEDBACK_BUFFER || type == GL_UNIFORM_BUFFER || type == GL_SHADER_STORAGE_BUFFER);
     glBindBufferBase(type, binding, id);

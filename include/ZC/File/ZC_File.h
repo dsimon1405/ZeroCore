@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ZC/Tools/ZC_string.h>
 #include <ZC_Config.h>
 
 #ifdef ZC_PC

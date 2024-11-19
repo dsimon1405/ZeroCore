@@ -11,6 +11,7 @@
 
 enum ZC_ShPName
 {
+    ShPN_ZC_GUI,
     ShPN_ZCR_ColorFigure,
     ShPN_ZCR_Point,
     ShPN_ZCR_LineFigure,

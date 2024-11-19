@@ -159,17 +159,21 @@ bool ZC_GUI_EventManager::CursorMove(float x, float y, float rel_x, float rel_y,
                 }
                 return false;
             }
-        }   //  not found window and object, make current window and object nullptr
+        }
+        return true;
+    };
+        //  check window one by one, starting from openable (if one of labmdas retuns false, then window had cursor collision, so return false from method)
+    if (lambCollisionWindow(openableWins) && lambCollisionWindow(stacionarWins))
+    {       //  not found window and object, make current window and object nullptr
         if (pObj_underCursor)
         {
             pObj_underCursor->VCursorCollisionEnd_Obj(time);
             pObj_underCursor = nullptr;
         }
         if (pObj_currentScroll) pObj_currentScroll->VNewScrollObj_underCursor_Obj(pObj_scroll);
-        return true;
-    };
-        //  check window one by one, starting from openable (if one of labmdas retuns false, then window had cursor collision, so return false from method)
-    return lambCollisionWindow(openableWins) && lambCollisionWindow(stacionarWins);
+        return true;    //  other sencities can use mouse cursor
+    }
+    else return false;  //  collision happend in one of the windows
 }
 
 bool ZC_GUI_EventManager::CursorMoveOnceInFrame(float x, float y, float rel_x, float rel_y, float time)

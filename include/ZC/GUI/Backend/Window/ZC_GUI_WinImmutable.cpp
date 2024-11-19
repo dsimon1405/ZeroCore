@@ -3,6 +3,7 @@
 #include <ZC/GUI/Backend/System/ZC_GUI.h>
 #include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 #include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
+#include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
 
 ZC_GUI_WinImmutable::ZC_GUI_WinImmutable(const ZC_WOIData& _woiData, ZC_GUI_WinFlags _winFlags, const ColorsWindow& colorsWindow)
     : ZC_GUI_WinImmutable(_woiData, ZC_GUI_IconUV::quad, _winFlags, colorsWindow)
@@ -25,6 +26,15 @@ ZC_GUI_WinImmutable::~ZC_GUI_WinImmutable()
 {
     ZC_GUI::EraseWindow(this);
     std::erase(winImmutables, this);
+
+    if (upDS_con)       //  if immutable window destroyes, program is end. Need to free not stl static data here.
+    {
+        bufDAICs = ZC_Buffer();
+        bufBorders = ZC_Buffer();
+        bufBLs = ZC_Buffer();
+        bufObjDatas = ZC_Buffer();
+        upDS_con = nullptr;
+    }
 }
 
 void ZC_GUI_WinImmutable::VSetDrawState_W(bool needDraw)
@@ -35,27 +45,33 @@ void ZC_GUI_WinImmutable::VSetDrawState_W(bool needDraw)
         if (this->VIsUseCursorMoveEventOnMBLetfDown_Obj() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
             SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
 
-        daic.instanceCount = 1;
+        daic.instanceCount = 1u;
 
         if (winFlags & ZC_GUI_WF__OutAreaClickClose)
             ZC_GUI::pGUI->eventManager.SetMouseButtonDownWatcherObj(this);
+
+        ++draw_winds_count;
     }
     else
     {
-        daic.instanceCount = 0;
+        daic.instanceCount = 0u;
 
         if (ZC_GUI::pGUI->eventManager.pWin_mouseButtonDown_watcher == this)
             ZC_GUI::pGUI->eventManager.SetMouseButtonDownWatcherObj(nullptr);
+    
+        --draw_winds_count;
     }
     
     if (VIsConfigured_Obj()) bufDAICs.GLMapNamedBufferRange_Write(daicOffset + offsetof(ZC_DrawArraysIndirectCommand, instanceCount),
         sizeof(ZC_DrawArraysIndirectCommand::instanceCount), &(daic.instanceCount));
     ZC_GUI::UpdateWindowDrawState(this);
+
+    upDS_con->SwitchToDrawLvl(ZC_RL_Default, draw_winds_count > 0u ? ZC_DrawerLevels::Gui : ZC_RL_Default);
 }
 
 bool ZC_GUI_WinImmutable::VIsDrawing_Obj() const noexcept
 {
-    return daic.instanceCount == 1;  //  1 for drawing, otherwise 0
+    return daic.instanceCount == 1u;  //  1 for drawing, otherwise 0
 }
 
 void ZC_GUI_WinImmutable::VConfigure_Obj()
@@ -65,15 +81,17 @@ void ZC_GUI_WinImmutable::VConfigure_Obj()
     for (ZC_GUI_WinImmutable* pWin : winImmutables)
         pWin->VSet_pBL_Obj(pWin->Get_bl_Obj());     //  calculate bl for all window's objects
 
-    GLsizeiptr totalBorders = 0,
-        totalObjs = 0;
+    GLsizeiptr totalBorders = 0ll,
+        totalObjs = 0ll;
     for (ZC_GUI_WinImmutable* pWin : winImmutables)
     {
-         pWin->VConf_GetBordersAndObjsCount_Obj(pWin->bordersCount, pWin->objsCount);
+        pWin->VConf_GetBordersAndObjsCount_Obj(pWin->bordersCount, pWin->objsCount);
 
         pWin->daic.count = pWin->objsCount - pWin->daic.first;    //  count drawing elements (GL_POINTS) in window; daic.first shows is border drown or not
         totalBorders += pWin->bordersCount;
         totalObjs += pWin->objsCount;
+
+        draw_winds_count += pWin->daic.instanceCount;
     }
 
     std::vector<ZC_DrawArraysIndirectCommand> daics;    //  don't need on class level, caurse all data will be actual only on gpu and each immutable window change daic data for it self, using -> daicOffset
@@ -91,17 +109,25 @@ void ZC_GUI_WinImmutable::VConfigure_Obj()
         pWin->VConf_GetData_Obj(borders, bls, objDatas, 0, pWin->buttonKeyboard_objs);
     }
 
-    drawCount = daics.size();
+    daics_count = daics.size();
 
     using namespace ZC_GUI_Bindings;
     bufDAICs = ZC_Buffer(GL_DRAW_INDIRECT_BUFFER);
     bufBorders = ZC_Buffer(GL_SHADER_STORAGE_BUFFER, bind_Border);
     bufBLs = ZC_Buffer(GL_SHADER_STORAGE_BUFFER, bind_BL);
     bufObjDatas = ZC_Buffer(GL_SHADER_STORAGE_BUFFER, bind_ObjData);
-    bufDAICs.GLNamedBufferStorage(sizeof(ZC_DrawArraysIndirectCommand) * drawCount, daics.data(), GL_MAP_WRITE_BIT);
+    bufDAICs.GLNamedBufferStorage(sizeof(ZC_DrawArraysIndirectCommand) * daics_count, daics.data(), GL_MAP_WRITE_BIT);
     bufBorders.GLNamedBufferStorage(sizeof(ZC_GUI_Border) * borders.size(), borders.data(), GL_DYNAMIC_STORAGE_BIT);
     bufBLs.GLNamedBufferStorage(sizeof(ZC_Vec2<float>) * bls.size(), bls.data(), GL_DYNAMIC_STORAGE_BIT);
     bufObjDatas.GLNamedBufferStorage(sizeof(ZC_GUI_ObjData) * objDatas.size(), objDatas.data(), GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+
+    mult_draw_arr_indir = ZC_MultiDrawArraysIndirect(&bufDAICs, GL_POINTS, 0, daics_count, 0);
+
+    upDS_con = new ZC_DSController(&(ZC_ShProgs::Get(ShPN_ZC_GUI)->shProg), &mult_draw_arr_indir, &ZC_GUI::pGUI->drawManager.vao_empty,
+        ZC_TexturesHolder{ .pTexture = ZC_GUI::pGUI->drawManager.textures.data(), .texturesCount = 2u }, std::forward_list<ZC_uptr<ZC_RSPersonalData>>{},
+        std::forward_list<ZC_DSController::RenderSet>{ { ZC_RL_Default } }, { &bufBorders, &bufBLs, &bufObjDatas });
+
+    if (draw_winds_count > 0u) upDS_con->SwitchToDrawLvl(ZC_RL_Default, ZC_DrawerLevels::Gui);
 }
 
 bool ZC_GUI_WinImmutable::VIsConfigured_Obj() const noexcept
@@ -114,17 +140,18 @@ bool ZC_GUI_WinImmutable::VIsMutableWin_Obj() const noexcept
     return false;
 }
 
-void ZC_GUI_WinImmutable::VDraw_W()
-{
-    if (bls.empty()) return;    //  no data
+// void ZC_GUI_WinImmutable::VDraw_W()
+// {
+//     if (bls.empty()) return;    //  no data
 
-    bufDAICs.BindBuffer();  //  bind indirect buffer
+//     bufBorders.GLBindBufferBase();
+//     bufBLs.GLBindBufferBase();
+//     bufObjDatas.GLBindBufferBase();
 
-    bufBorders.GLBindBufferBase();
-    bufBLs.GLBindBufferBase();
-    bufObjDatas.GLBindBufferBase();
-    glMultiDrawArraysIndirect(GL_POINTS, 0, drawCount, 0);
-}
+//     bufDAICs.BindBuffer();  //  bind indirect buffer
+
+//     glMultiDrawArraysIndirect(GL_POINTS, 0, drawCount, 0);
+// }
 
 void ZC_GUI_WinImmutable::VReconf_UpdateTextUV_W()
 {       //  update uv in text objs

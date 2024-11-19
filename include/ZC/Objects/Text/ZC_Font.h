@@ -2,7 +2,6 @@
 
 #include <ZC/Tools/Math/ZC_Math.h>
 #include <ZC/Video/OpenGL/Texture/ZC_Texture.h>
-#include <ZC/Tools/ZC_string.h>
 
 #include <vector>
 

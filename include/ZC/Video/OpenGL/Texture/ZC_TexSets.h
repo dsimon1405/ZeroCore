@@ -11,6 +11,8 @@ struct ZC_TexSets
     enum TextureName
     {
         texColor,
+        tex_Icon,   //  GUI/gui.fs
+        tex_Text,   //  GUI/gui.fs
 
         game_cubeMap,
     };

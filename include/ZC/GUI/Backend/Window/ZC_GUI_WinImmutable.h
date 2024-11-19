@@ -3,6 +3,9 @@
 #include "ZC_GUI_Window.h"
 #include <ZC/GUI/Backend/ZC_GUI_ObjData.h>
 #include <ZC/Video/OpenGL/Buffer/ZC_Buffer.h>
+#include <ZC/Video/OpenGL/ZC_GLDraw.h>
+#include <ZC/Video/OpenGL/Renderer/ZC_DSController.h>
+#include <ZC/ZC_Types.h>
 
 #include <vector>
 
@@ -15,12 +18,15 @@ struct ZC_GUI_WinImmutable : public ZC_GUI_Window
     static inline std::vector<ZC_Vec2<float>> bls;    //  objecte's bottom left corners
     static inline std::vector<ZC_GUI_ObjData> objDatas;
 
-    static inline GLsizei drawCount = 0;
+    static inline GLsizei daics_count = 0;
+    static inline ui_zc draw_winds_count = 0u;  //  count immutable windows drawing now
 
     static inline ZC_Buffer bufDAICs;
     static inline ZC_Buffer bufBorders;
     static inline ZC_Buffer bufBLs;   //  bottom left corners (positions)
     static inline ZC_Buffer bufObjDatas;
+    static inline ZC_MultiDrawArraysIndirect mult_draw_arr_indir;
+    static inline ZC_uptr<ZC_DSController> upDS_con;
         
         //  object data
     struct ZC_DrawArraysIndirectCommand
@@ -44,7 +50,7 @@ struct ZC_GUI_WinImmutable : public ZC_GUI_Window
     bool VIsConfigured_Obj() const noexcept override;
     
     bool VIsMutableWin_Obj() const noexcept override;
-    void VDraw_W() override;
+    // void VDraw_W() override;
     void VReconf_UpdateTextUV_W() override;
     void VMapObjData_Obj(ZC_GUI_ObjData* pObjData, GLintptr offsetIn_objData, GLsizeiptr byteSize, void* pData) override;
     void VSubDataBL_Obj(ZC_Vec2<float>* pBL_start, ZC_Vec2<float>* pBL_end) override;

@@ -30,6 +30,7 @@ ZC_GUI_WinMutable::~ZC_GUI_WinMutable()
 void ZC_GUI_WinMutable::VSetDrawState_W(bool needDraw)
 {
     if (VIsDrawing_Obj() == needDraw) return;
+    if (needDraw && !VIsConfigured_Obj()) VConfigure_Obj();
     if (needDraw)
     {
         if (this->VIsUseCursorMoveEventOnMBLetfDown_Obj() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
@@ -43,6 +44,8 @@ void ZC_GUI_WinMutable::VSetDrawState_W(bool needDraw)
         
     isDrawing = needDraw;
     ZC_GUI::UpdateWindowDrawState(this);
+
+    upDS_con->SwitchToDrawLvl(ZC_RL_Default, needDraw ? ZC_DrawerLevels::Gui : ZC_RL_Default);
 }
 
 bool ZC_GUI_WinMutable::VIsDrawing_Obj() const noexcept
@@ -78,6 +81,15 @@ void ZC_GUI_WinMutable::VConfigure_Obj()
     bufBorders.GLNamedBufferData(sizeof(ZC_GUI_Border) * borders.size(), borders.data(), GL_DYNAMIC_DRAW);
     bufBLs.GLNamedBufferData(sizeof(ZC_Vec2<float>) * bls.size(), bls.data(), GL_DYNAMIC_DRAW);
     bufObjDatas.GLNamedBufferData(sizeof(ZC_GUI_ObjData) * objDatas.size(), objDatas.data(), GL_DYNAMIC_DRAW);
+    
+    if (!upDS_con)  //  if upDS_con not seted then it first configuration
+    {
+        upDS_con = new ZC_DSController(&(ZC_ShProgs::Get(ShPN_ZC_GUI)->shProg), &drawArrays, &ZC_GUI::pGUI->drawManager.vao_empty,
+            ZC_TexturesHolder{ .pTexture = ZC_GUI::pGUI->drawManager.textures.data(), .texturesCount = 2u }, std::forward_list<ZC_uptr<ZC_RSPersonalData>>{},
+            std::forward_list<ZC_DSController::RenderSet>{ { ZC_RL_Default } }, { &bufBorders, &bufBLs, &bufObjDatas });
+
+        if (isDrawing) upDS_con->SwitchToDrawLvl(ZC_RL_Default, ZC_DrawerLevels::Gui);
+    }
 }
 
 bool ZC_GUI_WinMutable::VIsConfigured_Obj() const noexcept
@@ -90,16 +102,16 @@ bool ZC_GUI_WinMutable::VIsMutableWin_Obj() const noexcept
     return true;
 }
 
-void ZC_GUI_WinMutable::VDraw_W()
-{
-    if (!isDrawing) return;
-    if (!VIsConfigured_Obj()) VConfigure_Obj();
+// void ZC_GUI_WinMutable::VDraw_W()
+// {
+//     if (!isDrawing) return;
+//     if (!VIsConfigured_Obj()) VConfigure_Obj();
 
-    bufBorders.GLBindBufferBase();
-    bufBLs.GLBindBufferBase();
-    bufObjDatas.GLBindBufferBase();
-    drawArrays.Draw();
-}
+//     bufBorders.GLBindBufferBase();
+//     bufBLs.GLBindBufferBase();
+//     bufObjDatas.GLBindBufferBase();
+//     drawArrays.Draw();
+// }
 
 void ZC_GUI_WinMutable::VReconf_UpdateTextUV_W()
 {       //  update uv in text objs
@@ -126,7 +138,8 @@ void ZC_GUI_WinMutable::VSubDataBorder_Obj(ZC_GUI_Border* pBorder_start, ZC_GUI_
 
 void ZC_GUI_WinMutable::VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC_GUI_ObjData* pObjData_end)
 {
-    if (VIsConfigured_Obj()) bufObjDatas.GLNamedBufferSubData((pObjData_start - objDatas.data()) * sizeof(ZC_GUI_ObjData), (pObjData_end - pObjData_start + 1) * sizeof(ZC_GUI_ObjData), pObjData_start);
+    if (VIsConfigured_Obj()) bufObjDatas.GLNamedBufferSubData((pObjData_start - objDatas.data()) * sizeof(ZC_GUI_ObjData),
+        (pObjData_end - pObjData_start + 1) * sizeof(ZC_GUI_ObjData), pObjData_start);
 }
 
 void ZC_GUI_WinMutable::VCursorMove_Obj(float rel_x, float rel_y)

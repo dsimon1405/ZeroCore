@@ -2,7 +2,6 @@
 
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
 #include <ZC/Tools/ZC_uptr.h>
-#include <ZC/Tools/ZC_string.h>
 
 class ZC_FileReader;
 using ZC_upFileReader = ZC_uptr<ZC_FileReader>;

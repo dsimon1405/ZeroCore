@@ -2,9 +2,9 @@
 
 #include <ZC/GUI/Backend/Window/ZC_GUI_WinImmutable.h>
 #include <ZC/GUI/Backend/Text/ZC_GUI_Text.h>
-#include <ZC/GUI/Backend/ZC_cGUI_Number.h>
 #include <ZC/Events/ZC_EC.h>
 #include <ZC/Tools/Time/ZC_Clock.h>
+#include <ZC/Tools/ZC_NumberToString.h>
 
 struct ZC_GUI_TextInputWindow : protected ZC_GUI_WinImmutable
 {
@@ -20,7 +20,7 @@ struct ZC_GUI_TextInputWindow : protected ZC_GUI_WinImmutable
         virtual void Call_Callback() = 0;
     };
     
-    template <ZC_GUI_Number::cNumber TNum>
+    template <ZC_cNumber TNum>
     struct NumberInput : public INumberInput
     {
 
@@ -48,7 +48,7 @@ struct ZC_GUI_TextInputWindow : protected ZC_GUI_WinImmutable
     static bool StartInputWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text);
     
     //  _max_symbols - if less or equal 0, takes some valid count.
-    template <ZC_GUI_Number::cNumber TNum>
+    template <ZC_cNumber TNum>
     static bool StartInputNumberWindow(float bl_x, float bl_y, int win_width, NumberInput<TNum>&& numberInput, bool highlight_text, int _max_symbols);
 
     bool VIsInputWindow_W() const noexcept override;
@@ -195,7 +195,7 @@ private:
 };
 
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 bool ZC_GUI_TextInputWindow::StartInputNumberWindow(float bl_x, float bl_y, int win_width, NumberInput<TNum>&& numberInput, bool highlight_text, int _max_symbols)
 {
     if (!(pTIW->StartWindow(bl_x, bl_y, win_width, _max_symbols > 0 ? _max_symbols :
@@ -217,7 +217,7 @@ bool ZC_GUI_TextInputWindow::StartInputNumberWindow(float bl_x, float bl_y, int 
 
     //  ZC_GUI_TextInputWindow::NumberInput
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 ZC_GUI_TextInputWindow::NumberInput<TNum>::NumberInput(TNum _number, ZC_Function<void(TNum)>&& _callback, uchar _afterDot_count)
     : number(_number),
     funcChangedNumber(std::move(_callback)),
@@ -231,13 +231,13 @@ ZC_GUI_TextInputWindow::NumberInput<TNum>::NumberInput(TNum _number, ZC_Function
     haveDot(std::same_as<TNum, float> || std::same_as<TNum, double> || std::same_as<TNum, long double>)
 {}
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 std::wstring ZC_GUI_TextInputWindow::NumberInput<TNum>::GetStart_wstr()
 {
-    return ZC_GUI_Number::NumberToWstr(number, afterDot_count);
+    return ZC_NumberToString::ToWStr(number, afterDot_count);
 }
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 bool ZC_GUI_TextInputWindow::NumberInput<TNum>::NewCharacter(wchar_t wch)
 {
     switch (wch)
@@ -260,7 +260,7 @@ bool ZC_GUI_TextInputWindow::NumberInput<TNum>::NewCharacter(wchar_t wch)
     return false;
 }
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 void ZC_GUI_TextInputWindow::NumberInput<TNum>::Call_Callback()
 {
     std::wstring wstr = pTIW->text.GetWStr();

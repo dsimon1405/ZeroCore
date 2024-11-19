@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ZC/Tools/ZC_string.h>
+#include <string>
 
 /*
 Create error string.

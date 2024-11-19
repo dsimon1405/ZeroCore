@@ -16,20 +16,21 @@ bool ZC_TexturesHolder::operator == (const ZC_TexturesHolder& th) const noexcept
 
 void ZC_TexturesHolder::ActivateOpenGL() const
 {
-    for (unsigned int i = 0; i < texturesCount; ++i) pTexture->GLActivateAndBind(GL_TEXTURE0 + i);
+    for (unsigned int i = 0; i < texturesCount; ++i) pTexture[i].GLActivateAndBind(GL_TEXTURE0 + i);
 }
 
 
 //  ZC_DSController
 
 ZC_DSController::ZC_DSController(const ZC_ShProg* _pShProg, const ZC_GLDraw* _pGLDraw, const ZC_VAO* _pVAO, const ZC_TexturesHolder& _texturesHolder,
-        std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData, std::forward_list<RenderSet> _renderSets)
+        std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData, std::forward_list<RenderSet> _renderSets, std::forward_list<ZC_Buffer*>&& _ssbo_buffers)
     : pShProg(_pShProg),
     pGLDraw(_pGLDraw),
     pVAO(_pVAO),
     texturesHolder(_texturesHolder),
     personalData(std::move(_personalData)),
-    renderSets(std::move(_renderSets))
+    renderSets(std::move(_renderSets)),
+    ssbo_buffers(std::move(_ssbo_buffers))
 {}
 
 ZC_DSController::~ZC_DSController()
@@ -95,7 +96,9 @@ ZC_DSController ZC_DSController::MakeCopy() const
     auto copyRenderSets = renderSets;
     for (auto& drawerSet : copyRenderSets) drawerSet.drawerLevel = ZC_DL_None;
 
-    return { pShProg, pGLDraw, pVAO, texturesHolder, std::move(copyPersonalData), std::move(copyRenderSets) };
+    std::forward_list<ZC_Buffer*> _ssbo_buffers = ssbo_buffers;
+
+    return { pShProg, pGLDraw, pVAO, texturesHolder, std::move(copyPersonalData), std::move(copyRenderSets), std::move(_ssbo_buffers) };
 }
 
 bool ZC_DSController::IsDrawing(ZC_RenderLevel renderLevel)
@@ -188,5 +191,22 @@ void ZC_RLDData_Uniforms_GLDraw_StencilBorder::Draw()
         pUniformsStencilBorder->Set(ZC_UN_unColor, &(pStencilBorderData->color));
         pUniformsStencilBorder->Activate();     //  activate stencil uniforms and draw
         pGLDraw->Draw();
+    }
+}
+
+
+    //  ZC_SSBOActivator
+
+bool ZC_SSBOActivator::operator == (const ZC_SSBOActivator& ssboa) const noexcept
+{
+    return ssboa.pSSBO_buffers == pSSBO_buffers;
+}
+
+void ZC_SSBOActivator::ActivateOpenGL() const
+{
+    for (const ZC_Buffer* pSSBO_buf : *pSSBO_buffers)
+    {
+        assert(pSSBO_buf->GetType() == GL_SHADER_STORAGE_BUFFER);     //  not ssbo buffer
+        pSSBO_buf->GLBindBufferBase();
     }
 }

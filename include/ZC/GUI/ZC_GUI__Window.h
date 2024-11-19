@@ -70,7 +70,7 @@ struct ZC_GUI__InputWindow
     Return:
     false on fail, otherwise true.
     */
-    template <ZC_GUI_Number::cNumber TNum>
+    template <ZC_cNumber TNum>
     static bool StartInputNumberWindow(float bl_x, float bl_y, int win_width, ZC_GUI_TextInputWindow::NumberInput<TNum>&& numberInput, bool highlight_text, int _max_symbols)
     {
         return ZC_GUI_TextInputWindow::StartInputNumberWindow(bl_x, bl_y, win_width, std::move(numberInput), highlight_text, _max_symbols);

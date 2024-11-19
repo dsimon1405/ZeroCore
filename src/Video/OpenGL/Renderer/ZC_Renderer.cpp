@@ -62,45 +62,6 @@ void ZC_Renderer::Erase(ZC_Render* pRender)
     ZC_ForwardListErase(pRenderer->renders, pRender);
 }
 
-// void ZC_Renderer::Draw()
-// {
-//     this->UpdateUBO();
-
-//     auto prevIter = renders.before_begin();
-//     for (auto curIter = renders.begin(); curIter != renders.end(); )
-//         curIter = (*curIter)->Draw() ? ++curIter : renders.erase_after(prevIter);
-
-//     //  my rendering finished, make openGL state default
-//     ZC_VAO::UnbindVertexArray();
-//     ZC_GLBlend::Disable();
-//     ZC_Framebuffer::Unbind();
-
-// #ifdef ZC_IMGUI
-//     ZC_IGWindow::Draw();
-// #endif
-
-//     funcSwapBuffer();
-// }
-
-
-// #include <ZC/GUI/ZC_GUI_TextManager.h>
-// #include <ZC/Video/OpenGL/Shader/ZC_ShProgs.h>
-// #include <ZC/Video/ZC_SWindow.h>
-// ZC_GUI_TextManager tm;
-
-// ZC_ShProg* pShP;
-// void Create()
-// {
-//     tm.Init();
-//     tm.GetText(L"jk");
-//     tm.Configure();
-
-//     ZC_Shader vs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/build/assets/ZC/shaders/GUI/gui_text_test.vs", GL_VERTEX_SHADER).pHead, GL_VERTEX_SHADER);
-//     ZC_Shader gs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/build/assets/ZC/shaders/GUI/gui_text_test.gs", GL_GEOMETRY_SHADER).pHead, GL_GEOMETRY_SHADER);
-//     ZC_Shader fs(ZC_Shader::ReadShaderFile("/home/dmitry/projects/ZCreator/build/assets/ZC/shaders/GUI/gui_text_test.fs", GL_FRAGMENT_SHADER).pHead, GL_FRAGMENT_SHADER);
-//     pShP = new ZC_ShProg(vs.id, fs.id, gs.id);
-// }
-
 void ZC_Renderer::Draw(ZC_GUI* pGUI)
 {
     this->UpdateUBO();
@@ -109,41 +70,7 @@ void ZC_Renderer::Draw(ZC_GUI* pGUI)
     for (auto curIter = renders.begin(); curIter != renders.end(); )
         curIter = (*curIter)->Draw() ? ++curIter : renders.erase_after(prevIter);
 
-    // static bool isFirst = true;
-    // if (isFirst)
-    // {
-    //     Create();
-    //     isFirst = false;
-    // }
-
-    // tm.texture.GLBindTextureUnit();
-    // pShP->ActivateOpenGL();
-    // glDrawArrays(GL_POINTS, 0, 1);
-
-    // int w,h;
-    // ZC_SWindow::GetSize(w,h);
-// glDisable(GL_DEPTH_TEST);
-
-
-
-    if (pGUI)
-    {
-            //  ZC_GUI uses modern openGL rendering, while total render system uses not fresh openGL =(
-        ZC_GLDepth::GLDepthMask(GL_TRUE);
-        ZC_GLDepth::GLEnableDisable(true);
-        ZC_GLDepth::GLDepthFunc(GL_LEQUAL);
-
-        if (!ZC_GLBlend::global_state_const.use_blend) ZC_GLBlend::GLEnableDisable(true);
-        if (ZC_GLBlend::global_state_const.sfactor != GL_SRC_ALPHA || ZC_GLBlend::global_state_const.dfactor != GL_ONE_MINUS_SRC_ALPHA)
-            ZC_GLBlend::GLBendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        ZC_FBOBuffersController::GlClear(GL_DEPTH_BUFFER_BIT);
-
-        pGUI->Draw();
-        ZC_FBOBuffersController::UsingGLDraw();     //  glMultiDrawArraysIndirect haven't ZC_Draw wrap, so call here
-    }
-
-    //  my rendering finished, make openGL state default
+        //  rendering finished, make openGL state default
     ZC_ShProg::SetDefault();
     ZC_VAO::UnbindVertexArray();
     ZC_Framebuffer::Unbind();

@@ -4,7 +4,7 @@
 #include <ZC/GUI/ZC_GUI__Obj.h>
 
 //  Button with number
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 struct ZC_GUI__ButtonNumberText : public ZC_GUI__Obj<ZC_GUI_ButtonNumberText<TNum>>
 {
     /*
@@ -42,30 +42,30 @@ struct ZC_GUI__ButtonNumberText : public ZC_GUI__Obj<ZC_GUI_ButtonNumberText<TNu
 };
 
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 ZC_GUI__ButtonNumberText<TNum>::ZC_GUI__ButtonNumberText(ZC_GUI_ButtonNumber<TNum>&& buttonNumber, ZC_GUI_TextForButton&& _tfb_name)
     : ZC_GUI__Obj<ZC_GUI_ButtonNumberText<TNum>>(ZC_GUI_ButtonNumberText<TNum>(std::move(buttonNumber), std::move(_tfb_name)))
 {}
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 void ZC_GUI__ButtonNumberText<TNum>::SetNumber(TNum _number, bool use_callback)
 {
     this->obj.SetNumber(_number, use_callback);
 }
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 TNum ZC_GUI__ButtonNumberText<TNum>::GetNumber() const noexcept
 {
     return this->obj.GetNumber();
 }
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 const std::wstring& ZC_GUI__ButtonNumberText<TNum>::GetName()
 {
     return this->obj.GetName_BNT();
 }
 
-template <ZC_GUI_Number::cNumber TNum>
+template <ZC_cNumber TNum>
 bool ZC_GUI__ButtonNumberText<TNum>::UpdateText(const std::wstring& wstr, bool brootForceUpdate)
 {
     return this->obj.UpdateText_BNT(wstr, brootForceUpdate);

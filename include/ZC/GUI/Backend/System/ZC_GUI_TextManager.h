@@ -51,7 +51,7 @@ struct ZC_GUI_TextManager
         int width;          //  count free pixels on botton line 
     };
 
-    ZC_GUI_TextManager();
+    ZC_GUI_TextManager(ZC_Texture* _pTexture);
     ~ZC_GUI_TextManager();
 
     bool IsConfigured() const noexcept;
@@ -79,7 +79,7 @@ private:
     std::list<Text> immutable_texts;
     std::list<Text> mutable_texts;
     std::list<FreeSpace> freeSpaces;    //  free spaces in texture (space for texts from mutable_texts, created after configuration)
-    ZC_Texture texture;
+    ZC_Texture* pTexture = nullptr;
 
     static std::vector<unsigned char> CreateWstrData(Text* pText, int* pWSTR_width);
     static std::vector<unsigned char> CreateChDataData(const std::list<ZC_GUI_ChData>& chDatas, Text* pText);

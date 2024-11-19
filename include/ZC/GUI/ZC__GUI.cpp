@@ -27,10 +27,15 @@ int ZC__GUI::CalculateWstrWidth(const std::wstring& wstr)
     return ZC_GUI_TextManager::CalculateWstrWidth(wstr);
 }
 
-void ZC__GUI::SetState(bool active)
-{
-    ZC_GUI::SetState(active);
-}
+// void ZC__GUI::SetState(bool active)
+// {
+//     ZC_GUI::SetState(active);
+// }
+
+// bool ZC__GUI::GetState()
+// {
+//     return ZC_GUI::GetState();
+// }
 
 int ZC__GUI::GetLongestNumberCharacterWidth()
 {
