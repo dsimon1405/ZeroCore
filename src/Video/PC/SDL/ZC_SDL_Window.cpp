@@ -36,10 +36,14 @@ ZC_SDL_Window::ZC_SDL_Window(ZC_WindowFlags flags, int _width, int _height, cons
 							: flags & ZC_SWF__Multisampling_1 ? 1
 							: 0)) return;
 
-	pWindow = !(flags & ZC_SWF__Border) ? SDL_CreateWindow(name, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN)
-		: _width <= 0 || _height <= 0 ? SDL_CreateWindow(name, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED)
-			: SDL_CreateWindow(name, _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		
+	if (!(flags & ZC_SWF__Border))
+	{
+		pWindow = SDL_CreateWindow(name, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
+		full_sreen = true;
+	}
+	else if (_width <= 0 || _height <= 0) pWindow = SDL_CreateWindow(name, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
+	else pWindow = SDL_CreateWindow(name, _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+
 	if (!pWindow)
 	{
 		ZC_ErrorLogger::Err("SDL_CreateWindow() fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
@@ -120,6 +124,11 @@ void ZC_SDL_Window::VUnlimitCursor()
 	SDL_SetWindowMouseGrab(pWindow, SDL_FALSE);
 }
 
+bool ZC_SDL_Window::VIsCursorLimited() const noexcept
+{
+	return SDL_GetWindowMouseGrab(pWindow);
+}
+
 void ZC_SDL_Window::VStartInputText()
 {
 	SDL_StartTextInput();
@@ -140,9 +149,19 @@ void ZC_SDL_Window::VSetMinSize(int x, int y)
 	SDL_SetWindowMinimumSize(pWindow, x, y);
 }
 
-void ZC_SDL_Window::VSetFullScreen(bool full_screen)
+void ZC_SDL_Window::VSetFullScreen(bool _fullscreen)
 {
-	SDL_SetWindowFullscreen(pWindow, full_screen);
+	if (SDL_SetWindowFullscreen(pWindow, _fullscreen) == 0) full_sreen = _fullscreen;
+}
+
+bool ZC_SDL_Window::VIsFullScreen() const noexcept
+{
+	return full_sreen;
+}
+
+void ZC_SDL_Window::VGetPosition(int& x, int& y)
+{
+	SDL_GetWindowPosition(pWindow, &x, &y);
 }
 
 bool ZC_SDL_Window::SetOpenGLAttributes(int samplesCount)

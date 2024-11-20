@@ -57,7 +57,7 @@ void ZC_Render::SetDrawState(DrawState _drawState)
     else if (drawState == DS_None) ZC_Renderer::Add(this);
     drawState = _drawState;
 }
-// #define DEBUG_ZC_Render_Draw
+#define DEBUG_ZC_Render_Draw
 #ifdef DEBUG_ZC_Render_Draw
 #include <ZC/Tools/Time/ZC_Timer.h>
 #include <iostream>
@@ -71,7 +71,7 @@ bool ZC_Render::Draw()
 #ifdef DEBUG_ZC_Render_Draw
         if (upRendererLevelDrawerPair.first == 1103)        //  1103 Flame
         {
-            static ZC_Timer timer(ZC_TR__seconds, 5., ZC_TRO__average, "draw flame");
+            static ZC_Timer timer(ZC_TR__repeats, 5000., ZC_TRO__average, "draw flame");
             timer.StartPoint();
             upRendererLevelDrawerPair.second->VDraw();
             timer.EndPoint();

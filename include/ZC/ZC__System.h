@@ -20,7 +20,7 @@ typedef int ZC_SystemFlags;
 enum ZC_SW_Flags
 {
     ZC_SWF__None                 = 0,
-    ZC_SWF__Border               = 1 << 1,   //  if don't set - fullscreen; if set and (width or height <= 0) use fullscreen with border(reduced size will be 800x600), otherwise bordered with width and height windowю
+    ZC_SWF__Border               = 1 << 1,   //  if don't set - fullscreen; if set and (width or height <= 0) use fullscreen with border(reduced size will be 800x600), otherwise bordered with width and height from params
     ZC_SWF__Multisampling_1      = 1 << 2,   //  antialiasing with 1 sample on pixel (if Multisampling flags more than one, will take greatest).
     ZC_SWF__Multisampling_2      = 1 << 3,   //  antialiasing with 2 samples on pixel (if Multisampling flags more than one, will take greatest).
     ZC_SWF__Multisampling_3      = 1 << 4,   //  antialiasing with 3 samples on pixel (if Multisampling flags more than one, will take greatest).
@@ -102,13 +102,16 @@ namespace ZC__Window
     //  Mouses cursor can break out window (have effect only in ZC_PC build mode).
     void UnlimitCursor();
 
+    //  Return true if cursor can't break out window, otherwise false.
+    bool IsCursorLimited();
+
     //  Start processing press keyboard keys in unicode (that function start heavy proccesing of each pressed key and used by ZC_GUI). Don't call it without necessarily!
     void StartInputText();
 
     //  Stop processing press keyboard keys in unicode (that function used by ZC_GUI). Don't call it without necessarily!
     void StopInputText();
 
-    //  Sets the position X, Y coords in references.
+    //  Sets the position X, Y coords in references. Position counting from bottom left corner of the window, like in OpenGL!
     void GetCursorPosition(float& posX, float& posY);
 
     //  Sets window max size in pixels.
@@ -119,6 +122,12 @@ namespace ZC__Window
 
     //  Change full screen mode. If full_screen is true, the window will be full screen.
     void SetFullScreen(bool full_screen);
+    
+    //  Returns true on borderless fullscreen mode, otherwise false.
+    bool IsFullScreen();
+
+    //  Sets to references TOP(y) LEFT(x) position of the window into the display. Positoin counting from TOP LEFT corner of the display to TOP LEFT corner of the window.
+    void GetPosition(int& x, int& y);
 } // ZC__Window
 
 

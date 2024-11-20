@@ -16,11 +16,14 @@ public:
     virtual void VShowCursor() {}
     virtual void VLimitCursor() {}
     virtual void VUnlimitCursor() {}
+    virtual bool VIsCursorLimited() const noexcept { return false; }
     virtual void VStartInputText() {}
     virtual void VStopInputText() {}
     virtual void VSetMaxSize(int x, int y) {}
     virtual void VSetMinSize(int x, int y) {}
     virtual void VSetFullScreen(bool full_screen) {}
+    virtual bool VIsFullScreen() const noexcept { return false; }
+    virtual void VGetPosition(int& x, int& y) {}
 
 protected:
     ZC_IWindow() = default;

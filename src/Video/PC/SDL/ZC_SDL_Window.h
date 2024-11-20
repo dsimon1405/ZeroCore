@@ -12,6 +12,8 @@ private:
     SDL_Window* pWindow = nullptr;
     SDL_GLContext glContext = nullptr;
 
+    bool full_sreen = false;
+    
     void VDestroy() override;
     void VSwapBuffer() override;
     void VGetSize(int& width, int& height) const noexcept override;
@@ -19,11 +21,14 @@ private:
     void VShowCursor() override;
     void VLimitCursor() override;
     void VUnlimitCursor() override;
+    bool VIsCursorLimited() const noexcept override;
     void VStartInputText() override;
     void VStopInputText() override;
     void VSetMaxSize(int x, int y) override;
     void VSetMinSize(int x, int y) override;
-    void VSetFullScreen(bool full_screen) override;
+    void VSetFullScreen(bool _full_screen) override;
+    bool VIsFullScreen() const noexcept override;
+    void VGetPosition(int& x, int& y) override;
 
     bool SetOpenGLAttributes(int samplesCount);
     // bool LoadOpenGLFunctions();

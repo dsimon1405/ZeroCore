@@ -60,6 +60,11 @@ namespace ZC__Window
         if (ZC_System::upSystem) ZC_System::upSystem->upIWindow->VUnlimitCursor();
     }
 
+    bool IsCursorLimited()
+    {
+        return ZC_System::upSystem ? ZC_System::upSystem->upIWindow->VIsCursorLimited() : false;
+    }
+
     void StartInputText()
     {
         if (ZC_System::upSystem) ZC_System::upSystem->upIWindow->VStartInputText();
@@ -88,6 +93,16 @@ namespace ZC__Window
     void SetFullScreen(bool full_screen)
     {
         if (ZC_System::upSystem) ZC_System::upSystem->upIWindow->VSetFullScreen(full_screen);
+    }
+    
+    bool IsFullScreen()
+    {
+        return ZC_System::upSystem ? ZC_System::upSystem->upIWindow->VIsFullScreen() : false;
+    }
+
+    void GetPosition(int& x, int& y)
+    {
+        if (ZC_System::upSystem) ZC_System::upSystem->upIWindow->VGetPosition(x, y);
     }
 } // namespace ZC__Window
 
