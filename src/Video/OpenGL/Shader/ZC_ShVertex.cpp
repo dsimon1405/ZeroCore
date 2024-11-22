@@ -80,7 +80,8 @@ std::vector<ZC_uptr<ZC_Uniform>> ZC_ShVertex1::GetUniformData(Name name)    //  
         return ZC_Uniform::GetUniformVector(uniforms, 2);
     }
     case Name::game_star: return ZC_Uniform::GetUniformVector(ZC_Uniform::NameType{ .name = ZC_UN_unModel, .isPointer = true });
-    case Name::game_flame: return ZC_Uniform::GetUniformVector({ G_UN_unData, true });
+    case Name::game_flame: return {};
+    // case Name::game_flame: return ZC_Uniform::GetUniformVector({ G_UN_unData, true });
 
     // case Name::Test_skelet: return ZC_Uniform::GetUniformVector({ ZC_UN_unModel, true });
     case Name::Test_skelet:

@@ -58,8 +58,9 @@ typename ZC_ShProgs::ShNames ZC_ShProgs::GetShNames(ZC_ShPName name) const noexc
         .usingFormatsPacker = VAOPack(0).Pack(1) }, .fName = FName::color, .gName = GName::none };
     case ShPN_Game_Star: return ShNames{ .vName = VName::game_star, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_3_0__I_2_10_10_10_REV_1_1_N__F_2_2,
         .usingFormatsPacker = VAOPack(0).Pack(1).Pack(2) }, .fName = FName::game_star, .gName = GName::none };
-    case ShPN_Game_Flame: return ShNames{ .vName = VName::game_flame, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_4_0, .usingFormatsPacker = VAOPack(0) },
-        .fName = FName::game_flame, .gName = GName::game_flame };
+    case ShPN_Game_Flame: return ShNames{ .vName = VName::game_flame, .vaoConfigData = {}, .fName = FName::game_flame, .gName = GName::game_flame };
+    // case ShPN_Game_Flame: return ShNames{ .vName = VName::game_flame, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_4_0, .usingFormatsPacker = VAOPack(0) },
+    //     .fName = FName::game_flame, .gName = GName::game_flame };
 
     case ShPN_Test_Skelet: return ShNames{ .vName = VName::Test_skelet, .vaoConfigData = VAOConfigData{ .formatShVLayout = ZC_VAOL__F_3_0__F_3_1__F_2_2__I_4_3__F_4_4,
         .usingFormatsPacker = VAOPack(0).Pack(1).Pack(2).Pack(3).Pack(4) }, .fName = FName::Test_skelet, .gName = GName::none };
