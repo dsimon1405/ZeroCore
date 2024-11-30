@@ -86,7 +86,7 @@ void ZC_GUI_WinMutable::VConfigure_Obj()
     {
         upDS_con = new ZC_DSController(&(ZC_ShProgs::Get(ShPN_ZC_GUI)->shProg), &drawArrays, &ZC_GUI::pGUI->drawManager.vao_empty,
             ZC_TexturesHolder{ .pTexture = ZC_GUI::pGUI->drawManager.textures.data(), .texturesCount = 2u }, std::forward_list<ZC_uptr<ZC_RSPersonalData>>{},
-            std::forward_list<ZC_DSController::RenderSet>{ { ZC_RL_Default } }, { &bufBorders, &bufBLs, &bufObjDatas });
+            std::forward_list<ZC_DSController::RenderSet>{ { ZC_RL_Default } }, { &bufBorders, &bufBLs, &bufObjDatas }, nullptr);
 
         if (isDrawing) upDS_con->SwitchToDrawLvl(ZC_RL_Default, ZC_DrawerLevels::Gui);
     }

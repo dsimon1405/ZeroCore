@@ -7,6 +7,8 @@ struct ZC_ShProg
     GLuint id;
 
     ZC_ShProg(GLuint idV, GLuint idF, GLuint idG);
+		//	ctr for compute shader programm
+	ZC_ShProg(const char* compute_code);
 
 	ZC_ShProg(const ZC_ShProg&) = delete;
 	ZC_ShProg& operator = (const ZC_ShProg&) = delete;

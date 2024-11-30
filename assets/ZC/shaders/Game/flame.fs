@@ -17,6 +17,7 @@ layout (location = 0) in InF
 {
     float life_time_alpha;
     vec2 tex_coords;
+    float add_color;
 } inF;
 
 uniform sampler2D texColor;
@@ -26,10 +27,16 @@ out vec4 FragColor;
 
 void main()
 {
-    vec3 color = texture(texColor, inF.tex_coords).xyz;
-    float texture_alpha = (color.x + color.y + color.z) / 3.f;
-    // FragColor = vec4(color, inF.life_time_alpha);
-    float alpha = texture_alpha * inF.life_time_alpha;
-    if (alpha == 0.f) discard;
-    FragColor = vec4(color, alpha);
+    // vec3 color = texture(texColor, inF.tex_coords).xyz;
+    // float texture_alpha = (color.x + color.y + color.z) / 3.f;
+    // // FragColor = vec4(color, inF.life_time_alpha);
+    // float alpha = texture_alpha * inF.life_time_alpha;
+    // if (alpha == 0.f) discard;
+    // FragColor = vec4(color + vec3(inF.add_color, inF.add_color, inF.add_color), alpha);
+
+    
+    vec4 color = texture(texColor, inF.tex_coords).xyzw;
+    float alpha = color.a * inF.life_time_alpha;
+    // if (alpha == 0.f) discard;
+    FragColor = vec4(color.xyz, alpha);
 }

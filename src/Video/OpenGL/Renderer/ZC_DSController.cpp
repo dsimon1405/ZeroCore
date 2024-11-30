@@ -23,14 +23,15 @@ void ZC_TexturesHolder::ActivateOpenGL() const
 //  ZC_DSController
 
 ZC_DSController::ZC_DSController(const ZC_ShProg* _pShProg, const ZC_GLDraw* _pGLDraw, const ZC_VAO* _pVAO, const ZC_TexturesHolder& _texturesHolder,
-        std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData, std::forward_list<RenderSet> _renderSets, std::forward_list<ZC_Buffer*>&& _ssbo_buffers)
+        std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData, std::forward_list<RenderSet> _renderSets, std::forward_list<ZC_Buffer*>&& _ssbo_buffers, ZC_ShPCompute* _pShPCompute)
     : pShProg(_pShProg),
     pGLDraw(_pGLDraw),
     pVAO(_pVAO),
     texturesHolder(_texturesHolder),
     personalData(std::move(_personalData)),
     renderSets(std::move(_renderSets)),
-    ssbo_buffers(std::move(_ssbo_buffers))
+    ssbo_buffers(std::move(_ssbo_buffers)),
+    pShPCompute(_pShPCompute)
 {}
 
 ZC_DSController::~ZC_DSController()
@@ -98,7 +99,7 @@ ZC_DSController ZC_DSController::MakeCopy() const
 
     std::forward_list<ZC_Buffer*> _ssbo_buffers = ssbo_buffers;
 
-    return { pShProg, pGLDraw, pVAO, texturesHolder, std::move(copyPersonalData), std::move(copyRenderSets), std::move(_ssbo_buffers) };
+    return { pShProg, pGLDraw, pVAO, texturesHolder, std::move(copyPersonalData), std::move(copyRenderSets), std::move(_ssbo_buffers), pShPCompute };
 }
 
 bool ZC_DSController::IsDrawing(ZC_RenderLevel renderLevel)

@@ -112,8 +112,13 @@ void ZC_GUI_TextManager::ProcessDeletableText(int wstr_width, Text* pText)
 
     const std::list<FreeSpace>::iterator emptyIter;
     typename std::list<FreeSpace>::iterator freeSpaceIter = emptyIter;
-    for (auto iter = pTM->freeSpaces.begin(); iter != pTM->freeSpaces.end(); ++iter)    //  try to find free space with a width as close as possible to wstr_width
+    for (auto iter = pTM->freeSpaces.begin(); ; ++iter)    //  try to find free space with a width as close as possible to wstr_width
     {
+        if (iter == pTM->freeSpaces.end())
+        {
+            freeSpaceIter = iter;
+            break;
+        }
         if (iter->width == wstr_width)  //  find same width (perfect)
         {
             freeSpaceIter = iter;
@@ -137,8 +142,8 @@ void ZC_GUI_TextManager::ProcessDeletableText(int wstr_width, Text* pText)
         pText->uv = ZC_GUI_UV{ .bl{ (float)freeSpaceIter->start_index / float(pTM->pTexture->GetWidth()), 0.f },
             .tr{ float(freeSpaceIter->start_index + pText->width) / float(pTM->pTexture->GetWidth()), 1.f } };
     };
-
-    if (freeSpaceIter == emptyIter) pTM->Configure(true);     //  can't find freespace, need reconfig and double texture size
+    
+    if (freeSpaceIter == pTM->freeSpaces.end()) pTM->Configure(true);     //  can't find freespace, need reconfig and double texture size
     else if (freeSpaceIter->width == wstr_width)     //  same width
     {
         lambFillTextureAndpTextData();

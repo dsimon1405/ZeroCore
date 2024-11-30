@@ -129,20 +129,25 @@ layout (std430, binding = BIND_SSBO_TEX_DATA) readonly buffer SSBO_UV
     //  particle
 struct Particle    //  std 430 to avoid problems with alignment, don't use mat and vec types!
 {
-    float secs_to_start;
-
-    float pos_start[3];
-    float pos_cur[3];
-    
     float life_secs_total;
     float life_secs_cur;
 
+    float life_time_alpha;
+
+    float secs_to_start;
+    
+        //  position
+    float pos_start[3];
+    float pos_cur[3];
+    
     float dir_move_normalized[3];
     float move_speed_secs;
 
+        //  animaion, uv
     uint uvs_start_id;      //  updated on life time end of the particle
+    uint uvs_cur_id;
 };
-layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_Particles
+layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
 {
             //  Update every frame on the cpu
         //  time
@@ -150,7 +155,7 @@ layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_Particles
     float total_secs;   //  seconds from the start of particle system drawing
         //  origin pos
                 //  may be changed
-    float particles_origin_pos[3];   //  may be located in other SSBOs and one calculated system may be use in different places
+    float mat_model[4][4];   //  may be located in other SSBOs and one calculated system may be use in different places
 
             //  Update only on configuration
         //  corners rotated frace to cam
@@ -161,22 +166,27 @@ layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_Particles
         //  particle size for corners calculation
     float half_width;
     float half_height;
-        //  texture
-    float uv_shift_speed;   //  1 / uv_per_second
         //  alpha data
     float appear_secs;
     float disappear_secs;
+
+        //  position
+    int life_space;     //  look enum G_ParticleLifeSpace
+            //  move
+    float move_speed_power;     //  total move speed of all particles
+
+        //  Animation
+    float uv_shift_speed;   //  1 / uv_per_second
     
     Particle particles[];
-} ssbo_particles;
+} ssbo_ps;
 
 
     //  out
 layout (location = 0) out OutV
 {
     float life_time_alpha;
-    flat uint uvs_id;
-
+    flat uint uvs_cur_id;
 } outV;
 
 
@@ -184,89 +194,110 @@ void main()
 {
     gl_Position = vec4(0,0,0,1);
 
-    Particle p = ssbo_particles.particles[gl_VertexID];
+    outV.life_time_alpha = ssbo_ps.particles[gl_VertexID].life_time_alpha;
+    outV.uvs_cur_id = ssbo_ps.particles[gl_VertexID].uvs_cur_id;
 
-    if (ssbo_particles.total_secs < p.secs_to_start)      //  life has not yet begun
-    {
-        outV.life_time_alpha = 0.f;
-        return;
-    }
-        //  get pos
-    vec3 pos_cur = vec3(p.pos_cur[0], p.pos_cur[1], p.pos_cur[2]);
+    if (gl_VertexID == 0) ssbo_ps.prev_frame_secs = 0.f;     //  updater can be stoped on cpu for particles, so need to stop update on gpu like that
 
-        //  life time
-    float life_secs_cur = p.life_secs_cur + ssbo_particles.prev_frame_secs;
 
-        //  uv coord
-    uint uvs_id = p.uvs_start_id + uint(life_secs_cur / ssbo_particles.uv_shift_speed);
-                                                    //  repeats amount           total amount   
-    if (uvs_id >= ssbo_uv.uvs_count) uvs_id -= (uvs_id / ssbo_uv.uvs_count) * ssbo_uv.uvs_count;   //  avoid out of range uvs[]
 
-        //  particle reborn
-    if (life_secs_cur > p.life_secs_total)  //  life ended
-    {
-        life_secs_cur -= p.life_secs_total;
-        pos_cur = vec3(p.pos_start[0], p.pos_start[1], p.pos_start[2]);    //  return particle to the start
 
-        ssbo_particles.particles[gl_VertexID].uvs_start_id = uvs_id;      //  update start id
-    }
 
-        //  calculate pos
-    vec3 dir_move_normalized = vec3(ssbo_particles.particles[gl_VertexID].dir_move_normalized[0], ssbo_particles.particles[gl_VertexID].dir_move_normalized[1],
-        ssbo_particles.particles[gl_VertexID].dir_move_normalized[2]);
-    pos_cur += dir_move_normalized * p.move_speed_secs * ssbo_particles.prev_frame_secs;
+    // gl_Position = vec4(0,0,0,1);
 
-        //  alpha
-    float disappear_start_secs = p.life_secs_total - ssbo_particles.disappear_secs;
-    outV.life_time_alpha = life_secs_cur < ssbo_particles.appear_secs ? life_secs_cur / ssbo_particles.appear_secs  //  particle appear (life start)
-        : disappear_start_secs < life_secs_cur ? 1.f - ((life_secs_cur - disappear_start_secs) / ssbo_particles.disappear_secs)  //  particle dissapear (life end)
-        : 1.f;  //  full seen
-    // outV.life_time_alpha = 1.f;
+    // Particle p = ssbo_particles.particles[gl_VertexID];
 
-        //  set data
-    ssbo_particles.particles[gl_VertexID].life_secs_cur = life_secs_cur;
-    ssbo_particles.particles[gl_VertexID].pos_cur[0] = pos_cur.x;
-    ssbo_particles.particles[gl_VertexID].pos_cur[1] = pos_cur.y;
-    ssbo_particles.particles[gl_VertexID].pos_cur[2] = pos_cur.z;
+    // if (ssbo_particles.total_secs < p.secs_to_start)      //  life has not yet begun
+    // {
+    //     outV.life_time_alpha = 0.f;
+    //     return;
+    // }
+    //     //  get pos
+    // vec3 pos_cur = vec3(p.pos_cur[0], p.pos_cur[1], p.pos_cur[2]);
 
-    outV.uvs_id = uvs_id;
-    // outV.pos_cur = pos_cur;
+    //     //  life time
+    // float life_secs_cur = p.life_secs_cur + ssbo_particles.prev_frame_secs;
 
-    if (gl_VertexID == 0)   //  on first vertex rotate corners to cam, they are same for each particle
-    {
-        vec3 cam_right = vec3(camera.view[0].x, camera.view[1].x, camera.view[2].x);     //  normalized
-        vec3 cam_up = vec3(camera.view[0].y, camera.view[1].y, camera.view[2].y);        //  normalized
+    //     //  uv coord
+    // uint uvs_cur_id = p.uvs_start_id + uint(life_secs_cur / ssbo_particles.uv_shift_speed);
+    //                                                 //  repeats amount           total amount   
+    // if (uvs_cur_id >= ssbo_uv.uvs_count) uvs_cur_id -= (uvs_cur_id / ssbo_uv.uvs_count) * ssbo_uv.uvs_count;   //  avoid out of range uvs[]
 
-        float left_x    = -1.f;
-        float right_x   =  1.f;
-        float top_y     =  1.f;
-        float bottom_y  = -1.f;
+    //     //  particle reborn
+    // if (life_secs_cur > p.life_secs_total)  //  life ended
+    // {
+    //     life_secs_cur -= p.life_secs_total;
+    //     pos_cur = vec3(p.pos_start[0], p.pos_start[1], p.pos_start[2]);    //  return particle to the start
 
-        vec3 bl = (cam_right * left_x * ssbo_particles.half_width) + (cam_up * bottom_y * ssbo_particles.half_height);
-        ssbo_particles.bl[0] = bl.x;
-        ssbo_particles.bl[1] = bl.y;
-        ssbo_particles.bl[2] = bl.z;
+    //     ssbo_particles.particles[gl_VertexID].uvs_start_id = uvs_cur_id;      //  update start id
+    // }
 
-        vec3 br = (cam_right * right_x * ssbo_particles.half_width) + (cam_up * bottom_y * ssbo_particles.half_height);
-        ssbo_particles.br[0] = br.x;
-        ssbo_particles.br[1] = br.y;
-        ssbo_particles.br[2] = br.z;
+    //     //  calculate pos
+    // vec3 dir_move_normalized = vec3(ssbo_particles.particles[gl_VertexID].dir_move_normalized[0], ssbo_particles.particles[gl_VertexID].dir_move_normalized[1],
+    //     ssbo_particles.particles[gl_VertexID].dir_move_normalized[2]);
+    // pos_cur += dir_move_normalized * p.move_speed_secs * ssbo_particles.prev_frame_secs;
 
-        vec3 tl = (cam_right * left_x * ssbo_particles.half_width) + (cam_up * top_y * ssbo_particles.half_height);
-        ssbo_particles.tl[0] = tl.x;
-        ssbo_particles.tl[1] = tl.y;
-        ssbo_particles.tl[2] = tl.z;
+    //     //  alpha
+    // float disappear_start_secs = p.life_secs_total - ssbo_particles.disappear_secs;
+    // outV.life_time_alpha = life_secs_cur < ssbo_particles.appear_secs ? life_secs_cur / ssbo_particles.appear_secs  //  particle appear (life start)
+    //     : disappear_start_secs < life_secs_cur ? 1.f - ((life_secs_cur - disappear_start_secs) / ssbo_particles.disappear_secs)  //  particle dissapear (life end)
+    //     : 1.f;  //  full seen
+    // // outV.life_time_alpha = 1.f;
 
-        vec3 tr = (cam_right * right_x * ssbo_particles.half_width) + (cam_up * top_y * ssbo_particles.half_height);
-        ssbo_particles.tr[0] = tr.x;
-        ssbo_particles.tr[1] = tr.y;
-        ssbo_particles.tr[2] = tr.z;
-    }
+    //     //  set data
+    // ssbo_particles.particles[gl_VertexID].life_secs_cur = life_secs_cur;
+    // ssbo_particles.particles[gl_VertexID].pos_cur[0] = pos_cur.x;
+    // ssbo_particles.particles[gl_VertexID].pos_cur[1] = pos_cur.y;
+    // ssbo_particles.particles[gl_VertexID].pos_cur[2] = pos_cur.z;
 
-    // outV.bl = vec3(ssbo_particles.bl[0], ssbo_particles.bl[1], ssbo_particles.bl[2]);
-    // outV.br = vec3(ssbo_particles.br[0], ssbo_particles.br[1], ssbo_particles.br[2]);
-    // outV.tl = vec3(ssbo_particles.tl[0], ssbo_particles.tl[1], ssbo_particles.tl[2]);
-    // outV.tr = vec3(ssbo_particles.tr[0], ssbo_particles.tr[1], ssbo_particles.tr[2]);
+    // outV.uvs_cur_id = uvs_cur_id;
+    // // outV.pos_cur = pos_cur;
+
+    // if (gl_VertexID == 0)   //  on first vertex rotate corners to cam, they are same for each particle
+    // {
+    //     vec3 cam_right = vec3(camera.view[0].x, camera.view[1].x, camera.view[2].x);     //  normalized
+    //     vec3 cam_up = vec3(camera.view[0].y, camera.view[1].y, camera.view[2].y);        //  normalized
+
+    //     float left_x    = -1.f;
+    //     float right_x   =  1.f;
+    //     float top_y     =  1.f;
+    //     float bottom_y  = -1.f;
+
+    //     vec3 bl = (cam_right * left_x * ssbo_particles.half_width) + (cam_up * bottom_y * ssbo_particles.half_height);
+    //     ssbo_particles.bl[0] = bl.x;
+    //     ssbo_particles.bl[1] = bl.y;
+    //     ssbo_particles.bl[2] = bl.z;
+
+    //     vec3 br = (cam_right * right_x * ssbo_particles.half_width) + (cam_up * bottom_y * ssbo_particles.half_height);
+    //     ssbo_particles.br[0] = br.x;
+    //     ssbo_particles.br[1] = br.y;
+    //     ssbo_particles.br[2] = br.z;
+
+    //     vec3 tl = (cam_right * left_x * ssbo_particles.half_width) + (cam_up * top_y * ssbo_particles.half_height);
+    //     ssbo_particles.tl[0] = tl.x;
+    //     ssbo_particles.tl[1] = tl.y;
+    //     ssbo_particles.tl[2] = tl.z;
+
+    //     vec3 tr = (cam_right * right_x * ssbo_particles.half_width) + (cam_up * top_y * ssbo_particles.half_height);
+    //     ssbo_particles.tr[0] = tr.x;
+    //     ssbo_particles.tr[1] = tr.y;
+    //     ssbo_particles.tr[2] = tr.z;
+    // }
+
+    // // outV.bl = vec3(ssbo_particles.bl[0], ssbo_particles.bl[1], ssbo_particles.bl[2]);
+    // // outV.br = vec3(ssbo_particles.br[0], ssbo_particles.br[1], ssbo_particles.br[2]);
+    // // outV.tl = vec3(ssbo_particles.tl[0], ssbo_particles.tl[1], ssbo_particles.tl[2]);
+    // // outV.tr = vec3(ssbo_particles.tr[0], ssbo_particles.tr[1], ssbo_particles.tr[2]);
+
+
+
+
+
+
+
+
+
+
 
 
 

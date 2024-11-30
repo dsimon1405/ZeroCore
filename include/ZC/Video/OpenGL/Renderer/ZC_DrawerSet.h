@@ -27,15 +27,16 @@ struct ZC_DrawerSet
     std::forward_list<ZC_Buffer> buffers;
     std::forward_list<ZC_TexturesSet> texSets;
     std::forward_list<ZC_RSC_RenderSet> renderSets;      //  base, for copy in ZC_DSController
+    ZC_ShPCompute shPCompute;
 
     ZC_DrawerSet(ZC_ShP_ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw, std::forward_list<ZC_Buffer>&& _buffers,
-        std::forward_list<ZC_TexturesSet>&& _texSets = {}, std::forward_list<ZC_RSC_RenderSet> _renderSets = { { ZC_RL_Default } });
+        std::forward_list<ZC_TexturesSet>&& _texSets = {}, std::forward_list<ZC_RSC_RenderSet> _renderSets = { { ZC_RL_Default } }, const ZC_ShPCompute& _shP_Compute = {});
 
     static ZC_uptr<ZC_DrawerSet> CreateUptr(ZC_ShP_ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw, std::forward_list<ZC_Buffer>&& _buffers,
-        std::forward_list<ZC_TexturesSet>&& _texSets = {}, std::forward_list<ZC_RSC_RenderSet> _renderSets = { { ZC_RL_Default } });
+        std::forward_list<ZC_TexturesSet>&& _texSets = {}, std::forward_list<ZC_RSC_RenderSet> _renderSets = { { ZC_RL_Default } }, const ZC_ShPCompute& _shP_Compute = {});
 
     static ZC_sptr<ZC_DrawerSet> CreateShptr(ZC_ShP_ShPInitSet* pShPInitSet, ZC_VAO&& _vao, ZC_uptr<ZC_GLDraw>&& _upDraw, std::forward_list<ZC_Buffer>&& _buffers,
-        std::forward_list<ZC_TexturesSet>&& _texSets = {}, std::forward_list<ZC_RSC_RenderSet> _renderSets = { { ZC_RL_Default } });
+        std::forward_list<ZC_TexturesSet>&& _texSets = {}, std::forward_list<ZC_RSC_RenderSet> _renderSets = { { ZC_RL_Default } }, const ZC_ShPCompute& _shP_Compute = {});
 
     /*
     Params:

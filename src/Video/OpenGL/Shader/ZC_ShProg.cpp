@@ -1,6 +1,9 @@
 #include <ZC/Video/OpenGL/Shader/ZC_ShProg.h>
 
 #include <ZC/ErrorLogger/ZC_ErrorLogger.h>
+#include <ZC/Video/OpenGL/Shader/ZC_Shader.h>
+
+#include <cassert>
 
 ZC_ShProg::ZC_ShProg(GLuint idV, GLuint idF, GLuint idG)
 {
@@ -25,6 +28,29 @@ ZC_ShProg::ZC_ShProg(GLuint idV, GLuint idF, GLuint idG)
     glDetachShader(id, idV);
     glDetachShader(id, idF);
     if (idG != 0) glDetachShader(id, idG);
+}
+
+ZC_ShProg::ZC_ShProg(const char* compute_code)
+{
+    ZC_Shader shader(compute_code, GL_COMPUTE_SHADER);
+    
+    id = glCreateProgram();
+    glAttachShader(id, shader.id);
+
+    glLinkProgram(id);
+    //	link check
+    int success = 0;
+    glGetProgramiv(id, GL_LINK_STATUS, &success);
+    if (!success)
+    {
+        char infoLog[1024];
+        glGetProgramInfoLog(id, 1024, NULL, infoLog);
+        ZC_ErrorLogger::Err("glLinkProgram() fail! => " + std::string(infoLog));
+    }
+
+
+    // id = glCreateShaderProgramv(GL_COMPUTE_SHADER, 1, &compute_code);
+    // assert(id != 0);
 }
    
 ZC_ShProg::ZC_ShProg(ZC_ShProg&& shader) noexcept

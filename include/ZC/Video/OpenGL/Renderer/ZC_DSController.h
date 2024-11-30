@@ -5,6 +5,7 @@
 #include <ZC/Video/OpenGL/VAO/ZC_VAO.h>
 #include "ZC_RSPersonalData.h"
 #include "ZC_RenderLevel.h"
+#include <ZC/Video/OpenGL/Shader/ZC_ShPCompute.h>
 
 #include <forward_list>
 
@@ -40,7 +41,7 @@ struct ZC_DSController   //  stores data of object of ZC_DrawerSet for search in
     _texturesCount - count of textures in _pTexture array.
     */
     ZC_DSController(const ZC_ShProg* _pShProg, const ZC_GLDraw* _pGLDraw, const ZC_VAO* _pVAO, const ZC_TexturesHolder& _texturesHolder,
-        std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData, std::forward_list<RenderSet> _renderSets, std::forward_list<ZC_Buffer*>&& _buffers_base_bind);
+        std::forward_list<ZC_uptr<ZC_RSPersonalData>>&& _personalData, std::forward_list<RenderSet> _renderSets, std::forward_list<ZC_Buffer*>&& _buffers_base_bind, ZC_ShPCompute* _pShPCompute);
 
     ~ZC_DSController();
 
@@ -68,10 +69,11 @@ struct ZC_DSController   //  stores data of object of ZC_DrawerSet for search in
     const ZC_ShProg* pShProg = nullptr;
     const ZC_GLDraw* pGLDraw = nullptr;
     const ZC_VAO* pVAO = nullptr;
-    const std::forward_list<ZC_Buffer*> ssbo_buffers;
+    std::forward_list<ZC_Buffer*> ssbo_buffers;
     ZC_TexturesHolder texturesHolder;
     std::forward_list<ZC_uptr<ZC_RSPersonalData>> personalData;
     std::forward_list<RenderSet> renderSets;
+    ZC_ShPCompute* pShPCompute;
 };
 
 
@@ -116,4 +118,5 @@ auto ZC_DSController::GetByType()
         return ZC_RLDData_Uniforms_GLDraw_StencilBorder{ static_cast<const ZC_Uniforms*>(GetPersonalData(ZC_RSPDC_uniforms)),
             pGLDraw, static_cast<const ZC_RSPDStencilBorderData*>(GetPersonalData(ZC_RSPDC_stencilBorder)) };
     else if constexpr (std::same_as<T, ZC_SSBOActivator>) return ZC_SSBOActivator{ .pSSBO_buffers = &ssbo_buffers };
+    else if constexpr (std::same_as<T, const ZC_ShPCompute*>) return pShPCompute;
 }
