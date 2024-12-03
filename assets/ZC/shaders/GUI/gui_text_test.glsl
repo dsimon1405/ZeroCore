@@ -20,7 +20,7 @@ layout (location = 0) out OutG
 };
 
 float win_width = 1850;
-float win_height = 600;
+float win_height = 600 / 3;
 
 void main()
 {
@@ -28,22 +28,22 @@ void main()
 
     uv = vec2(0, 0);
     gl_Position = ortho * vec4(0, 0, 0, 1);
-    gl_Position.y += y_offset;
+    // gl_Position.y += y_offset;
     EmitVertex();
 
     uv = vec2(1, 0);
     gl_Position = ortho * vec4(win_width, 0, 0, 1);
-    gl_Position.y += y_offset;
+    // gl_Position.y += y_offset;
     EmitVertex();
 
     uv = vec2(0, 1);
-    gl_Position = ortho * vec4(0, win_height / 10, 0, 1);
-    gl_Position.y += y_offset;
+    gl_Position = ortho * vec4(0, win_height, 0, 1);
+    // gl_Position.y += y_offset;
     EmitVertex();
 
     uv = vec2(1, 1);
-    gl_Position = ortho * vec4(win_width, win_height / 10, 0, 1);
-    gl_Position.y += y_offset;
+    gl_Position = ortho * vec4(win_width, win_height, 0, 1);
+    // gl_Position.y += y_offset;
     EmitVertex();
 
     EndPrimitive();

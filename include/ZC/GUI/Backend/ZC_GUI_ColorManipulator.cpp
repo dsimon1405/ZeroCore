@@ -4,29 +4,29 @@
 #include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
 #include <ZC/ZC__System.h>
 
-ZC_GUI_ColorManipulator::ZC_GUI_ColorManipulator(ZC_Function<void(float,float,float,float)>&& _callback, bool _range_255)
+ZC_GUI_ColorManipulator::ZC_GUI_ColorManipulator(const ZC_GUI_Font* pFont, ZC_Function<void(float,float,float,float)>&& _callback, bool _range_255)
     : ZC_GUI_ObjComposite(ZC_GUI_ObjData(0.f, 20.f, 0, ZC_GUI_IconUV::quad_colored, ZC_GUI_Bindings::location_tex_Icons)),      //  wisth sets in VSet_pBL_Obj()
     range_255(_range_255),
     cursor_color_line(ZC_GUI_ObjData(2.f, this->GetHeight(), 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons)),
     result_triangle(ZC_GUI_ObjData(GetTriangleSize(), GetTriangleSize(), ZC_PackColorUcharToUInt_RGBA(255, 0, 0, 255), {}, ZC_GUI_Bindings::location_ColorManipulator_resultTriangle)),
     alpha_triangle(ZC_GUI_ObjData(result_triangle.VGetWidth_Obj(), result_triangle.GetHeight(), 0, ZC_GUI_IconUV::background_alpha, ZC_GUI_Bindings::location_ColorManipulator_alphaTrinalge)),
     saturation_triangle(GetTriangleSize()),
-    bnt_red_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 255, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
-        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"R"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"R", true, 0, ZC_GUI_TextAlignment::Left)),
-    bnt_green_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 0, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
-        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"G"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"G", true, 0, ZC_GUI_TextAlignment::Left)),
-    bnt_blue_uchar(ZC_GUI_ButtonNumber<uchar>(button_width, 0.f, 0, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
-        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"B"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"B", true, 0, ZC_GUI_TextAlignment::Left)),
-    bnt_red_float(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 1.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
-        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"R"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"R", true, 0, ZC_GUI_TextAlignment::Left)),
-    bnt_green_float(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 0.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
-        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"G"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"G", true, 0, ZC_GUI_TextAlignment::Left)),
-    bnt_blue_float(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 0.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
-        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"B"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"B", true, 0, ZC_GUI_TextAlignment::Left)),
-    bnt_alpha(ZC_GUI_ButtonNumber<float>(button_width, 0.f, 1.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
-        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(L"A"), ZC_GUI_TFB_Indent::OutOfButtonLeft), L"A", true, 0, ZC_GUI_TextAlignment::Left)),
-    bmt_uchar(bnt_red_uchar.VGetWidthComposite_Obj() / 2.f, true),
-    bmt_float(bnt_red_uchar.VGetWidthComposite_Obj() / 2.f, false),
+    bnt_red_uchar(ZC_GUI_ButtonNumber<uchar>(pFont, button_width, 0.f, 255, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
+        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(pFont, L"R"), ZC_GUI_TFB_Indent::OutOfButtonLeft), pFont, L"R", true, 0, ZC_GUI_TextAlignment::Left)),
+    bnt_green_uchar(ZC_GUI_ButtonNumber<uchar>(pFont, button_width, 0.f, 0, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
+        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(pFont, L"G"), ZC_GUI_TFB_Indent::OutOfButtonLeft), pFont, L"G", true, 0, ZC_GUI_TextAlignment::Left)),
+    bnt_blue_uchar(ZC_GUI_ButtonNumber<uchar>(pFont, button_width, 0.f, 0, 0, 255, 1, 3, 0, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
+        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(pFont, L"B"), ZC_GUI_TFB_Indent::OutOfButtonLeft), pFont, L"B", true, 0, ZC_GUI_TextAlignment::Left)),
+    bnt_red_float(ZC_GUI_ButtonNumber<float>(pFont, button_width, 0.f, 1.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
+        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(pFont, L"R"), ZC_GUI_TFB_Indent::OutOfButtonLeft), pFont, L"R", true, 0, ZC_GUI_TextAlignment::Left)),
+    bnt_green_float(ZC_GUI_ButtonNumber<float>(pFont, button_width, 0.f, 0.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
+        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(pFont, L"G"), ZC_GUI_TFB_Indent::OutOfButtonLeft), pFont, L"G", true, 0, ZC_GUI_TextAlignment::Left)),
+    bnt_blue_float(ZC_GUI_ButtonNumber<float>(pFont, button_width, 0.f, 0.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
+        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(pFont, L"B"), ZC_GUI_TFB_Indent::OutOfButtonLeft), pFont, L"B", true, 0, ZC_GUI_TextAlignment::Left)),
+    bnt_alpha(ZC_GUI_ButtonNumber<float>(pFont, button_width, 0.f, 1.f, 0.f, 1.f, 0.01f, 0.05f, 2, ZC_GUI_TextAlignment::Center, nullptr, nullptr),
+        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(GetDistance(pFont, L"A"), ZC_GUI_TFB_Indent::OutOfButtonLeft), pFont, L"A", true, 0, ZC_GUI_TextAlignment::Left)),
+    bmt_uchar(pFont, bnt_red_uchar.VGetWidthComposite_Obj() / 2.f, true),
+    bmt_float(pFont, bnt_red_uchar.VGetWidthComposite_Obj() / 2.f, false),
     callback(std::move(_callback))
 {}
 
@@ -56,19 +56,27 @@ void ZC_GUI_ColorManipulator::SetAlpha(float alpha, bool use_callback)
     ChangedAlphaInButton(alpha, use_callback);
 }
 
-float ZC_GUI_ColorManipulator::GetDistance(const std::wstring& rgba)
+float ZC_GUI_ColorManipulator::GetDistance(const ZC_GUI_Font* pFont, const std::wstring& rgba)
 {
     static float dist_R = 0.f;
     static float dist_G = 0.f;
     static float dist_B = 0.f;
     static float dist_A = 0.f;
 
-    if (dist_R == 0.f)
+    if (!pFont)
     {
-        float distance = ZC_GUI_TextManager::GetFontHeight() / 10.f;     //  distance between letter and button (left arrow)
+        dist_R = 0.f;
+        dist_G = 0.f;
+        dist_B = 0.f;
+        dist_A = 0.f;
+        return 0.f;     //  threre's no font
+    }
+
+    if (rgba == L"R")   //  method call from ctr, so calculate for all letters distance in R, and so repeat for every new creating object (can be different fonrs...)
+    {
+        float distance = pFont->GetHeight() / 10.f;     //  distance between letter and button (left arrow)
         
-        const ZC_GUI_Font::Character* chs[] { ZC_GUI::pGUI->textManager.font.GetCharacter(L'R'), ZC_GUI::pGUI->textManager.font.GetCharacter(L'G'),
-            ZC_GUI::pGUI->textManager.font.GetCharacter(L'B'), ZC_GUI::pGUI->textManager.font.GetCharacter(L'A'),};
+        const ZC_GUI_Font::Character* chs[] { pFont->GetCharacter(L'R'), pFont->GetCharacter(L'G'), pFont->GetCharacter(L'B'), pFont->GetCharacter(L'A'),};
         float max_width = 0.f;
         for (auto pCh : chs) if (pCh->width > max_width) max_width = pCh->width;
 
@@ -125,7 +133,7 @@ float ZC_GUI_ColorManipulator::VGetHeightComposite_Obj()
 float ZC_GUI_ColorManipulator::VGetWidthComposite_Obj()
 {       //  composite width takes after VSet_pBL_Obj, so can be calculated from positions
                                     //  right_x (button's bl + width + right arrow width (equal font height))   minus  leftest left_x
-    return (bnt_red_uchar.Get_bl_Obj()[0] + bnt_red_uchar.VGetWidth_Obj() + ZC_GUI_TextManager::GetFontHeight()) - result_triangle.Get_bl_Obj()[0];
+    return (bnt_red_uchar.Get_bl_Obj()[0] + bnt_red_uchar.VGetWidth_Obj() + GetFontHeight()) - result_triangle.Get_bl_Obj()[0];
 }
 
 void ZC_GUI_ColorManipulator::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
@@ -148,7 +156,7 @@ void ZC_GUI_ColorManipulator::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
         float max_width = 0.f;
         for (float width : widths) if (width > max_width) max_width = width;
 
-        float distance_x = ZC_GUI_TextManager::GetFontHeight() / 1.5f;  //  distance between saturation triangle and buttons
+        float distance_x = GetFontHeight() / 1.5f;  //  distance between saturation triangle and buttons
         dist_r_x = distance_x + (max_width - widths[0]);
         dist_g_x = distance_x + (max_width - widths[1]);
         dist_b_x = distance_x + (max_width - widths[2]);
@@ -274,8 +282,8 @@ void ZC_GUI_ColorManipulator::UpdateColorLineCursorPosition(const ZC_Vec2<float>
 
 float ZC_GUI_ColorManipulator::GetTriangleSize()
 {                   
-    if (distance_buttons_y == 0) distance_buttons_y = ZC_GUI_TextManager::GetFontHeight() / 2.f;
-    static const float triangle_size = (ZC_GUI_TextManager::GetFontHeight() * lines_with_buttons) + (distance_buttons_y * (lines_with_buttons - 1));
+    if (distance_buttons_y == 0) distance_buttons_y = GetFontHeight() / 2.f;
+    static const float triangle_size = (GetFontHeight() * lines_with_buttons) + (distance_buttons_y * (lines_with_buttons - 1));
     return triangle_size;
 }
 
@@ -411,6 +419,10 @@ void ZC_GUI_ColorManipulator::Callback_alpha(float alpha)
     ChangedAlphaInButton(alpha, true);
 }
 
+int ZC_GUI_ColorManipulator::GetFontHeight() const
+{
+    return bnt_red_uchar.GetFont()->GetHeight();
+}
     
     //  Saturation
 
@@ -596,9 +608,9 @@ void ZC_GUI_ColorManipulator::Saturation::GetTriangleCoords(ZC_Vec2<float>& tl, 
 
     //  TypeSwitcher
 
-ZC_GUI_ColorManipulator::TypeSwitcher::TypeSwitcher(float width, bool _isUChar)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, ZC_GUI_TextManager::GetFontHeight(), 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_ButtonFlag::ZC_GUI_BF__None),
-    ZC_GUI_ButtonMouseText(width, ZC_GUI_TextManager::GetFontHeight(), 0, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Location::Center),
+ZC_GUI_ColorManipulator::TypeSwitcher::TypeSwitcher(const ZC_GUI_Font* pFont, float width, bool _isUChar)
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, pFont->GetHeight(), 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_ButtonFlag::ZC_GUI_BF__None),
+    ZC_GUI_ButtonMouseText(width, pFont->GetHeight(), 0, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Location::Center), pFont,
         _isUChar ? L"255" : L"1.0", true, 0, ZC_GUI_TextAlignment::Center)),
     isUChar(_isUChar)
 {}

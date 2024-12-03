@@ -42,6 +42,7 @@ ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumber<TNum>
 {
     if (tfb_name.indent.indentFlag_X != ZC_GUI_TFB_Indent::OutOfButtonLeft || tfb_name.indent.indentFlag_X != ZC_GUI_TFB_Indent::OutOfButtonRight)
         tfb_name.indent.indentFlag_X = ZC_GUI_TFB_Indent::OutOfButtonLeft;
+    this->VAddObj_Obj(&tfb_name, nullptr);
 }
 
 template <ZC_cNumber TNum>
@@ -49,7 +50,9 @@ ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumberText&&
     : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(bnt)),
     ZC_GUI_ButtonNumber<TNum>(static_cast<ZC_GUI_ButtonNumber<TNum>&&>(bnt)),
     tfb_name(std::move(bnt.tfb_name))
-{}
+{
+    this->VAddObj_Obj(&tfb_name, nullptr);
+}
 
 template <ZC_cNumber TNum>
 const std::wstring& ZC_GUI_ButtonNumberText<TNum>::GetName_BNT()
@@ -71,9 +74,7 @@ float ZC_GUI_ButtonNumberText<TNum>::VGetWidthComposite_Obj()
 
 template <ZC_cNumber TNum>
 void ZC_GUI_ButtonNumberText<TNum>::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
-{       //  set here to avoid reset in move ctr
-    this->VAddObj_Obj(&tfb_name, nullptr);
-
+{
     if (tfb_name.indent.indentFlag_X == ZC_GUI_TFB_Indent::OutOfButtonLeft)    //  first goes textForButton, set bl for them first
     {
         tfb_name.VSet_pBL_Obj(_bl);

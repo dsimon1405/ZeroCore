@@ -104,6 +104,11 @@ namespace ZC__Window
     {
         if (ZC_System::upSystem) ZC_System::upSystem->upIWindow->VGetPosition(x, y);
     }
+
+    void GetDisplaySize(int& width, int& height)
+    {
+        if (ZC_System::upSystem) ZC_System::upSystem->upIWindow->VGetDisplaySize(width, height);
+    }
 } // namespace ZC__Window
 
 

@@ -28,7 +28,8 @@ struct ZC_GUI_ButtonMouseText : public ZC_GUI_ButtonMouse
     bool UpdateText_BMT(const std::wstring& wstr, bool brootForceUpdate);
 
         //  Return current wstring.
-    const std::wstring& GetWStr_BMT();
+    const std::wstring& GetWStr_BMT() const;
+    const ZC_GUI_Font* GetFont() const;
 
     void UpdateText_BMT(ZC_GUI_TextManager::Text* pText);
     void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;

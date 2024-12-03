@@ -4,9 +4,10 @@
 #include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 #include "ZC_GUI_Tree.h"
 
-ZC_GUI_BranchSimple::ZC_GUI_BranchSimple(const std::wstring& name, const ColorsBranch& colorsBranch)
+ZC_GUI_BranchSimple::ZC_GUI_BranchSimple(const ZC_GUI_Font* pFont, const std::wstring& name, const ColorsBranch& colorsBranch)
     : ZC_GUI_ButtonBase(ZC_GUI_ObjData(0.f, 0.f, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None, colorsBranch.colorsBranchButton),
-    ZC_GUI_ButtonMouseText(0.f, 0.f, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Left), name, false, 0, ZC_GUI_TextAlignment::Left, colorsBranch.color_text))
+    ZC_GUI_ButtonMouseText(0.f, 0.f, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Left), pFont, name, false, 0,
+        ZC_GUI_TextAlignment::Left, colorsBranch.color_text))
 {}
 
 ZC_GUI_BranchSimple::ZC_GUI_BranchSimple(ZC_GUI_BranchSimple&& bs)
@@ -31,7 +32,7 @@ bool ZC_GUI_BranchSimple::VIsOpen_Br()
 
 void ZC_GUI_BranchSimple::UpdateName(const std::wstring& name)
 {
-    ZC_GUI_TextManager::Text* pText = ZC_GUI_TextManager::GetText(name, false, 0, ZC_GUI_TextAlignment::Left);
+    ZC_GUI_TextManager::Text* pText = ZC_GUI_TextManager::GetText(this->textForButton.GetFont(), name, false, 0, ZC_GUI_TextAlignment::Left);
     this->UpdateText_BMT(pText);
 
     this->pObjData->width = pText->width;

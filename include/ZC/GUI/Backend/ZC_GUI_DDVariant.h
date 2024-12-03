@@ -12,16 +12,16 @@ struct ZC_GUI_ColorsDropDown
 
     ZC_GUI_ColorsDropDown(const ZC_GUI_ColorsButton& _colorsButton = ZC_GUI_ColorsButton(ZC_GUI_Colors::dropDownSwitch_button, ZC_GUI_Colors::dropDownSwitch_button_under_cursor,
         ZC_GUI_Colors::dropDownSwitch_button_pressed), uint _color_text = ZC_GUI_Colors::dropDownSwitch_text, uint _color_arrow = ZC_GUI_Colors::dropDownSwitch_arrow);
-
 };
 
 struct ZC_GUI_DropDownIcon : public ZC_GUI_Obj
 {
-    ZC_GUI_DropDownIcon(uint color);
+    ZC_GUI_DropDownIcon(const ZC_GUI_Font* pFont, uint color);
 
-        //  indent from button's left border to text
-    static float GetTextIndentX();
-    static float GetWidth();
+        //  calculate distance between items into the button (including borders). Created to get same values in ZC_GUI_DropDown and ZC_GUI_SwitchDropDown from font_height, in ctr class time 
+    static float CalculateDistance(const ZC_GUI_Font* pFont);
+        //  created to get same values in ZC_GUI_DropDown and ZC_GUI_SwitchDropDown from font_height, in ctr class time
+    static float CalculateWidth(const ZC_GUI_Font* pFont);
 };
 
     //  ZC_GUI_SwitchDropDown::ColorsDropDownSwitch
@@ -31,7 +31,7 @@ struct ZC_GUI_DDVariant : public ZC_GUI_ButtonMouseText
 {
     THolder* pHolder;
 
-    ZC_GUI_DDVariant(THolder* _pHolder, float width, float height, const std::wstring& _wstr,
+    ZC_GUI_DDVariant(THolder* _pHolder, const ZC_GUI_Font* pFont, float width, float height, const std::wstring& _wstr,
         const ColorsButton& _colorsButton = {}, unsigned int color_text = 0);
 
     void VLeftButtonUp_BM(float time) override;
@@ -42,11 +42,11 @@ struct ZC_GUI_DDVariant : public ZC_GUI_ButtonMouseText
     //  ZC_GUI_SwitchDropDown::ZC_GUI_DDVariant
 
 template <typename THolder>
-ZC_GUI_DDVariant<THolder>::ZC_GUI_DDVariant(THolder* _pHolder, float width, float height, const std::wstring& _wstr,
+ZC_GUI_DDVariant<THolder>::ZC_GUI_DDVariant(THolder* _pHolder, const ZC_GUI_Font* pFont, float width, float height, const std::wstring& _wstr,
         const ColorsButton& _colorsButton, unsigned int color_text)
     : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None),
-    ZC_GUI_ButtonMouseText(width, height, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(ZC_GUI_DropDownIcon::GetTextIndentX(),
-        ZC_GUI_TFB_Indent::Left), _wstr, true, 0, ZC_GUI_TextAlignment::Left, color_text), _colorsButton),
+    ZC_GUI_ButtonMouseText(width, height, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(ZC_GUI_DropDownIcon::CalculateDistance(pFont),
+        ZC_GUI_TFB_Indent::Left), pFont, _wstr, true, 0, ZC_GUI_TextAlignment::Left, color_text), _colorsButton),
     pHolder(_pHolder)
 {}
 

@@ -30,15 +30,15 @@ ZC_GUI__ClickMouseText::ZC_GUI__ClickMouseText(float width, float height, const 
         std::move(_callback_button_down), std::move(_callback_button_up), std::move(_callback_focuse_changed))
 {}
 
-ZC_GUI__ClickMouseText::ZC_GUI__ClickMouseText(float width, float height, const std::wstring& name, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up,
+ZC_GUI__ClickMouseText::ZC_GUI__ClickMouseText(float width, float height, const ZC_GUI_Font* pFont, const std::wstring& name, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up,
         ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsButtonText& _colorsButtonText)
-    : ZC_GUI__ClickMouseText(width, height, ZC_GUI_IconUV::button, name, std::move(callback_button_down), std::move(callback_button_up),
+    : ZC_GUI__ClickMouseText(width, height, ZC_GUI_IconUV::button, pFont, name, std::move(callback_button_down), std::move(callback_button_up),
         std::move(_callback_focuse_changed), _colorsButtonText)
 {}
 
-ZC_GUI__ClickMouseText::ZC_GUI__ClickMouseText(float width, float height, const ZC_GUI_UV& uv, const std::wstring& name, ZC_Function<void(float)>&& _callback_button_down,
+ZC_GUI__ClickMouseText::ZC_GUI__ClickMouseText(float width, float height, const ZC_GUI_UV& uv, const ZC_GUI_Font* pFont, const std::wstring& name, ZC_Function<void(float)>&& _callback_button_down,
         ZC_Function<void(float)>&& _callback_button_up, ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsButtonText& _colorsButtonText)
-    : ZC_GUI__ClickMouseText(width, height, uv, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Center), name, true, 0, ZC_GUI_TextAlignment::Center,
+    : ZC_GUI__ClickMouseText(width, height, uv, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Center), pFont, name, true, 0, ZC_GUI_TextAlignment::Center,
         _colorsButtonText.text_color), std::move(callback_button_down), std::move(callback_button_up), std::move(_callback_focuse_changed), _colorsButtonText.colorsButton)
 {}
 

@@ -4,10 +4,10 @@
 #include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 #include "ZC_GUI_Tree.h"
 
-ZC_GUI_BranchOpenable::ZC_GUI_BranchOpenable(const std::wstring& name, bool isOpen, const ColorsBranchOpenable& branchOpenableColors)
+ZC_GUI_BranchOpenable::ZC_GUI_BranchOpenable(const ZC_GUI_Font* pFont, const std::wstring& name, bool isOpen, const ColorsBranchOpenable& branchOpenableColors)
     : ZC_GUI_ButtonBase(ZC_GUI_ObjData(0.f, 0.f, 0, ZC_GUI_IconUV::button, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF_M__DoubleCLick, branchOpenableColors.colorsBranch.colorsBranchButton),
-    ZC_GUI_BranchSimple(name, branchOpenableColors.colorsBranch),
-    arrowButton(float(ZC_GUI_TextManager::GetFontHeight() / 1.5f), isOpen, branchOpenableColors.colorsArrowButton)
+    ZC_GUI_BranchSimple(pFont, name, branchOpenableColors.colorsBranch),
+    arrowButton(float(pFont->GetHeight() / 1.5f), isOpen, branchOpenableColors.colorsArrowButton)
 {
     this->VAddObj_Obj(&arrowButton, nullptr);
 }

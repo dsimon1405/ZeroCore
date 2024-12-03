@@ -24,7 +24,7 @@ struct ZC_GUI_BranchOpenable : public ZC_GUI_BranchSimple
 
     ArrowButton arrowButton;
 
-    ZC_GUI_BranchOpenable(const std::wstring& name, bool isOpen, const ColorsBranchOpenable& branchOpenableColors = {});
+    ZC_GUI_BranchOpenable(const ZC_GUI_Font* pFont, const std::wstring& name, bool isOpen, const ColorsBranchOpenable& branchOpenableColors = {});
 
     ZC_GUI_BranchOpenable(ZC_GUI_BranchOpenable&& bo);
 

@@ -16,13 +16,13 @@ ZC_GUI__SwitchKeyboardUV::ZC_GUI__SwitchKeyboardUV(const std::vector<ZC_GUI_Keyb
 
     //  ZC_GUI__SwitchText
 
-ZC_GUI__SwitchText::ZC_GUI__SwitchText(const std::vector<std::wstring>& variants, float width, float height, bool orientation_horizontal, float distance,
+ZC_GUI__SwitchText::ZC_GUI__SwitchText(const ZC_GUI_Font* pFont, const std::vector<std::wstring>& variants, float width, float height, bool orientation_horizontal, float distance,
         ZC_Function<void(uint)> _callback, uint active_variant, const ZC_GUI_ColorsButton& _colorsButton, uint _color_text)
-    : ZC_GUI__Switch<ZC_GUI_Switch<ZC_GUI_ButtonMouseText>>(ZC_GUI_Switch<ZC_GUI_ButtonMouseText>(variants, width, height, orientation_horizontal, distance, std::move(_callback), active_variant, _colorsButton, _color_text))
+    : ZC_GUI__Switch<ZC_GUI_Switch<ZC_GUI_ButtonMouseText>>(ZC_GUI_Switch<ZC_GUI_ButtonMouseText>(pFont, variants, width, height, orientation_horizontal, distance, std::move(_callback), active_variant, _colorsButton, _color_text))
 {}
 
     //  ZC_GUI__SwitchDropDown
 
-ZC_GUI__SwitchDropDown::ZC_GUI__SwitchDropDown(const std::vector<std::wstring>& variants, uint active_variant, float width, float height, ZC_Function<void(uint)> _callback, const ZC_GUI_ColorsDropDown& colorsDropDownSwitch)
-    : ZC_GUI__Switch<ZC_GUI_SwitchDropDown>(ZC_GUI_SwitchDropDown(variants, active_variant, width, height, std::move(_callback), colorsDropDownSwitch))
+ZC_GUI__SwitchDropDown::ZC_GUI__SwitchDropDown(const ZC_GUI_Font* pFont, const std::vector<std::wstring>& variants, uint active_variant, float width, float height, ZC_Function<void(uint)> _callback, const ZC_GUI_ColorsDropDown& colorsDropDownSwitch)
+    : ZC_GUI__Switch<ZC_GUI_SwitchDropDown>(ZC_GUI_SwitchDropDown(pFont, variants, active_variant, width, height, std::move(_callback), colorsDropDownSwitch))
 {}

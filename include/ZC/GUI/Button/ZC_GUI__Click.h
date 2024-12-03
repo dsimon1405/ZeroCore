@@ -138,13 +138,14 @@ struct ZC_GUI__ClickMouseText : public ZC_GUI__Click<ZC_GUI__ButtonMouseText>
     Params:
     - width - width in pixels, if less then text pixels length, takes text pixels length.
     - height - height in pixels, if less then text pixels height, takes text pixels height.
+    - pFont - font.
     - name - button name.
     - _callback_button_down - the function is called when the left mouse button is down the button.
     - _callback_button_up - the function is called when the left mouse button is up and the cursor is still above the button.
     - _callback_focuse_changed - the function is called when the focus change. If true - in focus.
     - _colorsButton - button colors (may stay default).
     */
-    ZC_GUI__ClickMouseText(float width, float height, const std::wstring& name, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up,
+    ZC_GUI__ClickMouseText(float width, float height, const ZC_GUI_Font* pFont, const std::wstring& name, ZC_Function<void(float)>&& _callback_button_down, ZC_Function<void(float)>&& _callback_button_up,
         ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsButtonText& _colorsButtonText = {});
 
     /*
@@ -152,13 +153,14 @@ struct ZC_GUI__ClickMouseText : public ZC_GUI__Click<ZC_GUI__ButtonMouseText>
     - width - width in pixels, if less then text pixels length, takes text pixels length.
     - height - height in pixels, if less then text pixels height, takes text pixels height.
     - uv - custom uv if uses custom icons texture (not default).
+    - pFont - font. See ZC_GUI::LoadFonts(), ZC_GUI::GetFont().
     - name - button name.
     - _callback_button_down - the function is called when the left mouse button is down the button.
     - _callback_button_up - the function is called when the left mouse button is up and the cursor is still above the button.
     - _callback_focuse_changed - the function is called when the focus change. If true - in focus.
     - _colorsButton - button colors (may stay default).
     */
-    ZC_GUI__ClickMouseText(float width, float height, const ZC_GUI_UV& uv, const std::wstring& name, ZC_Function<void(float)>&& _callback_button_down,
+    ZC_GUI__ClickMouseText(float width, float height, const ZC_GUI_UV& uv, const ZC_GUI_Font* pFont, const std::wstring& name, ZC_Function<void(float)>&& _callback_button_down,
         ZC_Function<void(float)>&& _callback_button_up, ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsButtonText& _colorsButtonText = {});
 };
 

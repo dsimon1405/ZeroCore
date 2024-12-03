@@ -15,15 +15,12 @@ struct ZC_GUI_ChData
     bool operator == (const ZC_GUI_ChData* pChData) const noexcept;
 };
 
-struct ZC_GUI_TextManager
+class ZC_GUI_TextManager
 {
+public:
     static inline ZC_GUI_TextManager* pTM;
 
-    static inline std::string font_path;   //  path to custom font (default Arial)
-    static inline ulong font_height = 14;       //  loading font height in pixels (default 14, but after load some symbols can have height larger ZC__GUI::GetFontHeight() return real height of largest symbol)
-    static inline ZC_GUI_FontElements font_elements = ZC_GUI_FE__Symbols | ZC_GUI_FE__English | ZC_GUI_FE__Russian;   //  mask for symbols to be load from font (default ZC_GUI_FE__Symbols | ZC_GUI_FE__English | ZC_GUI_FE__Russian)
-
-    ZC_GUI_Font font;
+    struct TextureRow;
 
     struct Text
     {
@@ -34,56 +31,87 @@ struct ZC_GUI_TextManager
             Right
         };
 
-        bool isImmutable;
+        const ZC_GUI_Font* pFont = nullptr;   //  if nullptr then this is an empty space in TextureRow::texts
+        TextureRow* pRow = nullptr;     //  row from wich current text
+        bool isImmutable = true;
         std::wstring wstr;
-        int width = 0;          //  width of texture in pixels (reserved width for texture could be larger then pixel width of wstr)
+        int width = 0;          //  width of texture in pixels (reserved width for texture could be larger then pixel width of wstr). Don't include max_texture_height.
         ZC_GUI_UV uv;
-        int start_index = 0;    //  start index on the bottom line on the texture (start from bl, end is br)
+        int start_index_in_row = 0;    //  start index in texture's row. Range [0, pTexture::width]
         Alignment alignment;    //  if in texture reserved width more then pixel width of the wstr, may be used alignment
 
-        bool operator == (const std::wstring& _wstr) const noexcept;
-        int GetHeight();
+        int GetHeight() const;
+            //  erase text from mutable_tex_rows
+        void Erase();
+            //  calculates pixel width of the wstr using pFont, if pFont not nullptr
+        int CalculateWstrWidth() const;
     };
 
     struct FreeSpace    //  free space in texture
     {
         int start_index;    //  start index (pixel on bottom line)
-        int width;          //  count free pixels on botton line 
+        int width;          //  count free pixels on botton line
+        int height;         //  height of the row
     };
 
     ZC_GUI_TextManager(ZC_Texture* _pTexture);
     ~ZC_GUI_TextManager();
 
     bool IsConfigured() const noexcept;
-    void Configure(bool doubleWidth);
+    void Configure();
     const ZC_Texture& GetTexture() const noexcept;
 
-    static int GetFontHeight();
-
         //  find or create Text
-    static Text* GetText(const std::wstring& wstr, bool isImmutable, int reserveWidth, Text::Alignment alignment, int* pWSTR_width = nullptr);
-    static void ProcessDeletableText(int wstr_width, Text* pText);
-        //  erase only deletable text (not stacionar), to free space in texture
-    static void EraseText(Text* pText);
-        //  update texture with new wstr
+    static Text* GetText(const ZC_GUI_Font* pFont, const std::wstring& wstr, bool isImmutable, int reserveWidth, Text::Alignment alignment, int* pWSTR_width = nullptr);
+        //  update (mutable text) texture with new wstr
     static bool UpdateText(Text*& pText, int total_width, bool brootForceUpdate, const std::wstring& wstr);
-        //  update texture with new wstr
+        //  update (mutable text) texture with new wstr
     static bool UpdateText(Text* pText, const std::list<ZC_GUI_ChData>& chDatas);
         //  calculates wstr width
-    static int CalculateWstrWidth(const std::wstring& wstr);
     static int CalculateChDataWidth(const std::list<ZC_GUI_ChData>& chDatas);
 
 private:
-    static const int text_distance_pixel = 1;  //  pixels between texts in texture
+        //  Rows of the texture of texts. One row can include different font with the same height.
+    struct TextureRow
+    {
+        static inline int row_width;    //  all row in the texture have same width, sets in ctr ZC_GUI_TextManager(), takes width of the display or maximum openGL texture width
+        static inline int max_texture_height;   //  maximum height of the openGL texture
 
-    std::list<Text> immutable_texts;
-    std::list<Text> mutable_texts;
-    std::list<FreeSpace> freeSpaces;    //  free spaces in texture (space for texts from mutable_texts, created after configuration)
+        int row_height;     //  row's height
+        std::list<Text> texts;
+
+        int height_from_bottom_to_row = 0;   //  height from buttom of the texture to the current row. sets in Configure()
+
+        TextureRow(i_zc _height);
+
+        Text* FindText(const ZC_GUI_FontSrc& font_src, const std::wstring& wstr);
+        Text* TryAddToEmptyPlace(Text& text);
+        void EraseText(Text* pText);
+    };
+
+    static const int text_distance_pixel = 1;  //  pixels in texture, on rows between texts for width, and between rows for height
+
     ZC_Texture* pTexture = nullptr;
+    std::list<TextureRow> immutable_tex_rows;
+    std::list<TextureRow> mutable_tex_rows;
 
-    static std::vector<unsigned char> CreateWstrData(Text* pText, int* pWSTR_width);
+    /*
+    Fills concrete quad part part of 2d array, with some add data. Both data and add are in 1d arrays, but interprete as 2d arrays.
+
+    Params:
+    - data - destination array (interpreted as a 2d array).
+    - rData_index - start index in desination (data) (for eteration uses only first line and it's indexes).
+    - data_width - length of the row in desination (data) (length of the 1d array in 2d array).
+    - add - source array (interpreted as a 2d array).
+    - add_width - length of the row in source (add) (length of the 1d array in 2d array).
+    - add_height - count of not empty rows in source (add) (count of 1d arrays in 2d array).
+    - add_startRow - index of the first not empty row in source (add).
+    */
+    static void AddSymbolData(std::vector<unsigned char>& data, int& rData_index, int data_width, const ZC_GUI_Font::Character* pCh);
+    ZC_GUI_UV CalculateUV(Text* pText);
+    static std::vector<unsigned char> CreateWstrData(Text* pText, int wstr_width);
     static std::vector<unsigned char> CreateChDataData(const std::list<ZC_GUI_ChData>& chDatas, Text* pText);
-    static void MapTexture(int start_index, int width, const unsigned char* data);
+    static void MapTexture(Text* pText, const unsigned char* data);
 };
 
 typedef typename ZC_GUI_TextManager::Text::Alignment ZC_GUI_TextAlignment;

@@ -37,13 +37,13 @@ bool ZC_GUI__Tree::MakeActive(ZC_GUI_BranchSimple* pBranch)
 
     //  ZC_GUI__BranchSimple
 
-ZC_GUI__BranchSimple::ZC_GUI__BranchSimple(const std::wstring& name, const ZC_GUI_ColorsBranch& colorsBranch)
-    : ZC_GUI__Branch<ZC_GUI_BranchSimple>(ZC_GUI_BranchSimple(name, colorsBranch))
+ZC_GUI__BranchSimple::ZC_GUI__BranchSimple(const ZC_GUI_Font* pFont, const std::wstring& name, const ZC_GUI_ColorsBranch& colorsBranch)
+    : ZC_GUI__Branch<ZC_GUI_BranchSimple>(ZC_GUI_BranchSimple(pFont, name, colorsBranch))
 {}
 
 
     //  ZC_GUI__BranchOpenable
 
-ZC_GUI__BranchOpenable::ZC_GUI__BranchOpenable(const std::wstring& name, bool isOpen, const ZC_GUI_ColorsBranchOpenable& branchOpenableColors)
-    : ZC_GUI__Branch<ZC_GUI_BranchOpenable>(ZC_GUI_BranchOpenable(name, isOpen, branchOpenableColors))
+ZC_GUI__BranchOpenable::ZC_GUI__BranchOpenable(const ZC_GUI_Font* pFont, const std::wstring& name, bool isOpen, const ZC_GUI_ColorsBranchOpenable& branchOpenableColors)
+    : ZC_GUI__Branch<ZC_GUI_BranchOpenable>(ZC_GUI_BranchOpenable(pFont, name, isOpen, branchOpenableColors))
 {}

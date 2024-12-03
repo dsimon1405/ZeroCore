@@ -57,9 +57,14 @@ void ZC_GUI_ButtonMouseText::Set_pBL_BMT(const ZC_Vec2<float>& _bl)
     this->textForButton.VChangeObjectActivity_Obj(this->isButtonActive, false);
 }
 
-const std::wstring& ZC_GUI_ButtonMouseText::GetWStr_BMT()
+const std::wstring& ZC_GUI_ButtonMouseText::GetWStr_BMT() const
 {
     return textForButton.GetWStr();
+}
+
+const ZC_GUI_Font* ZC_GUI_ButtonMouseText::GetFont() const
+{
+    return textForButton.GetFont();
 }
 
 void ZC_GUI_ButtonMouseText::UpdateText_BMT(ZC_GUI_TextManager::Text* pText)

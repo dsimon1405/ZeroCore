@@ -13,7 +13,7 @@ struct ZC_GUI
     ZC_GUI_TextManager textManager;
     ZC_GUI_EventManager eventManager;
 
-    ZC_GUI_TextInputWindow textInputWindow{ float(textManager.font.GetHeight()) };
+    ZC_GUI_TextInputWindow textInputWindow;
 
     ZC_GUI();
     ~ZC_GUI();

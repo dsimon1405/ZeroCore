@@ -1,7 +1,7 @@
 #include "ZC_GUI__Text.h"
 
-ZC_GUI__Text::ZC_GUI__Text(const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment, unsigned int color)
-    : ZC_GUI__Obj<ZC_GUI_Text>(ZC_GUI_Text(wstr, _isImmutable, reserveWidth, textAlignment, color))
+ZC_GUI__Text::ZC_GUI__Text(const ZC_GUI_Font* pFont, const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment, unsigned int color)
+    : ZC_GUI__Obj<ZC_GUI_Text>(ZC_GUI_Text(pFont, wstr, _isImmutable, reserveWidth, textAlignment, color))
 {}
 
 bool ZC_GUI__Text::UpdateText(const std::wstring& wstr, bool brootForceUpdate)

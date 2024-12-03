@@ -164,6 +164,33 @@ void ZC_SDL_Window::VGetPosition(int& x, int& y)
 	SDL_GetWindowPosition(pWindow, &x, &y);
 }
 
+void ZC_SDL_Window::VGetDisplaySize(int& width, int& height)
+{
+	int count;
+	SDL_DisplayID* pDisplays_id = SDL_GetDisplays(&count);
+	if (!pDisplays_id)
+	{
+		ZC_ErrorLogger::Err("SDL_GetDisplays() fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		width = 0;
+		height = 0;
+		return;
+	}
+
+	const SDL_DisplayMode* pDisplayMode = SDL_GetDesktopDisplayMode(pDisplays_id[0]);
+	if (!pDisplayMode)
+	{
+		ZC_ErrorLogger::Err("SDL_GetDesktopDisplayMode() fail: " + std::string(SDL_GetError()), __FILE__, __LINE__);
+		SDL_free(pDisplays_id);
+		width = 0;
+		height = 0;
+		return;
+	}
+	SDL_free(pDisplays_id);
+
+	width = pDisplayMode->w;
+	height = pDisplayMode->h;
+}
+
 bool ZC_SDL_Window::SetOpenGLAttributes(int samplesCount)
 {
 	if (SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE) != 0)

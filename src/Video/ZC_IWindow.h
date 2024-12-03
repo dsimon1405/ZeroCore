@@ -24,6 +24,7 @@ public:
     virtual void VSetFullScreen(bool full_screen) {}
     virtual bool VIsFullScreen() const noexcept { return false; }
     virtual void VGetPosition(int& x, int& y) {}
+    virtual void VGetDisplaySize(int& width, int& height) {}
 
 protected:
     ZC_IWindow() = default;

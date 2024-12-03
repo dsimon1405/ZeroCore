@@ -43,6 +43,7 @@ struct ZC_GUI__InputWindow
     Start drawing input window.
 
     Params:
+    - pFont - font. See ZC_GUI::LoadFonts(), ZC_GUI::GetFont().
     - bl_x - window position X.
     - bl_y - window positioin Y.
     - win_width - window pixel width.
@@ -54,12 +55,14 @@ struct ZC_GUI__InputWindow
     Return:
     false on fail, otherwise true.
     */
-    static bool StartInputWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text);
+    static bool StartInputWindow(const ZC_GUI_Font* pFont, float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr,
+        ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text);
     
     /*
     Starts drawing a number input window,
     
     Params:
+    - pFont - font. See ZC_GUI::LoadFonts(), ZC_GUI::GetFont().
     - bl_x - window position X.
     - bl_y - window positioin Y.
     - win_width - window pixel width.
@@ -71,8 +74,8 @@ struct ZC_GUI__InputWindow
     false on fail, otherwise true.
     */
     template <ZC_cNumber TNum>
-    static bool StartInputNumberWindow(float bl_x, float bl_y, int win_width, ZC_GUI_TextInputWindow::NumberInput<TNum>&& numberInput, bool highlight_text, int _max_symbols)
+    static bool StartInputNumberWindow(const ZC_GUI_Font* pFont, float bl_x, float bl_y, int win_width, ZC_GUI_TextInputWindow::NumberInput<TNum>&& numberInput, bool highlight_text, int _max_symbols)
     {
-        return ZC_GUI_TextInputWindow::StartInputNumberWindow(bl_x, bl_y, win_width, std::move(numberInput), highlight_text, _max_symbols);
+        return ZC_GUI_TextInputWindow::StartInputNumberWindow(pFont, bl_x, bl_y, win_width, std::move(numberInput), highlight_text, _max_symbols);
     }
 };

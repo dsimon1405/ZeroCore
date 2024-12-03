@@ -156,7 +156,7 @@ void ZC_GUI_Tree::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
 void ZC_GUI_Tree::VKeyboardButtonUp_Obj(float time)
 {
     if (!pActiveBranch) return;
-    ZC_GUI_TextInputWindow::StartInputWindow(this->Get_bl_Obj()[0], pActiveBranch->Get_bl_Obj()[1], this->VGetWidth_Obj(), ZC_GUI_BranchSimple::max_symbols,
+    ZC_GUI_TextInputWindow::StartInputWindow(pActiveBranch->textForButton.GetFont(), this->Get_bl_Obj()[0], pActiveBranch->Get_bl_Obj()[1], this->VGetWidth_Obj(), ZC_GUI_BranchSimple::max_symbols,
         pActiveBranch->GetWStr_BMT(), { &ZC_GUI_BranchSimple::UpdateName, pActiveBranch }, false);
 }
 

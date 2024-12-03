@@ -45,11 +45,12 @@ struct ZC_GUI_TextInputWindow : protected ZC_GUI_WinImmutable
 
     static void SetColors(uint textInput_background, uint textInput_text, uint textInput_caret, uint texInput_highlight);
 
-    static bool StartInputWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text);
+    static bool StartInputWindow(const ZC_GUI_Font* pFont, float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr,
+        ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text);
     
     //  _max_symbols - if less or equal 0, takes some valid count.
     template <ZC_cNumber TNum>
-    static bool StartInputNumberWindow(float bl_x, float bl_y, int win_width, NumberInput<TNum>&& numberInput, bool highlight_text, int _max_symbols);
+    static bool StartInputNumberWindow(const ZC_GUI_Font* pFont, float bl_x, float bl_y, int win_width, NumberInput<TNum>&& numberInput, bool highlight_text, int _max_symbols);
 
     bool VIsInputWindow_W() const noexcept override;
     ZC_GUI_Obj* VGetButtonKeyboard_W(ZC_ButtonID buttonId) override;
@@ -88,7 +89,7 @@ private:
         float end_x = 0;    //  highlight br.x (to calculate width)
         Direction direction = None;     //  start_x is bl.x. If Left: start_x is moveing. If Right: end_x is moving
 
-        Highlight(float fontHeight);
+        Highlight();
 
         void MBL_DoubleClick();
         void MBL_TripleClick();
@@ -149,7 +150,7 @@ private:
         const float blinkTime_limit = 600000000;    //  nanoseconds
         float blinkTime = 0;    //  nanoseconds
 
-        Caret(float fontHeight);
+        Caret();
 
         bool IsCaretOnStart();
         void SetDrawState(DrawState _drawState);
@@ -183,11 +184,11 @@ private:
     std::list<ZC_GUI_ChData> chDatas;
     int chDatasOffset = 0;    //  texture's offset in window (negative or 0)
 
-    ZC_GUI_TextInputWindow(float fontHeight);
+    ZC_GUI_TextInputWindow();
 
     void VSetDrawState_W(bool needDraw) override;
 
-    bool StartWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, bool highlight_text);
+    bool StartWindow(const ZC_GUI_Font* pFont, float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, bool highlight_text);
 
     void WindowResize(float,float);
 
@@ -196,9 +197,9 @@ private:
 
 
 template <ZC_cNumber TNum>
-bool ZC_GUI_TextInputWindow::StartInputNumberWindow(float bl_x, float bl_y, int win_width, NumberInput<TNum>&& numberInput, bool highlight_text, int _max_symbols)
+bool ZC_GUI_TextInputWindow::StartInputNumberWindow(const ZC_GUI_Font* pFont, float bl_x, float bl_y, int win_width, NumberInput<TNum>&& numberInput, bool highlight_text, int _max_symbols)
 {
-    if (!(pTIW->StartWindow(bl_x, bl_y, win_width, _max_symbols > 0 ? _max_symbols :
+    if (!(pTIW->StartWindow(pFont, bl_x, bl_y, win_width, _max_symbols > 0 ? _max_symbols :
                                                         std::same_as<TNum, schar> ? schar_min.size() :
                                                         std::same_as<TNum, uchar> ? uchar_max.size() :
                                                         std::same_as<TNum, short> ? short_min.size() :

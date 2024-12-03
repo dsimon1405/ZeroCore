@@ -29,6 +29,7 @@ private:
     void VSetFullScreen(bool _full_screen) override;
     bool VIsFullScreen() const noexcept override;
     void VGetPosition(int& x, int& y) override;
+    void VGetDisplaySize(int& width, int& height) override;
 
     bool SetOpenGLAttributes(int samplesCount);
     // bool LoadOpenGLFunctions();

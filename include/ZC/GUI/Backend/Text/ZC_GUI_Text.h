@@ -11,13 +11,14 @@ struct ZC_GUI_Text : public ZC_GUI_Obj
     Createt text string.
 
     Params:
+    - font_src - font data.
     - wstr - string in unicode.
     - _isImmutable - if true can't be used method UpdateText().
     - reserveWidth - may be reserve pixel width longer then in wstr (have effect only if _isImmutable = false). More info in method UpdateText().
     - textAlignment - if reservedWidth more then wstr pixel wisth, current wstr can have horizontal alignment in texture. In other case it's Left.
     - color - text's color.
     */
-    ZC_GUI_Text(const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment, unsigned int color = ZC_GUI_Colors::window_text);
+    ZC_GUI_Text(const ZC_GUI_Font* pFont, const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment, unsigned int color = ZC_GUI_Colors::window_text);
 
     ZC_GUI_Text(ZC_GUI_Text&& t);
 
@@ -36,9 +37,10 @@ struct ZC_GUI_Text : public ZC_GUI_Obj
     */
     bool UpdateText(const std::wstring& wstr, bool brootForceUpdate);
     bool UpdateText(const std::list<ZC_GUI_ChData>& chDatas);
-        //  calls from ZC_GUI_BranchSimple::UpdateName()
+        //  calls from ZC_GUI_BranchSimple::UpdateName() and ZC_GUI_TextInputWindow::StartWindow()
     void UpdateText(ZC_GUI_TextManager::Text* _pText);
-    const std::wstring& GetWStr();
+    const std::wstring& GetWStr() const;
+    const ZC_GUI_Font* GetFont() const noexcept;
     float VGetWidth_Obj() override;
     float VGetWidthComposite_Obj() override;
     void VConf_SetTextUV_Obj() override;

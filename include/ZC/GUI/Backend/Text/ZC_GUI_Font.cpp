@@ -2,71 +2,72 @@
 
 #include <ZC/Tools/Container/ZC_ContFunc.h>
 
-ZC_GUI_Font::ZC_GUI_Font(std::vector<Character>&& _characters)
+ZC_GUI_Font::ZC_GUI_Font(int font_id, std::vector<Character>&& _characters)
     : characters(std::move(_characters)),
-    height(characters.empty() ? 0 : characters.back().data.size() / characters.back().width)   //  width individual for character but all data have same height, so get it
+    font_src{ .id = font_id, .pixels_height = (characters.empty() ? 0 : i_zc(characters.back().data.size()) / characters.back().width) },   //  width individual for character but all data have same height, so get it
+    longest_character_pixels_width(GetLongestCharacterLength()),
+    longest_number_pixels_width(GetLongestNumberCharacterWidth())
 {}
 
-const typename ZC_GUI_Font::Character* ZC_GUI_Font::GetCharacter(wchar_t ch)
+bool ZC_GUI_Font::operator == (const ZC_GUI_FontSrc& f) const noexcept
+{
+    return font_src == f;
+}
+
+const typename ZC_GUI_Font::Character* ZC_GUI_Font::GetCharacter(wchar_t ch) const
 {
     return ZC_Find(characters, ch);
 }
 
-int ZC_GUI_Font::GetHeight()
+int ZC_GUI_Font::GetHeight() const noexcept
 {
-    return height;
+    return font_src.pixels_height;
 }
 
-int ZC_GUI_Font::GetLongestCharacterLength() const noexcept
+int ZC_GUI_Font::GetLongestCharacterLength()
 {
-    static int longestLength = 0;
-    if (longestLength == 0)
+    int longestLength = 0;
+    for (auto& ch : characters)
     {
-        for (auto& ch : characters)
+        int length = ch.width + ch.left_offset;
+        if (length > longestLength) longestLength = length;
+    }
+    return longestLength;
+}
+
+int ZC_GUI_Font::GetLongestNumberCharacterWidth()
+{
+    int longestLength = 0;
+    bool found = false;
+    for (const Character& ch : characters)
+    {
+        if (ch.character == L'0') found = true;
+        if (found)
         {
-            int length = ch.width + ch.left_offset;
+            float length = ch.left_offset + ch.width;
             if (length > longestLength) longestLength = length;
+            
+            if (ch.character == L'9') break;
         }
     }
     return longestLength;
 }
 
-int ZC_GUI_Font::GetLongestNumberCharacterLendth() const noexcept
+int ZC_GUI_Font::CalculateWstrWidth(const std::wstring& wstr) const
 {
-    static int longestLength = 0;
-    if (longestLength == 0)
+    int wstr_width = 0;
+    for (const wchar_t& wch : wstr)
     {
-        bool found = false;
-        for (const Character& ch : characters)
-        {
-            if (ch.character == L'0') found = true;
-            if (found)
-            {
-                float length = ch.left_offset + ch.width;
-                if (length > longestLength) longestLength = length;
-                
-                if (ch.character == L'9') break;
-            }
-        }
+        const typename ZC_GUI_Font::Character* pCh = GetCharacter(wch);
+        if (!pCh) continue;     //  symbol wasn't loaded
+        if (&wch != wstr.data()) wstr_width += pCh->left_offset;   // if this is not the first wch of the wstr, adds left_offset
+        wstr_width += pCh->width;
     }
-    return longestLength;
-}
-
-void ZC_GUI_Font::AddSymbolData(std::vector<unsigned char>& data, int& rData_index, int data_width, const Character* pCh)
-{
-    int data_i = rData_index + (pCh->start_row * data_width);     //  start index in data vector, miss white space rows in add vector
-    int add_i = pCh->start_row * pCh->width;   //  start index in add vector, miss space rows
-    int height = pCh->height;
-    for (; height > 0; data_i += data_width, --height)     //  data_i += data_width - get same position in the next row. Looping while have height of add (in 2d array)
-        for (int add_line_width = 0; add_line_width < pCh->width; ++add_line_width)   //  fill rows (same start pos for each row in 2d array)
-            data[data_i + add_line_width] = pCh->data[add_i++];
-
-    rData_index += pCh->width;
+    return wstr_width;
 }
 
 
-
-//  ZC_GUI_Font::Character
+    //  ZC_GUI_Font::Character
         
 bool ZC_GUI_Font::Character::operator == (wchar_t ch) const noexcept
 {
@@ -74,8 +75,12 @@ bool ZC_GUI_Font::Character::operator == (wchar_t ch) const noexcept
 }
 
 
+    //  ZC_GUI_FontSrc
 
-
+bool ZC_GUI_FontSrc::operator == (const ZC_GUI_FontSrc& f) const noexcept
+{
+    return f.id == id && f.pixels_height == pixels_height;
+}
 
     
 // #include <iostream>

@@ -1,8 +1,43 @@
 #pragma once
 
+#include <ZC/ZC_Types.h>
+#include "ZC_GUI_FontElement.h"
+
 #include <vector>
 #include <string>
 #include <list>
+
+    //  source data for loading fonts ZC__GUI::LoadFonts(), and later for geting ZC__GUI::GetFont() if nessesary
+struct ZC_GUI_FontSrc
+{
+    i_zc id = -1;               //  id may be user's enum with names of the fonts, don't use ids after 10000, look enum ZC_GUI_FontLoader::FontName
+    i_zc pixels_height = -1;     //  factical font height in pixels. If sets in ZC_GUI_FontLoadDataUser, later coud be change on factical height of loaded font. Must be used factical pixel_height in call ZC__GUI::GetFont(ZC_GUI_FontSrc{})
+
+    bool operator == (const ZC_GUI_FontSrc& f) const noexcept;
+};
+
+    //  struct for load fonts from enum ZC_GUI_FontName
+struct ZC_GUI_FontLoadData
+{
+        //  name font presents in the library for load ZC__GUI::LoadFonts()
+    enum ZC_GUI_FontName
+    {
+        Arial               = 10000,      //  use as ZC_GUI_FontSrc::id
+        ChunkFivePrint  //  = 10001,    and so on...
+    };
+
+    ZC_GUI_FontName font_name;      //  font to load, later id from enum sets to ZC_GUI_FontSrc::id -> ZC_GUI_Font::font_src::id
+    i_zc pixels_height;              //  font's height, after load factical height can be some different, factical height will be set to ZC_GUI_FontSrc::pixels_height -> ZC_GUI_Font::font_src::pixels_height
+    ZC_GUI_FontElements elements;   //  mask for symbols to be load from font (default ZC_GUI_FE__Symbols | ZC_GUI_FE__English | ZC_GUI_FE__Russian)
+};
+
+    //  struct for load user's fonts
+struct ZC_GUI_FontLoadDataUser
+{
+    ZC_GUI_FontSrc font_src;        //  look ZC_GUI_FontSrc
+    std::string font_path;          //  path to font
+    ZC_GUI_FontElements elements;   //  mask for symbols to be load from font (default ZC_GUI_FE__Symbols | ZC_GUI_FE__English | ZC_GUI_FE__Russian)
+};
 
 //  class for storing charecters
 struct ZC_GUI_Font
@@ -19,31 +54,28 @@ struct ZC_GUI_Font
         bool operator == (wchar_t ch) const noexcept;
     };
 
+    const std::vector<Character> characters;
+    const ZC_GUI_FontSrc font_src;
+    const int longest_character_pixels_width;
+    const int longest_number_pixels_width;
+
     ZC_GUI_Font() = default;
-    ZC_GUI_Font(std::vector<Character>&& _characters);
+    ZC_GUI_Font(int font_id, std::vector<Character>&& _characters);
 
-    const Character* GetCharacter(wchar_t ch);
-    int GetHeight();
-    int GetLongestCharacterLength() const noexcept;
-    int GetLongestNumberCharacterLendth() const noexcept;
+    bool operator == (const ZC_GUI_FontSrc& f) const noexcept;
 
-    /*
-    Fills concrete quad part part of 2d array, with some add data. Both data and add are in 1d arrays, but interprete as 2d arrays.
+        //  return character if exists, otherwise nullptr.
+    const Character* GetCharacter(wchar_t ch) const;
+        //  Return height in pixels of largest loaded symbols.
+    int GetHeight() const noexcept;
+        //  Returns length of the wstr in pixels.
+    int CalculateWstrWidth(const std::wstring& wstr) const;
 
-    Params:
-    - data - destination array (interpreted as a 2d array).
-    - rData_index - start index in desination (data) (for eteration uses only first line and it's indexes).
-    - data_width - length of the row in desination (data) (length of the 1d array in 2d array).
-    - add - source array (interpreted as a 2d array).
-    - add_width - length of the row in source (add) (length of the 1d array in 2d array).
-    - add_height - count of not empty rows in source (add) (count of 1d arrays in 2d array).
-    - add_startRow - index of the first not empty row in source (add).
-    */
-    void AddSymbolData(std::vector<unsigned char>& data, int& rData_index, int data_width, const Character* pCh);
-    
 private:
-    std::vector<Character> characters;
-    int height = 0;
+        //  Return length of the longest character in pixels.
+    int GetLongestCharacterLength();
+        //  Returns length of the longest number in pixels.
+    int GetLongestNumberCharacterWidth();
 };
 typedef typename ZC_GUI_Font::Character ZC_GUI_Character;
 

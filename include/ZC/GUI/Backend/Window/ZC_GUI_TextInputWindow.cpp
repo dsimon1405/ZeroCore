@@ -17,10 +17,10 @@ void ZC_GUI_TextInputWindow::SetColors(uint color_background, uint color_text, u
     pTIW->VSubDataObjData_Obj(pTIW->Get_pObjData_start(), pTIW->VGet_pObjData_end());
 }
 
-bool ZC_GUI_TextInputWindow::StartInputWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr,
+bool ZC_GUI_TextInputWindow::StartInputWindow(const ZC_GUI_Font* pFont, float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr,
     ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text)
 {
-    if (!pTIW->StartWindow(bl_x, bl_y, win_width, _max_symbols, wstr, highlight_text)) return false;
+    if (!pTIW->StartWindow(pFont, bl_x, bl_y, win_width, _max_symbols, wstr, highlight_text)) return false;
     funcChangedWstr = std::move(_callBack);
     return true;
 }
@@ -50,14 +50,11 @@ void ZC_GUI_TextInputWindow::TextButtonDown(unsigned char ch)
     eventHandler.TextButtonDown(ch);
 }
 
-ZC_GUI_TextInputWindow::ZC_GUI_TextInputWindow(float fontHeight)
+ZC_GUI_TextInputWindow::ZC_GUI_TextInputWindow()
     : ZC_GUI_WinImmutable(ZC_WOIData(0.f, 0.f, 0.f, 0.f, ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel), ZC_GUI_WF__None, ColorsWindow(ZC_GUI_Colors::textInput_background)),
-    highlight(fontHeight),
-    text(L"", false, 0, ZC_GUI_TextAlignment::Left, ZC_GUI_Colors::textInput_text),     //  reserve place for 200 longest symbols (may be more if symbols are smaller)
-    caret(fontHeight)
+    text({}, L"", false, 0, ZC_GUI_TextAlignment::Left, ZC_GUI_Colors::textInput_text)     //  reserve place for 200 longest symbols (may be more if symbols are smaller)
 {
     this->pObjData->depth = 0.f;    //  allways on first plane
-    this->SetHeight_Obj(fontHeight);
     
     AddRow(Row({}, { &highlight, &text, &caret }));  //  must be correct order: highlight, textMut, caret
 
@@ -101,14 +98,17 @@ void ZC_GUI_TextInputWindow::VSetDrawState_W(bool needDraw)
         sizeof(ZC_DrawArraysIndirectCommand::instanceCount), &(this->daic.instanceCount));
 }
 
-bool ZC_GUI_TextInputWindow::StartWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, bool highlight_text)
+bool ZC_GUI_TextInputWindow::StartWindow(const ZC_GUI_Font* pFont, float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, bool highlight_text)
 {
     if (this->VIsDrawing_Obj()) return false;     //  allready drawing
 
     max_symbols = _max_symbols;
 
-    int text_new_width = max_symbols * ZC_GUI_TextManager::pTM->font.GetLongestCharacterLength();
-    if (text_new_width > text.VGetWidth_Obj()) text.UpdateText(ZC_GUI::pGUI->textManager.GetText(wstr, false, text_new_width, ZC_GUI_TextAlignment::Left));     //  in text width too small, need more texture space, so update pText in text
+    if (!pFont) return false;     //  have no such font
+
+    int text_new_width = max_symbols * pFont->longest_character_pixels_width;
+    if (text.GetFont() != pFont || text_new_width > text.VGetWidth_Obj())     //  if font was changed or in text width too small(need more texture space) -> need update pText in text
+        text.UpdateText(ZC_GUI::pGUI->textManager.GetText(pFont, wstr, false, text_new_width, ZC_GUI_TextAlignment::Left));
     else if (!(text.UpdateText(wstr, true))) return false;      //  wstr have too wide (in pixels). May be symbols_count less then symbols in wstr...
 
     chDatasOffset = 0;
@@ -121,16 +121,28 @@ bool ZC_GUI_TextInputWindow::StartWindow(float bl_x, float bl_y, int win_width, 
     *(this->text.pBL) = { bl_x, bl_y };  //  set text position
     *(this->caret.pBL) = { bl_x, bl_y };    //  set coret pos
         //  set border
-    *(this->pBorder) = { .bl{ bl_x, bl_y }, .tr{ bl_x + win_width, bl_y + this->GetHeight() } };
+    *(this->pBorder) = { .bl{ bl_x, bl_y }, .tr{ bl_x + win_width, bl_y + pFont->GetHeight() } };
     this->VSubDataBorder_Obj(this->pBorder, this->pBorder);
-        //  set width
+        //  set size
     this->pObjData->width = win_width;
-    this->VMapObjData_Obj(pTIW->pObjData, offsetof(ZC_GUI_ObjData, width), sizeof(ZC_GUI_ObjData::width), &(this->pObjData->width));
+    if (this->GetHeight() != pFont->GetHeight())     //  font was not seated precious at all or had another height, need update height for all object: input window, highlight, text, caret 
+    {
+        this->pObjData->height = pFont->GetHeight();
+        this->actual_height = pFont->GetHeight();
+        highlight.pObjData->height = pFont->GetHeight();
+        highlight.actual_height = pFont->GetHeight();
+        text.pObjData->height = pFont->GetHeight();
+        text.actual_height = pFont->GetHeight();
+        caret.pObjData->height = pFont->GetHeight();
+        caret.actual_height = pFont->GetHeight();
+        this->VSubDataObjData_Obj(this->pObjData, caret.pObjData);
+    }
+    else this->VMapObjData_Obj(pTIW->pObjData, offsetof(ZC_GUI_ObjData, width), sizeof(ZC_GUI_ObjData::width) + sizeof(ZC_GUI_ObjData::height), &(this->pObjData->width));  //  just update width
     
     chDatas.clear();
     for (const wchar_t& wch : wstr)     //  fill chDatas
     {
-        ZC_GUI_ChData& chPos =  pTIW->chDatas.emplace_back(ZC_GUI_ChData{ .pCh = ZC_GUI_TextManager::pTM->font.GetCharacter(wch), .start_index = int(bl_x) });
+        ZC_GUI_ChData& chPos =  pTIW->chDatas.emplace_back(ZC_GUI_ChData{ .pCh = pFont->GetCharacter(wch), .start_index = int(bl_x) });
         bl_x += chPos.pCh->width;
         if (&wch != wstr.data()) bl_x += chPos.pCh->left_offset;    //   not first element add offset
     }
@@ -184,8 +196,8 @@ bool ZC_GUI_TextInputWindow::MoveChDataAfterErase(std::list<ZC_GUI_ChData>::iter
 
     //  Highlight
 
-ZC_GUI_TextInputWindow::Highlight::Highlight(float fontHeight)
-    : ZC_GUI_Obj(0.f, fontHeight, 0.f, ZC_GUI_Colors::texInput_highlight, ZC_GUI_IconUV::quad, 0, ZC_GUI_Bindings::location_tex_Icons)
+ZC_GUI_TextInputWindow::Highlight::Highlight()
+    : ZC_GUI_Obj(0.f, 0.f, 0.f, ZC_GUI_Colors::texInput_highlight, ZC_GUI_IconUV::quad, 0, ZC_GUI_Bindings::location_tex_Icons)
 {}
 
 void ZC_GUI_TextInputWindow::Highlight::MBL_DoubleClick()
@@ -384,7 +396,7 @@ void ZC_GUI_TextInputWindow::Highlight::DeleteDown()
 void ZC_GUI_TextInputWindow::Highlight::TextButtonDown()
 {
     if ((int)pTIW->chDatas.size() == pTIW->max_symbols && start_x == end_x) return;
-    const typename ZC_GUI_Font::Character* pCh = ZC_GUI_TextManager::pTM->font.GetCharacter(pTIW->eventHandler.wch_lastDown);
+    const typename ZC_GUI_Font::Character* pCh = ZC_GUI_TextInputWindow::pTIW->text.GetFont()->GetCharacter(pTIW->eventHandler.wch_lastDown);
     if (!pCh || (upINumberInput && !(upINumberInput->NewCharacter(pCh->character)))) return;
     if (IsHighLight()) DeleteHighlight();
     pTIW->caret.TextButtonDown(pCh);
@@ -458,8 +470,8 @@ bool ZC_GUI_TextInputWindow::Highlight::IsContainCharacter(wchar_t character)
 
     //  Caret
 
-ZC_GUI_TextInputWindow::Caret::Caret(float fontHeight)
-    : ZC_GUI_Obj(1.f, fontHeight, 0.f, ZC_GUI_Colors::textInput_caret, ZC_GUI_IconUV::quad, 0, ZC_GUI_Bindings::location_tex_Icons)
+ZC_GUI_TextInputWindow::Caret::Caret()
+    : ZC_GUI_Obj(1.f, 0.f, 0.f, ZC_GUI_Colors::textInput_caret, ZC_GUI_IconUV::quad, 0, ZC_GUI_Bindings::location_tex_Icons)
 {}
 
 bool ZC_GUI_TextInputWindow::Caret::IsCaretOnStart()

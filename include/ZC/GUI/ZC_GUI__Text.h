@@ -10,13 +10,14 @@ public:
     Createt text string.
 
     Params:
+    - pFont - font. See ZC_GUI::LoadFonts(), ZC_GUI::GetFont().
     - wstr - string in unicode.
     - _isImmutable - if true can't be used method UpdateText().
     - reserveWidth - may be reserve pixel width longer then in wstr (have effect only if _isImmutable = false). More info in method UpdateText().
     - textAlignment - if reservedWidth more then wstr pixel wisth, current wstr can have horizontal alignment in texture. In other case it's Left.
     - color - text's color (may stay default).
     */
-    ZC_GUI__Text(const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment, unsigned int color = ZC_GUI_Colors::window_text);
+    ZC_GUI__Text(const ZC_GUI_Font* pFont, const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment, unsigned int color = ZC_GUI_Colors::window_text);
 
     /*
     Update text in wstring. Data updates only if pixel width of new string less or equal current width. Text width don't change in any case.

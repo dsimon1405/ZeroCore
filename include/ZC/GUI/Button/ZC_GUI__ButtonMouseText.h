@@ -50,20 +50,23 @@ public:
     - width - width in pixels, if less then text pixels length, takes text pixels length.
     - height - height in pixels, if less then text pixels height, takes text pixels height.
     - _buttonFlags - flags determine wich virtual methods will be called on evetns.
+    - pFont - font.
     - name - button name.
     - _colorsButton - buttons collors (may stay default).
     */
-    ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const std::wstring& name, const ZC_GUI_ColorsButtonText& _colorsButtonText = {});
+    ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_Font* pFont, const std::wstring& name,
+        const ZC_GUI_ColorsButtonText& _colorsButtonText = {});
     /*
     Params:
     - width - width in pixels, if less then text pixels length, takes text pixels length.
     - height - height in pixels, if less then text pixels height, takes text pixels height.
     - _buttonFlags - flags determine wich virtual methods will be called on evetns.
+    - pFont - font. See ZC_GUI::LoadFonts(), ZC_GUI::GetFont().
     - name - button name.
     - uv - custom uv if uses custom icons texture (not default).
     - _colorsButton - buttons collors (may stay default).
     */
-    ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const std::wstring& name, const ZC_GUI_UV& uv,
+    ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_Font* pFont, const std::wstring& name, const ZC_GUI_UV& uv,
         const ZC_GUI_ColorsButtonText& _colorsButtonText = {});
 
     /*

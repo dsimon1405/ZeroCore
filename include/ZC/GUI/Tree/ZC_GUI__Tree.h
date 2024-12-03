@@ -5,8 +5,8 @@
 #include "ZC_GUI__Branch.h"
 
 /*
-Creates tree in window with own space and scroll system. In tree may be added ZC_GUI__BranchSimple and ZC_GUI__BranchOpenable (may include other branches). Each branch have method fro override: void VBranchBecameActive(),
-wich calls whe nbranch became active (focused).
+Creates tree in window with own space and scroll system. In tree may be added ZC_GUI__BranchSimple and ZC_GUI__BranchOpenable (may include other branches).
+Each branch have method for override: void VBranchBecameActive(), wich calls when branch became active (focused).
 */
 struct ZC_GUI__Tree : public ZC_GUI__Obj<ZC_GUI_Tree>
 {
@@ -55,7 +55,7 @@ May be override:
 class ZC_GUI__BranchSimple : public ZC_GUI__Branch<ZC_GUI_BranchSimple>
 {
 public:
-    ZC_GUI__BranchSimple(const std::wstring& name, const ZC_GUI_ColorsBranch& colorsBranch = {});
+    ZC_GUI__BranchSimple(const ZC_GUI_Font* pFont, const std::wstring& name, const ZC_GUI_ColorsBranch& colorsBranch = {});
 };
 
 /*
@@ -68,5 +68,5 @@ May be override:
 class ZC_GUI__BranchOpenable : public ZC_GUI__Branch<ZC_GUI_BranchOpenable>
 {
 public:
-    ZC_GUI__BranchOpenable(const std::wstring& name, bool isOpen, const ZC_GUI_ColorsBranchOpenable& branchOpenableColors = {});
+    ZC_GUI__BranchOpenable(const ZC_GUI_Font* pFont, const std::wstring& name, bool isOpen, const ZC_GUI_ColorsBranchOpenable& branchOpenableColors = {});
 };

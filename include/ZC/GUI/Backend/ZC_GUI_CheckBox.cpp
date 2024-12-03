@@ -3,13 +3,13 @@
 #include <ZC/GUI/Backend/Config/ZC_GUI_IconUV.h>
 #include <ZC/GUI/Backend/Config/ZC_GUI_Bindings.h>
 
-ZC_GUI_CheckBox::ZC_GUI_CheckBox(ZC_GUI_TFB_Indent_Location name_pos, const std::wstring& name, bool _isOn, ZC_Function<void(bool)>&& _callback_state_changed,
+ZC_GUI_CheckBox::ZC_GUI_CheckBox(ZC_GUI_TFB_Indent_Location name_pos, const ZC_GUI_Font* pFont, const std::wstring& name, bool _isOn, ZC_Function<void(bool)>&& _callback_state_changed,
         ZC_Function<void(bool)>&& _callback_focuse_changed, const ColorsCheckBox& colorsCheckBox, bool immutable_name, int reserve_name_width, ZC_GUI_TextAlignment name_alignment)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(float(ZC_GUI_TextManager::GetFontHeight()), float(ZC_GUI_TextManager::GetFontHeight()), 0, ZC_GUI_IconUV::button,
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(pFont->GetHeight(), pFont->GetHeight(), 0, ZC_GUI_IconUV::button,
         ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None, colorsCheckBox.colorsButton),
-    ZC_GUI_ButtonMouseText(0, 0, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(ZC_GUI_TextManager::GetFontHeight() * 0.5f,
+    ZC_GUI_ButtonMouseText(0, 0, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(pFont->GetHeight() * 0.5f,
         name_pos == ZC_GUI_TFB_Indent_Location::OutOfButtonLeft || name_pos == ZC_GUI_TFB_Indent_Location::OutOfButtonLeft ? name_pos
-        : ZC_GUI_TFB_Indent_Location::OutOfButtonLeft), name, immutable_name, reserve_name_width, name_alignment, colorsCheckBox.color_text)),
+        : ZC_GUI_TFB_Indent_Location::OutOfButtonLeft), pFont, name, immutable_name, reserve_name_width, name_alignment, colorsCheckBox.color_text)),
     isOn(_isOn),
     objArrow(ZC_GUI_ObjData(this->VGetWidth_Obj(), this->GetHeight(), colorsCheckBox.color_arrow, ZC_GUI_IconUV::arrow_down, ZC_GUI_Bindings::location_tex_Icons)),
     callback_state_changed(std::move(_callback_state_changed)),

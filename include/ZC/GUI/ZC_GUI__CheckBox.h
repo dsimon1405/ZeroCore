@@ -8,7 +8,8 @@ class ZC_GUI__CheckBox : public ZC_GUI__Obj<ZC_GUI_CheckBox>
 public:
     /*
     Params:
-    - name_pos - position of the name relative to the button. May be only OutOfButtonRight or OutOfButtonLeft, trying to set other will set OutOfButtonRight.
+    - indent_lok - position of the name relative to the button. May be only OutOfButtonRight or OutOfButtonLeft, trying to set other will set OutOfButtonRight.
+    - pFont - font. See ZC_GUI::LoadFonts(), ZC_GUI::GetFont().
     - name - checkbox name.
     - _isOn - start state.
     - _callback_state_changed - function called when state changed.
@@ -18,7 +19,7 @@ public:
     - reserve_name_width - width in pixels of the longest name (ignores if immutable_name true)
     - name_alignment - name alignment in the texture if the name width in pixels is less then reserve_name_vidth.
     */
-    ZC_GUI__CheckBox(ZC_GUI_TFB_Indent_Location name_pos, const std::wstring& name, bool _isOn, ZC_Function<void(bool)>&& _callback_state_changed,
+    ZC_GUI__CheckBox(ZC_GUI_TFB_Indent_Location indent_lok, const ZC_GUI_Font* pFont, const std::wstring& name, bool _isOn, ZC_Function<void(bool)>&& _callback_state_changed,
         ZC_Function<void(bool)>&& _callback_focuse_changed, const ZC_GUI_ColorsCheckBox& colorsCheckBox = {}, bool immutable_name = true, int reserve_name_width = 0,
         ZC_GUI_TextAlignment name_alignment = ZC_GUI_TextAlignment::Left);
 

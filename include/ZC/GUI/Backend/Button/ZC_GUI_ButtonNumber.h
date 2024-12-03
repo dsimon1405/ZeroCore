@@ -32,6 +32,7 @@ struct ZC_GUI_ButtonNumber : public ZC_GUI_ButtonMouseText
     Button consist from 3 buttons: left arrow, button with number, right arrow.
 
     Params:
+    - pFont - font. See ZC_GUI::LoadFonts(), ZC_GUI::GetFont().
     - width - button with number pixel width (can't be less then texture with number length).
     - height - button with number pixel height (can't be less then font height).
     - _number - storing number.
@@ -45,7 +46,7 @@ struct ZC_GUI_ButtonNumber : public ZC_GUI_ButtonMouseText
     - _callback_focus_changed - the function is called when the focus change. If true - in focus.
     - colorsButtonNumber - specific colors for button's objects and states.
     */
-    ZC_GUI_ButtonNumber(float width, float height, TNum _number, TNum _number_min, TNum _number_max, TNum _step, TNum _step_fast, unsigned char _afterDot_count,
+    ZC_GUI_ButtonNumber(const ZC_GUI_Font* pFont, float width, float height, TNum _number, TNum _number_min, TNum _number_max, TNum _step, TNum _step_fast, unsigned char _afterDot_count,
         ZC_GUI_TextAlignment textAlignment, ZC_Function<void(TNum)>&& _callback_number_chaned, ZC_Function<void(bool)>&& _callback_focus_changed,
         const ZC_GUI_ColorsButtonNumber& colorsButtonNumber = {});
 
@@ -107,27 +108,30 @@ private:
     void VFocuseChanged_BM(bool isFocused) override;
     void ChangeAndUpdateNumber(ldouble offset);
     void UpdateNumberFromArrow(TNum _number);
-    float CalculateNumberMaxWidth(TNum _number, TNum _number_min, TNum _number_max, unsigned char _afterDot_count);
+    float CalculateNumberMaxWidth(const ZC_GUI_Font* pFont, TNum _number, TNum _number_min, TNum _number_max, unsigned char _afterDot_count);
 };
 
 
     //  ZC_GUI_ButtonNumber<TNum>
 
 template <ZC_cNumber TNum>
-ZC_GUI_ButtonNumber<TNum>::ZC_GUI_ButtonNumber(float width, float height, TNum _number, TNum _number_min, TNum _number_max, TNum _step, TNum _step_fast,
+ZC_GUI_ButtonNumber<TNum>::ZC_GUI_ButtonNumber(const ZC_GUI_Font* pFont, float width, float height, TNum _number, TNum _number_min, TNum _number_max, TNum _step, TNum _step_fast,
         unsigned char _afterDot_count, ZC_GUI_TextAlignment textAlignment, ZC_Function<void(TNum)>&& _callback_number_chaned, ZC_Function<void(bool)>&& _callback_focus_changed,
         const ZC_GUI_ColorsButtonNumber& colorsButtonNumber)
     : ZC_GUI_ButtonBase(GetButtonBase_BN(width, height, colorsButtonNumber.colorsButton)),
     ZC_GUI_ButtonMouseText(width, height, 0,
-        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Center), ZC_NumberToString::ToWStr(number, afterDot_count), false,
-            CalculateNumberMaxWidth(_number, _number_min, _number_max, _afterDot_count), textAlignment, colorsButtonNumber.color_text_number)),
+        ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0.f, ZC_GUI_TFB_Indent::Center), pFont, ZC_NumberToString::ToWStr(number, afterDot_count), false,
+            CalculateNumberMaxWidth(pFont, _number, _number_min, _number_max, _afterDot_count), textAlignment, colorsButtonNumber.color_text_number)),
     step(_step < 0 ? - _step : _step),    //  must be positive
     step_fast(_step_fast < 0 ? - _step_fast : _step_fast),    //  must be positive
     buttonArrow_left(this->GetHeight(), true, colorsButtonNumber.colorsArrow),
     buttonArrow_right(this->GetHeight(), false, colorsButtonNumber.colorsArrow),
     callback_number_chaned(std::move(_callback_number_chaned)),
     callback_focus_changed(std::move(_callback_focus_changed))
-{}
+{
+    this->VAddObj_Obj(&buttonArrow_left, nullptr);
+    this->VAddObj_Obj(&buttonArrow_right, nullptr);
+}
 
 template <ZC_cNumber TNum>
 ZC_GUI_ButtonNumber<TNum>::ZC_GUI_ButtonNumber(ZC_GUI_ButtonNumber&& bn)
@@ -144,7 +148,10 @@ ZC_GUI_ButtonNumber<TNum>::ZC_GUI_ButtonNumber(ZC_GUI_ButtonNumber&& bn)
     buttonArrow_right(std::move(bn.buttonArrow_right)),
     callback_number_chaned(std::move(bn.callback_number_chaned)),
     callback_focus_changed(std::move(bn.callback_focus_changed))
-{}
+{
+    this->VAddObj_Obj(&buttonArrow_left, nullptr);
+    this->VAddObj_Obj(&buttonArrow_right, nullptr);
+}
 
 template <ZC_cNumber TNum>
 void ZC_GUI_ButtonNumber<TNum>::SetNumber(TNum _number, bool use_callback)
@@ -190,11 +197,7 @@ void ZC_GUI_ButtonNumber<TNum>::Set_pBL_BN(const ZC_Vec2<float>& _bl)
 {
     this->Set_pBL_BMT(_bl);
 
-        //  set here to avoid reset in move ctr
-    this->VAddObj_Obj(&buttonArrow_left, nullptr);
-    this->VAddObj_Obj(&buttonArrow_right, nullptr);
-
-           //  left button
+        //  left button
     buttonArrow_left.VSet_pBL_Obj(_bl);
         //  text button
     ZC_Vec2<float> next_bl(_bl[0] + buttonArrow_left.VGetWidth_Obj(), _bl[1]);
@@ -238,7 +241,7 @@ template <ZC_cNumber TNum>
 void ZC_GUI_ButtonNumber<TNum>::VLeftButtonDoubleClick_BM(float time)
 {
     ZC_Vec2<float> text_bl = this->textForButton.Get_bl_Obj();
-    ZC_GUI_TextInputWindow::StartInputNumberWindow<TNum>(text_bl[0], text_bl[1], this->textForButton.VGetWidth_Obj(),
+    ZC_GUI_TextInputWindow::StartInputNumberWindow<TNum>(this->textForButton.GetFont(), text_bl[0], text_bl[1], this->textForButton.VGetWidth_Obj(),
         ZC_GUI_TextInputWindow::NumberInput<TNum>(number, { &ZC_GUI_ButtonNumber<TNum>::UpdateNumberFromArrow, this }, afterDot_count), false, max_symbols);
 }
 
@@ -263,7 +266,7 @@ void ZC_GUI_ButtonNumber<TNum>::UpdateNumberFromArrow(TNum _number)
 }
 
 template <ZC_cNumber TNum>
-float ZC_GUI_ButtonNumber<TNum>::CalculateNumberMaxWidth(TNum _number, TNum _number_min, TNum _number_max, unsigned char _afterDot_count)
+float ZC_GUI_ButtonNumber<TNum>::CalculateNumberMaxWidth(const ZC_GUI_Font* pFont, TNum _number, TNum _number_min, TNum _number_max, unsigned char _afterDot_count)
 {       //  set params
     number_min =_number_min < _number_max ? _number_min : _number_max;
     number_max =_number_max > _number_min ? _number_max : _number_min;
@@ -277,12 +280,12 @@ float ZC_GUI_ButtonNumber<TNum>::CalculateNumberMaxWidth(TNum _number, TNum _num
         : _number;
         //  set static part
     static float numb_left_offset = 0.f; 
-    auto lambGetLongestNumbLength = []()
+    auto lambGetLongestNumbLength = [pFont]()
     {
         float max_length = 0.f;
         for (wchar_t numb = L'0'; numb <= L'9'; ++numb)
         {
-            auto pCh_numb = ZC_GUI_TextManager::pTM->font.GetCharacter(numb);
+            const ZC_GUI_Font::Character* pCh_numb = pFont->GetCharacter(numb);
             float length = pCh_numb->left_offset + pCh_numb->width;
             if (length > max_length)
             {
@@ -292,13 +295,13 @@ float ZC_GUI_ButtonNumber<TNum>::CalculateNumberMaxWidth(TNum _number, TNum _num
         }
         return max_length;
     };
-    auto lambGetDotLength = []()
+    auto lambGetDotLength = [pFont]()
     {
-        auto pCh_minus = ZC_GUI_TextManager::pTM->font.GetCharacter(L'.');
+        const ZC_GUI_Font::Character* pCh_minus = pFont->GetCharacter(L'.');
         return pCh_minus->left_offset + pCh_minus->width;
     };
     static const float numb_length = lambGetLongestNumbLength();
-    static const float minus_length = ZC_GUI_TextManager::pTM->font.GetCharacter(L'-')->width;  //  minus always first, don't need left_offset
+    static const float minus_length = pFont->GetCharacter(L'-')->width;  //  minus always first, don't need left_offset
     static const float dot_length = lambGetDotLength();
         //  calculate width
     std::string str_number_min = std::to_string(number_min);

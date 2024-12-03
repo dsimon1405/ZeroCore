@@ -5,10 +5,10 @@
 
 #include <cmath>
 
-ZC_GUI_Text::ZC_GUI_Text(const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment, unsigned int color)
+ZC_GUI_Text::ZC_GUI_Text(const ZC_GUI_Font* pFont, const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment, unsigned int color)
     : ZC_GUI_Obj(ZC_GUI_ObjData(0.f, 0.f, color, {}, ZC_GUI_Bindings::location_tex_Text)),
     isImmutable(_isImmutable),
-    pText(ZC_GUI_TextManager::GetText(wstr, isImmutable, reserveWidth, textAlignment)),
+    pText(ZC_GUI_TextManager::GetText(pFont, wstr, isImmutable, reserveWidth, textAlignment)),
     actual_width(pText ? pText->width : 0)
 {
     if (!pText) return;
@@ -27,7 +27,7 @@ ZC_GUI_Text::ZC_GUI_Text(ZC_GUI_Text&& t)
 
 ZC_GUI_Text::~ZC_GUI_Text()
 {
-    if (pText) ZC_GUI_TextManager::EraseText(pText);
+    if (pText) pText->Erase();
 }
 
 bool ZC_GUI_Text::UpdateText(const std::wstring& wstr, bool brootForceUpdate)
@@ -51,7 +51,7 @@ bool ZC_GUI_Text::UpdateText(const std::list<ZC_GUI_ChData>& chDatas)
 
 void ZC_GUI_Text::UpdateText(ZC_GUI_TextManager::Text* _pText)
 {
-    ZC_GUI_TextManager::EraseText(pText);
+    if (pText) pText->Erase();
     pText = _pText;
 
     actual_width = pText->width;    //  in that case totaly changes actual_width 
@@ -61,9 +61,14 @@ void ZC_GUI_Text::UpdateText(ZC_GUI_TextManager::Text* _pText)
     VMapObjData_Obj(this->pObjData, offsetof(ZC_GUI_ObjData, width), offsetof(ZC_GUI_ObjData, borderIndex), pObjData);   //  offset to border will calculate size in ZC_GUI_ObjData from width to uv include
 }
 
-const std::wstring& ZC_GUI_Text::GetWStr()
+const std::wstring& ZC_GUI_Text::GetWStr() const
 {
     return pText->wstr;
+}
+
+const ZC_GUI_Font* ZC_GUI_Text::GetFont() const noexcept
+{
+    return pText ? pText->pFont : nullptr;
 }
 
 float ZC_GUI_Text::VGetWidth_Obj()
@@ -78,7 +83,7 @@ float ZC_GUI_Text::VGetWidthComposite_Obj()
 
 void ZC_GUI_Text::VConf_SetTextUV_Obj()
 {
-    this->pObjData->uv = pText->uv;
+    if (pText) this->pObjData->uv = pText->uv;
 }
 
 void ZC_GUI_Text::VSetWidth_Obj(float width)

@@ -128,6 +128,9 @@ namespace ZC__Window
 
     //  Sets to references TOP(y) LEFT(x) position of the window into the display. Positoin counting from TOP LEFT corner of the display to TOP LEFT corner of the window.
     void GetPosition(int& x, int& y);
+
+    //  Sets the display width and height in references in pixels, or 0 in case of error.
+    void GetDisplaySize(int& width, int& height);
 } // ZC__Window
 
 

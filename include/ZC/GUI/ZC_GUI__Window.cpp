@@ -29,7 +29,7 @@ void ZC_GUI__InputWindow::SetColors(uint textInput_background, uint textInput_te
     ZC_GUI_TextInputWindow::SetColors(textInput_background, textInput_text, textInput_caret, texInput_highlight);
 }
 
-bool ZC_GUI__InputWindow::StartInputWindow(float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text)
+bool ZC_GUI__InputWindow::StartInputWindow(const ZC_GUI_Font* pFont, float bl_x, float bl_y, int win_width, int _max_symbols, const std::wstring& wstr, ZC_Function<void(const std::wstring&)>&& _callBack, bool highlight_text)
 {
-    return ZC_GUI_TextInputWindow::StartInputWindow(bl_x, bl_y, win_width, _max_symbols, wstr, std::move(_callBack), highlight_text);
+    return ZC_GUI_TextInputWindow::StartInputWindow(pFont, bl_x, bl_y, win_width, _max_symbols, wstr, std::move(_callBack), highlight_text);
 }

@@ -4,9 +4,9 @@
 
     //  ZC_GUI_TextForButton
 
-ZC_GUI_TextForButton::ZC_GUI_TextForButton(const ZC_GUI_TFB_Indent& _indent, const std::wstring& wstr, bool _isImmutable, int reserveWidth, ZC_GUI_TextAlignment textAlignment,
-        const ZC_GUI_TFB_Colors& _tfb_colors)
-    : ZC_GUI_Text(wstr, _isImmutable, reserveWidth, textAlignment, _tfb_colors.color),
+ZC_GUI_TextForButton::ZC_GUI_TextForButton(const ZC_GUI_TFB_Indent& _indent, const ZC_GUI_Font* pFont, const std::wstring& wstr, bool _isImmutable,
+        int reserveWidth, ZC_GUI_TextAlignment textAlignment, const ZC_GUI_TFB_Colors& _tfb_colors)
+    : ZC_GUI_Text(pFont, wstr, _isImmutable, reserveWidth, textAlignment, _tfb_colors.color),
     indent(_indent),
     tfb_colors(_tfb_colors)
 {}

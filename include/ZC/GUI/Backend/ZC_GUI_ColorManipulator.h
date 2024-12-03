@@ -15,10 +15,11 @@ class ZC_GUI_ColorManipulator : public ZC_GUI_ObjComposite
 public:
     /*
     Params:
+    - pFont - font.
     - _callback - calls if one of value changed. Params: red, green, blue, alpha. Colors red, gree, blue may be in range [0, 255] or [0, 1], look next parameter. Alpha always in range [0, 1].
     - range_255 - if true, callback r,g,b params will have values in range [0, 255], otherwise in range [0, 1]. No metter in wich range data was input from gui.
     */
-    ZC_GUI_ColorManipulator(ZC_Function<void(float,float,float,float)>&& _callback, bool _range_255);
+    ZC_GUI_ColorManipulator(const ZC_GUI_Font* pFont, ZC_Function<void(float,float,float,float)>&& _callback, bool _range_255);
 
     ZC_GUI_ColorManipulator(ZC_GUI_ColorManipulator&& cm);
 
@@ -66,7 +67,7 @@ private:
     {
         bool isUChar;
 
-        TypeSwitcher(float width, bool _isUChar);
+        TypeSwitcher(const ZC_GUI_Font* pFont, float width, bool _isUChar);
 
         bool VMouseButtonLeftDown_Obj(float time) override;
         void VMouseButtonLeftUp_Obj(float time) override;
@@ -100,7 +101,7 @@ private:
 
     ZC_Function<void(float,float,float,float)> callback;
 
-    float GetDistance(const std::wstring& rgba);
+    float GetDistance(const ZC_GUI_Font* pFont, const std::wstring& rgba);
     void AddObjs();
     float VGetHeightComposite_Obj() override;
     float VGetWidthComposite_Obj() override;
@@ -124,6 +125,7 @@ private:
     void Callback_uchar(uchar);
     void Callback_float(float);
     void Callback_alpha(float alpha);
+    int GetFontHeight() const;
 
     template <ZC_cGUI_UCharOrFloat Trgb>
     void ChangedColorInButton(ZC_GUI_ButtonNumberText<Trgb>* pRed, ZC_GUI_ButtonNumberText<Trgb>* pGreen, ZC_GUI_ButtonNumberText<Trgb>* pBlue, bool use_callback);

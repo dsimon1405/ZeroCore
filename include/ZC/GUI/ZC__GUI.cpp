@@ -1,30 +1,21 @@
 #include "ZC__GUI.h"
 
+#include <ZC/GUI/Backend/Text/ZC_GUI_FontLoader.h>
 #include <ZC/GUI/Backend/System/ZC_GUI.h>
 
-void ZC__GUI::SetFontPath(const std::string& path)
+std::vector<ZC_GUI_Font*> ZC__GUI::LoadFonts(const std::vector<ZC_GUI_FontLoadData>& font_load_data, const std::vector<ZC_GUI_FontLoadDataUser>& font_load_data_user)
 {
-    ZC_GUI_TextManager::font_path = path;
+    return ZC_GUI_FontLoader::LoadFonts(font_load_data, font_load_data_user);
 }
 
-void ZC__GUI::SetFontHeight(unsigned int pix_height)
+const ZC_GUI_Font* ZC__GUI::GetFont(const ZC_GUI_FontSrc& font_src)
 {
-    ZC_GUI_TextManager::font_height = pix_height;
+    return ZC_GUI_FontLoader::GetFont(font_src);
 }
 
-void ZC__GUI::SetFontLoadingElements(ZC_GUI_FontElements font_elements)
+void ZC__GUI::SetPathToCustomIconTexture(std::string&& path)
 {
-    ZC_GUI_TextManager::font_elements = font_elements;
-}
-
-int ZC__GUI::GetFontHeight()
-{
-    return ZC_GUI_TextManager::GetFontHeight();
-}
-
-int ZC__GUI::CalculateWstrWidth(const std::wstring& wstr)
-{
-    return ZC_GUI_TextManager::CalculateWstrWidth(wstr);
+    ZC_GUI_DrawManager::SetPathToCustomIconTexture(std::move(path));
 }
 
 // void ZC__GUI::SetState(bool active)
@@ -36,13 +27,3 @@ int ZC__GUI::CalculateWstrWidth(const std::wstring& wstr)
 // {
 //     return ZC_GUI::GetState();
 // }
-
-int ZC__GUI::GetLongestNumberCharacterWidth()
-{
-    return ZC_GUI_TextManager::pTM->font.GetLongestNumberCharacterLendth();
-}
-
-void ZC__GUI::SetPathToCustomIconTexture(std::string&& path)
-{
-    ZC_GUI_DrawManager::SetPathToCustomIconTexture(std::move(path));
-}

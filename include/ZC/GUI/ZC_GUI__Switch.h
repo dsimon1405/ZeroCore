@@ -61,6 +61,7 @@ struct ZC_GUI__SwitchText : public ZC_GUI__Switch<ZC_GUI_Switch<ZC_GUI_ButtonMou
 {
     /*
     Params:
+    - pFont - font. See ZC_GUI::LoadFonts(), ZC_GUI::GetFont().
     - variants - text varinats (names).
     - width - pixel with of one variant (if less then longest names pixel length, takes longest length). All variants have same (longest) width.
     - height - pixel height of one variant (if less then font height, takes font height). All variants have same height.
@@ -71,7 +72,7 @@ struct ZC_GUI__SwitchText : public ZC_GUI__Switch<ZC_GUI_Switch<ZC_GUI_ButtonMou
     - _colorsButton - buttons collors (may stay default).
     - _color_text - text color (may stay default).
     */
-    ZC_GUI__SwitchText(const std::vector<std::wstring>& variants, float width, float height, bool orientation_horizontal, float distance, ZC_Function<void(uint)> _callback, uint active_variant = UINT_MAX,
+    ZC_GUI__SwitchText(const ZC_GUI_Font* pFont, const std::vector<std::wstring>& variants, float width, float height, bool orientation_horizontal, float distance, ZC_Function<void(uint)> _callback, uint active_variant = UINT_MAX,
         const ZC_GUI_ColorsButton& _colorsButton = {}, uint _color_text = ZC_GUI_Colors::dropDownSwitch_text);
 };
 
@@ -80,6 +81,7 @@ struct ZC_GUI__SwitchDropDown : public ZC_GUI__Switch<ZC_GUI_SwitchDropDown>
 {
     /*
     Params:
+    - pFont - font. See ZC_GUI::LoadFonts(), ZC_GUI::GetFont().
     - variants - text varinats (names).
     - active_variant - index of the variant active at start.
     - width - pixel with of one variant (if less then longest names pixel length, takes longest length). All variants have same (longest) width.
@@ -87,7 +89,7 @@ struct ZC_GUI__SwitchDropDown : public ZC_GUI__Switch<ZC_GUI_SwitchDropDown>
     - _callback - function calls on changing variant. Parameter - uint, will contain index (from variants vector) of variant that became active.
     - colorsDropDownSwitch - buttons collors (may stay default).
     */
-    ZC_GUI__SwitchDropDown(const std::vector<std::wstring>& variants, uint active_variant, float width, float height, ZC_Function<void(uint)> _callback, const ZC_GUI_ColorsDropDown& colorsDropDownSwitch = {});
+    ZC_GUI__SwitchDropDown(const ZC_GUI_Font* pFont, const std::vector<std::wstring>& variants, uint active_variant, float width, float height, ZC_Function<void(uint)> _callback, const ZC_GUI_ColorsDropDown& colorsDropDownSwitch = {});
 };
 
 

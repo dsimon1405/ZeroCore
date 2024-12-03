@@ -20,8 +20,8 @@ struct ZC_GUI_DropDown : public ZC_GUI_ButtonMouseText
 {
     const bool isUnderCursorFlag;
 
-    ZC_GUI_DropDown(const std::wstring& name, const std::vector<std::wstring>& variants, float width, float height, ZC_GUI_DropDownFlags dropDownFlags, ZC_Function<void(uint)>&& _callback,
-        const ZC_GUI_ColorsDropDown& colorsDropDown = {});
+    ZC_GUI_DropDown(const ZC_GUI_Font* pFont, const std::wstring& name, const std::vector<std::wstring>& variants, float width, float height, ZC_GUI_DropDownFlags dropDownFlags,
+        ZC_Function<void(uint)>&& _callback, const ZC_GUI_ColorsDropDown& colorsDropDown = {});
 
     ZC_GUI_DropDown(ZC_GUI_DropDown&& dd);
 
@@ -33,8 +33,8 @@ private:
     std::vector<ZC_GUI_DDVariant<ZC_GUI_DropDown>> ddVariants;
     ZC_GUI_WinImmutable ddWindow;
     ZC_Function<void(uint)> callback;
-
-    std::vector<ZC_GUI_DDVariant<ZC_GUI_DropDown>> FillVariants(const std::wstring& name, const std::vector<std::wstring>& variants, float width, float height);
+    
+    std::vector<ZC_GUI_DDVariant<ZC_GUI_DropDown>> FillVariants(const ZC_GUI_Font* pFont, const std::wstring& name, const std::vector<std::wstring>& variants, float width, float height);
 
     void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
     void VMoveBL_Obj(float rel_x, float rel_y, int& update_borders) override;

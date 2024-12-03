@@ -29,7 +29,7 @@ struct ZC_GUI_Switch : public TSwitch
             //  ctr with ZC_GUI_ButtonMouseAndKeyboard specialization
         Variant(const ZC_GUI_KeyboardUV& keyboardUV, float width, float height, const ZC_Vec2<float>& bl, const ZC_GUI_ColorsButton& _colorsButton);
             //  ctr with ZC_GUI_ButtonMouseText specialization
-        Variant(const std::wstring& name, float width, float height, const ZC_Vec2<float>& bl, const ZC_GUI_ColorsButton& _colorsButton, uint _color_text);
+        Variant(const ZC_GUI_Font* pFont, const std::wstring& name, float width, float height, const ZC_Vec2<float>& bl, const ZC_GUI_ColorsButton& _colorsButton, uint _color_text);
 
         bool VMouseButtonLeftDown_Obj(float time) override;
         void VMouseButtonLeftUp_Obj(float time) override;
@@ -44,7 +44,7 @@ struct ZC_GUI_Switch : public TSwitch
     ZC_GUI_Switch(const std::vector<ZC_GUI_KeyboardUV>& keyboardUVs, float width, float height, bool orientation_horizontal, float distance,
         ZC_Function<void(uint)>&& _callback, uint active_variant = UINT_MAX, const ZC_GUI_ColorsButton& _colorsButton = {});
         //  ctr with ZC_GUI_ButtonMouseText specialization
-    ZC_GUI_Switch(const std::vector<std::wstring>& names, float width, float height, bool orientation_horizontal, float distance, ZC_Function<void(uint)>&& _callback,
+    ZC_GUI_Switch(const ZC_GUI_Font* pFont, const std::vector<std::wstring>& names, float width, float height, bool orientation_horizontal, float distance, ZC_Function<void(uint)>&& _callback,
         uint active_variant = UINT_MAX, const ZC_GUI_ColorsButton& _colorsButton = {}, uint _color_text = ZC_GUI_Colors::dropDownSwitch_text);
 
     ZC_GUI_Switch(ZC_GUI_Switch&& sw);
@@ -69,7 +69,7 @@ private:
 
     void MakeActive(TSwitch* _pBM_active, bool use_callback);
         //  find longest of names pixel width
-    float CalculateNamesWidth(const std::vector<std::wstring>& names, float width);
+    static float CalculateNamesWidth(const ZC_GUI_Font* pFont, const std::vector<std::wstring>& names, float width);
 };
 
 
@@ -179,11 +179,11 @@ void ZC_GUI_Switch<TSwitch>::MakeActive(TSwitch* _pBM_active, bool use_callback)
 }
 
 template <ZC_GUI_cSwitch TSwitch>
-float ZC_GUI_Switch<TSwitch>::CalculateNamesWidth(const std::vector<std::wstring>& names, float width)
+float ZC_GUI_Switch<TSwitch>::CalculateNamesWidth(const ZC_GUI_Font* pFont, const std::vector<std::wstring>& names, float width)
 {
     for (const std::wstring& name : names)
     {
-        float temp_width = ZC_GUI_TextManager::CalculateWstrWidth(name);
+        float temp_width = pFont->CalculateWstrWidth(name);
         if (temp_width > width) width = temp_width;
     }
     return width;

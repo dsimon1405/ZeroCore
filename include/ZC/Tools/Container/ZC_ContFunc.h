@@ -69,6 +69,34 @@ TData* ZC_Find(TCont<TData, TAllocator>& container, const TFind& find)
 }
 
 /*
+Find data in stl container. Type(TData) storing in container may be pointer on TCont or must determine for searching type(TFind) operator:
+bool operator == (const TFind&) const {}
+
+Params:
+- rCont - reference on stl container.
+- find - value for searching.
+
+Return:
+If found, pointer on store data, otherwise - nullptr.
+*/
+template<typename TData, typename TAllocator, template<typename, typename> typename TCont, typename TFind>
+const TData* ZC_Find(const TCont<TData, TAllocator>& container, const TFind& find)
+{
+    for (auto& rContData : container)
+    {
+        if constexpr (std::same_as<TData*, TFind>)
+        {
+            if (&rContData == find) return &rContData;
+        }
+        else
+        {
+            if (rContData == find) return &rContData;
+        }
+    }
+    return nullptr;
+}
+
+/*
 Find data in stl container of pointers. Type(TData) storing in container must determine for searching type(TFind) operator:
 bool operator == (const TFind&) const {}
 

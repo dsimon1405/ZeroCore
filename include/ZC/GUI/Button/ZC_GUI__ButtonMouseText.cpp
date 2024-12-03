@@ -17,14 +17,14 @@ ZC_GUI__ButtonMouseText::ZC_GUI__ButtonMouseText(float width, float height, ZC_G
         uv, _colorsButton)))
 {}
 
-ZC_GUI__ButtonMouseText::ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const std::wstring& name,
+ZC_GUI__ButtonMouseText::ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_Font* pFont, const std::wstring& name,
         const ZC_GUI_ColorsButtonText& _colorsButtonText)
-    : ZC_GUI__ButtonMouseText(width, height, _buttonFlags, name, ZC_GUI_IconUV::button, _colorsButtonText)
+    : ZC_GUI__ButtonMouseText(width, height, _buttonFlags, pFont, name, ZC_GUI_IconUV::button, _colorsButtonText)
 {}
 
-ZC_GUI__ButtonMouseText::ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const std::wstring& name, const ZC_GUI_UV& uv,
+ZC_GUI__ButtonMouseText::ZC_GUI__ButtonMouseText(float width, float height, ZC_GUI_ButtonFlags _buttonFlags, const ZC_GUI_Font* pFont, const std::wstring& name, const ZC_GUI_UV& uv,
         const ZC_GUI_ColorsButtonText& _colorsButtonText)
-    : ZC_GUI__ButtonMouseText(width, height, _buttonFlags, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0, ZC_GUI_TFB_Indent::Center),
+    : ZC_GUI__ButtonMouseText(width, height, _buttonFlags, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0, ZC_GUI_TFB_Indent::Center), pFont,
         name, true, 0, ZC_GUI_TextAlignment::Center, _colorsButtonText.text_color), uv, _colorsButtonText.colorsButton)
 {}
 

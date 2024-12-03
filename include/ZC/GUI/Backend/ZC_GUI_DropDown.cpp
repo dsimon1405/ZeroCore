@@ -1,13 +1,13 @@
 #include "ZC_GUI_DropDown.h"
 
-ZC_GUI_DropDown::ZC_GUI_DropDown(const std::wstring& name, const std::vector<std::wstring>& variants, float width, float height, ZC_GUI_DropDownFlags dropDownFlags, ZC_Function<void(uint)>&& _callback,
-        const ZC_GUI_ColorsDropDown& colorsDropDown)
+ZC_GUI_DropDown::ZC_GUI_DropDown(const ZC_GUI_Font* pFont, const std::wstring& name, const std::vector<std::wstring>& variants, float width, float height,
+        ZC_GUI_DropDownFlags dropDownFlags, ZC_Function<void(uint)>&& _callback, const ZC_GUI_ColorsDropDown& colorsDropDown)
     : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None, colorsDropDown.colorsButton),
-    ZC_GUI_ButtonMouseText(width, height, ZC_GUI_BF__None,ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(ZC_GUI_DropDownIcon::GetTextIndentX(),
-        ZC_GUI_TFB_Indent::Left), name, true, 0, ZC_GUI_TextAlignment::Left, colorsDropDown.color_text), colorsDropDown.colorsButton),
+    ZC_GUI_ButtonMouseText(width, height, ZC_GUI_BF__None,ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(pFont->GetHeight() / 5, ZC_GUI_TFB_Indent::Left),
+        pFont, name, true, 0, ZC_GUI_TextAlignment::Left, colorsDropDown.color_text), colorsDropDown.colorsButton),
     isUnderCursorFlag(dropDownFlags & ZC_GUI_DDF__UnderCursor),
-    upDropDownIcon(dropDownFlags & ZC_GUI_DDF__DropIcon ? new ZC_GUI_DropDownIcon(colorsDropDown.color_arrow) : nullptr),
-    ddVariants(FillVariants(name, variants, width, height)),
+    upDropDownIcon(dropDownFlags & ZC_GUI_DDF__DropIcon ? new ZC_GUI_DropDownIcon(pFont, colorsDropDown.color_arrow) : nullptr),
+    ddVariants(FillVariants(pFont, name, variants, width, height)),
     ddWindow(ZC_WOIData(ddVariants.front().VGetWidth_Obj(), this->GetHeight() * ddVariants.size(), 0.f, 0.f, ZC_WOIF__X_Right_Pixel | ZC_WOIF__Y_Top_Pixel),
         isUnderCursorFlag ? ZC_GUI_WF__EscapeClose : ZC_GUI_WF__OutAreaClickClose | ZC_GUI_WF__EscapeClose),
     callback(std::move(_callback))
@@ -15,7 +15,7 @@ ZC_GUI_DropDown::ZC_GUI_DropDown(const std::wstring& name, const std::vector<std
     if (dropDownFlags & ZC_GUI_DDF__DropIcon) this->VSetWidth_Obj(ddWindow.VGetWidth_Obj());     //  need use dipo down window width in button
     else
     {
-        float text_indent_x = ZC_GUI_DropDownIcon::GetTextIndentX();
+        float text_indent_x = ZC_GUI_DropDownIcon::CalculateDistance(pFont);
         float width = text_indent_x + this->textForButton.VGetWidth_Obj() + text_indent_x;
         if (this->VGetWidth_Obj() < width) this->VSetWidth_Obj(width);
     }
@@ -32,23 +32,24 @@ ZC_GUI_DropDown::ZC_GUI_DropDown(ZC_GUI_DropDown&& dd)
     callback(std::move(dd.callback))
 {}
 
-std::vector<ZC_GUI_DDVariant<ZC_GUI_DropDown>> ZC_GUI_DropDown::FillVariants(const std::wstring& name, const std::vector<std::wstring>& variants, float width, float height)
+std::vector<ZC_GUI_DDVariant<ZC_GUI_DropDown>> ZC_GUI_DropDown::FillVariants(const ZC_GUI_Font* pFont, const std::wstring& name,
+    const std::vector<std::wstring>& variants, float width, float height)
 {
-    float text_indent_x = ZC_GUI_DropDownIcon::GetTextIndentX();
-    float name_width = text_indent_x + ZC_GUI_TextManager::CalculateWstrWidth(name) + text_indent_x;      //  text_indent_x - distances from button border left and right to text
-    if (upDropDownIcon) name_width += text_indent_x + ZC_GUI_DropDownIcon::GetWidth();  //  uses drop down icon
+    float text_indent_x = ZC_GUI_DropDownIcon::CalculateDistance(pFont);
+    float name_width = text_indent_x + pFont->CalculateWstrWidth(name) + text_indent_x;      //  text_indent_x - distances from button border left and right to text
+    if (upDropDownIcon) name_width += text_indent_x + upDropDownIcon->VGetWidth_Obj();  //  uses drop down icon
     if (width < name_width) width = name_width;
 
     for (const std::wstring& var : variants)    //  get longest of variants width
     {
-        float var_width = text_indent_x + ZC_GUI_TextManager::CalculateWstrWidth(var) + text_indent_x;      //  text_indent_x - distances from button border left and right to text
+        float var_width = text_indent_x + pFont->CalculateWstrWidth(var) + text_indent_x;      //  text_indent_x - distances from button border left and right to text
         if (width < var_width) width = var_width;
     }
 
     std::vector<ZC_GUI_DDVariant<ZC_GUI_DropDown>> ddVars;
     ddVars.reserve(variants.size());
     for (const std::wstring& var : variants)    //  get longest of buttons width
-        ddVars.emplace_back(this, width, height, var);
+        ddVars.emplace_back(ZC_GUI_DDVariant<ZC_GUI_DropDown>(this, pFont, width, height, var));
     
     return ddVars;
 }

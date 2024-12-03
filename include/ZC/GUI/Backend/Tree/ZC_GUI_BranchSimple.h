@@ -15,7 +15,7 @@ struct ZC_GUI_BranchSimple : public ZC_GUI_ButtonMouseText
                 ZC_GUI_ButtonBase::ColorsButton(ZC_GUI_Colors::tree_branch_button, ZC_GUI_Colors::tree_branch_button_under_cursor, ZC_GUI_Colors::tree_branch_button_pressed));
     };
 
-    ZC_GUI_BranchSimple(const std::wstring& name, const ColorsBranch& colorsBranch = {});
+    ZC_GUI_BranchSimple(const ZC_GUI_Font* pFont, const std::wstring& name, const ColorsBranch& colorsBranch = {});
 
     ZC_GUI_BranchSimple(ZC_GUI_BranchSimple&& bs);
 

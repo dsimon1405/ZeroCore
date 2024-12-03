@@ -16,7 +16,7 @@ ZC_GUI::~ZC_GUI()
 
 void ZC_GUI::Configure()
 {
-    textManager.Configure(false);    //  must be before drawManager.Configure(), must calculate uv for ZC_GUI_Text objects
+    textManager.Configure();    //  must be before drawManager.Configure(), must calculate uv for ZC_GUI_Text objects
     eventManager.Configure();   //  must be before drawManager to unset color_focused on unfocused windows
     drawManager.Configure();
 }

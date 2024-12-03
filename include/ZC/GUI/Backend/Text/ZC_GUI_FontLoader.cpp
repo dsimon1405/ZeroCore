@@ -8,14 +8,11 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-ZC_GUI_Font ZC_GUI_FontLoader::LoadFont(FontName font_name, ulong pix_height, ZC_GUI_FontElements elements)
-{
-    return LoadFont(GetPath(font_name).c_str(), pix_height, elements);
-}
+#include <cassert>
 
-ZC_GUI_Font ZC_GUI_FontLoader::LoadFont(const char* path, ulong pix_height, ZC_GUI_FontElements elements)
+std::vector<ZC_GUI_Font*> ZC_GUI_FontLoader::LoadFonts(const std::vector<ZC_GUI_FontLoadData>& font_load_data, const std::vector<ZC_GUI_FontLoadDataUser>& font_load_data_user)
 {
-    if (elements == 0) return {};  //  elements not requested
+    if (font_load_data.empty() && font_load_data_user.empty()) return {};
 
     FT_Library ft;
     if (FT_Init_FreeType(&ft)) 
@@ -24,40 +21,76 @@ ZC_GUI_Font ZC_GUI_FontLoader::LoadFont(const char* path, ulong pix_height, ZC_G
         FT_Done_FreeType(ft);
         return {};
     }
-    FT_Face ft_face;
-    if (FT_New_Face(ft, path, 0, &ft_face))
-    {
-        ZC_ErrorLogger::Err("Fail FT_New_Face()!", __FILE__, __LINE__);
-        FT_Done_Face(ft_face);
-        FT_Done_FreeType(ft);
-        return {};
-    }
-    if (FT_Set_Pixel_Sizes(ft_face, 0, pix_height))
-    {
-        ZC_ErrorLogger::Err("Fail FT_Set_Pixel_Sizes()!", __FILE__, __LINE__);
-        FT_Done_Face(ft_face);
-        FT_Done_FreeType(ft);
-        return {};
-    }
-    ZC_GUI_Font font = CreateFont(ft_face, GetCategories(elements));
 
-    FT_Done_Face(ft_face);
+    std::vector<ZC_GUI_Font*> loaded_fonts;
+    loaded_fonts.reserve(font_load_data.size() + font_load_data_user.size());
+    
+    for (const ZC_GUI_FontLoadData& fld : font_load_data)
+    {
+        FT_Face ft_face;
+        if (FT_New_Face(ft, GetPath(fld.font_name).c_str(), 0, &ft_face))
+        {
+            ZC_ErrorLogger::Err("Fail FT_New_Face()!", __FILE__, __LINE__);
+            FT_Done_Face(ft_face);
+            loaded_fonts.emplace_back(nullptr);
+            continue;
+        }
+        if (FT_Set_Pixel_Sizes(ft_face, 0, fld.pixels_height))
+        {
+            ZC_ErrorLogger::Err("Fail FT_Set_Pixel_Sizes()!", __FILE__, __LINE__);
+            FT_Done_Face(ft_face);
+            loaded_fonts.emplace_back(nullptr);
+            continue;
+        }
+        loaded_fonts.emplace_back(&(fonts.emplace_back(CreateFont(fld.font_name, ft_face, GetCategories(fld.elements)))));
+        FT_Done_Face(ft_face);
+    }
+    
+    for (const ZC_GUI_FontLoadDataUser& fldu : font_load_data_user)
+    {
+        FT_Face ft_face;
+        if (FT_New_Face(ft, fldu.font_path.c_str(), 0, &ft_face))
+        {
+            ZC_ErrorLogger::Err("Fail FT_New_Face()!", __FILE__, __LINE__);
+            FT_Done_Face(ft_face);
+            loaded_fonts.emplace_back(nullptr);
+            continue;
+        }
+        if (FT_Set_Pixel_Sizes(ft_face, 0, fldu.font_src.pixels_height))
+        {
+            ZC_ErrorLogger::Err("Fail FT_Set_Pixel_Sizes()!", __FILE__, __LINE__);
+            FT_Done_Face(ft_face);
+            loaded_fonts.emplace_back(nullptr);
+            continue;
+        }
+        loaded_fonts.emplace_back(&(fonts.emplace_back(CreateFont(fldu.font_src.id, ft_face, GetCategories(fldu.elements)))));
+        FT_Done_Face(ft_face);
+    }
+    
     FT_Done_FreeType(ft);
-    return font;
+
+    return loaded_fonts;
 }
 
-std::string ZC_GUI_FontLoader::GetPath(FontName name)
+const ZC_GUI_Font* ZC_GUI_FontLoader::GetFont(const ZC_GUI_FontSrc& font_src)
+{
+    for (ZC_GUI_Font& f : fonts)
+        if (f == font_src) return &f;
+    return nullptr;
+}
+
+std::string ZC_GUI_FontLoader::GetPath(ZC_GUI_FontLoadData::ZC_GUI_FontName name)
 {
     static const ZC_FSPath ZC_fontsPath = ZC_FSPath(ZC_ZCDirPath).append("fonts");
     switch (name)
     {
-    case Arial: return ZC_FSPath(ZC_fontsPath).append("arial.ttf").string();
-    case ChunkFivePrint: return ZC_FSPath(ZC_fontsPath).append("chunkFivePrint.otf").string();
+    case ZC_GUI_FontLoadData::ZC_GUI_FontName::Arial: return ZC_FSPath(ZC_fontsPath).append("arial.ttf").string();
+    case ZC_GUI_FontLoadData::ZC_GUI_FontName::ChunkFivePrint: return ZC_FSPath(ZC_fontsPath).append("chunkFivePrint.otf").string();
     default: return "";
     }
 }
 
-ZC_GUI_Font ZC_GUI_FontLoader::CreateFont(void* ft_face, std::forward_list<ElementsRange>&& el_ranges)
+ZC_GUI_Font ZC_GUI_FontLoader::CreateFont(i_zc font_src, void* ft_face, std::forward_list<ElementsRange>&& el_ranges)
 {
     std::vector<ZC_GUI_Character> chrs;
     ulong chrs_count = 0;
@@ -73,7 +106,7 @@ ZC_GUI_Font ZC_GUI_FontLoader::CreateFont(void* ft_face, std::forward_list<Eleme
     size_t chrsIndex = 0;   //  index for iteretion in chrs
     for (ElementsRange& el_r : el_ranges) el_r.FillCharactersData(ft_face, chrs, chrsIndex, max_top, max_tail, total_height, min_left_offset);
 
-    return { std::move(chrs) };
+    return ZC_GUI_Font(font_src, std::move(chrs));
 }
 
 std::forward_list<typename ZC_GUI_FontLoader::ElementsRange> ZC_GUI_FontLoader::GetCategories(ZC_GUI_FontElements elements)
