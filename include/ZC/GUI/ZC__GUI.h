@@ -12,8 +12,8 @@ namespace ZC__GUI
     system could change it after loading font on the factical height of the loaded font. And to use ZC__GUI::GetFont(ZC_GUI_FontSrc{}) need use factical height.
 
     Params:
-    - font_load_data - fonts fron the library see struct ZC_GUI_FontLoadData.
-    - font_load_data_user - users fonts, see struct ZC_GUI_FontLoadDataUser.
+    - font_load_data - fonts fron the library see struct ZC_GUI_FontLoadData. If don't need use {} (vector's empty list-intialization).
+    - font_load_data_user - users fonts, see struct ZC_GUI_FontLoadDataUser. If don't need use {} (vector's empty list-intialization).
 
     Retrun:
     Vector of loaded fonts at first goes fonts from font_load_data, then from font_load_data_user. If load of some font is fail on it's plays will be nullptr. Pay atention that loaded

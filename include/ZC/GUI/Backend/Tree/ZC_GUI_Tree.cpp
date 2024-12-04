@@ -24,7 +24,8 @@ void ZC_GUI_Tree::AddBranch(ZC_GUI_BranchSimple* pBranchAdd, ZC_GUI_BranchSimple
             if (iter->objs.front() == pBranchAddTo)     //  found branch to add
             {
                 auto next_iter = iter;
-                Row& newRow = *(rows.emplace(++next_iter, Row(ZC_GUI_RowParams(iter->rowParams.indent_x + newRowIndent, ZC_GUI_RowParams::Left, 0.f, 0.f), { pBranchAdd })));
+                Row& newRow = *(rows.emplace(++next_iter, Row(ZC_GUI_RowParams(iter->rowParams.indent_x + newRowIndent, ZC_GUI_RowParams::X_Left, 0.f, 0.f, ZC_GUI_RowParams::Y_Center),
+                    { pBranchAdd })));
                 if (!(pBranchAddTo->VIsDrawing_Obj()) || !(pBranchAddTo->VIsOpen_Br()))
                     newRow.objs.front()->VSetDrawState_Obj(false, true);     //  edited branch is not drawn or close, new branch should not be drawn too
                 newRow.SetObjHolder(this);      //  set objHolder (must be after VSetDrawState_Obj)
@@ -33,7 +34,7 @@ void ZC_GUI_Tree::AddBranch(ZC_GUI_BranchSimple* pBranchAdd, ZC_GUI_BranchSimple
             }
         }
     }
-    else this->AddRow(Row(ZC_GUI_RowParams(0.f, ZC_GUI_RowParams::Left, 0.f, 0.f), { pBranchAdd }));
+    else this->AddRow(Row(ZC_GUI_RowParams(0.f, ZC_GUI_RowParams::X_Left, 0.f, 0.f, ZC_GUI_RowParams::Y_Center), { pBranchAdd }));
 }
 
 void ZC_GUI_Tree::AddBranches(const std::vector<ZC_GUI_BranchSimple*>& branchesAdd, ZC_GUI_BranchSimple* pBranchAddTo)
@@ -51,7 +52,7 @@ void ZC_GUI_Tree::AddBranches(const std::vector<ZC_GUI_BranchSimple*>& branchesA
                 for (ZC_GUI_BranchSimple* pBranchAdd : branchesAdd)
                 {
                     if (!(pBranchAdd->isFirstGetDataCall)) continue;    //  branch was allready configured some where
-                    Row& newRow = *(rows.emplace(iter, Row(ZC_GUI_RowParams(indent_x, ZC_GUI_RowParams::Left, 0.f, 0.f), { pBranchAdd })));
+                    Row& newRow = *(rows.emplace(iter, Row(ZC_GUI_RowParams(indent_x, ZC_GUI_RowParams::X_Left, 0.f, 0.f, ZC_GUI_RowParams::Y_Center), { pBranchAdd })));
                     if (newBranches_notDrawing) newRow.objs.front()->VSetDrawState_Obj(false, true);     //  edited branch is not drawn or close, new branch should not be drawn too
                     newRow.SetObjHolder(this);      //  set objHolder (must be after VSetDrawState_Obj)
                 }
@@ -63,7 +64,7 @@ void ZC_GUI_Tree::AddBranches(const std::vector<ZC_GUI_BranchSimple*>& branchesA
     else
     {
         for (ZC_GUI_BranchSimple* pBranchAdd : branchesAdd)
-            if (pBranchAdd->isFirstGetDataCall) this->AddRow(Row(ZC_GUI_RowParams(0.f, ZC_GUI_RowParams::Left, 0.f, 0.f), { pBranchAdd }));
+            if (pBranchAdd->isFirstGetDataCall) this->AddRow(Row(ZC_GUI_RowParams(0.f, ZC_GUI_RowParams::X_Left, 0.f, 0.f, ZC_GUI_RowParams::Y_Center), { pBranchAdd }));
     }
 }
 

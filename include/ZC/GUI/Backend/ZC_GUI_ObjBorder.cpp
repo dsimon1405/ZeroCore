@@ -313,35 +313,53 @@ void ZC_GUI_Row::SetObjHolder(ZC_GUI_Obj* pObjHolder)
 void ZC_GUI_Row::CalculateObjs_bl(ZC_Vec2<float>& border_tl, float border_width)
 {
     border_tl[1] -= rowParams.indent_y;
+    
+        //  calculate row height
+    for (ZC_GUI_Obj* pObj : objs)
+    {
+        float compositeHeight = pObj->VGetHeightComposite_Obj();
+        if (compositeHeight > rowParams.height) rowParams.height = compositeHeight; //  update the row height to a higher one
+    }
+
+        //  set bl.y
+    auto lamb__Get_bl_y = [this, &border_tl](float obj_height) -> float
+    {
+        typedef typename RowParams::Position_Y Pos_Y;
+        switch (rowParams.position_y)
+        {
+        case Pos_Y::Y_Top: return border_tl[1] - obj_height;
+        case Pos_Y::Y_Bottom: return border_tl[1] - rowParams.height;
+        case Pos_Y::Y_Center: return border_tl[1] - ((rowParams.height - obj_height) / 2.f) - obj_height;
+        }
+        return 0.f;
+    };
+
         //  calculates bl for objects going from left to right
-    auto lambCalc_bl_fromLeft = [this, border_tl](float cur_x)
+    auto lambCalc_bl_fromLeft = [this, border_tl, &lamb__Get_bl_y](float cur_x)
     {
         for (ZC_GUI_Obj* pObj : objs)
         {
             cur_x += pObj == objs.front() ? rowParams.indent_x : rowParams.distance_x;
-            float compositeHeight = pObj->VGetHeightComposite_Obj();
-            if (compositeHeight > rowParams.height) rowParams.height = compositeHeight; //  update the row height to a higher one
-            pObj->VSet_pBL_Obj({ cur_x, border_tl[1] - compositeHeight });
+            pObj->VSet_pBL_Obj({ cur_x, lamb__Get_bl_y(pObj->VGetHeightComposite_Obj()) });
             cur_x += pObj->VGetWidthComposite_Obj();
         }
     };
+    
     typedef typename RowParams::Indent_X Indent_XFlag;
     switch (rowParams.indentFlag_X)
     {
-    case Indent_XFlag::Left: lambCalc_bl_fromLeft(border_tl[0]); break;
-    case Indent_XFlag::Right:
+    case Indent_XFlag::X_Left: lambCalc_bl_fromLeft(border_tl[0]); break;
+    case Indent_XFlag::X_Right:
     {
         float cur_x = border_tl[0] + border_width;
         for (ZC_GUI_Obj* pObj : objs)
         {
             cur_x -= pObj == objs.front() ? rowParams.indent_x : rowParams.distance_x;
-            float compositeHeight = pObj->VGetHeightComposite_Obj();
-            if (compositeHeight > rowParams.height) rowParams.height = compositeHeight; //  update the row height to a higher one
             cur_x -= pObj->VGetWidthComposite_Obj();
-            pObj->VSet_pBL_Obj({ cur_x, border_tl[1] - compositeHeight });
+            pObj->VSet_pBL_Obj({ cur_x, lamb__Get_bl_y(pObj->VGetHeightComposite_Obj()) });
         }
     } break;
-    case Indent_XFlag::Center:
+    case Indent_XFlag::X_Center:
     {
         float indent_x = 0.f;
         for (ZC_GUI_Obj* pObj : objs) indent_x += pObj->VGetWidthComposite_Obj();   //  sum of objects width
@@ -357,11 +375,12 @@ void ZC_GUI_Row::CalculateObjs_bl(ZC_Vec2<float>& border_tl, float border_width)
 
     //  ZC_GUI_ObjBorder::Row ZC_GUI_Row::RowParams
 
-ZC_GUI_RowParams::RowParams(float _indent_x, Indent_X _indentFlag_X, float _indent_y, float _distance_x)
+ZC_GUI_RowParams::RowParams(float _indent_x, Indent_X _indentFlag_X, float _indent_y, float _distance_x, Position_Y _position_y)
     : indent_x(_indent_x),
     indentFlag_X(_indentFlag_X),
     indent_y(_indent_y),
-    distance_x(_distance_x)
+    distance_x(_distance_x),
+    position_y(_position_y)
 {}
 
 

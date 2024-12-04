@@ -76,7 +76,7 @@ ZC_IGWindow::ZC_IGWindow(std::string&& unicName, bool needDraw, float _width, fl
     mayClose(_mayClose),
     igwf(_igwf)
 {
-    this->CalculateCurrentIndents();
+    this->CalculateCurrentIndents_WOI();
     ZC_ImGui::FrameStart();
     SetPosition();
     ImGui::SetNextWindowSize(ImVec2(_width, _height));

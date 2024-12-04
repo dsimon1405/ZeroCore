@@ -14,7 +14,7 @@ ZC_TextWindow::ZC_TextWindow(ZC_FontData fontData, const std::wstring& _text, ZC
 ZC_TextWindow ZC_TextWindow::MakeCopy(float windowIndentX, float windowIndentY, ZC_WindowOrthoIndentFlags indentFlags) const
 {
     ZC_TextWindow copy = { *this };
-    copy.SetNewIndentParams(windowIndentX, windowIndentY, indentFlags);
+    copy.SetNewIndentParams_WOI(windowIndentX, windowIndentY, indentFlags);
     return copy;
 }
 
@@ -41,5 +41,5 @@ ZC_TextWindow::ZC_TextWindow(const ZC_TextWindow& tw)
 
 void ZC_TextWindow::SetNewTextSize()
 {
-    this->SetNewSize(textWidth, textHeight);    //  calculates text indents into the window and store text size in ZC_WindowOrthoIndent
+    this->SetNewSize_WOI(textWidth, textHeight);    //  calculates text indents into the window and store text size in ZC_WindowOrthoIndent
 }

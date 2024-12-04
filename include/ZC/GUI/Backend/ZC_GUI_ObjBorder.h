@@ -14,14 +14,22 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
         {
             enum Indent_X
             {
-                Left,   //  indent X calculates from the left border
-                Right,  //  indent X calculates from right border
-                Center  //  ignore RowParams::indent_x. Row's objects in center of the X border (window)
+                X_Left,   //  indent X calculates from the left border
+                X_Right,  //  indent X calculates from right border
+                X_Center  //  ignore RowParams::indent_x. Row's objects in center of the X border (window)
+            };
+                //  vertical position of the object in the row. If some objects in a row are taller than others, smaller objects may be placed near the top of the row, near the bottom, or in the center.
+            enum Position_Y
+            {
+                Y_Top,    //  smaller objects places near the top of the row
+                Y_Bottom, //  smaller objects places near the bottom of the row
+                Y_Center  //  smaller object places in the center of the row
             };
             float indent_x = 0.f;       //  indent from left border of window or border
-            Indent_X indentFlag_X = Left;   //  indent specifier for indent_x
+            Indent_X indentFlag_X = X_Left;   //  indent specifier for indent_x
             float indent_y = 0.f;       //  indent from previous row, or on first line, indent from top border of window or border
             float distance_x = 0.f;     //  distance between object on the row
+            Position_Y position_y = Y_Center;
             float height = 0.f;   //  rows height
 
             RowParams() = default;
@@ -31,8 +39,9 @@ struct ZC_GUI_ObjBorder : public ZC_GUI_Obj
             - _indentFlag_X - from what border take _indent_x.
             - _indent_y - indent from row above or top border.
             - _distance_x - distance between objects in row.
+            - _position_y - vertical position of the objects smaller than tallest object in the row.
             */
-            RowParams(float _indent_x, Indent_X _indentFlag_X, float _indent_y, float _distance_x);
+            RowParams(float _indent_x, Indent_X _indentFlag_X, float _indent_y, float _distance_x, Position_Y _position_y);
         } rowParams;
         std::list<ZC_GUI_Obj*> objs;
 

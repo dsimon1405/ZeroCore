@@ -33,9 +33,6 @@ void ZC_GUI_WinMutable::VSetDrawState_W(bool needDraw)
     if (needDraw && !VIsConfigured_Obj()) VConfigure_Obj();
     if (needDraw)
     {
-        if (this->VIsUseCursorMoveEventOnMBLetfDown_Obj() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
-            SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
-
         if (winFlags & ZC_GUI_WF__OutAreaClickClose)
             ZC_GUI::pGUI->eventManager.SetMouseButtonDownWatcherObj(this);
     }
@@ -142,7 +139,7 @@ void ZC_GUI_WinMutable::VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC_G
         (pObjData_end - pObjData_start + 1) * sizeof(ZC_GUI_ObjData), pObjData_start);
 }
 
-void ZC_GUI_WinMutable::VCursorMove_Obj(float rel_x, float rel_y)
+void ZC_GUI_WinMutable::VCursorMove_W(float rel_x, float rel_y)
 {
     ZC_Vec2<float> rel(rel_x, rel_y);
     for (ZC_Vec2<float>& rBL : bls) rBL += rel;

@@ -13,7 +13,7 @@ enum ZC_GUI_WinFlag
     ZC_GUI_WF__Stacionar            = 1,        //  The window is always under non-stacionar windows (if the window is in focus and not stationary windows overlap it, the stationary window is still drawn under those windows). Each new created stationary window will always display above the previous created stationary windows (avoid intersecting stationary windows, think of it as a desktop interface).
     ZC_GUI_WF__NeedDraw             = 1 << 1,   //  Need draw on start.
     ZC_GUI_WF__NoBackground         = 1 << 2,   //  Don't draw background (window background don't make collisioin with mouse cursor, objects of the window still make collision).
-    ZC_GUI_WF__Movable              = 1 << 3,   //  Window can be moved. ZC_WOIData will be ignored and on first draw, window will be in the ZC_SWindow center, then will be set flags ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel.
+    ZC_GUI_WF__Movable              = 1 << 3,   //  Window can be moved. With that flag can be used only ZC_WOIF__X_Center_Pixel | ZC_WOIF__Y_Center_Pixel. Otherwise will be set (ZC_WOIF__X_Center_Pixel, indentX = 0) or (ZC_WOIF__Y_Center_Pixel, indentY = 0).
     ZC_GUI_WF__Scrollable           = 1 << 4,   //  Can be used scroll.
     ZC_GUI_WF__Frame                = 1 << 5,   //  Window have 2 pixels frame (border).
     ZC_GUI_WF__OutAreaClickClose    = 1 << 6,   //  If mouse cursor click outside window area, widnow will close.
@@ -48,6 +48,8 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
 
     ZC_GUI_Window(const ZC_WOIData& _woiData, const ZC_GUI_UV& uv, ZC_GUI_WinFlags winFlags, const ColorsWindow& colorsWindow);
 
+    ZC_WOIData CheckWOIData(ZC_GUI_WinFlags _winFlags, const ZC_WOIData& _woiData);
+
     virtual void VSetDrawState_W(bool needDraw) = 0;
     void VSetDrawState_Obj(bool needDraw, bool updateGPU) override;
 
@@ -70,6 +72,9 @@ struct ZC_GUI_Window : public ZC_WindowOrthoIndent1, public ZC_GUI_ObjBorder
     void VEraseFrom__buttonKeyboard_objs_Obj(ZC_GUI_Obj* pDelete) override;
         //  close window with ZC_GUI_WF__OutAreaClickClose flag
     void MouseButtonLeftOrRightDown();
+
+    void VCursorMove_Obj(float rel_x, float rel_y) override;
+    virtual void VCursorMove_W(float rel_x, float rel_y) = 0;
 
     float GetStacionarDepth();
     void SetFocuseDepthAndColor();

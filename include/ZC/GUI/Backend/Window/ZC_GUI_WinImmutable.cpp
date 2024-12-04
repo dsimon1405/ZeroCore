@@ -42,9 +42,6 @@ void ZC_GUI_WinImmutable::VSetDrawState_W(bool needDraw)
     if (VIsDrawing_Obj() == needDraw) return;
     if (needDraw)
     {
-        if (this->VIsUseCursorMoveEventOnMBLetfDown_Obj() && !(this->woiData.indentFlags & ZC_WOIF__X_Left_Pixel))    //  look ZC_GUI_WF__Movable or ZC_GUI_Window ctr
-            SetNewIndentParams((*pBL)[0], (*pBL)[1], ZC_WOIF__X_Left_Pixel | ZC_WOIF__Y_Bottom_Pixel);
-
         daic.instanceCount = 1u;
 
         if (winFlags & ZC_GUI_WF__OutAreaClickClose)
@@ -182,7 +179,7 @@ void ZC_GUI_WinImmutable::VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC
     if (VIsConfigured_Obj()) bufObjDatas.GLNamedBufferSubData((pObjData_start - objDatas.data()) * sizeof(ZC_GUI_ObjData), (pObjData_end - pObjData_start + 1) * sizeof(ZC_GUI_ObjData), pObjData_start);
 }
 
-void ZC_GUI_WinImmutable::VCursorMove_Obj(float rel_x, float rel_y)
+void ZC_GUI_WinImmutable::VCursorMove_W(float rel_x, float rel_y)
 {
     ZC_Vec2<float> rel(rel_x, rel_y);
     for (GLuint i = 0; i < this->objsCount; ++i) *(pBL + i) += rel;

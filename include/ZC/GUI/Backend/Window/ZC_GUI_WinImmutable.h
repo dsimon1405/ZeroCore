@@ -57,5 +57,5 @@ struct ZC_GUI_WinImmutable : public ZC_GUI_Window
     void VSubDataBorder_Obj(ZC_GUI_Border* pBorder_start, ZC_GUI_Border* pBorder_end) override;
     void VSubDataObjData_Obj(ZC_GUI_ObjData* pObjData_start, ZC_GUI_ObjData* pObjData_end) override;
 
-    void VCursorMove_Obj(float rel_x, float rel_y) override;
+    void VCursorMove_W(float rel_x, float rel_y) override;
 };

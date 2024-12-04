@@ -2,7 +2,7 @@
 
 void ZC_OrthoSquare::SetSize(float _width, float _height)
 {
-    if (!this->SetNewSize(_width, _height)) return;     //  if false, size same
+    if (!this->SetNewSize_WOI(_width, _height)) return;     //  if false, size same
 
     float vertices[]
     {
