@@ -67,9 +67,9 @@ const ZC_GUI_Font* ZC_GUI_ButtonMouseText::GetFont() const
     return textForButton.GetFont();
 }
 
-void ZC_GUI_ButtonMouseText::UpdateText_BMT(ZC_GUI_TextManager::Text* pText)
+void ZC_GUI_ButtonMouseText::UpdateText_and_actual_width_BMT(ZC_GUI_TextManager::Text* pText)
 {
-    textForButton.UpdateText(pText);
+    textForButton.UpdateText_and_actual_width(pText);
 }
 
 float ZC_GUI_ButtonMouseText::VGetWidthComposite_Obj()

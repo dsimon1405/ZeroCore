@@ -38,7 +38,7 @@ struct ZC_GUI_Text : public ZC_GUI_Obj
     bool UpdateText(const std::wstring& wstr, bool brootForceUpdate);
     bool UpdateText(const std::list<ZC_GUI_ChData>& chDatas);
         //  calls from ZC_GUI_BranchSimple::UpdateName() and ZC_GUI_TextInputWindow::StartWindow()
-    void UpdateText(ZC_GUI_TextManager::Text* _pText);
+    void UpdateText_and_actual_width(ZC_GUI_TextManager::Text* _pText);
     const std::wstring& GetWStr() const;
     const ZC_GUI_Font* GetFont() const noexcept;
     float VGetWidth_Obj() override;

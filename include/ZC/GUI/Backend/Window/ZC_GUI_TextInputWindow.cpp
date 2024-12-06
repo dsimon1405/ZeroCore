@@ -108,7 +108,7 @@ bool ZC_GUI_TextInputWindow::StartWindow(const ZC_GUI_Font* pFont, float bl_x, f
 
     int text_new_width = max_symbols * pFont->longest_character_pixels_width;
     if (text.GetFont() != pFont || text_new_width > text.VGetWidth_Obj())     //  if font was changed or in text width too small(need more texture space) -> need update pText in text
-        text.UpdateText(ZC_GUI::pGUI->textManager.GetText(pFont, wstr, false, text_new_width, ZC_GUI_TextAlignment::Left));
+        text.UpdateText_and_actual_width(ZC_GUI::pGUI->textManager.GetText(pFont, wstr, false, text_new_width, ZC_GUI_TextAlignment::Left));
     else if (!(text.UpdateText(wstr, true))) return false;      //  wstr have too wide (in pixels). May be symbols_count less then symbols in wstr...
 
     chDatasOffset = 0;

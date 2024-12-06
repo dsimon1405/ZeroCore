@@ -33,7 +33,7 @@ bool ZC_GUI_BranchSimple::VIsOpen_Br()
 void ZC_GUI_BranchSimple::UpdateName(const std::wstring& name)
 {
     ZC_GUI_TextManager::Text* pText = ZC_GUI_TextManager::GetText(this->textForButton.GetFont(), name, false, 0, ZC_GUI_TextAlignment::Left);
-    this->UpdateText_BMT(pText);
+    this->UpdateText_and_actual_width_BMT(pText);
 
     this->pObjData->width = pText->width;
     this->VMapObjData_Obj(this->pObjData, offsetof(ZC_GUI_ObjData, width), sizeof(ZC_GUI_ObjData::width), &(this->pObjData->width));

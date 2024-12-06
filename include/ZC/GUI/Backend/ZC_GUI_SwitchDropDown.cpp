@@ -105,8 +105,9 @@ void ZC_GUI_SwitchDropDown::SetActiveBMTDrawState(bool needDraw)
     {
         ZC_Vec2<float>* pBL_start = pDDVariant_active->VGet_pBL_end();
         ZC_Vec2<float>* pBL_end = ddWindow.rows.back().objs.front()->VGet_pBL_end();
-        static float offset_y = ddWindow.rows.front().rowParams.height + ddWindow.rows.front().rowParams.indent_y;
-        for (auto pBL_cur = ++pBL_start; pBL_cur <= pBL_end; ++pBL_cur) (*pBL_cur)[1] += needDraw ? - offset_y : offset_y;
+        float offset_y = ddWindow.rows.front().rowParams.height + ddWindow.rows.front().rowParams.indent_y;
+        for (auto pBL_cur = ++pBL_start; pBL_cur <= pBL_end; ++pBL_cur) 
+            (*pBL_cur)[1] += needDraw ? - offset_y : offset_y;
         ddWindow.VSubDataBL_Obj(pBL_start, pBL_end);
     }
 }

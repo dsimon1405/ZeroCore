@@ -9,7 +9,9 @@ ZC_GUI_Text::ZC_GUI_Text(const ZC_GUI_Font* pFont, const std::wstring& wstr, boo
     : ZC_GUI_Obj(ZC_GUI_ObjData(0.f, 0.f, color, {}, ZC_GUI_Bindings::location_tex_Text)),
     isImmutable(_isImmutable),
     pText(ZC_GUI_TextManager::GetText(pFont, wstr, isImmutable, reserveWidth, textAlignment)),
-    actual_width(pText ? pText->width : 0)
+    actual_width(pText ? 
+                        !isImmutable && reserveWidth > pText->width ? reserveWidth : pText->width       //  may happen that we get an already existing (inmmutable!) pText with a width smaller then request reserveWidth, we can use this pText, but actual_width for our object (mutable!) need to be set as requested in reserveWidth 
+                        : 0)
 {
     if (!pText) return;
     VSetWidth_Obj(pText->width);
@@ -49,7 +51,7 @@ bool ZC_GUI_Text::UpdateText(const std::list<ZC_GUI_ChData>& chDatas)
     return ZC_GUI_TextManager::UpdateText(pText, chDatas);
 }
 
-void ZC_GUI_Text::UpdateText(ZC_GUI_TextManager::Text* _pText)
+void ZC_GUI_Text::UpdateText_and_actual_width(ZC_GUI_TextManager::Text* _pText)
 {
     if (pText) pText->Erase();
     pText = _pText;

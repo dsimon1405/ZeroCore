@@ -27,7 +27,7 @@ ZC_GUI_TextManager::ZC_GUI_TextManager(ZC_Texture* _pTexture)
     
     pTM = this;
 
-        //  //  DRAW pTexture
+    //      //  DRAW pTexture
     // static ZC_VAO vao;
     // static ZC_ShProg ShP = ZC_ShProg(
     //     ZC_Shader(ZC_Shader::ReadShaderFile("C:/Users/simon007/source/repos/Game1/Game/external/ZeroCore/assets/ZC/shaders/GUI/gui_text_test.vs", 0).pHead, GL_VERTEX_SHADER).id,

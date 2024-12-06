@@ -17,7 +17,7 @@ private:
         GLenum sfactor;
         GLenum dfactor;
         ZC_Vec4<GLfloat> blend_color;
-    } static inline global_state { .use_blend = false, .sfactor = GL_SRC_ALPHA, .dfactor = GL_ONE_MINUS_SRC_ALPHA,
+    } static inline global_state { .use_blend = false, .sfactor = 0, .dfactor = 0,
         .blend_color { unused_color, unused_color, unused_color, unused_color }};
 public:
     static inline const State& global_state_const = global_state;

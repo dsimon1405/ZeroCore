@@ -24,6 +24,8 @@ private:
     static inline std::vector<ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>> ddVariants_temp;     //  need to create ddVariant before this(current class), to make text in this immutable. Fills in CalculateWidth()
     std::vector<ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>> ddVariants;
     ZC_GUI_WinImmutable ddWindow;
+        //  pointer to active variant from ddVariants. When some variant became active, stops darwing then into the ddWindow and other variants move to thwm place to cover empty space into the window.
+        //  pText of the active variant became to draw at the main object's button 
     ZC_GUI_DDVariant<ZC_GUI_SwitchDropDown>* pDDVariant_active = nullptr;
     ZC_Function<void(uint)> callback;
 
