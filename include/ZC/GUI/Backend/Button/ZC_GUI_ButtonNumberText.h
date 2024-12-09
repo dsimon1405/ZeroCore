@@ -40,7 +40,7 @@ ZC_GUI_ButtonNumberText<TNum>::ZC_GUI_ButtonNumberText(ZC_GUI_ButtonNumber<TNum>
     ZC_GUI_ButtonNumber<TNum>(std::move(buttonNumber)),
     tfb_name(std::move(_tfb_name))
 {
-    if (tfb_name.indent.indentFlag_X != ZC_GUI_TFB_Indent::OutOfButtonLeft || tfb_name.indent.indentFlag_X != ZC_GUI_TFB_Indent::OutOfButtonRight)
+    if (tfb_name.indent.indentFlag_X != ZC_GUI_TFB_Indent::OutOfButtonLeft && tfb_name.indent.indentFlag_X != ZC_GUI_TFB_Indent::OutOfButtonRight)
         tfb_name.indent.indentFlag_X = ZC_GUI_TFB_Indent::OutOfButtonLeft;
     this->VAddObj_Obj(&tfb_name, nullptr);
 }

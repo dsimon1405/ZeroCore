@@ -34,7 +34,8 @@ void ZC_GUI_TextForButton::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
     } break;
     case ZC_GUI_TFB_Indent::OutOfButtonRight:
     {
-        *(this->pBL) = ZC_Vec2<float>(std::round(_bl[0] + pObjHolder->VGetWidth_Obj() + indent.indent_x), std::round(_bl[1] + ((pObjHolder->GetHeight() - this->GetHeight()) / 2.f)));
+        *(this->pBL) = ZC_Vec2<float>(std::round(_bl[0] + pObjHolder->VGetWidthComposite_Obj() - this->VGetWidth_Obj()), std::round(_bl[1] + ((pObjHolder->GetHeight() - this->GetHeight()) / 2.f)));
+        // *(this->pBL) = ZC_Vec2<float>(std::round(_bl[0] + pObjHolder->VGetWidth_Obj() + indent.indent_x), std::round(_bl[1] + ((pObjHolder->GetHeight() - this->GetHeight()) / 2.f)));
     } break;
     case ZC_GUI_TFB_Indent::OutOfButtonLeft: *(this->pBL) = _bl; break;
     }

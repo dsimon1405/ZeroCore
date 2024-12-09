@@ -113,6 +113,7 @@ layout (std140, binding = 0) uniform Camera
     vec3 camPos;
 } camera;
 
+    //  ssbo bindings
 #define BIND_SSBO_PARTICLE 0
 #define BIND_SSBO_TEX_DATA 1
     //  texture data
@@ -144,27 +145,26 @@ struct Particle    //  std 430 to avoid problems with alignment, don't use mat a
         //  move
     float move_dir_normalized[3];
     float move_speed_secs;
-        //  animaion, uv
-    uint uvs_start_id;      //  updated on life time end of the particle
-    uint uvs_cur_id;
+        //  coners world pos
+    float world_bl[3];
+    float world_br[3];
+    float world_tl[3];
+    float world_tr[3];
+        //  rotate angle
+    float rotate_angle;    //  rotate particle in 2d
+        //  animaion
+    float animation_start_secs;     //  when in life time to start animation
+    uint animation_uvs_cur_id;      //  id of ssbo_uv.uvs[]
+    float animation_uvs_cur_id_secs;      //  seconds to show animation_uvs_cur_id
 };
 layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
 {
-            //  Update every frame on the cpu
         //  time
-    float time_prev_frame_secs;
-    float time_total_secs;   //  seconds from the start of particle system drawing
-        //  origin pos
-                //  may be changed
+    float time_prev_frame_secs;     //  cpu update
+    float time_total_secs;          //  cpu update. Seconds from the start of particle system drawing
+        //  spawn mat
     float spawn_mat_model[4][4];   //  may be located in other SSBOs and one calculated system may be use in different places
-
-            //  Update only on configuration
-        //  corners rotated frace to cam
-    float size_bl[3];
-    float size_br[3];
-    float size_tl[3];
-    float size_tr[3];
-        //  particle size for corners calculation
+        //  texture particle size for corners calculation
     float size_half_width;
     float size_half_height;
         //  visibility
@@ -175,7 +175,8 @@ layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
     float move_variable[3];       //  see G_PS_Source::Move::DirectionType
     float move_speed_power;       //  total move speed of all particles
         //  animation
-    float uv_shift_speed;   //  1 / uv_per_second
+    int animation_repeat;       //  enum G_PS_Source::Animation::LifeTimePass: loop or one single pass for a life time
+    float animation_uv_shift_speed;      //  how much change tiles in second (1 / uv_per_second)
 
     Particle particles[];
 } ssbo_ps;
@@ -183,7 +184,7 @@ layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
 layout (location = 0) in InG    //  ALL VARIABLES MUST BE INVOLVED INTO THE SOME FUCNTION OR GONNA BE PROBLEM WITH ALIGNMENT (I THOUGHT THAT WITH ALIGNMENT. DATA AFTER NOT INVOLVED FIELD IS NOT CORRECT)
 {
     float visibility_alpha;
-    flat uint uvs_cur_id;
+    flat uint animation_uvs_cur_id;
 } inG[];
 
 
@@ -227,12 +228,11 @@ void main()
         return;
     }
         //  particle pos
-    vec4 particle_pos_world = vec4(particle.pos_cur[0], particle.pos_cur[1], particle.pos_cur[2], 1.f);
-    UV uv = ssbo_uv.uvs[inG[0].uvs_cur_id];
-    SetVertexData(particle_pos_world + vec4(ssbo_ps.size_bl[0], ssbo_ps.size_bl[1], ssbo_ps.size_bl[2], 0.f), vec2(uv.left_x, uv.bottom_y));
-    SetVertexData(particle_pos_world + vec4(ssbo_ps.size_br[0], ssbo_ps.size_br[1], ssbo_ps.size_br[2], 0.f), vec2(uv.right_x, uv.bottom_y));
-    SetVertexData(particle_pos_world + vec4(ssbo_ps.size_tl[0], ssbo_ps.size_tl[1], ssbo_ps.size_tl[2], 0.f), vec2(uv.left_x, uv.top_y));
-    SetVertexData(particle_pos_world + vec4(ssbo_ps.size_tr[0], ssbo_ps.size_tr[1], ssbo_ps.size_tr[2], 0.f), vec2(uv.right_x, uv.top_y));
+    UV uv = ssbo_uv.uvs[inG[0].animation_uvs_cur_id];
+    SetVertexData(vec4(particle.world_bl[0], particle.world_bl[1], particle.world_bl[2], 1.f), vec2(uv.left_x, uv.bottom_y));
+    SetVertexData(vec4(particle.world_br[0], particle.world_br[1], particle.world_br[2], 1.f), vec2(uv.right_x, uv.bottom_y));
+    SetVertexData(vec4(particle.world_tl[0], particle.world_tl[1], particle.world_tl[2], 1.f), vec2(uv.left_x, uv.top_y));
+    SetVertexData(vec4(particle.world_tr[0], particle.world_tr[1], particle.world_tr[2], 1.f), vec2(uv.right_x, uv.top_y));
 
 
         //  calculates in the vertex shader
@@ -248,7 +248,7 @@ void main()
     // float top_y     =  1.f;
     // float bottom_y  = -1.f;
     
-    // UV uv = ssbo_uv.uvs[inG[0].uvs_cur_id];
+    // UV uv = ssbo_uv.uvs[inG[0].animation_uvs_cur_id];
 
     // vec3 bl = (cam_right * left_x * ssbo_ps.size_half_width) + (cam_up * bottom_y * ssbo_ps.size_half_height);
     // SetVertexData(bl, vec2(uv.left_x, uv.bottom_y));

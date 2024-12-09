@@ -110,6 +110,7 @@ layout (std140, binding = 0) uniform Camera
     vec3 camPos;
 } camera;
 
+    //  ssbo bindings
 #define BIND_SSBO_PARTICLE 0
 #define BIND_SSBO_TEX_DATA 1
     //  texture data
@@ -141,27 +142,26 @@ struct Particle    //  std 430 to avoid problems with alignment, don't use mat a
         //  move
     float move_dir_normalized[3];
     float move_speed_secs;
-        //  animaion, uv
-    uint uvs_start_id;      //  updated on life time end of the particle
-    uint uvs_cur_id;
+        //  coners world pos
+    float world_bl[3];
+    float world_br[3];
+    float world_tl[3];
+    float world_tr[3];
+        //  rotate angle
+    float rotate_angle;    //  rotate particle in 2d
+        //  animaion
+    float animation_start_secs;     //  when in life time to start animation
+    uint animation_uvs_cur_id;      //  id of ssbo_uv.uvs[]
+    float animation_uvs_cur_id_secs;      //  seconds to show animation_uvs_cur_id
 };
 layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
 {
-            //  Update every frame on the cpu
         //  time
-    float time_prev_frame_secs;
-    float time_total_secs;   //  seconds from the start of particle system drawing
-        //  origin pos
-                //  may be changed
+    float time_prev_frame_secs;     //  cpu update
+    float time_total_secs;          //  cpu update. Seconds from the start of particle system drawing
+        //  spawn mat
     float spawn_mat_model[4][4];   //  may be located in other SSBOs and one calculated system may be use in different places
-
-            //  Update only on configuration
-        //  corners rotated frace to cam
-    float size_bl[3];
-    float size_br[3];
-    float size_tl[3];
-    float size_tr[3];
-        //  particle size for corners calculation
+        //  texture particle size for corners calculation
     float size_half_width;
     float size_half_height;
         //  visibility
@@ -172,8 +172,9 @@ layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
     float move_variable[3];       //  see G_PS_Source::Move::DirectionType
     float move_speed_power;       //  total move speed of all particles
         //  animation
-    float uv_shift_speed;   //  1 / uv_per_second
-    
+    int animation_repeat;       //  enum G_PS_Source::Animation::LifeTimePass: loop or one single pass for a life time
+    float animation_uv_shift_speed;      //  how much change tiles in second (1 / uv_per_second)
+
     Particle particles[];
 } ssbo_ps;
 
@@ -182,7 +183,7 @@ layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
 layout (location = 0) out OutV
 {
     float visibility_alpha;
-    flat uint uvs_cur_id;
+    flat uint animation_uvs_cur_id;
 } outV;
 
 
@@ -191,7 +192,7 @@ void main()
     gl_Position = vec4(0,0,0,1);
 
     outV.visibility_alpha = ssbo_ps.particles[gl_VertexID].visibility_alpha;
-    outV.uvs_cur_id = ssbo_ps.particles[gl_VertexID].uvs_cur_id;
+    outV.animation_uvs_cur_id = ssbo_ps.particles[gl_VertexID].animation_uvs_cur_id;
 
     if (gl_VertexID == 0) ssbo_ps.time_prev_frame_secs = 0.f;     //  updater can be stoped on cpu for particles, so need to stop update on gpu like that
 
@@ -215,9 +216,9 @@ void main()
     // float life_time_secs_cur = p.life_time_secs_cur + ssbo_particles.time_prev_frame_secs;
 
     //     //  uv coord
-    // uint uvs_cur_id = p.uvs_start_id + uint(life_time_secs_cur / ssbo_particles.uv_shift_speed);
+    // uint animation_uvs_cur_id = p.uvs_start_id + uint(life_time_secs_cur / ssbo_particles.animation_uv_shift_speed);
     //                                                 //  repeats amount           total amount   
-    // if (uvs_cur_id >= ssbo_uv.uvs_count) uvs_cur_id -= (uvs_cur_id / ssbo_uv.uvs_count) * ssbo_uv.uvs_count;   //  avoid out of range uvs[]
+    // if (animation_uvs_cur_id >= ssbo_uv.uvs_count) animation_uvs_cur_id -= (animation_uvs_cur_id / ssbo_uv.uvs_count) * ssbo_uv.uvs_count;   //  avoid out of range uvs[]
 
     //     //  particle reborn
     // if (life_time_secs_cur > p.life_time_secs_total)  //  life ended
@@ -225,7 +226,7 @@ void main()
     //     life_time_secs_cur -= p.life_time_secs_total;
     //     pos_cur = vec3(p.pos_start[0], p.pos_start[1], p.pos_start[2]);    //  return particle to the start
 
-    //     ssbo_particles.particles[gl_VertexID].uvs_start_id = uvs_cur_id;      //  update start id
+    //     ssbo_particles.particles[gl_VertexID].uvs_start_id = animation_uvs_cur_id;      //  update start id
     // }
 
     //     //  calculate pos
@@ -246,7 +247,7 @@ void main()
     // ssbo_particles.particles[gl_VertexID].pos_cur[1] = pos_cur.y;
     // ssbo_particles.particles[gl_VertexID].pos_cur[2] = pos_cur.z;
 
-    // outV.uvs_cur_id = uvs_cur_id;
+    // outV.animation_uvs_cur_id = animation_uvs_cur_id;
     // // outV.pos_cur = pos_cur;
 
     // if (gl_VertexID == 0)   //  on first vertex rotate corners to cam, they are same for each particle
@@ -259,31 +260,31 @@ void main()
     //     float top_y     =  1.f;
     //     float bottom_y  = -1.f;
 
-    //     vec3 size_bl = (cam_right * left_x * ssbo_particles.size_half_width) + (cam_up * bottom_y * ssbo_particles.size_half_height);
-    //     ssbo_particles.size_bl[0] = size_bl.x;
-    //     ssbo_particles.size_bl[1] = size_bl.y;
-    //     ssbo_particles.size_bl[2] = size_bl.z;
+    //     vec3 world_bl = (cam_right * left_x * ssbo_particles.size_half_width) + (cam_up * bottom_y * ssbo_particles.size_half_height);
+    //     ssbo_particles.world_bl[0] = world_bl.x;
+    //     ssbo_particles.world_bl[1] = world_bl.y;
+    //     ssbo_particles.world_bl[2] = world_bl.z;
 
-    //     vec3 size_br = (cam_right * right_x * ssbo_particles.size_half_width) + (cam_up * bottom_y * ssbo_particles.size_half_height);
-    //     ssbo_particles.size_br[0] = size_br.x;
-    //     ssbo_particles.size_br[1] = size_br.y;
-    //     ssbo_particles.size_br[2] = size_br.z;
+    //     vec3 world_br = (cam_right * right_x * ssbo_particles.size_half_width) + (cam_up * bottom_y * ssbo_particles.size_half_height);
+    //     ssbo_particles.world_br[0] = world_br.x;
+    //     ssbo_particles.world_br[1] = world_br.y;
+    //     ssbo_particles.world_br[2] = world_br.z;
 
-    //     vec3 size_tl = (cam_right * left_x * ssbo_particles.size_half_width) + (cam_up * top_y * ssbo_particles.size_half_height);
-    //     ssbo_particles.size_tl[0] = size_tl.x;
-    //     ssbo_particles.size_tl[1] = size_tl.y;
-    //     ssbo_particles.size_tl[2] = size_tl.z;
+    //     vec3 world_tl = (cam_right * left_x * ssbo_particles.size_half_width) + (cam_up * top_y * ssbo_particles.size_half_height);
+    //     ssbo_particles.world_tl[0] = world_tl.x;
+    //     ssbo_particles.world_tl[1] = world_tl.y;
+    //     ssbo_particles.world_tl[2] = world_tl.z;
 
-    //     vec3 size_tr = (cam_right * right_x * ssbo_particles.size_half_width) + (cam_up * top_y * ssbo_particles.size_half_height);
-    //     ssbo_particles.size_tr[0] = size_tr.x;
-    //     ssbo_particles.size_tr[1] = size_tr.y;
-    //     ssbo_particles.size_tr[2] = size_tr.z;
+    //     vec3 world_tr = (cam_right * right_x * ssbo_particles.size_half_width) + (cam_up * top_y * ssbo_particles.size_half_height);
+    //     ssbo_particles.world_tr[0] = world_tr.x;
+    //     ssbo_particles.world_tr[1] = world_tr.y;
+    //     ssbo_particles.world_tr[2] = world_tr.z;
     // }
 
-    // // outV.size_bl = vec3(ssbo_particles.size_bl[0], ssbo_particles.size_bl[1], ssbo_particles.size_bl[2]);
-    // // outV.size_br = vec3(ssbo_particles.size_br[0], ssbo_particles.size_br[1], ssbo_particles.size_br[2]);
-    // // outV.size_tl = vec3(ssbo_particles.size_tl[0], ssbo_particles.size_tl[1], ssbo_particles.size_tl[2]);
-    // // outV.size_tr = vec3(ssbo_particles.size_tr[0], ssbo_particles.size_tr[1], ssbo_particles.size_tr[2]);
+    // // outV.world_bl = vec3(ssbo_particles.world_bl[0], ssbo_particles.world_bl[1], ssbo_particles.world_bl[2]);
+    // // outV.world_br = vec3(ssbo_particles.world_br[0], ssbo_particles.world_br[1], ssbo_particles.world_br[2]);
+    // // outV.world_tl = vec3(ssbo_particles.world_tl[0], ssbo_particles.world_tl[1], ssbo_particles.world_tl[2]);
+    // // outV.world_tr = vec3(ssbo_particles.world_tr[0], ssbo_particles.world_tr[1], ssbo_particles.world_tr[2]);
 
 
 

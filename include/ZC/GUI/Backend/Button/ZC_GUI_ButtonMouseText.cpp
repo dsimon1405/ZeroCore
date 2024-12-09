@@ -21,13 +21,17 @@ ZC_GUI_ButtonMouseText::ZC_GUI_ButtonMouseText(float width, float height, ZC_GUI
         if (width < textForButton_width) this->pObjData->width = textForButton_width;
         if (height < textForButton.GetHeight()) this->SetHeight_Obj(textForButton.GetHeight());
     }
+
+    this->VAddObj_Obj(&textForButton, nullptr);
 }
 
 ZC_GUI_ButtonMouseText::ZC_GUI_ButtonMouseText(ZC_GUI_ButtonMouseText&& bmt)
     : ZC_GUI_ButtonBase(static_cast<ZC_GUI_ButtonBase&&>(bmt)),
     ZC_GUI_ButtonMouse(static_cast<ZC_GUI_ButtonMouse&&>(bmt)),
     textForButton(std::move(bmt.textForButton))
-{}
+{
+    this->VAddObj_Obj(&textForButton, nullptr);
+}
 
 bool ZC_GUI_ButtonMouseText::UpdateText_BMT(const std::wstring& wstr, bool brootForceUpdate)
 {
@@ -41,8 +45,6 @@ void ZC_GUI_ButtonMouseText::VSet_pBL_Obj(const ZC_Vec2<float>& _bl)
 
 void ZC_GUI_ButtonMouseText::Set_pBL_BMT(const ZC_Vec2<float>& _bl)
 {
-    this->VAddObj_Obj(&textForButton, nullptr);
-    
     if (textForButton.indent.indentFlag_X == ZC_GUI_TFB_Indent::OutOfButtonLeft)    //  first goes textForButton, set bl for them first
     {
         textForButton.VSet_pBL_Obj(_bl);
