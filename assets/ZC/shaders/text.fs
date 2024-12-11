@@ -17,9 +17,9 @@ void main()
 
     alpha *= unAlpha;   //  reduce font's alpha to users alpha (only for ZC_TextWindow)
 
-    float r = (unColor >> 20) / 255.f;
-    float g = (unColor >> 10 & uint(1023)) / 255.f;
-    float b = (unColor & uint(1023)) / 255.f;
+    float r = ((unColor >> 20) & uint(1023)) / 1023.f;
+    float g = ((unColor >> 10) & uint(1023)) / 1023.f;
+    float b = (unColor & uint(1023)) / 1023.f;
 
     FragColor = vec4(r, g, b, alpha);
 }

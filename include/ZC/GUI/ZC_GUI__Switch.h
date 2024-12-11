@@ -7,8 +7,6 @@
 template <typename TSwitch>
 struct ZC_GUI__Switch : public ZC_GUI__Obj<TSwitch>
 {
-    ZC_GUI__Switch(TSwitch&& sw);
-    
     /*
     Make variant active and call callback with index.
 
@@ -17,6 +15,9 @@ struct ZC_GUI__Switch : public ZC_GUI__Obj<TSwitch>
     - use_callback - if true will use callback setted in constructor.
     */
     void MakeVariantActive(uint index, bool use_callback);
+
+protected:
+    ZC_GUI__Switch(TSwitch&& sw);
 };
 
 //  Struct for creation switch (1 active variant) from textured (uv coords from iconsTexture (icons.png)) quads.

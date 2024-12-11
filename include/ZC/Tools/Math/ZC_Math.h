@@ -1,7 +1,8 @@
 #pragma once
 
 #include "ZC_Vec2.h"
-#include "ZC_Vec3.h"
+#include "ZC_Vec4.h"
+#include <ZC/ZC_Types.h>
 
 #include <climits>
 // #define ZC_CHAR_BIT 	8
@@ -44,7 +45,16 @@ constexpr int ZC_angle_270i = 270;
 constexpr float ZC_angle_360f = 360.f;
 constexpr int ZC_angle_360i = 360;
 
-uint ZC_PackColorFloatToUInt_RGB(const ZC_Vec3<float>& rgb) noexcept;
+/*
+Packs color from 3 float channels into one uint[32] indices -> [0-1] nothing, [2-11] red, [12-21] green, [22-31] blue.
+
+Params:
+- v - colors rgb in range [0.f, 1.f].
+
+Return:
+On success packed color, otherwise 0.
+*/
+uint ZC_Pack_Float_To_UInt_2x10x10x10(const ZC_Vec3<float>& rgb) noexcept;
 
 /*
 Packs color from 3 float channels into one uint[32] indices -> [0-1] nothing, [2-11] red, [12-21] green, [22-31] blue.
@@ -57,31 +67,97 @@ Params:
 Return:
 On success packed color, otherwise 0.
 */
-uint ZC_PackColorFloatToUInt_RGB(float r, float g, float b) noexcept;
-
-uint ZC_PackColorFloatToUInt_RGBA(float r, float g, float b, float a) noexcept;
+uint ZC_Pack_Float_To_UInt_2x10x10x10(float r, float g, float b) noexcept;
 
 /*
-Packs color from 3 float channels into one uint[32] indices -> [0-1] nothing, [2-11] red, [12-21] green, [22-31] blue.
+Packs color from 3 float channels into one uint[32] indices -> [0-7] red, [8-15] greed, [16-24] blue, [24-31] alpha.
+
+Params:
+- v - colors rgba in range [0.f, 1.f].
+
+Return:
+On success packed color, otherwise 0.
+*/
+uint ZC_Pack_Float_To_UInt_8x8x8x8(const ZC_Vec4<float>& v) noexcept;
+
+/*
+Packs color from 3 float channels into one uint[32] indices -> [0-7] red, [8-15] greed, [16-24] blue, [24-31] alpha.
 
 Params:
 - r - red color (range 0.f - 1.f).
 - g - green color (range 0.f - 1.f).
 - b - blue color (range 0.f - 1.f).
+- a - alpha (range 0.f - 1.f).
 
 Return:
 On success packed color, otherwise 0.
 */
-uint ZC_PackColorUCharToUInt_RGB(uchar r, uchar g, uchar b) noexcept;
+uint ZC_Pack_Float_To_UInt_8x8x8x8(float r, float g, float b, float a) noexcept;
 
-uint ZC_PackColorUcharToUInt_RGBA(uchar r, uchar g, uchar b, uchar a) noexcept;
+/*
+Packs color from 3 uchar channels into one uint[32] indices -> [0-1] nothing, [2-11] red, [12-21] green, [22-31] blue.
 
-ushort ZC_PackTexCoordFloatToUShort(float coord);
+Params:
+- v - colors rgb in range [0.f, 1.f].
 
-//  Unpack color from uint packed (2x10x10x10) to vector of floats.
-ZC_Vec3<float> ZC_UnpackUINTtoFloat_RGB(uint rgb) noexcept;
+Return:
+On success packed color, otherwise 0.
+*/
+uint ZC_Pack_UChar_To_UInt_2x10x10x10(const ZC_Vec3<uch_zc>& rgb) noexcept;
+
+/*
+Packs color from 3 uchar channels into one uint[32] indices -> [0-1] nothing, [2-11] red, [12-21] green, [22-31] blue.
+
+Params:
+- r - red color. Range [0, 255].
+- g - green color. Range [0, 255].
+- b - blue color. Range [0, 255].
+
+Return:
+On success packed color, otherwise 0.
+*/
+uint ZC_Pack_UChar_To_UInt_2x10x10x10(uchar r, uchar g, uchar b) noexcept;
+
+/*
+Packs color from 3 uchar channels into one uint[32] indices -> [0-7] red, [8-15] greed, [16-24] blue, [24-31] alpha.
+
+Params:
+- v - colors rgba in range [0.f, 1.f].
+
+Return:
+On success packed color, otherwise 0.
+*/
+uint ZC_Pack_UChar_To_UInt_8x8x8x8(const ZC_Vec4<uch_zc>& rgba) noexcept;
+
+/*
+Packs color from 3 uchar channels into one uint[32] indices -> [0-7] red, [8-15] greed, [16-24] blue, [24-31] alpha.
+
+Params:
+- r - red color. Range [0, 255].
+- g - green color. Range [0, 255].
+- b - blue color. Range [0, 255].
+- a - alpha. Range [0, 255].
+
+Return:
+On success packed color, otherwise 0.
+*/
+uint ZC_Pack_UChar_To_UInt_8x8x8x8(uchar r, uchar g, uchar b, uchar a) noexcept;
+
+//  Order in unpacked vector vec(r, g, b)
+ZC_Vec3<f_zc> ZC_Unpack_UInt_2x10x10x10_To_Float(uint rgb) noexcept;
+
+//  Order in unpacked vector vec(r, g, b)
+ZC_Vec3<uch_zc> ZC_Unpack_UInt_2x10x10x10_To_UChar(uint rgb) noexcept;
+
+//  Order in unpacked vector vec(r, g, b, a)
+ZC_Vec4<f_zc> ZC_Unpack_UInt_8x8x8x8_To_Float(uint rgba) noexcept;
+
+//  Order in unpacked vector vec(r, g, b, a)
+ZC_Vec4<uch_zc> ZC_Unpack_UInt_8x8x8x8_To_UChar(uint rgba) noexcept;
 
 int ZC_Pack_INT_2_10_10_10_REV(float x, float y, float z, char bytes_2 = 0);
+
+ushort ZC_PackTexCoordFloatToUShort(float coord);
 
 /*
 Params:

@@ -22,7 +22,7 @@ ZC_GUI_Switch<ZC_GUI_ButtonMouseAndKeyboard>::Variant::Variant(const ZC_GUI_Keyb
 template <>     //  ZC_GUI_ButtonMouseText specialization
 ZC_GUI_Switch<ZC_GUI_ButtonMouseText>::Variant::Variant(const ZC_GUI_Font* pFont, const std::wstring& name, float width, float height, const ZC_Vec2<float>& bl,
         const ZC_GUI_ColorsButton& _colorsButton, uint _color_text)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None, _colorsButton),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, ZC_GUI_IconUV::button_quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None, _colorsButton),
     ZC_GUI_ButtonMouseText(width, height, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0, ZC_GUI_TFB_Indent::Center), pFont, name, true, 0,
         ZC_GUI_TextAlignment::Left, _color_text), _colorsButton)
 {
@@ -86,7 +86,7 @@ ZC_GUI_Switch<ZC_GUI_ButtonMouseAndKeyboard>::ZC_GUI_Switch(const std::vector<ZC
 template <>     //  ZC_GUI_ButtonMouseText specialization
 ZC_GUI_Switch<ZC_GUI_ButtonMouseText>::ZC_GUI_Switch(const ZC_GUI_Font* pFont, const std::vector<std::wstring>& names, float width, float height, bool orientation_horizontal, float distance,
         ZC_Function<void(uint)>&& _callback, uint active_variant, const ZC_GUI_ColorsButton& _colorsButton, uint _color_text)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(CalculateNamesWidth(pFont, names, width), height, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None, _colorsButton),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(CalculateNamesWidth(pFont, names, width), height, 0, ZC_GUI_IconUV::button_quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None, _colorsButton),
     ZC_GUI_ButtonMouseText(this->VGetWidth_Obj(), height, ZC_GUI_BF__None,
         ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(0, ZC_GUI_TFB_Indent::Center), pFont, names[0], true, 0, ZC_GUI_TextAlignment::Left, _color_text), _colorsButton),
     callback(std::move(_callback))

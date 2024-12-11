@@ -24,7 +24,7 @@ public:
     ZC_GUI_ColorManipulator(ZC_GUI_ColorManipulator&& cm);
 
     template <ZC_cGUI_UCharOrFloat Trgb>
-    void SetColor(Trgb* pRed, Trgb* pGreen, Trgb* pBlue, bool use_callback);
+    void SetColor(const Trgb* pRed, const Trgb* pGreen, const Trgb* pBlue, bool use_callback);
 
     void SetAlpha(float alpha, bool use_callback);
 
@@ -113,7 +113,7 @@ private:
     void VCursorMove_Obj(float rel_x, float rel_y) override;
     void VMouseButtonLeftUp_Obj(float time) override;
     void UpdateColorLineCursorPosition(const ZC_Vec2<float>& cursor_color_line_pos);
-    float GetTriangleSize();
+    float GetTriangleSize(const ZC_GUI_Font* pFont);
     bool IsActiveUCharButtons();
     void UpdateSaturationAndResult(float color_line_offset);
     void UpdateResultColorAndNumbers(float r, float g, float b, bool updateGPU);
@@ -125,7 +125,6 @@ private:
     void Callback_uchar(uchar);
     void Callback_float(float);
     void Callback_alpha(float alpha);
-    int GetFontHeight() const;
 
     template <ZC_cGUI_UCharOrFloat Trgb>
     void ChangedColorInButton(ZC_GUI_ButtonNumberText<Trgb>* pRed, ZC_GUI_ButtonNumberText<Trgb>* pGreen, ZC_GUI_ButtonNumberText<Trgb>* pBlue, bool use_callback);
@@ -133,11 +132,11 @@ private:
 
 
 template <ZC_cGUI_UCharOrFloat Trgb>
-void ZC_GUI_ColorManipulator::SetColor(Trgb* pRed, Trgb* pGreen, Trgb* pBlue, bool use_callback)
+void ZC_GUI_ColorManipulator::SetColor(const Trgb* pRed, const Trgb* pGreen, const Trgb* pBlue, bool use_callback)
 {
     bool changed = false;
 
-    auto lambSetNumber = [&changed, this](Trgb* pColor, ZC_GUI_ButtonNumberText<uchar>& uchar_button, ZC_GUI_ButtonNumberText<float>& float_button)
+    auto lambSetNumber = [&changed, this](const Trgb* pColor, ZC_GUI_ButtonNumberText<uchar>& uchar_button, ZC_GUI_ButtonNumberText<float>& float_button)
     {
         IsActiveUCharButtons() ? uchar_button.SetNumber(std::same_as<Trgb, uchar> ? *pColor : uchar(*pColor * 255.f), false)
                                 : float_button.SetNumber(std::same_as<Trgb, float> ? *pColor : float(*pColor) / 255.f, false);

@@ -83,7 +83,11 @@ ZC_GUI_Switch<TSwitch>::ZC_GUI_Switch(ZC_GUI_Switch<TSwitch>&& sw)
     callback(std::move(sw.callback))
 {
     for (Variant& var : variants)
+    {
         this->VAddObj_Obj(&var);
+        if (&var == sw.pBM_active) pBM_active = &var;   //  reset active object if it is
+    }
+    if (&sw == sw.pBM_active) pBM_active = this;    //  main class is an active object now
 }
 
 template <ZC_GUI_cSwitch TSwitch>

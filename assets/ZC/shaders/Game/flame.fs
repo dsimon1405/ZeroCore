@@ -1,23 +1,15 @@
 #version 460 core
 
-    //  std 430 don't use mat and vec types!
-// struct Particle
-// {
-//     float secs_to_start;
+    //  color, see enum G_PS_Source::Color::RGBUse
+#define PS_Color_RGBU_Add 0
+#define PS_Color_RGBU_Replace 1
 
-//     float pos_start[3];
-//     float pos_cur[3];
-    
-//     float life_secs_total;
-//     float life_secs_cur;
-
-//     float dir_move_normalized[3];
-// };
 layout (location = 0) in InF
 {
-    float life_time_alpha;
-    vec2 tex_coords;
-    float add_color;
+    int color_rgb_use;
+    vec3 color_rgb;
+    float alpha;
+    vec2 uv;
 } inF;
 
 uniform sampler2D texColor;
@@ -35,8 +27,8 @@ void main()
     // FragColor = vec4(color + vec3(inF.add_color, inF.add_color, inF.add_color), alpha);
 
     
-    vec4 color = texture(texColor, inF.tex_coords).xyzw;
-    float alpha = color.a * inF.life_time_alpha;
-    // if (alpha == 0.f) discard;
-    FragColor = vec4(color.xyz, alpha);
+    vec4 color = texture(texColor, inF.uv);
+    float alpha = color.a * inF.alpha;
+    if (alpha == 0.f) discard;
+    FragColor = vec4(inF.color_rgb_use == PS_Color_RGBU_Add ? color.rgb + inF.color_rgb : inF.color_rgb, alpha);
 }

@@ -21,8 +21,8 @@ void main()
     position.z = 0;     //  stencil border wrights to Z buffer, but must be uper every thing in to scene, so sets Z value  = 0
     gl_Position = position;
 
-    float r = (unColor >> 20) / 255.f;
-    float g = (unColor >> 10 & uint(1023)) / 255.f;
-    float b = (unColor & uint(1023)) / 255.f;
+    float r = ((unColor >> 20) & uint(1023)) / 1023.f;
+    float g = ((unColor >> 10) & uint(1023)) / 1023.f;
+    float b = (unColor & uint(1023)) / 1023.f;
     vColor = vec4(r, g, b, 1.f);
 }

@@ -20,6 +20,7 @@ namespace ZC_GUI_IconUV
     
     ZC_GUI_UV quad = GetUV(0, 1);
     ZC_GUI_UV button = GetUV(1, 1);
+    ZC_GUI_UV button_quad = quad;
     ZC_GUI_UV arrow_down = GetUV(0, 0);
     ZC_GUI_UV arrow_right = GetUV(1, 0);
     ZC_GUI_UV quad_colored = GetUV(2, 1);       //  ZC_GUI_ColorManipulator

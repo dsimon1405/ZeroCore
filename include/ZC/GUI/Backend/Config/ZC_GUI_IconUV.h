@@ -14,6 +14,7 @@ namespace ZC_GUI_IconUV
     
     extern ZC_GUI_UV quad;
     extern ZC_GUI_UV button;
+    extern ZC_GUI_UV button_quad;
     extern ZC_GUI_UV arrow_down;
     extern ZC_GUI_UV arrow_right;
     extern ZC_GUI_UV quad_colored;

@@ -1,9 +1,9 @@
-#version 460 core
+#version 460 core   //  flame.vs
 
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
     //  math
-#define ZC_PI       3.14159265358979323846   // pi
+#define ZC_PI 3.14159265358979323846   // pi
 #define ZC_PI_RAD_COEF (ZC_PI / 180.0)
 
     //  in
@@ -18,8 +18,22 @@ layout (std140, binding = 0) uniform Camera
 } camera;
 
     //  ssbo bindings
-#define BIND_SSBO_PARTICLE 0
-#define BIND_SSBO_TEX_DATA 1
+#define G_BIND_SSBO_PARTICLE 0
+#define G_BIND_SSBO_TEX_DATA 1
+#define G_Bind_SSBO_COLLISION 2
+
+    //  collision
+struct CollisionObject
+{
+    float radius = 0.f;   //  if radius = 0 it is free space
+    float[3] world_pos;
+};
+layout (std430, binding = G_Bind_SSBO_COLLISION) readonly buffer SSBO_Collision
+{
+    uint collision_objects_count;
+    CollisionObject collision_objects[];
+} ssbo_collision;
+
     //  texture data
 struct UV
 {
@@ -28,7 +42,7 @@ struct UV
     float right_x;
     float bottom_y;
 };
-layout (std430, binding = BIND_SSBO_TEX_DATA) readonly buffer SSBO_UV
+layout (std430, binding =G_BIND_SSBO_TEX_DATA) readonly buffer SSBO_UV
 {
     uint uvs_count;     //  tiles count
     UV uvs[];
@@ -41,6 +55,9 @@ layout (std430, binding = BIND_SSBO_TEX_DATA) readonly buffer SSBO_UV
     //  animation, see enum G_PS_Source::Animation::Repeat 
 #define PS_Animation_R_Loop         0
 #define PS_Animation_R_Single_pass  1
+    //  collision, see enum G_PS_Source::CollisoinAction
+#define PS_Collision_CA_None                0
+#define PS_Collision_CA_StartAnimationTime  1
 
     //  particle
 struct Particle    //  std 430 to avoid problems with alignment, don't use mat and vec types!
@@ -52,8 +69,6 @@ struct Particle    //  std 430 to avoid problems with alignment, don't use mat a
         //  position
     float pos_start[3];
     float pos_cur[3];
-        //  visibility
-    float visibility_alpha;
         //  move
     float move_dir_normalized[3];
     float move_speed_secs;
@@ -68,8 +83,10 @@ struct Particle    //  std 430 to avoid problems with alignment, don't use mat a
     float animation_start_secs;     //  when in life time to start animation
     uint animation_uvs_cur_id;      //  id of ssbo_uv.uvs[]
     float animation_uvs_cur_id_secs;      //  seconds to show animation_uvs_cur_id
+        //  color
+    uint color_rgba;     //  rgb to add and alpha, packed [32]->8x8x8x8
 };
-layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
+layout (std430, binding = G_BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
 {
         //  time
     float time_prev_frame_secs;     //  cpu update
@@ -79,9 +96,6 @@ layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
         //  texture particle size for corners calculation
     float size_half_width;
     float size_half_height;
-        //  visibility
-    float visibility_appear_secs;
-    float visibility_disappear_secs;
         //  move
     int move_direction_type;    //  see G_PS_Source::Move::DirectionType
     float move_variable[3];     //  see G_PS_Source::Move::DirectionType
@@ -89,6 +103,14 @@ layout (std430, binding = BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
         //  animation
     int animation_repeat;       //  enum G_PS_Source::Animation::LifeTimePass: loop or one single pass for a life time
     float animation_uv_shift_speed;     //  (1 / uv_per_second)
+        //  color
+    int color_rgb_use;      //  see enum G_PS_Source::Color::RGBUse
+    float color_appear_secs;
+    float color_disappear_secs;
+    uint color_rgba_start;       //  rgb interpolation start and alpha appear, packed [32]->8x8x8x8
+    uint color_rgba_end;         //  rgb interpolation end and alpha disappear, packed [32]->8x8x8x8
+        //  collision
+    int collision_action;
 
     Particle particles[];
 } ssbo_ps;
@@ -101,6 +123,11 @@ void Set_pos_cur(uint particle_id, vec3 pos_cur);
 void Set_move_dir_normalized(uint particle_id, vec3 move_dir_normalized);
 mat2 GetRotateMatrix2D(float angle);
 void CalcAnimation(uint particle_id);
+vec4 Unpack_UInt_8x8x8x8_To_vec4(uint rgba);
+uint Pack_vec4_To_UInt_8x8x8x8(vec4 val);
+vec3 InterpolateColor(vec3 start_color, vec3 end_color, float growing_coef);
+void CalaColor(uint particle_id);
+void MakeCollisoin(uint particle_id);
 
 void main()
 {
@@ -133,20 +160,15 @@ void main()
     vec3 move_dir_normalized = vec3(ssbo_ps.particles[id].move_dir_normalized[0], ssbo_ps.particles[id].move_dir_normalized[1], ssbo_ps.particles[id].move_dir_normalized[2]);
     pos_cur += move_dir_normalized * p.move_speed_secs * ssbo_ps.move_speed_power * ssbo_ps.time_prev_frame_secs;
 
-        //  visibility
-    float disappear_start_secs = p.life_time_secs_total - ssbo_ps.visibility_disappear_secs;
-    float visibility_alpha = life_time_secs_cur < ssbo_ps.visibility_appear_secs ? life_time_secs_cur / ssbo_ps.visibility_appear_secs  //  particle appear (life start)
-        : disappear_start_secs < life_time_secs_cur ? 1.f - ((life_time_secs_cur - disappear_start_secs) / ssbo_ps.visibility_disappear_secs)  //  particle dissapear (life end)
-        : 1.f;  //  full seen
-
         //  ssbo update
     ssbo_ps.particles[id].life_time_secs_cur = life_time_secs_cur;
     Set_pos_cur(id, pos_cur);
-    ssbo_ps.particles[id].visibility_alpha = visibility_alpha;
 
-    
-    CalcCornersRotatedToCam(id, pos_cur);  //  must be called after ssbo update. Rotate particle in 2d, and calculate corners
-    CalcAnimation(id);  //  must be called after ssbo update
+        //  next functions must be called after ssbo update
+    CalcCornersRotatedToCam(id, pos_cur);   //  Rotate particle in 2d, and calculate corners
+    CalcAnimation(id);
+    CalaColor(id);
+    MakeCollisoin(id);
 }
 
 void CalcCornersRotatedToCam(uint particle_id, vec3 pos_cur)
@@ -273,4 +295,70 @@ void CalcAnimation(uint particle_id)
     }
             //  update ssbo
     ssbo_ps.particles[particle_id].animation_uvs_cur_id_secs = animation_uvs_cur_id_secs;
+}
+
+vec4 Unpack_UInt_8x8x8x8_To_vec4(uint rgba)
+{
+    return vec4(((rgba >> 24) & 255u) / 255.f, ((rgba >> 16) & 255u) / 255.f, ((rgba >> 8) & 255u) / 255.f, (rgba & 255u) / 255.f);
+}
+
+uint Pack_vec4_To_UInt_8x8x8x8(vec3 rgb, float alpha)
+{
+    return ((uint(rgb.r * 255.f) << 8 | uint(rgb.g * 255.f)) << 8 | uint(rgb.b * 255.f)) << 8 | uint(alpha * 255.f);
+}
+
+vec3 InterpolateColor(vec3 start_color, vec3 end_color, float growing_coef)
+{
+    return vec3(
+        start_color.r > end_color.r ? start_color.r - ((start_color.r - end_color.r) * growing_coef) : start_color.r + ((end_color.r - start_color.r) * growing_coef),
+        start_color.g > end_color.g ? start_color.g - ((start_color.g - end_color.g) * growing_coef) : start_color.g + ((end_color.g - start_color.g) * growing_coef),
+        start_color.b > end_color.b ? start_color.b - ((start_color.b - end_color.b) * growing_coef) : start_color.b + ((end_color.b - start_color.b) * growing_coef)
+        );
+}
+
+void CalaColor(uint particle_id)
+{
+    vec4 rgba_start = Unpack_UInt_8x8x8x8_To_vec4(ssbo_ps.color_rgba_start);
+    vec4 rgba_end = Unpack_UInt_8x8x8x8_To_vec4(ssbo_ps.color_rgba_end);
+    float life_time_secs_cur = ssbo_ps.particles[particle_id].life_time_secs_cur;
+    float life_time_secs_total = ssbo_ps.particles[particle_id].life_time_secs_total;
+
+        //  rgb
+    vec3 rgb_start = vec3(rgba_start);
+    vec3 rgb_end = vec3(rgba_end);
+    vec3 rgb = rgb_start == rgb_end ? vec3(0.f, 0.f, 0.f) : InterpolateColor(rgb_start, rgb_end, life_time_secs_cur / life_time_secs_total);  //  interpolate color over life time
+
+        //  alpha
+    const float max_alpha = 1.f;
+    float alpha = max_alpha;    //  default full seen alpha 1.f
+    float disappear_start_secs = life_time_secs_total - ssbo_ps.color_disappear_secs;
+    float visibility_alpha;
+    if (life_time_secs_cur < ssbo_ps.color_appear_secs)
+    {
+        float start_alpha = rgba_start.a;
+        float start_life_time_coef = life_time_secs_cur / ssbo_ps.color_appear_secs;  //  particle appear (life start)
+        float start_life_alpha_range = max_alpha - start_alpha;
+        alpha = start_alpha + (start_life_alpha_range * start_life_time_coef);
+    }
+    else if (disappear_start_secs < life_time_secs_cur)
+    {
+        float end_alpha = rgba_end.a;
+        float end_life_time_coef = (life_time_secs_cur - disappear_start_secs) / ssbo_ps.color_disappear_secs;
+        float end_life_alpha_range = max_alpha - end_alpha;
+        alpha = max_alpha - (end_life_alpha_range * end_life_time_coef);
+    }
+        //  update ssbo
+    ssbo_ps.particles[particle_id].color_rgba = Pack_vec4_To_UInt_8x8x8x8(rgb, alpha);
+}
+
+void MakeCollisoin(uint particle_id)
+{
+    if (ssbo_ps.collision_action == PS_Collision_CA_None) return;   //  no collision actoin
+
+    for (uint i = 0; i < ssbo_collision.collision_objects_count; ++i)
+    {
+        if (ssbo_collision.collision_objects[i].radius == 0) continue;    //  empty space
+
+        
+    }
 }

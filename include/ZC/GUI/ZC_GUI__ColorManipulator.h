@@ -26,7 +26,7 @@ public:
     - use_callback - if true will use callback setted in constructor.
     */
     template <ZC_cGUI_UCharOrFloat Trgb>
-    void SetColor(Trgb* pRed, Trgb* pGreen, Trgb* pBlue, bool use_callback);
+    void SetColor(const Trgb* pRed, const Trgb* pGreen, const Trgb* pBlue, bool use_callback);
 
     /*
     Update alpha channel value.
@@ -40,7 +40,7 @@ public:
 
 
 template <ZC_cGUI_UCharOrFloat Trgb>
-void ZC_GUI__ColorManipulator::SetColor(Trgb* pRed, Trgb* pGreen, Trgb* pBlue, bool use_callback)
+void ZC_GUI__ColorManipulator::SetColor(const Trgb* pRed, const Trgb* pGreen, const Trgb* pBlue, bool use_callback)
 {
     this->obj.SetColor(pRed, pGreen, pBlue, use_callback);
 }

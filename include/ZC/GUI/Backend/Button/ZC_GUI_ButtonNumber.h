@@ -234,7 +234,7 @@ void ZC_GUI_ButtonNumber<TNum>::VScroll_Obj(float vertical, float time)
 template <ZC_cNumber TNum>
 void ZC_GUI_ButtonNumber<TNum>::VCursorMove_Obj(float rel_x, float rel_y)
 {
-    ChangeAndUpdateNumber(rel_x);
+    ChangeAndUpdateNumber(step * rel_x);
 }
 
 template <ZC_cNumber TNum>

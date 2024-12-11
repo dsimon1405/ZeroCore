@@ -2,41 +2,66 @@
 
 #include <cmath>
 
-uint ZC_PackColorFloatToUInt_RGB(const ZC_Vec3<float>& rgb) noexcept
+uint ZC_Pack_Float_To_UInt_2x10x10x10(const ZC_Vec3<float>& rgb) noexcept
 {
-    return ZC_PackColorFloatToUInt_RGB(rgb[0], rgb[1], rgb[2]);
+    return ZC_Pack_Float_To_UInt_2x10x10x10(rgb[0], rgb[1], rgb[2]);
 }
 
-uint ZC_PackColorFloatToUInt_RGB(float r, float g, float b) noexcept
+uint ZC_Pack_Float_To_UInt_2x10x10x10(float r, float g, float b) noexcept
 {
     if (r < 0.f || r > 1.f || g < 0.f || g > 1.f || b < 0.f || b > 1.f) return 0;
-    return ((uint)(r * 255.f) << 10 | (uint)(g * 255.f)) << 10 | (uint)(b * 255.f);
+    return ((uint)(r * 1023.f) << 10 | (uint)(g * 1023.f)) << 10 | (uint)(b * 1023.f);      //  1023 ( ...001111111111 )
 }
 
-uint ZC_PackColorFloatToUInt_RGBA(float r, float g, float b, float a) noexcept
+uint ZC_Pack_Float_To_UInt_8x8x8x8(const ZC_Vec4<float>& v) noexcept
+{
+    return ZC_Pack_Float_To_UInt_8x8x8x8(v[0], v[1], v[2], v[3]);
+}
+
+uint ZC_Pack_Float_To_UInt_8x8x8x8(float r, float g, float b, float a) noexcept
 {
     if (r < 0.f || r > 1.f || g < 0.f || g > 1.f || b < 0.f || b > 1.f || a < 0.f || a > 1.f) return 0;
     return (((uint)(r * 255.f) << 8 | (uint)(g * 255.f)) << 8 | (uint)(b * 255.f)) << 8 | (uint)(a * 255.f);
 }
 
-uint ZC_PackColorUCharToUInt_RGB(uchar r, uchar g, uchar b) noexcept
+uint ZC_Pack_UChar_To_UInt_2x10x10x10(const ZC_Vec3<uch_zc>& rgb) noexcept
 {
-    return (static_cast<uint>(r) << 10 | static_cast<uint>(g)) << 10 | static_cast<uint>(b);
+    return ZC_Pack_UChar_To_UInt_2x10x10x10(rgb[0], rgb[1], rgb[2]);
 }
 
-uint ZC_PackColorUcharToUInt_RGBA(uchar r, uchar g, uchar b, uchar a) noexcept
+uint ZC_Pack_UChar_To_UInt_2x10x10x10(uchar r, uchar g, uchar b) noexcept
+{
+    return ((static_cast<uint>(r) * 1023u / 255u) << 10 | (static_cast<uint>(g)) * 1023u / 255u) << 10 | (static_cast<uint>(b) * 1023u / 255u);
+}
+
+uint ZC_Pack_UChar_To_UInt_8x8x8x8(const ZC_Vec4<uch_zc>& rgba) noexcept
+{
+    return ZC_Pack_UChar_To_UInt_8x8x8x8(rgba[0], rgba[1], rgba[2], rgba[3]);
+}
+
+uint ZC_Pack_UChar_To_UInt_8x8x8x8(uchar r, uchar g, uchar b, uchar a) noexcept
 {
     return (((static_cast<uint>(r) << 8 | static_cast<uint>(g)) << 8 | static_cast<uint>(b))) << 8 | static_cast<uint>(a);
 }
 
-ushort ZC_PackTexCoordFloatToUShort(float coord)
+ZC_Vec3<f_zc> ZC_Unpack_UInt_2x10x10x10_To_Float(uint rgb) noexcept
 {
-    return static_cast<ushort>(coord * USHRT_MAX);
+    return { ((rgb >> 20) & 1023u) / 1023.f, ((rgb >> 10) & 1023u) / 1023.f, (rgb & 1023u) / 1023.f };
 }
 
-ZC_Vec3<float> ZC_UnpackUINTtoFloat_RGB(uint rgb) noexcept
+ZC_Vec3<uch_zc> ZC_Unpack_UInt_2x10x10x10_To_UChar(uint rgb) noexcept
 {
-    return { (rgb >> 20) / 255.f, (rgb >> 10 & uint(1023)) / 255.f, (rgb & uint(1023)) / 255.f };
+    return { uch_zc(((rgb >> 20) & 1023u) * 255u / 1023u), uch_zc(((rgb >> 10) & 1023u) * 255u / 1023u), uch_zc((rgb & 1023u) * 255u / 1023u) };
+}
+
+ZC_Vec4<f_zc> ZC_Unpack_UInt_8x8x8x8_To_Float(uint rgba) noexcept
+{
+    return { ((rgba >> 24) & 255u) / 255.f, ((rgba >> 16) & 255u) / 255.f, ((rgba >> 8) & 255u) / 255.f, (rgba & 255u) / 255.f };
+}
+
+ZC_Vec4<uch_zc> ZC_Unpack_UInt_8x8x8x8_To_UChar(uint rgba) noexcept
+{
+    return { uch_zc(rgba >> 24), uch_zc(rgba >> 16), uch_zc(rgba >> 8), uch_zc(rgba & 255u) };
 }
 
 int ZC_Pack_INT_2_10_10_10_REV(float x, float y, float z, char bytes_2)
@@ -52,6 +77,11 @@ int ZC_Pack_INT_2_10_10_10_REV(float x, float y, float z, char bytes_2)
             : static_cast<int>(std::round(val * 511.f));
     };
     return (((bytes_2 << 30) | packIn10Bytes(z) << 20) | (packIn10Bytes(y) << 10)) | packIn10Bytes(x);
+}
+
+ushort ZC_PackTexCoordFloatToUShort(float coord)
+{
+    return static_cast<ushort>(coord * USHRT_MAX);
 }
 
 bool ZC_IsPointBelongTriangle_2D(const ZC_Vec2<float>& a, const ZC_Vec2<float>& b, const ZC_Vec2<float>& c, const ZC_Vec2<float>& p)

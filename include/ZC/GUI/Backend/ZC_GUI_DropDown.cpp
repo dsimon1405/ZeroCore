@@ -2,7 +2,7 @@
 
 ZC_GUI_DropDown::ZC_GUI_DropDown(const ZC_GUI_Font* pFont, const std::wstring& name, const std::vector<std::wstring>& variants, float width, float height,
         ZC_GUI_DropDownFlags dropDownFlags, ZC_Function<void(uint)>&& _callback, const ZC_GUI_ColorsDropDown& colorsDropDown)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None, colorsDropDown.colorsButton),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, ZC_GUI_IconUV::button_quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None, colorsDropDown.colorsButton),
     ZC_GUI_ButtonMouseText(width, height, ZC_GUI_BF__None,ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(pFont->GetHeight() / 5, ZC_GUI_TFB_Indent::Left),
         pFont, name, true, 0, ZC_GUI_TextAlignment::Left, colorsDropDown.color_text), colorsDropDown.colorsButton),
     isUnderCursorFlag(dropDownFlags & ZC_GUI_DDF__UnderCursor),

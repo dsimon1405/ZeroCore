@@ -105,9 +105,9 @@ void UnpackAndSetColor(uint color)
 {
     if (color != 0)
     {
-        outG.red = (color >> 20) / 255.f;
-        outG.green = (color >> 10 & uint(1023)) / 255.f;
-        outG.blue = (color & uint(1023)) / 255.f;
+        outG.red = ((color >> 20) & uint(1023)) / 1023.f;
+        outG.green = ((color >> 10) & uint(1023)) / 1023.f;
+        outG.blue = (color & uint(1023)) / 1023.f;
     }
     else
     {
@@ -157,9 +157,9 @@ void main()
     {
         if (objData.color != 0)
         {
-            outG.red = (objData.color >> 24 & uint(255)) / 255.f;
-            outG.green = (objData.color >> 16 & uint(255)) / 255.f;
-            outG.blue = (objData.color >> 8 & uint(255)) / 255.f;
+            outG.red = ((objData.color >> 24) & uint(255)) / 255.f;
+            outG.green = ((objData.color >> 16) & uint(255)) / 255.f;
+            outG.blue = ((objData.color >> 8) & uint(255)) / 255.f;
             outG.alpha = (objData.color & uint(255)) / 255.f;
         }
         else

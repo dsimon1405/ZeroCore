@@ -44,7 +44,7 @@ struct ZC_GUI_DDVariant : public ZC_GUI_ButtonMouseText
 template <typename THolder>
 ZC_GUI_DDVariant<THolder>::ZC_GUI_DDVariant(THolder* _pHolder, const ZC_GUI_Font* pFont, float width, float height, const std::wstring& _wstr,
         const ColorsButton& _colorsButton, unsigned int color_text)
-    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, ZC_GUI_IconUV::quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None),
+    : ZC_GUI_ButtonBase(ZC_GUI_ObjData(width, height, 0, ZC_GUI_IconUV::button_quad, ZC_GUI_Bindings::location_tex_Icons), ZC_GUI_BF__None),
     ZC_GUI_ButtonMouseText(width, height, ZC_GUI_BF__None, ZC_GUI_TextForButton(ZC_GUI_TFB_Indent(ZC_GUI_DropDownIcon::CalculateDistance(pFont),
         ZC_GUI_TFB_Indent::Left), pFont, _wstr, true, 0, ZC_GUI_TextAlignment::Left, color_text), _colorsButton),
     pHolder(_pHolder)

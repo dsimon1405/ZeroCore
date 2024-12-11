@@ -117,9 +117,9 @@ void main()
 
 vec3 Uint_2_10_10_10_To_vec3(uint val)
 {
-    return vec3((val >> 20) / 255.f,
-                (val >> 10 & uint(1023)) / 255.f,
-                (val & uint(1023)) / 255.f);
+    return vec3(((val >> 20) & uint(1023)) / 1023.f,
+                ((val >> 10) & uint(1023)) / 1023.f,
+                (val & uint(1023)) / 1023.f);
 }
 
 // vec2 MoveByLengthXY(vec2 v, vec2 direction, float length)
