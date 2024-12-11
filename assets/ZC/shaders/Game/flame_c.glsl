@@ -6,6 +6,20 @@ layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 #define ZC_PI 3.14159265358979323846   // pi
 #define ZC_PI_RAD_COEF (ZC_PI / 180.0)
 
+    //  move, see enum G_PS_Source::Move::DirectionType
+#define PS_Move_DT__from_particles_center   0
+#define PS_Move_DT__variable_is_direction   1
+#define PS_Move_DT__variable_is_destination 2
+    //  animation, see enum G_PS_Source::Animation::Repeat 
+#define PS_Animation_R_Loop        0
+#define PS_Animation_R_Single_pass 1
+    //  external influence, see enum G_PS_Source::ExternalInfluence
+#define PS_EI_None      0
+#define PS_EI_Collision 1
+    //  collision, see enum G_ParticleSystem::Collision::SetLifeTime
+#define PS_Collision_SLF_None            0
+#define PS_Collision_SLT_Start_animation 1
+
     //  in
 layout (std140, binding = 0) uniform Camera
 {
@@ -25,12 +39,17 @@ layout (std140, binding = 0) uniform Camera
     //  collision
 struct CollisionObject
 {
-    float radius = 0.f;   //  if radius = 0 it is free space
+    float radius;   //  if radius = 0 it is free space
     float[3] world_pos;
 };
 layout (std430, binding = G_Bind_SSBO_COLLISION) readonly buffer SSBO_Collision
 {
-    uint collision_objects_count;
+    uint collision_objects_count;    //  filles with system, may be missed. Count of object in collision_objects.
+    float particle_radius;    //  radius ofthe particle (may be less then drawing particle size, help to avoid alpha channels border around the particle).
+
+    int set_life_time;     //  enum G_ParticleSystem::Collision::SetLifeTime
+    float move_speed;      //  percent value to change speed value. Range [-1.f, 1.f].
+    
     CollisionObject collision_objects[];
 } ssbo_collision;
 
@@ -48,17 +67,6 @@ layout (std430, binding =G_BIND_SSBO_TEX_DATA) readonly buffer SSBO_UV
     UV uvs[];
 } ssbo_uv;
 
-    //  move, see enum G_PS_Source::Move::DirectionType
-#define PS_Move_DT__from_particles_center   0
-#define PS_Move_DT__variable_is_direction   1
-#define PS_Move_DT__variable_is_destination 2
-    //  animation, see enum G_PS_Source::Animation::Repeat 
-#define PS_Animation_R_Loop         0
-#define PS_Animation_R_Single_pass  1
-    //  collision, see enum G_PS_Source::CollisoinAction
-#define PS_Collision_CA_None                0
-#define PS_Collision_CA_StartAnimationTime  1
-
     //  particle
 struct Particle    //  std 430 to avoid problems with alignment, don't use mat and vec types!
 {
@@ -71,7 +79,8 @@ struct Particle    //  std 430 to avoid problems with alignment, don't use mat a
     float pos_cur[3];
         //  move
     float move_dir_normalized[3];
-    float move_speed_secs;
+    float move_speed_secs_start;  //  sets to move_speed_secs_cur at respawn
+    float move_speed_secs_cur;    //  cur speed
         //  coners world pos
     float world_bl[3];
     float world_br[3];
@@ -109,14 +118,15 @@ layout (std430, binding = G_BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
     float color_disappear_secs;
     uint color_rgba_start;       //  rgb interpolation start and alpha appear, packed [32]->8x8x8x8
     uint color_rgba_end;         //  rgb interpolation end and alpha disappear, packed [32]->8x8x8x8
-        //  collision
-    int collision_action;
+        //  external influence
+    int external_influence_mask;
 
     Particle particles[];
 } ssbo_ps;
 
 
     //  functions
+void Respawn(uint particle_id);
 void CalcCornersRotatedToCam(uint particle_id, vec3 pos_cur);
 void CalcPosAndDirOnSpawn(uint particle_id);
 void Set_pos_cur(uint particle_id, vec3 pos_cur);
@@ -133,7 +143,7 @@ void main()
 {
     uint id = gl_GlobalInvocationID.x;    //  use only glDispatchCompute(X, 1, 1). And use only layout(local_size_x, 1, 1)
 
-    if (ssbo_ps.time_prev_frame_secs == ssbo_ps.time_total_secs) CalcPosAndDirOnSpawn(id);     //  start of particles system life, calculate particles pos_cur from pos_start
+    if (ssbo_ps.time_prev_frame_secs == ssbo_ps.time_total_secs) Respawn(id);     //  start of particles system life, calculate particles pos_cur from pos_start
 
     Particle p = ssbo_ps.particles[id];
 
@@ -146,19 +156,14 @@ void main()
     if (life_time_secs_cur > p.life_time_secs_total)  //  life ended, need restart life
     {
         life_time_secs_cur -= p.life_time_secs_total;
-        CalcPosAndDirOnSpawn(id);
-        if (ssbo_ps.animation_repeat == PS_Animation_R_Single_pass)   //  set default state for single pass particle
-        {
-            ssbo_ps.particles[id].animation_uvs_cur_id_secs = 0;
-            ssbo_ps.particles[id].animation_uvs_cur_id = 0;
-        }
+        Respawn(id);
         p = ssbo_ps.particles[id];  //  get updated data from ssbo to p
     }
 
-        //  calculate pos
+        //  move
     vec3 pos_cur = vec3(p.pos_cur[0], p.pos_cur[1], p.pos_cur[2]);
     vec3 move_dir_normalized = vec3(ssbo_ps.particles[id].move_dir_normalized[0], ssbo_ps.particles[id].move_dir_normalized[1], ssbo_ps.particles[id].move_dir_normalized[2]);
-    pos_cur += move_dir_normalized * p.move_speed_secs * ssbo_ps.move_speed_power * ssbo_ps.time_prev_frame_secs;
+    pos_cur += move_dir_normalized * p.move_speed_secs_cur * ssbo_ps.move_speed_power * ssbo_ps.time_prev_frame_secs;
 
         //  ssbo update
     ssbo_ps.particles[id].life_time_secs_cur = life_time_secs_cur;
@@ -169,6 +174,20 @@ void main()
     CalcAnimation(id);
     CalaColor(id);
     MakeCollisoin(id);
+}
+
+void Respawn(uint particle_id)
+{
+        //  pos and dir
+    CalcPosAndDirOnSpawn(particle_id);
+        //  move speed
+    ssbo_ps.particles[particle_id].move_speed_secs_cur = ssbo_ps.particles[particle_id].move_speed_secs_start;
+        //  animation
+    if (ssbo_ps.animation_repeat == PS_Animation_R_Single_pass)   //  set default state for single pass particle
+    {
+        ssbo_ps.particles[particle_id].animation_uvs_cur_id_secs = 0;
+        ssbo_ps.particles[particle_id].animation_uvs_cur_id = 0;
+    }
 }
 
 void CalcCornersRotatedToCam(uint particle_id, vec3 pos_cur)
@@ -353,12 +372,31 @@ void CalaColor(uint particle_id)
 
 void MakeCollisoin(uint particle_id)
 {
-    if (ssbo_ps.collision_action == PS_Collision_CA_None) return;   //  no collision actoin
+    if (!(ssbo_ps.external_influence_mask & PS_EI_Collision)) return;   //  these's no collision objects
+
+    float p_radius_1 = ssbo_ps.size_half_width;
+    float p_radius_2 = ssbo_ps.size_half_height;
+    float p_radius = p_radius_1 > p_radius_2 ? p_radius_1 : p_radius_2;
+    vec3 p_pos_world = vec3(ssbo_ps.particles[particle_id].pos_cur[0], ssbo_ps.particles[particle_id].pos_cur[1], ssbo_ps.particles[particle_id].pos_cur[2]);
 
     for (uint i = 0; i < ssbo_collision.collision_objects_count; ++i)
     {
-        if (ssbo_collision.collision_objects[i].radius == 0) continue;    //  empty space
+        float obj_radius = ssbo_collision.collision_objects[i].radius;
+        if (obj_radius == 0) continue;    //  empty space
 
-        
+        float max_dist = p_radius + obj_radius;
+        vec3 obj_pos_world = vec3(ssbo_collision.collision_objects[i].world_pos[0], ssbo_collision.collision_objects[i].world_pos[1], ssbo_collision.collision_objects[i].world_pos[2]);
+        float centers_dist = length(p_pos_world - obj_pos_world);
+        if (centers_dist <= max_dist)   //  had collision
+        {
+            if (ssbo_ps.collision_action_mask & PS_Collision_CA_Start_animation_time)     //  starts the animation time if it has not already started
+            {
+                float animation_start_secs = ssbo_ps.particles[particle_id].animation_start_secs;
+                if (ssbo_ps.particles[particle_id].life_time_secs_cur < animation_start_secs) ssbo_ps.particles[particle_id].life_time_secs_cur = animation_start_secs;     //  collision may happend many times at the life time, sets only at first collision
+            }
+            if (ssbo_ps.collision_action_mask & PS_Collision_CA_Stop_move) ssbo_ps.particles[particle_id].move_speed_secs_cur = 0.f;      //  stop move
+
+            return;  //  one collision with one object at a time is enough
+        }
     }
 }

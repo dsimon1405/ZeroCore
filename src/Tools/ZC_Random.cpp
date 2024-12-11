@@ -10,7 +10,7 @@ i_zc ZC_Random::GetRandomInt(i_zc min, i_zc max)
 
 f_zc ZC_Random::GetRandomFloat_x_100(f_zc min, f_zc max)
 {
-    static const f_zc f_100 = 100.f; 
+    static const f_zc f_100 = 100.f;
     return f_zc(ZC_Random::GetRandomInt(min * f_100, max * f_100)) / f_100;
 }
 

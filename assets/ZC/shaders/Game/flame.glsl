@@ -16,7 +16,7 @@ layout (std140, binding = 0) uniform Camera
 
     //  ssbo bindings
 #define G_BIND_SSBO_PARTICLE 0
-#defineG_BIND_SSBO_TEX_DATA 1
+#define G_BIND_SSBO_TEX_DATA 1
     //  texture data
 struct UV
 {
@@ -43,7 +43,8 @@ struct Particle    //  std 430 to avoid problems with alignment, don't use mat a
     float pos_cur[3];
         //  move
     float move_dir_normalized[3];
-    float move_speed_secs;
+    float move_speed_secs_start;  //  sets to move_speed_secs_cur at respawn
+    float move_speed_secs_cur;    //  cur speed
         //  coners world pos
     float world_bl[3];
     float world_br[3];
@@ -82,7 +83,7 @@ layout (std430, binding = G_BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
     uint color_rgba_start;       //  rgb interpolation start and alpha appear, packed [32]->8x8x8x8
     uint color_rgba_end;         //  rgb interpolation end and alpha disappear, packed [32]->8x8x8x8
         //  collision
-    int collision_action;
+    int collision_action_mask;
 
     Particle particles[];
 } ssbo_ps;
@@ -96,7 +97,6 @@ layout (location = 0) out OutG
     float alpha;
     vec2 uv;
 } outG;
-
 
     //  functions
 void SetVertexData(vec4 particle_corner_pos_world, vec2 uv);
