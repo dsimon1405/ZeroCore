@@ -11,7 +11,7 @@ struct ZC_ShGeometry1
     {
         gui,
 
-        game_flame,
+        game_particle_system,
 
         none,
     };

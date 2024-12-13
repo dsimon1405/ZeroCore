@@ -204,11 +204,6 @@ bool ZC_GUI_ColorManipulator::VIsUseCursorMoveEventOnMBLetfDown_Obj() const noex
     return true;
 }
 
-bool ZC_GUI_ColorManipulator::VIsUseScrollEvent_Obj() const noexcept
-{
-    return true;
-}
-
 bool ZC_GUI_ColorManipulator::VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll)
 {
     return this->MakeCursorCollision_Obj(x, y, rpObj, rpScroll)

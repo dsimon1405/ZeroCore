@@ -77,13 +77,14 @@ layout (std430, binding = G_BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
     int animation_repeat;       //  enum G_PS_Source::Animation::LifeTimePass: loop or one single pass for a life time
     float animation_uv_shift_speed;     //  (1 / uv_per_second)
         //  color
+    float system_alpha;   //  visibility of all system
     int color_rgb_use;      //  see enum G_PS_Source::Color::RGBUse
     float color_appear_secs;
     float color_disappear_secs;
     uint color_rgba_start;       //  rgb interpolation start and alpha appear, packed [32]->8x8x8x8
     uint color_rgba_end;         //  rgb interpolation end and alpha disappear, packed [32]->8x8x8x8
-        //  collision
-    int collision_action_mask;
+        //  external influence
+    int external_influence_mask;
 
     Particle particles[];
 } ssbo_ps;
@@ -109,7 +110,7 @@ void main()
     outG.color_rgb_use = ssbo_ps.color_rgb_use;
     vec4 color_rgba = Unpack_UInt_8x8x8x8_To_vec4(particle.color_rgba);
     outG.color_rgb = color_rgba.rgb;
-    outG.alpha = color_rgba.a;
+    outG.alpha = color_rgba.a * ssbo_ps.system_alpha;
     
     if (outG.alpha == 0.f)    //  particle isn't visible, will be discard in the fragment shader
     {

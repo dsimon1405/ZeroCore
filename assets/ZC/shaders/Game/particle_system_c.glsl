@@ -6,17 +6,20 @@ layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 #define ZC_PI 3.14159265358979323846   // pi
 #define ZC_PI_RAD_COEF (ZC_PI / 180.0)
 
+    //  SSBO_ParticleSystem
     //  move, see enum G_PS_Source::Move::DirectionType
-#define PS_Move_DT__from_particles_center   0
-#define PS_Move_DT__variable_is_direction   1
-#define PS_Move_DT__variable_is_destination 2
+#define PS_Move_DT_from_particles_center   0
+#define PS_Move_DT_variable_is_direction   1
+#define PS_Move_DT_variable_is_destination 2
     //  animation, see enum G_PS_Source::Animation::Repeat 
 #define PS_Animation_R_Loop        0
 #define PS_Animation_R_Single_pass 1
     //  external influence, see enum G_PS_Source::ExternalInfluence
 #define PS_EI_None      0
 #define PS_EI_Collision 1
-    //  collision, see enum G_ParticleSystem::Collision::SetLifeTime
+
+    //  SSBO_Collision
+    //  see enum G_ParticleSystem::Collision::SetLifeTime
 #define PS_Collision_SLF_None            0
 #define PS_Collision_SLT_Start_animation 1
 
@@ -113,13 +116,14 @@ layout (std430, binding = G_BIND_SSBO_PARTICLE) buffer SSBO_ParticleSystem
     int animation_repeat;       //  enum G_PS_Source::Animation::LifeTimePass: loop or one single pass for a life time
     float animation_uv_shift_speed;     //  (1 / uv_per_second)
         //  color
+    float system_alpha;   //  visibility of all system
     int color_rgb_use;      //  see enum G_PS_Source::Color::RGBUse
     float color_appear_secs;
     float color_disappear_secs;
     uint color_rgba_start;       //  rgb interpolation start and alpha appear, packed [32]->8x8x8x8
     uint color_rgba_end;         //  rgb interpolation end and alpha disappear, packed [32]->8x8x8x8
         //  external influence
-    int external_influence_mask;
+    int external_influence_mask;    //  G_PS_Source::ExternalInfluence
 
     Particle particles[];
 } ssbo_ps;
@@ -132,18 +136,24 @@ void CalcPosAndDirOnSpawn(uint particle_id);
 void Set_pos_cur(uint particle_id, vec3 pos_cur);
 void Set_move_dir_normalized(uint particle_id, vec3 move_dir_normalized);
 mat2 GetRotateMatrix2D(float angle);
+uint GetNextUV(uint particle_id);
 void CalcAnimation(uint particle_id);
 vec4 Unpack_UInt_8x8x8x8_To_vec4(uint rgba);
 uint Pack_vec4_To_UInt_8x8x8x8(vec4 val);
 vec3 InterpolateColor(vec3 start_color, vec3 end_color, float growing_coef);
 void CalaColor(uint particle_id);
-void MakeCollisoin(uint particle_id);
+void MakeCollision(uint particle_id);
 
 void main()
 {
     uint id = gl_GlobalInvocationID.x;    //  use only glDispatchCompute(X, 1, 1). And use only layout(local_size_x, 1, 1)
 
-    if (ssbo_ps.time_prev_frame_secs == ssbo_ps.time_total_secs) Respawn(id);     //  start of particles system life, calculate particles pos_cur from pos_start
+    if (ssbo_ps.time_prev_frame_secs == ssbo_ps.time_total_secs)    //  start drwing system, set particle to default state
+    {
+        ssbo_ps.particles[id].life_time_secs_cur = 0.f;
+        ssbo_ps.particles[id].color_rgba = 0;   //  if system were drawing before, particle must be invisible wile -> ssbo_ps.time_total_secs < p.life_time_secs_to_start
+        Respawn(id);     //  start of particles system life, calculate particles pos_cur from pos_start
+    }
 
     Particle p = ssbo_ps.particles[id];
 
@@ -173,7 +183,7 @@ void main()
     CalcCornersRotatedToCam(id, pos_cur);   //  Rotate particle in 2d, and calculate corners
     CalcAnimation(id);
     CalaColor(id);
-    MakeCollisoin(id);
+    MakeCollision(id);
 }
 
 void Respawn(uint particle_id)
@@ -258,13 +268,13 @@ void CalcPosAndDirOnSpawn(uint particle_id)
         //  calc move_dir_normalized
     switch (ssbo_ps.move_direction_type)
     {
-    case PS_Move_DT__from_particles_center: 
+    case PS_Move_DT_from_particles_center: 
     {
         vec3 ps_origin_world_pos = vec3(spawn_mat_model * vec4(0.f, 0.f, 0.f, 1.f));
         Set_move_dir_normalized(particle_id, normalize(pos_cur - ps_origin_world_pos));
     } break;
-    case PS_Move_DT__variable_is_direction: Set_move_dir_normalized(particle_id, vec3(ssbo_ps.move_variable[0], ssbo_ps.move_variable[1], ssbo_ps.move_variable[2])); break;     //  move_variable normalized at cpu in that case
-    case PS_Move_DT__variable_is_destination:
+    case PS_Move_DT_variable_is_direction: Set_move_dir_normalized(particle_id, vec3(ssbo_ps.move_variable[0], ssbo_ps.move_variable[1], ssbo_ps.move_variable[2])); break;     //  move_variable normalized at cpu in that case
+    case PS_Move_DT_variable_is_destination:
     {
         vec4 dest_local = vec4(ssbo_ps.move_variable[0], ssbo_ps.move_variable[1], ssbo_ps.move_variable[2], 1.f);
         vec3 dest_world = vec3(spawn_mat_model * dest_local);
@@ -295,17 +305,26 @@ mat2 GetRotateMatrix2D(float angle)
     );
 }
 
+uint GetNextUV(uint particle_id)
+{
+    uint animation_uvs_cur_id = ssbo_ps.particles[particle_id].animation_uvs_cur_id + 1;
+    if (animation_uvs_cur_id == ssbo_uv.uvs_count)
+        animation_uvs_cur_id = ssbo_ps.animation_repeat == PS_Animation_R_Loop ? 0 : animation_uvs_cur_id - 1;     //  overflow uvs array, so restart loop. But for PS_Animation_R_Single_pass restart only on respawn
+    return animation_uvs_cur_id;
+}
+
 void CalcAnimation(uint particle_id)
 {
     if (ssbo_ps.particles[particle_id].life_time_secs_cur < ssbo_ps.particles[particle_id].animation_start_secs   //  animation don't started
         || (ssbo_ps.animation_repeat == PS_Animation_R_Single_pass && ssbo_ps.particles[particle_id].animation_uvs_cur_id == ssbo_uv.uvs_count - 1)) return;    //  PS_Animation_R_Single_pass reached end, wait for respawn
 
+    if (ssbo_ps.particles[particle_id].animation_start_secs != 0.f && ssbo_ps.particles[particle_id].animation_uvs_cur_id == 0)    //  if the animation has a time offset, then when the animation starts there is no need to show the first tile of the animation, we immediately move on to the next
+        ssbo_ps.particles[particle_id].animation_uvs_cur_id = GetNextUV(particle_id);
+
     float animation_uvs_cur_id_secs = ssbo_ps.particles[particle_id].animation_uvs_cur_id_secs + ssbo_ps.time_prev_frame_secs;
     if (animation_uvs_cur_id_secs > ssbo_ps.animation_uv_shift_speed)   //  switch to next uv
     {
-        uint animation_uvs_cur_id = ssbo_ps.particles[particle_id].animation_uvs_cur_id + 1;
-        if (animation_uvs_cur_id == ssbo_uv.uvs_count)
-            animation_uvs_cur_id = ssbo_ps.animation_repeat == PS_Animation_R_Loop ? 0 : animation_uvs_cur_id - 1;     //  overflow uvs array, so restart loop. But for PS_Animation_R_Single_pass restart only on respawn
+        uint animation_uvs_cur_id = GetNextUV(particle_id);
 
         animation_uvs_cur_id_secs -= ssbo_ps.animation_uv_shift_speed;  //  restart time
 
@@ -370,13 +389,10 @@ void CalaColor(uint particle_id)
     ssbo_ps.particles[particle_id].color_rgba = Pack_vec4_To_UInt_8x8x8x8(rgb, alpha);
 }
 
-void MakeCollisoin(uint particle_id)
+void MakeCollision(uint particle_id)
 {
-    if (!(ssbo_ps.external_influence_mask & PS_EI_Collision)) return;   //  these's no collision objects
+    if ((ssbo_ps.external_influence_mask & PS_EI_Collision) != PS_EI_Collision) return;   //  these's no collision objects
 
-    float p_radius_1 = ssbo_ps.size_half_width;
-    float p_radius_2 = ssbo_ps.size_half_height;
-    float p_radius = p_radius_1 > p_radius_2 ? p_radius_1 : p_radius_2;
     vec3 p_pos_world = vec3(ssbo_ps.particles[particle_id].pos_cur[0], ssbo_ps.particles[particle_id].pos_cur[1], ssbo_ps.particles[particle_id].pos_cur[2]);
 
     for (uint i = 0; i < ssbo_collision.collision_objects_count; ++i)
@@ -384,19 +400,17 @@ void MakeCollisoin(uint particle_id)
         float obj_radius = ssbo_collision.collision_objects[i].radius;
         if (obj_radius == 0) continue;    //  empty space
 
-        float max_dist = p_radius + obj_radius;
+        float max_dist = ssbo_collision.particle_radius + obj_radius;
         vec3 obj_pos_world = vec3(ssbo_collision.collision_objects[i].world_pos[0], ssbo_collision.collision_objects[i].world_pos[1], ssbo_collision.collision_objects[i].world_pos[2]);
         float centers_dist = length(p_pos_world - obj_pos_world);
         if (centers_dist <= max_dist)   //  had collision
         {
-            if (ssbo_ps.collision_action_mask & PS_Collision_CA_Start_animation_time)     //  starts the animation time if it has not already started
-            {
-                float animation_start_secs = ssbo_ps.particles[particle_id].animation_start_secs;
-                if (ssbo_ps.particles[particle_id].life_time_secs_cur < animation_start_secs) ssbo_ps.particles[particle_id].life_time_secs_cur = animation_start_secs;     //  collision may happend many times at the life time, sets only at first collision
-            }
-            if (ssbo_ps.collision_action_mask & PS_Collision_CA_Stop_move) ssbo_ps.particles[particle_id].move_speed_secs_cur = 0.f;      //  stop move
+            if ((ssbo_collision.set_life_time & PS_Collision_SLT_Start_animation) == PS_Collision_SLT_Start_animation && ssbo_ps.particles[particle_id].life_time_secs_cur < ssbo_ps.particles[particle_id].animation_start_secs)     //  starts the animation time if it has not already started
+                ssbo_ps.particles[particle_id].life_time_secs_cur = ssbo_ps.particles[particle_id].animation_start_secs;     //  collision may happend many times at the life time, life time changes sets only at first collision
+            if (ssbo_collision.move_speed != 0.f && ssbo_ps.particles[particle_id].move_speed_secs_cur == ssbo_ps.particles[particle_id].move_speed_secs_start)      //  change speed if it wasn't shaged yet
+                ssbo_ps.particles[particle_id].move_speed_secs_cur += ssbo_ps.particles[particle_id].move_speed_secs_cur * ssbo_collision.move_speed;      //  stop move
 
-            return;  //  one collision with one object at a time is enough
+            return;  //  one collision with one object at a time is enough. DON'T USE break; !!!
         }
     }
 }

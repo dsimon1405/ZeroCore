@@ -57,7 +57,7 @@ void ZC_Render::SetDrawState(DrawState _drawState)
     else if (drawState == DS_None) ZC_Renderer::Add(this);
     drawState = _drawState;
 }
-#define DEBUG_ZC_Render_Draw
+// #define DEBUG_ZC_Render_Draw
 #ifdef DEBUG_ZC_Render_Draw
 #include <ZC/Tools/Time/ZC_Timer.h>
 #include <iostream>

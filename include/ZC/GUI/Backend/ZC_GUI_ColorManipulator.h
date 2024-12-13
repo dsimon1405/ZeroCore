@@ -107,7 +107,6 @@ private:
     float VGetWidthComposite_Obj() override;
     void VSet_pBL_Obj(const ZC_Vec2<float>& _bl) override;
     bool VIsUseCursorMoveEventOnMBLetfDown_Obj() const noexcept override;
-    bool VIsUseScrollEvent_Obj() const noexcept override;
     bool VMakeCursorCollision_Obj(float x, float y, ZC_GUI_Obj*& rpObj, ZC_GUI_Obj*& rpScroll) override;
     bool VMouseButtonLeftDown_Obj(float time) override;
     void VCursorMove_Obj(float rel_x, float rel_y) override;

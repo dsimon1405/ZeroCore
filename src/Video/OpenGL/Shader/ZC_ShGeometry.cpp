@@ -14,7 +14,7 @@ ZC_Shader* ZC_ShGeometry1::GetShader(Name name)    //  add here new
     case Name::gui: path = ZC_FSPath(shadersPath).append("GUI/gui.gs").string(); break;
     // case Name::lineOrientation3D: path = ZC_FSPath(shadersPath).append("lineOrientation3D.gs").string(); break;
     
-    case Name::game_flame: path = ZC_FSPath(shadersPath).append("Game/flame.glsl").string(); break;
+    case Name::game_particle_system: path = ZC_FSPath(shadersPath).append("Game/particle_system.glsl").string(); break;
     
     case Name::none: return nullptr;
     }
