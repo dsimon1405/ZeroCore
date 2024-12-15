@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ZC_SConnection.h"
+#include <ZC/Tools/Signal/ZC_SConnection.h>
 #include <ZC/Tools/Function/ZC_Function.h>
 
 #include <mutex>
@@ -23,9 +23,13 @@ template<typename TVal, ZC_cNotRValueRef1... TParams>
 class ZC_Signal<TVal(TParams...)>
 {
 public:
-    //  Creates a ZC_Signal with the function signature <TReturn(TParams...)>.
+    /*
+    Creates a ZC_Signal with the function signature <TReturn(TParams...)>.
+
+    Params:
+    - useThreadSafety - if true, calling each signal method will block access for all other methods until the method completes.
+    */
     ZC_Signal(bool useThreadSafety);
-    // ZC_Signal1(const ZC_sptr<std::mutex>& spMutex) noexcept;
 
     ZC_Signal(ZC_Signal<TVal(TParams...)>&& sig);
     ZC_Signal<TVal(TParams...)>& operator = (ZC_Signal<TVal(TParams...)>&& sig);
@@ -88,6 +92,7 @@ private:
     std::list<FuncAndState> funcAndStates;
     std::list<FuncAndState> funcAndStatesToAdd;
     ZC_uptr<std::mutex> upMutexFuncAndStatesToAdd;
+    bool call_in_progress = false;
     //  from funcAndStatesToAdd to funcAndStates if still spIsConnected == true
     void AddFunctions();
 };
@@ -119,104 +124,159 @@ ZC_SConnection ZC_Signal<TVal(TParams...)>::Connect(ZC_Function<TVal(TParams...)
     if (upMutexFuncAndStatesToAdd)
     {
         std::lock_guard<std::mutex> lock(*upMutexFuncAndStatesToAdd);
-        return { funcAndStatesToAdd.emplace_back(FuncAndState{ std::move(func) }).spIsConnected };
+        return ZC_SConnection { call_in_progress ? funcAndStatesToAdd.emplace_back(FuncAndState{ .function = std::move(func), .spIsConnected = ZC_sptr<bool>(new bool(true)) }).spIsConnected
+            : funcAndStates.emplace_back(FuncAndState{ .function = std::move(func), .spIsConnected = ZC_sptr<bool>(new bool(true)) }).spIsConnected };
     }
-    else return { funcAndStatesToAdd.emplace_back(FuncAndState{ std::move(func) }).spIsConnected };
+    else return ZC_SConnection { call_in_progress ? funcAndStatesToAdd.emplace_back(FuncAndState{ .function = std::move(func), .spIsConnected = ZC_sptr<bool>(new bool(true)) }).spIsConnected
+        : funcAndStates.emplace_back(FuncAndState{ .function = std::move(func), .spIsConnected = ZC_sptr<bool>(new bool(true)) }).spIsConnected };
 }
 
 template<typename TVal, ZC_cNotRValueRef1... TParams>
 void ZC_Signal<TVal(TParams...)>::operator () (TParams... params)
 {
-    AddFunctions();
-    for (auto funcAndStatesIter = funcAndStates.begin(); funcAndStatesIter != funcAndStates.end(); )
+    auto lamb_call = [this, params...]()
     {
-        if (*(funcAndStatesIter->spIsConnected))    //  if function still must be connected calls it, otherwise erases from funcAndStates
+        call_in_progress = true;
+        AddFunctions();
+        for (auto funcAndStatesIter = funcAndStates.begin(); funcAndStatesIter != funcAndStates.end(); )
         {
-            funcAndStatesIter->function(params...);
-            funcAndStatesIter++;
+            if (*(funcAndStatesIter->spIsConnected))    //  if function still must be connected calls it, otherwise erases from funcAndStates
+            {
+                funcAndStatesIter->function(params...);
+                funcAndStatesIter++;
+            }
+            else funcAndStatesIter = funcAndStates.erase(funcAndStatesIter);
         }
-        else funcAndStatesIter = funcAndStates.erase(funcAndStatesIter);
+        call_in_progress = false;
+    };
+
+    if (upMutexFuncAndStatesToAdd)
+    {
+        std::lock_guard<std::mutex> lock(*upMutexFuncAndStatesToAdd);
+        lamb_call();
     }
+    else lamb_call();
 }
 
 template<typename TVal, ZC_cNotRValueRef1... TParams>
 void ZC_Signal<TVal(TParams...)>::operator () (std::vector<TVal>& container, TParams... params)
 {
-    AddFunctions();
-    container.reserve(funcAndStates.size());
-    for (auto funcAndStatesIter = funcAndStates.begin(); funcAndStatesIter != funcAndStates.end(); )
+    auto lamb_call = [this, &container, params...]()
     {
-        if (*(funcAndStatesIter->spIsConnected))    //  if function still must be connected calls it, otherwise erases from funcAndStates
+        call_in_progress = true;
+        AddFunctions();
+        container.reserve(funcAndStates.size());
+        for (auto funcAndStatesIter = funcAndStates.begin(); funcAndStatesIter != funcAndStates.end(); )
         {
-            container.emplace_back(funcAndStatesIter->function(params...));
-            funcAndStatesIter++;
+            if (*(funcAndStatesIter->spIsConnected))    //  if function still must be connected calls it, otherwise erases from funcAndStates
+            {
+                container.emplace_back(funcAndStatesIter->function(params...));
+                funcAndStatesIter++;
+            }
+            else funcAndStatesIter = funcAndStates.erase(funcAndStatesIter);
         }
-        else funcAndStatesIter = funcAndStates.erase(funcAndStatesIter);
+        call_in_progress = false;
+    };
+    
+    if (upMutexFuncAndStatesToAdd)
+    {
+        std::lock_guard<std::mutex> lock(*upMutexFuncAndStatesToAdd);
+        lamb_call();
     }
+    else lamb_call();
 }
 
 template<typename TVal, ZC_cNotRValueRef1... TParams>
 bool ZC_Signal<TVal(TParams...)>::IsEmpty()
 {
-    AddFunctions();
-    for (auto& funcAndState : funcAndStates) if (*(funcAndState.spIsConnected)) return false;
-    return true;
+    auto lamb_call = [this]() -> bool
+    {
+        call_in_progress = true;
+        AddFunctions();
+        for (auto& funcAndState : funcAndStates)
+            if (*(funcAndState.spIsConnected)) return false;
+        call_in_progress = false;
+        return true;
+    };
+    
+    if (upMutexFuncAndStatesToAdd)
+    {
+        std::lock_guard<std::mutex> lock(*upMutexFuncAndStatesToAdd);
+        return lamb_call();
+    }
+    else return lamb_call();
 }
 
 template<typename TVal, ZC_cNotRValueRef1... TParams>
 void ZC_Signal<TVal(TParams...)>::CallLastConnected(TParams... params)
 {
-    AddFunctions();
-    auto beforeBeginIter = --funcAndStates.begin();
-    for (auto funcAndStatesIter = --funcAndStates.end(); funcAndStatesIter != beforeBeginIter; )
+    auto lamb_call = [this, params...]()
     {
-        if (*(funcAndStatesIter->spIsConnected))
+        call_in_progress = true;
+        AddFunctions();
+        auto beforeBeginIter = --funcAndStates.begin();
+        for (auto funcAndStatesIter = --funcAndStates.end(); funcAndStatesIter != beforeBeginIter; )
         {
-            funcAndStatesIter->function(params...);
-            return;
+            if (*(funcAndStatesIter->spIsConnected))
+            {
+                funcAndStatesIter->function(params...);
+                return;
+            }
+            else
+            {
+                auto eraseIter = funcAndStatesIter;
+                --funcAndStatesIter;
+                funcAndStates.erase(eraseIter);
+            }
         }
-        else
-        {
-            auto eraseIter = funcAndStatesIter;
-            --funcAndStatesIter;
-            funcAndStates.erase(eraseIter);
-        }
+        call_in_progress = false;
+    };
+    
+    if (upMutexFuncAndStatesToAdd)
+    {
+        std::lock_guard<std::mutex> lock(*upMutexFuncAndStatesToAdd);
+        lamb_call();
     }
+    else lamb_call();
 }
 
 template<typename TVal, ZC_cNotRValueRef1... TParams>
 void ZC_Signal<TVal(TParams...)>::CallLastConnected(ZC_uptr<TVal>& container, TParams... params)
 {
-    AddFunctions();
-    auto beforeBeginIter = --funcAndStates.begin();
-    for (auto funcAndStatesIter = --funcAndStates.end(); funcAndStatesIter != beforeBeginIter; )
+    auto lamb_call = [this, params...]()
     {
-        if (*(funcAndStatesIter->spIsConnected))
+        call_in_progress = true;
+        AddFunctions();
+        auto beforeBeginIter = --funcAndStates.begin();
+        for (auto funcAndStatesIter = --funcAndStates.end(); funcAndStatesIter != beforeBeginIter; )
         {
-            container = ZC_uptrMake<TVal>(funcAndStatesIter->function(params...));
-            return;
+            if (*(funcAndStatesIter->spIsConnected))
+            {
+                container = ZC_uptrMake<TVal>(funcAndStatesIter->function(params...));
+                return;
+            }
+            else
+            {
+                auto eraseIter = funcAndStatesIter;
+                --funcAndStatesIter;
+                funcAndStates.erase(eraseIter);
+            }
         }
-        else
-        {
-            auto eraseIter = funcAndStatesIter;
-            --funcAndStatesIter;
-            funcAndStates.erase(eraseIter);
-        }
+        call_in_progress = false;
+    };
+    
+    if (upMutexFuncAndStatesToAdd)
+    {
+        std::lock_guard<std::mutex> lock(*upMutexFuncAndStatesToAdd);
+        lamb_call();
     }
+    else lamb_call();
 }
 
 template<typename TVal, ZC_cNotRValueRef1... TParams>
 void ZC_Signal<TVal(TParams...)>::AddFunctions()
 {
-    if (funcAndStatesToAdd.empty()) return;
-    if (upMutexFuncAndStatesToAdd)
-    {
-        std::lock_guard<std::mutex> lock(*upMutexFuncAndStatesToAdd);
-        for (auto& rFuncAndState : funcAndStatesToAdd)      // use emplace front for call in CallLastConnected()
-            if (*(rFuncAndState.spIsConnected)) funcAndStates.emplace_back(std::move(rFuncAndState));  //  if still need to connect, connects
-    }
-    else for (auto& rFuncAndState : funcAndStatesToAdd)
-            if (*(rFuncAndState.spIsConnected)) funcAndStates.emplace_back(std::move(rFuncAndState));  //  if still need to connect, connects
-
+    for (auto& rFuncAndState : funcAndStatesToAdd)      // use emplace front for call in CallLastConnected()
+        if (*(rFuncAndState.spIsConnected)) funcAndStates.emplace_back(std::move(rFuncAndState));  //  if still need to connect, connects
     funcAndStatesToAdd.clear();
 }

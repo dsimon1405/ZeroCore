@@ -2,26 +2,28 @@
 
 #include <compare>
 #include <utility>
+#include <ZC/ZC_Types.h>
 
 template<typename T>
 class ZC_sptr
 {
 public:
-    ZC_sptr(T* _pData = nullptr) noexcept;
+    ZC_sptr(T* _pData = nullptr);
+    ZC_sptr(T* _pData, ul_zc* _pUseCount);
     
-    ZC_sptr(const ZC_sptr<T>& sptr) noexcept;
-    ZC_sptr<T>& operator = (const ZC_sptr<T>& sptr) noexcept;
+    ZC_sptr(const ZC_sptr<T>& sptr);
+    ZC_sptr<T>& operator = (const ZC_sptr<T>& sptr);
     
-    ZC_sptr(ZC_sptr<T>&& sptr) noexcept;
-    ZC_sptr<T>& operator = (ZC_sptr<T>&& sptr) noexcept;
+    ZC_sptr(ZC_sptr<T>&& sptr);
+    ZC_sptr<T>& operator = (ZC_sptr<T>&& sptr);
 
-    ~ZC_sptr() noexcept;
+    ~ZC_sptr();
 
     T* operator -> () noexcept;
     const T* operator -> () const noexcept;
 
-    T& operator * () noexcept;
-    const T& operator * () const noexcept;
+    T& operator * ();
+    const T& operator * () const;
 
     operator bool () const noexcept;
     auto operator <=> (const ZC_sptr<T>& uptr) const noexcept;
@@ -30,12 +32,12 @@ public:
     const T* Get() const noexcept;
 
     template<typename TParant>
-    ZC_sptr<TParant> DynamicCast() const noexcept;
-    unsigned long UseCount() const noexcept;
+    ZC_sptr<TParant> DynamicCast() const;
+    ul_zc UseCount() const noexcept;
 
 private:
     T* pData = nullptr;
-    unsigned long* pUseCount = nullptr;
+    ul_zc* pUseCount = nullptr;
 
     void Delete();
 };
@@ -53,19 +55,25 @@ ZC_sptr<T> ZC_sptrMakeFromChild(TParams&&... params) noexcept
 }
 
 template<typename T>
-ZC_sptr<T>::ZC_sptr(T* _pData) noexcept
+ZC_sptr<T>::ZC_sptr(T* _pData)
     : pData(_pData),
-    pUseCount(pData ? new unsigned long(1) : nullptr)
-{}
-    
-template<typename T>
-ZC_sptr<T>::ZC_sptr(const ZC_sptr<T>& sptr) noexcept
-    : pData(sptr.pData),
-    pUseCount(&++*sptr.pUseCount)
+    pUseCount(pData ? new ul_zc(1) : nullptr)
 {}
 
 template<typename T>
-ZC_sptr<T>& ZC_sptr<T>::operator = (const ZC_sptr<T>& sptr) noexcept
+ZC_sptr<T>::ZC_sptr(T* _pData, ul_zc* _pUseCount)
+    : pData(_pData && _pUseCount ? _pData : nullptr),
+    pUseCount(_pData && _pUseCount ? _pUseCount : nullptr)
+{}
+    
+template<typename T>
+ZC_sptr<T>::ZC_sptr(const ZC_sptr<T>& sptr)
+    : pData(sptr.pData),
+    pUseCount(pData ? &++*sptr.pUseCount : nullptr)
+{}
+
+template<typename T>
+ZC_sptr<T>& ZC_sptr<T>::operator = (const ZC_sptr<T>& sptr)
 {
     if (*this != sptr)
     {
@@ -77,7 +85,7 @@ ZC_sptr<T>& ZC_sptr<T>::operator = (const ZC_sptr<T>& sptr) noexcept
 }
 
 template<typename T>
-ZC_sptr<T>::ZC_sptr(ZC_sptr<T>&& sptr) noexcept
+ZC_sptr<T>::ZC_sptr(ZC_sptr<T>&& sptr)
     : pData(sptr.pData),
     pUseCount(sptr.pUseCount)
 {
@@ -86,7 +94,7 @@ ZC_sptr<T>::ZC_sptr(ZC_sptr<T>&& sptr) noexcept
 }
 
 template<typename T>
-ZC_sptr<T>& ZC_sptr<T>::operator = (ZC_sptr<T>&& sptr) noexcept
+ZC_sptr<T>& ZC_sptr<T>::operator = (ZC_sptr<T>&& sptr)
 {
     if (this != &sptr)
     {
@@ -101,7 +109,7 @@ ZC_sptr<T>& ZC_sptr<T>::operator = (ZC_sptr<T>&& sptr) noexcept
 }
 
 template<typename T>
-ZC_sptr<T>::~ZC_sptr() noexcept
+ZC_sptr<T>::~ZC_sptr()
 {
     Delete();
 }
@@ -119,13 +127,13 @@ const T* ZC_sptr<T>::operator -> () const noexcept
 }
 
 template<typename T>
-T& ZC_sptr<T>::operator * () noexcept
+T& ZC_sptr<T>::operator * ()
 {
     return *pData;
 }
 
 template<typename T>
-const T& ZC_sptr<T>::operator * () const noexcept
+const T& ZC_sptr<T>::operator * () const
 {
     return *pData;
 }
@@ -156,19 +164,14 @@ const T* ZC_sptr<T>::Get() const noexcept
 
 template<typename T>
 template<typename TParant>
-ZC_sptr<TParant> ZC_sptr<T>::DynamicCast() const noexcept
+ZC_sptr<TParant> ZC_sptr<T>::DynamicCast() const
 {
-    ZC_sptr<TParant> result;
-    if (!pData)
-    {
-        result.pData = dynamic_cast<TParant*>(pData);
-        result.pUseCount = &++*pUseCount;
-    }
-    return result;
+    if (pData) return ZC_sptr<TParant>(dynamic_cast<TParant*>(pData), &++*pUseCount);
+    return nullptr;
 }
 
 template<typename T>
-unsigned long ZC_sptr<T>::UseCount() const noexcept
+ul_zc ZC_sptr<T>::UseCount() const noexcept
 {
     return pUseCount ? *pUseCount : 0;
 }

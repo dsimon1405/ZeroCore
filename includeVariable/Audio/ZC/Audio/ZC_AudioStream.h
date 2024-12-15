@@ -57,7 +57,7 @@ protected:
 
 private:
     static inline ZC_AS_State stateAudioStream = ZC_AS__None;
-    static inline ZC_Signal<ZC_StreamSound*()> sGetpZC_StreamSound { false };
+    static inline ZC_Signal<ZC_StreamSound*()> sGetpZC_StreamSound { true };
 
     template <ZC_cBitsPerSample T>
     static void FillData(void* pDataContainer, int bytesCount, std::vector<ZC_StreamSound*>& sounds);
