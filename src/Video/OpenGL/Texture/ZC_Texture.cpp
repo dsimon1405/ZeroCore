@@ -6,40 +6,35 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLuint _binding, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
+ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLuint _binding, bool create_alpha_from_rgb, GLenum wrapS, GLenum wrapT, GLenum filterMin, GLenum filterMag)
 {
-    int width = 0,
-        height = 0,
-        channels = 0;
+    i_zc width = 0;
+    i_zc height = 0;
+    i_zc channels = 0;
 
     stbi_set_flip_vertically_on_load(true);
     
     uchar* pData = stbi_load(filePath, &width, &height, &channels, 0);
     
-    // if (!pData) return nullptr;
+    std::vector<uch_zc> rgba_data;
+    if (create_alpha_from_rgb && channels == 3 && width > 0 && height > 0)
+    {
+        i_zc tex_resolution = width * height;
+        i_zc tex_rgb_size = tex_resolution * channels;
+        ++channels;     //  add alpha channel
+        rgba_data.reserve(tex_resolution * channels);
+        for (i_zc pData_i = 0; pData_i < tex_rgb_size; )
+        {
+            i_zc r = rgba_data.emplace_back(pData[pData_i++]);
+            i_zc g = rgba_data.emplace_back(pData[pData_i++]);
+            i_zc b = rgba_data.emplace_back(pData[pData_i++]);
+            rgba_data.emplace_back((r + g + b) / 3);
+        }
+        pData = rgba_data.data();
+    }
 
-    // auto size = width * height *channels;
-    // auto newSize = size + size / 3;
-    // unsigned char* test = new unsigned char[newSize];
-    // for (int i = 0, pixelI = 1; i < newSize; ++pixelI)
-    // {
-    //         test[i++] = 128;
-    //         test[i++] = 128;
-    //         test[i++] = 128;
-    //     if (pixelI <= width || pixelI > width * width - width || pixelI % width == 0 || pixelI % width == 1)
-    //     {
-    //     test[i++] = 0;
-    //     }
-    //     else
-    //     {
-    //     test[i++] = 1;
-    //     }
-    //     // test[i++] = pData[dataI] != 128 ? 0 : 255;
-    // }
-    // channels = 4;
-
-    GLenum internalFormat = 0,
-        format = 0;
+    GLenum internalFormat = 0;
+    GLenum format = 0;
     switch (channels)
     {
     case 1: { internalFormat = GL_R8; format = GL_RED; } break;

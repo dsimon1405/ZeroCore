@@ -9,16 +9,15 @@ class ZC_Texture
 {
 public:
     /*
+    - filePath - path to the file.
+    - _binding - gpu smpler binding.
+    - create_alpha_from_rgb - alpha = (r + g + b) / 3. Texture must have rgb channels on load,
     - wrapS - GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER (default GL_CLAMP_TO_EDGE). Texture axis S (as X).
     - wrapT - GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER (default GL_CLAMP_TO_EDGE). Texture axis T (as Y).
-    - filterMin - GL_NEAREST, GL_LINEAR (default GL_NEAREST).
-    - filterMag - GL_NEAREST, GL_LINEAR (default GL_NEAREST).
+    - filterMin - GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST,GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR (default GL_NEAREST).
+    - filterMag - GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST,GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR (default GL_NEAREST).
     */
-    static ZC_Texture LoadTexture2D(const char* filePath, GLuint _binding,
-    //  GLenum wrapS,   // wrapS = wrapT = GL_REPEAT
-    //     GLenum wrapT, GLenum filterMin, GLenum filterMag);
-     GLenum wrapS = GL_CLAMP_TO_EDGE,   // wrapS = wrapT = GL_REPEAT
-        GLenum wrapT = GL_CLAMP_TO_EDGE, GLenum filterMin = GL_LINEAR_MIPMAP_LINEAR, GLenum filterMag = GL_LINEAR);
+    static ZC_Texture LoadTexture2D(const char* filePath, GLuint _binding, bool create_alpha_from_rgb, GLenum wrapS = GL_CLAMP_TO_EDGE, GLenum wrapT = GL_CLAMP_TO_EDGE, GLenum filterMin = GL_LINEAR, GLenum filterMag = GL_LINEAR);
     
     static ZC_Texture LoadCubeMap(const std::vector<std::string>&  filePaths);
     //  Cube map ctr
@@ -30,12 +29,13 @@ public:
 
     Params:
     - internalFormat - number of color components in texture. Most used: GL_R8, GL_RGB8, GL_RGBA8, GL_DEPTH_COMPONENT24. Table 1: Sized Internal Format -> https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexStorage2D.xhtml
+    - _binding - gpu smpler binding.
     - width - textures width (max 1024).
     - height - textures heiht (max 1024).
     - wrapS - GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER (default GL_REPEAT). Texture axis S (as X).
     - wrapT - GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER (default GL_REPEAT). Texture axis T (as Y).
-    - filterMin - GL_NEAREST, GL_LINEAR (default GL_NEAREST).
-    - filterMag - GL_NEAREST, GL_LINEAR (default GL_NEAREST).
+    - filterMin - GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST,GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR (default GL_NEAREST).
+    - filterMag - GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST,GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR (default GL_NEAREST).
     - mimmap - need to create mipmap or not.
     */
     static ZC_Texture TextureStorage2D(GLenum internalFormat, GLuint _binding, GLsizei width, GLsizei height, bool mimmap, GLenum wrapS = GL_REPEAT, GLenum wrapT = GL_REPEAT,

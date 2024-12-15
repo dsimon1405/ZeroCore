@@ -10,8 +10,8 @@ ZC_GUI_DrawManager::ZC_GUI_DrawManager()
 {
     textures.reserve(2ull);
     textures.emplace_back(path_to_custom_icon_texture.empty() ?
-        ZC_Texture::LoadTexture2D(ZC_FSPath(ZC_ZCDirPath).append("textures/gui/icons.png").string().c_str(), 0)
-        : ZC_Texture::LoadTexture2D(path_to_custom_icon_texture.c_str(), ZC_GUI_Bindings::location_tex_Icons));
+        ZC_Texture::LoadTexture2D(ZC_FSPath(ZC_ZCDirPath).append("textures/gui/icons.png").string().c_str(), 0, false)
+        : ZC_Texture::LoadTexture2D(path_to_custom_icon_texture.c_str(), ZC_GUI_Bindings::location_tex_Icons, false));
     
     textures.emplace_back(ZC_Texture());    //  text texture default
 }
