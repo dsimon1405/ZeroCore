@@ -12,7 +12,7 @@ void ZC_TexSets::Uniformli(ZC_ShProg& shProg)
         case TextureName::tex_Icon: glUniform1i(shProg.GetUniformLocation("tex_Icon"), static_cast<GLint>(texSetsI)); break;
         case TextureName::tex_Text: glUniform1i(shProg.GetUniformLocation("tex_Text"), static_cast<GLint>(texSetsI)); break;
 
-        case TextureName::game_cubeMap: glUniform1i(shProg.GetUniformLocation("cubeMap"), static_cast<GLint>(texSetsI)); break;
+        // case TextureName::game_cubeMap: glUniform1i(shProg.GetUniformLocation("cubeMap"), static_cast<GLint>(texSetsI)); break;
         }
     }
 }

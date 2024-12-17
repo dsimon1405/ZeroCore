@@ -1,0 +1,129 @@
+#version 460 core
+
+    //  ubo bindings
+#define ZC_BIND_CAMERA 0
+#define G_BIND_UBO_Light 1
+    //  in
+layout (std140, binding = ZC_BIND_CAMERA) uniform Camera
+{
+    mat4 ortho;
+    mat4 perspective;
+    mat4 perspView;
+    mat4 perspViewSkybox;
+    mat4 view;
+    vec3 camPos;
+} camera;
+
+        //  light[i]
+#define Light_Star 0
+#define Light_Platform 1
+struct Light
+{       //  vec3 + uitn = vec4 alignment
+    vec3 pos;
+    uint color;
+};
+layout (std140, binding = G_BIND_UBO_Light) uniform UBOLight
+{
+    Light light[2];     //  first Star, seond Platform -> look G_LightUBO
+    vec4 attenuations[2];    //  [0].x/y - player-sphere; [0].z/y - platforms; [1].x/y - map sphere; [1].z/a - empty     //  ALIGNMENT =(
+} ubo_light;
+
+uniform samplerCube texColor;
+
+layout (location = 0) in InF
+{
+    vec3 pos_in_cube;
+    vec3 light_color_star;
+    float dist_to_frag;
+} inF;
+
+
+    //  out
+out vec4 FragColor;
+
+
+vec3 MoveByLength(vec3 v, vec3 direction, float length);
+vec3 Calculate_dir_frag_to_cam(bool use_specular, vec3 frag_pos);
+float CalcAttenuationRealistic(vec3 light_pos, float attenuation_linear, float attenuation_quadratic, vec3 frag_pos);
+float CalculateColor(float start, float end, float growing_coef);
+vec3 InterpolateColor(vec3 start_color, vec3 end_color, float growing_coef);
+vec3 CalculateCombineFragColor(vec3 frag_pos, vec3 frag_color, vec3 light_pos, vec3 light_color, bool interpolate_light_color, float attenuation,
+    float ambient_power, float diffuse_power, float specular_power, bool use_specular, vec3 dir_frag_to_cam, float specular_pow);
+
+
+void main()
+{    
+    vec3 frag_color = texture(texColor, inF.pos_in_cube).rgb;     //  for cube map position uses as texture coords
+    // vec3 frag_color = texture(texColor, inF.tex_coords).rgb;
+    if (frag_color == vec3(0.f, 0.f, 0.f))
+    {
+        FragColor = vec4(0.f, 0.f, 0.f, 1.f);
+        return;
+    }
+
+// FragColor = vec4(1,1,1,1);
+
+    const float SPECULAR_POW = 16.f;
+
+    vec3 frag_pos_in_sphere = MoveByLength(vec3(0.f, 0.f, 0.f), inF.pos_in_cube, inF.dist_to_frag);
+
+    FragColor = vec4(CalculateCombineFragColor(frag_pos_in_sphere, frag_color, ubo_light.light[Light_Star].pos, inF.light_color_star, true,
+        CalcAttenuationRealistic(ubo_light.light[Light_Star].pos, ubo_light.attenuations[1].x, ubo_light.attenuations[1].y, frag_pos_in_sphere),
+        0.3f, 0.5f, 2.f, true, Calculate_dir_frag_to_cam(true, frag_pos_in_sphere), SPECULAR_POW), 1.f);
+}
+
+
+vec3 MoveByLength(vec3 v, vec3 direction, float length)
+{
+    return v + (direction * (length / sqrt(direction[0] * direction[0] + direction[1] * direction[1] + direction[2] * direction[2])));
+}
+
+vec3 Calculate_dir_frag_to_cam(bool use_specular, vec3 frag_pos)
+{
+    return use_specular ? normalize(camera.camPos - frag_pos) : vec3(0.f, 0.f, 0.f);
+}
+
+float CalcAttenuationRealistic(vec3 light_pos, float attenuation_linear, float attenuation_quadratic, vec3 frag_pos)
+{
+    const float attenuation_constant = 1.f;
+    float dist_frag_to_light = length(light_pos - frag_pos);
+    return 1.f / (attenuation_constant + attenuation_linear * dist_frag_to_light + attenuation_quadratic * (dist_frag_to_light * dist_frag_to_light));
+}
+
+float CalculateColor(float start, float end, float growing_coef)
+{
+    return start > end ? start - ((start - end) * growing_coef) : start + ((end - start) * growing_coef);
+};
+
+vec3 InterpolateColor(vec3 start_color, vec3 end_color, float growing_coef)
+{
+    return vec3(CalculateColor(start_color.x, end_color.x, growing_coef),
+        CalculateColor(start_color.y, end_color.y, growing_coef),
+        CalculateColor(start_color.z, end_color.z, growing_coef));
+}
+
+vec3 CalculateCombineFragColor(vec3 frag_pos, vec3 frag_color, vec3 light_pos, vec3 light_color, bool interpolate_light_color, float attenuation,
+    float ambient_power, float diffuse_power, float specular_power, bool use_specular, vec3 dir_frag_to_cam, float specular_pow)
+{
+    if (attenuation < 0.f) return vec3(0.f, 0.f, 0.f);
+        //  interpolate light color to white with attenuation coef
+    if (interpolate_light_color) light_color = InterpolateColor(vec3(0.8f, 0.8f, 0.8f), light_color, attenuation);
+
+    vec3 normal = - normalize(frag_pos);    //  normal is always direct to the center of the map spehere
+
+        // ambient
+    vec3 ambient = ambient_power * frag_color * light_color * attenuation;
+        // diffuse
+    vec3 dir_frag_to_light = normalize(light_pos - frag_pos);
+    float diffuse_coef = max(dot(normal, dir_frag_to_light), 0.f);
+    vec3 diffuse = diffuse_power * diffuse_coef * frag_color * light_color * attenuation;
+        // specular
+    if (use_specular)
+    {
+        vec3 reflectDir = reflect(-dir_frag_to_light, normal);  
+        float specular_coef = pow(max(dot(dir_frag_to_cam, reflectDir), 0.f), specular_pow);
+        vec3 specular = specular_power * specular_coef * frag_color * light_color * attenuation;
+        return ambient + diffuse + specular;
+    }
+    else return ambient + diffuse;
+}

@@ -26,6 +26,7 @@ ZC_Shader* ZC_ShFragment1::GetShader(Name name)    //  add here new
     case Name::game_star: path = ZC_FSPath(shadersPath).append("Game/star.fs").string(); break;
     // case Name::game_platform: path = ZC_FSPath(shadersPath).append("Game/platform.fs").string(); break;
     case Name::game_particle_system: path = ZC_FSPath(shadersPath).append("Game/particle_system.fs").string(); break;
+    case Name::game_cube_map: path = ZC_FSPath(shadersPath).append("Game/cube_map.fs").string(); break;
 
     case Name::Test_skelet: path =  ZC_FSPath(shadersPath).append("test_skelet/skelet.fs").string(); break;
     default: break;
@@ -57,6 +58,7 @@ typename ZC_ShFragment1::Set ZC_ShFragment1::GetVAOAndUniformData(Name name)    
     // case Name::game_platform: return { .shader = GetShader(name), .texSets = { { new TName[]{ TName::texColor }, 1 } },
     //     .uniforms = ZC_Uniform::GetUniformVector({ .name = ZC_UN_unAlpha, .isPointer = true }) };
     case Name::game_particle_system: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, {} };
+    case Name::game_cube_map: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, {} };
 
     case Name::Test_skelet: return { GetShader(name) };
     // case Name::Test_skelet: return { GetShader(name), { { new TName[]{ TName::texColor }, 1 } }, {} };

@@ -28,7 +28,8 @@ enum ZC_ShPName
     SHPN_Game_Particle,
     ShPN_Game_Star,
     ShPN_Game_Flame,
-
+    ShPN_Game_CubeMap,
+    
     ShPN_Test_Skelet,
     
     ShPN_LoadAll,    //  must be last

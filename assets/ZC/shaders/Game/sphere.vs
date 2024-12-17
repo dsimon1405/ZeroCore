@@ -12,9 +12,11 @@ layout (std140, binding = 0) uniform Camera
     mat4 perspViewSkybox;
     mat4 view;
     vec3 camPos;
-};
+} camera;
 
-        //  light
+    //  bindings
+#define G_BIND_UBO_Light 1
+        //  light[i]
 #define Light_Star 0
 #define Light_Platform 1
 struct Light
@@ -22,17 +24,11 @@ struct Light
     vec3 pos;
     uint color;
 };
-layout (std140, binding = 1) uniform UBOLight
+layout (std140, binding = G_BIND_UBO_Light) uniform UBOLight
 {
     Light light[2];     //  first Star, seond Platform -> look G_LightUBO
-
-    // float test_atten_linear;
-    // float test_atten_quadratic;
-    // float test_ambient;
-    // float test_difuse;
-    // float test_specular;
-    // float test_spec_pow;
-};
+    vec4 attenuations[2];    //  [0].x/y - player-sphere; [0].z/y - platforms; [1].x/y - map sphere; [1].z/a - empty     //  ALIGNMENT =(
+} ubo_light;
 
 uniform mat4 unModel;
 uniform uint unColor = 0;
@@ -49,12 +45,8 @@ layout (location = 0) out OutV
 
     vec3 normal;
     int object_id;
-    float attenuation_linear;
-    float attenuation_quadratic;
-
+    
     vec3 light_color[2];
-
-    // bool normal_aligned_to_cam;
 } outV;
 
 
@@ -70,48 +62,20 @@ void main()
     outV.frag_pos = vec3(frag_pos_v4);
     outV.normal = normalize(mat3(transpose(inverse(unModel))) * vec3(norm));
     
-    gl_Position = perspView * frag_pos_v4;
+    outV.object_id = int(norm.w);    //  look upper -> layout(location = 1) in vec4 norm ...
 
-    // outV.normal_aligned_to_cam = dot(normalize(outV.frag_pos - camPos), outV.normal) > 0.f;
-    // // outV.normal_aligned_to_cam = false;                                                                         //  TEST MODE
-    // if (outV.normal_aligned_to_cam) return;     //  cam look at the face from the back, will be discard in fs
+    gl_Position = camera.perspView * frag_pos_v4;
+    // gl_Position = (outV.object_id == 1 ? perspViewSkybox : perspView) * frag_pos_v4;                                            //  SKY BOX
     
         //  unpack adding color
     outV.add_color_packed = unColor;
     outV.add_color = vec3(0.f,0.f,0.f);
     outV.add_color = unColor != 0 ? Uint_2_10_10_10_To_vec3(unColor) : vec3(0.f, 0.f, 0.f);
         //  unpack light color Star
-    outV.light_color[Light_Star] = light[Light_Star].color != 0 ? Uint_2_10_10_10_To_vec3(light[Light_Star].color) : vec3(0.f, 0.f, 0.f);
+    outV.light_color[Light_Star] = ubo_light.light[Light_Star].color != 0 ? Uint_2_10_10_10_To_vec3(ubo_light.light[Light_Star].color) : vec3(0.f, 0.f, 0.f);
 
-        //  attenuation
-    outV.object_id = int(norm.w);
-    float attenuation_linear_start = 0.f;
-    float attenuation_quadratic_start = 0.f;
-    switch (outV.object_id)    //  look upper -> layout(location = 1) in vec4 norm ...
-    {
-    case -1:    //  sphere playable
-    {
-        attenuation_linear_start = 0.014f;
-        attenuation_quadratic_start = 0.00007f;
-        if (light[Light_Platform].color != 0)
-            outV.light_color[Light_Platform] = Uint_2_10_10_10_To_vec3(light[Light_Platform].color);
-    } break;
-    case 0:     //  platform
-    {
-        attenuation_linear_start = 0.0028f;
-        attenuation_quadratic_start = 0.00002f;
-    } break;
-    case 1:     //  sphere map
-    {
-        attenuation_linear_start = 0.007f;
-        attenuation_quadratic_start = 0.0002f;
-    } break;
-    default: break;
-    }
-    float distance = length(vec3(light[Light_Star].pos));
-    float attenuation_dist_coef = floor(distance / 100.0);  //  coef for calculation linear and quadratic params, each section is pluss 100.f to map radius
-    outV.attenuation_linear = attenuation_linear_start / (2.f * attenuation_dist_coef);  //  linear has progression with some near 2 divisor on each new section must be added 
-    outV.attenuation_quadratic = attenuation_quadratic_start / (4.f * attenuation_dist_coef);    //  quadratic has progression with some near 4 divisor on each new section must be added 
+    if (outV.object_id == -1 && ubo_light.light[Light_Platform].color != 0)    //  sphere playable
+        outV.light_color[Light_Platform] = Uint_2_10_10_10_To_vec3(ubo_light.light[Light_Platform].color);
 }
 
 

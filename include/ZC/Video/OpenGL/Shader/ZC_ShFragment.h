@@ -21,6 +21,7 @@ struct ZC_ShFragment1
         game_star,
         // game_platform,
         game_particle_system,
+        game_cube_map,
 
         Test_skelet
     };

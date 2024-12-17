@@ -34,14 +34,14 @@ ZC_Texture ZC_Texture::LoadTexture2D(const char* filePath, GLuint _binding, bool
     }
 
     GLenum internalFormat = 0;
-    GLenum format = 0;
     switch (channels)
     {
-    case 1: { internalFormat = GL_R8; format = GL_RED; } break;
-    case 3: { internalFormat = GL_RGB8; format = GL_RGB; } break;
-    case 4: { internalFormat = GL_RGBA8; format = GL_RGBA; } break;
+    case 1: internalFormat = GL_R8; break;
+    case 3: internalFormat = GL_RGB8; break;
+    case 4: internalFormat = GL_RGBA8; break;
     default: assert(false);
     }
+    GLenum format = GetFormat(internalFormat);
 
     ZC_ErrorLogger::Clear();
     ZC_Texture texture = TextureStorage2DFill(internalFormat, _binding, width, height, pData, format, GL_UNSIGNED_BYTE, true, wrapS, wrapT, filterMin, filterMag);
@@ -65,37 +65,38 @@ ZC_Texture ZC_Texture::LoadCubeMap(const std::vector<std::string>& filePaths)
         assert(datas[i]);
     }
 
-    GLenum internalFormat = 0,
-        format = 0;
+    GLenum internalFormat = 0;
     switch (channels)
     {
-    case 1: { internalFormat = GL_R8; format = GL_RED; } break;
-    case 3: { internalFormat = GL_RGB8; format = GL_RGB; } break;
-    case 4: { internalFormat = GL_RGBA8; format = GL_RGBA; } break;
+    case 1: internalFormat = GL_R8; break;
+    case 3: internalFormat = GL_RGB8; break;
+    case 4: internalFormat = GL_RGBA8; break;
     default: assert(false);
     }
 
-    ZC_Texture texture(internalFormat, format, width, height, datas);
+    ZC_Texture texture(internalFormat, width, height, datas);
 
     for (size_t i = 0; i < 6; i++) stbi_image_free(datas[i]);
 
     return texture;
 }
 
-ZC_Texture::ZC_Texture(GLenum internalformat, GLenum format, int _width, int _height, unsigned char** pData)
-    : width(_width),
+ZC_Texture::ZC_Texture(GLenum internalformat, int _width, int _height, unsigned char** pData)
+    : target(GL_TEXTURE_CUBE_MAP),
+    width(_width),
     height(_height)
 {
+    GLenum format = GetFormat(internalformat);
     // glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &id);
     glGenTextures(1, &id);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, id);
+    glBindTexture(target, id);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    for (int i = 0; i < 6; ++i) glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalformat, width, height, 0, GetFormat(internalformat), GL_UNSIGNED_BYTE, pData[i]);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    for (int i = 0; i < 6; ++i) glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalformat, width, height, 0, format, GL_UNSIGNED_BYTE, pData[i]);
+    glBindTexture(target, 0);
     // glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     // glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -104,12 +105,6 @@ ZC_Texture::ZC_Texture(GLenum internalformat, GLenum format, int _width, int _he
     
     // glTextureStorage2D(id, 1, internalformat, width, height);
     
-}
-
-void ZC_Texture::BindCubeMap()
-{
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, id);
 }
 
 ZC_Texture ZC_Texture::TextureStorage2D(GLenum internalFormat, GLuint _binding, GLsizei width, GLsizei height, bool mimmap, GLenum wrapS, GLenum wrapT,
@@ -142,6 +137,7 @@ ZC_Texture ZC_Texture::TextureStorage2DMultisample(GLsizei samples, GLsizei widt
 
 ZC_Texture::ZC_Texture(ZC_Texture&& tex) noexcept
     : id(tex.id),
+    target(tex.target),
     binding(tex.binding),
     width(tex.width),
     height(tex.height)
@@ -153,6 +149,7 @@ ZC_Texture& ZC_Texture::operator = (ZC_Texture&& tex)
 {
     if (id != 0) glDeleteTextures(1, &id);
     id = tex.id;
+    target = tex.target;
     binding = tex.binding;
     width = tex.width;
     height = tex.height;
@@ -170,7 +167,7 @@ ZC_Texture::~ZC_Texture()
 void ZC_Texture::GLActivateAndBind(GLenum active) const
 {
     glActiveTexture(active);
-    glBindTexture(GL_TEXTURE_2D, id);
+    glBindTexture(target, id);
 }
 
 // void ZC_Texture::GLBindTextureUnit(GLuint DELETE_BINDING) const
@@ -199,8 +196,9 @@ int ZC_Texture::GetHeight() const noexcept
     return height;
 }
 
-ZC_Texture::ZC_Texture(GLenum target, GLuint _binding, int width, int height)
-    : binding(_binding),
+ZC_Texture::ZC_Texture(GLenum _target, GLuint _binding, int width, int height)
+    : target(_target),
+    binding(_binding),
     width(width),
     height(height)
 {

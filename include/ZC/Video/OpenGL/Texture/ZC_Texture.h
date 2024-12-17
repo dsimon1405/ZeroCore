@@ -21,8 +21,7 @@ public:
     
     static ZC_Texture LoadCubeMap(const std::vector<std::string>&  filePaths);
     //  Cube map ctr
-    ZC_Texture(GLenum internalformat, GLenum format, int _width, int _height, unsigned char** data);
-    void BindCubeMap();
+    ZC_Texture(GLenum internalformat, int _width, int _height, unsigned char** data);
     
     /*
     Creates -> no resizable texture 2D.
@@ -102,6 +101,7 @@ public:
 
 private:
     GLuint id = 0;
+    GLenum target = 0;
     GLuint binding = 0;     //  used in GLBindTextureUnit(), useless -> thanks win10 driver withought ARB support
     int width = 0;
     int height = 0;
