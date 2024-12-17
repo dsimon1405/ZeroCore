@@ -4,14 +4,17 @@
 #include "ZC/Tools/ZC_uptr.h"
 
 class ZC_Sound;
-//  Unique pointer to ZC_Sound.
-using ZC_upSound = ZC_uptr<ZC_Sound>;
+// //  Unique pointer to ZC_Sound.
+// using ZC_upSound = ZC_uptr<ZC_Sound>;
 
 //  Class for controlling sound in an audio stream.
-class ZC_Sound : protected ZC_StreamSound
+class ZC_Sound
 {
 public:
-    ZC_Sound(const ZC_SoundData* _sound);
+    ZC_Sound(const ZC_sptr<ZC_StreamSound>& _spStream_sound);
+
+    ZC_Sound(ZC_Sound&&);
+    ZC_Sound& operator = (ZC_Sound&&);
 
     ~ZC_Sound();
     
@@ -57,11 +60,14 @@ public:
     Return:
     Unique pointer with the same sound data.
     */
-    ZC_upSound GetSameSound() const;
+    ZC_Sound GetSameSound() const;
 
-    //  Return audioset of the sound.
-    ZC_AudioSet GetAudioSet() const noexcept;
+    //  Return audioset of the sound if sound exists, otherwise nullptr.
+    const ZC_AudioSet* GetAudioSet() const noexcept;
 
 private:
-    ZC_StreamSound* GetpZC_StreamSound() noexcept;
+    ZC_sptr<ZC_StreamSound> spStream_sound;
+    ZC_SConnection sconGetpZC_StreamSound;
+
+    ZC_sptr<ZC_StreamSound> GetpZC_StreamSound();
 };

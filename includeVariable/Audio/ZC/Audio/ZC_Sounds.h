@@ -35,7 +35,7 @@ public:
     Return:
     If sound is loaded a unique pointer to the sound, otherwise nullptr.
     */
-    static ZC_upSound GetSound(int id);
+    static ZC_Sound GetSound(int id);
 
 private:
     static inline std::map<int, ZC_SoundData> sounds;

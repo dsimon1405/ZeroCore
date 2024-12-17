@@ -46,7 +46,7 @@ bool ZC_Sounds::LoadWAV(int id, const std::string& path)
     return LoadWAV(id, path.c_str());
 }
 
-ZC_upSound ZC_Sounds::GetSound(int id)
+ZC_Sound ZC_Sounds::GetSound(int id)
 {
     std::shared_lock<std::shared_mutex> soundsSLock(soundsSMutex);
     std::map<int, ZC_SoundData>::iterator soundsIter;
@@ -58,9 +58,9 @@ ZC_upSound ZC_Sounds::GetSound(int id)
             return soundsIter->second.GetAudioSet().frequency != 0;
         });
 
-    if (soundsIter == sounds.end()) return nullptr;
+    if (soundsIter == sounds.end()) return ZC_Sound(nullptr);
     
-    return ZC_uptrMake<ZC_Sound>(&soundsIter->second);
+    return ZC_Sound(ZC_sptrMake<ZC_StreamSound>(&(soundsIter->second)));
 }
 
 ZC_SoundData ZC_Sounds::ReadWAV(const char* path)

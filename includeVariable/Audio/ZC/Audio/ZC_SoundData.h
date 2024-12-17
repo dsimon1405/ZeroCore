@@ -29,7 +29,7 @@ public:
     template <ZC_cBitsPerSample T>
     T GetValue(unsigned long index) const;
 
-    ZC_AudioSet GetAudioSet() const noexcept;
+    const ZC_AudioSet& GetAudioSet() const noexcept;
 
 private:
     ZC_DA<char> data;

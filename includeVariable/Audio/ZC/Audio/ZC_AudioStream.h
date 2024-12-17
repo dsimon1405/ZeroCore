@@ -57,14 +57,14 @@ protected:
 
 private:
     static inline ZC_AS_State stateAudioStream = ZC_AS__None;
-    static inline ZC_Signal<ZC_StreamSound*()> sGetpZC_StreamSound { true };
+    static inline ZC_Signal<ZC_sptr<ZC_StreamSound>()> sGetpZC_StreamSound { true };    //  use ZC_sptr for case if ZC_Sound holding ZC_StreamSound will be deleted while GetStreamData() in process
 
     template <ZC_cBitsPerSample T>
-    static void FillData(void* pDataContainer, int bytesCount, std::vector<ZC_StreamSound*>& sounds);
+    static void FillData(void* pDataContainer, int bytesCount, std::vector<ZC_sptr<ZC_StreamSound>>& sounds);
 };
 
 template <ZC_cBitsPerSample T>
-void ZC_AudioStream::FillData(void* pDataContainer, int bytesCount, std::vector<ZC_StreamSound*>& sounds)
+void ZC_AudioStream::FillData(void* pDataContainer, int bytesCount, std::vector<ZC_sptr<ZC_StreamSound>>& sounds)
 {
     T* pData = static_cast<T*>(pDataContainer);
     int pDataSize = bytesCount / static_cast<int>(sizeof(T));
@@ -87,6 +87,14 @@ void ZC_AudioStream::FillData(void* pDataContainer, int bytesCount, std::vector<
             for (auto soundsIter = sounds.begin(); soundsIter != sounds.end();)
             {
                 T data = 0;
+
+                assert(*soundsIter);    //  how ZC_Sound returned empty ZC_sptr<ZC_StreamSound> ?
+                if (!(*soundsIter))     //  avoid fall
+                {
+                    soundsIter = sounds.erase(soundsIter);
+                    continue;
+                }
+                
                 soundsIter = (*soundsIter)->Pop(data) ? ++soundsIter : sounds.erase(soundsIter);
                 result += data / divisor;
             }
