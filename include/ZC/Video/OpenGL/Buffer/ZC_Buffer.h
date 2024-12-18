@@ -90,7 +90,7 @@ struct ZC_Buffer
 	- storingTypeSize - here places the size of the element's type.
 	- rElementsType - here places the type of that element from open gl enum.
 	*/
-    static void GetElementsData(ulong maxElementsIndex, ulong& storingTypeSize, GLenum& rElementsType) noexcept;
+    static void GetElementsData(ul_zc maxElementsIndex, ul_zc& storingTypeSize, GLenum& rElementsType) noexcept;
 
 	/*
 	Create dynamic array of elements for drawing quads and(or) triangles. Im vbo vertices(corners) of quad must be in order [bl -> tr -> tl -> br].
@@ -106,7 +106,7 @@ struct ZC_Buffer
 		ZC_Buffer ebo(GL_ELEMENT_ARRAY_BUFFER);
 		ebo.GLNamedBufferData(elements.size, elements.Begin(), ...);
 	*/
-	static ZC_DA<uchar> GetTriangleElements(ulong& rElementsCount, GLenum& rElementsType, ulong quadsCount, ulong trianglesCount);
+	static ZC_DA<uchar> GetTriangleElements(ul_zc& rElementsCount, GLenum& rElementsType, ul_zc quadsCount, ul_zc trianglesCount);
 
 	GLuint id = 0;
 	GLenum type;
