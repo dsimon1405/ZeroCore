@@ -8,8 +8,6 @@
 
 ZC_CO_Figure::ZC_CO_Figure(const ZC_Vec3<float>& _center, float _radius, const std::vector<ZC_CO_Surface<ZC_Vec3<float>>>& _surfaces)
     : ZC_CO_FigureSphere(_center, _radius)
-    // : radius(_radius),
-    // center_src(_center)
 {
     all_normals_scr.reserve(_surfaces.size());  //  each surface have only one normal, normals of collision figure can't be dublicated!
 
@@ -45,19 +43,6 @@ ZC_CO_Figure::ZC_CO_Figure(const ZC_Vec3<float>& _center, float _radius, const s
         surfaces_fact.emplace_back(ZC_CO_Surface<ZC_Vec3<float>*>(std::move(points), &(all_normals_fact[normal_i++])));    //  normals in surfaces_fact have same order with _surfaces and all_normals_fact, so normal can be taken with index
     }
 }
-
-// ZC_Vec3<float> ZC_CO_Figure::MultiplyWithModel(const ZC_Mat4<float>& model, const ZC_Vec3<float>& src)
-// {
-//     return ZC_Vec::Vec4_to_Vec3(model * ZC_Vec4<float>(src, 1.f));
-// }
-
-// void ZC_CO_Figure::UpdateCenter(const ZC_Mat4<float>& mat_model)
-// {
-//     if (is_center_actual) return;
-    
-//     center_fact = MultiplyWithModel(mat_model, center_src);
-//     is_center_actual = true;
-// }
 
 void ZC_CO_Figure::UpdatePointsAndNormals(const ZC_Mat4<float>& mat_model)
 {
@@ -99,11 +84,6 @@ const ZC_CO_Surface<ZC_Vec3<float>*>* ZC_CO_Figure::GetClosesSurface(const ZC_Ve
     return pSurf_closest;
 }
 
-// const ZC_Vec3<float>* ZC_CO_Figure::GetSourcePoint(const ZC_Vec3<float>* pPoint_fact) const
-// {
-//     size_t index = pPoint_fact - all_points_fact.data();
-//     return index < all_points_src.size() ? &all_points_src[index] : nullptr;
-// }
 const std::vector<ZC_Vec3<float>>* ZC_CO_Figure::GetAllPointsFact() const
 {
     return &all_points_fact;
