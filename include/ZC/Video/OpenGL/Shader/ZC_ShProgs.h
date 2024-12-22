@@ -29,6 +29,7 @@ enum ZC_ShPName
     ShPN_Game_Star,
     ShPN_Game_Flame,
     ShPN_Game_CubeMap,
+    ShPN_Game_CylinderDMG,
     
     ShPN_Test_Skelet,
     

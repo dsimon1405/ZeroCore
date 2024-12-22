@@ -27,6 +27,7 @@ struct ZC_ShVertex1
         game_star,
         game_particle_system,
         game_cube_map,
+        game_cylinder_dmg,
 
         Test_skelet
     };

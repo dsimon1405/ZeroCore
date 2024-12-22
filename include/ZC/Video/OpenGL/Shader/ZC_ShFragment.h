@@ -22,6 +22,7 @@ struct ZC_ShFragment1
         // game_platform,
         game_particle_system,
         game_cube_map,
+        game_cylinder_dmg,
 
         Test_skelet
     };
