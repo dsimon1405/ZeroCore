@@ -68,6 +68,12 @@ void* ZC_CollisionObject::GetHolder()
     return pHolder;
 }
 
+const ZC_Vec3<float>& ZC_CollisionObject::GetCenterFact()
+{
+    UpdateCenterWithModelMatrix();
+    return upFigSphere->center_fact;
+}
+
 void ZC_CollisionObject::UpdateCenterWithModelMatrix()
 {
     upFigSphere->UpdateCenter(mat_model_actual);

@@ -17,10 +17,10 @@ struct ZC_GUI_ChData
 
 class ZC_GUI_TextManager
 {
+    struct TextureRow;
 public:
     static inline ZC_GUI_TextManager* pTM;
 
-    struct TextureRow;
 
     struct Text
     {

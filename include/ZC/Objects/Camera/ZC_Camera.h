@@ -40,6 +40,9 @@ private:
 
     UboSet uboSet;
     ZC_EC sConWindowResize;
+    
+    bool persp_need_update = true;
+    bool view_need_update = true;
 
     void UboUpdate();
     void WindowResize(float width, float height);

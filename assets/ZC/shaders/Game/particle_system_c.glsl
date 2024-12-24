@@ -64,7 +64,7 @@ struct UV
     float right_x;
     float bottom_y;
 };
-layout (std430, binding =G_BIND_SSBO_TEX_DATA) readonly buffer SSBO_UV
+layout (std430, binding = G_BIND_SSBO_TEX_DATA) readonly buffer SSBO_UV
 {
     uint uvs_count;     //  tiles count
     UV uvs[];

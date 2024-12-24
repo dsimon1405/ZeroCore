@@ -64,6 +64,8 @@ struct ZC_CollisionObject
     bool IsCurrentFrameCollision() const;
         //  return pointer on object's holder
     void* GetHolder();
+        //  actualize and return ZC_CO_FigureSphere::center_fact
+    const ZC_Vec3<float>& GetCenterFact();
 
 private:
     ZC_uptr<ZC_CO_FigureSphere> upFigSphere;  //  sets in ctr

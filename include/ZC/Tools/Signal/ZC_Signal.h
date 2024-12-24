@@ -243,7 +243,7 @@ void ZC_Signal<TVal(TParams...)>::CallLastConnected(TParams... params)
 template<typename TVal, ZC_cNotRValueRef1... TParams>
 void ZC_Signal<TVal(TParams...)>::CallLastConnected(ZC_uptr<TVal>& container, TParams... params)
 {
-    auto lamb_call = [this, params...]()
+    auto lamb_call = [this, &container, params...]()
     {
         call_in_progress = true;
         AddFunctions();

@@ -62,9 +62,11 @@ ZC_Camera* ZC_Camera::GetActiveCamera()
 
 const ZC_Mat4<float>* ZC_Camera::GetPerspectiveView()
 {
-    bool perspNeedUpdate = this->PerspectiveUpdate(),
-        viewNeedUpdate = this->ViewUpdate();
+    bool perspNeedUpdate = this->PerspectiveUpdate();
+    bool viewNeedUpdate = this->ViewUpdate();
     if (perspNeedUpdate || viewNeedUpdate) uboSet.perspView = *(this->pPerspective) * *(this->pView);
+    if (perspNeedUpdate) persp_need_update = true;
+    if (viewNeedUpdate) view_need_update = true;
     return &(uboSet.perspView);
 }
 
@@ -78,16 +80,12 @@ void ZC_Camera::UboUpdate()
 {
     bool perspNeedUpdate = this->PerspectiveUpdate();
     bool viewNeedUpdate = this->ViewUpdate();
-    if (perspNeedUpdate || viewNeedUpdate)
+    if (perspNeedUpdate) persp_need_update = true;
+    if (viewNeedUpdate) view_need_update = true;
+
+    if (persp_need_update || view_need_update)
     {
         uboSet.perspView = *(this->pPerspective) * *(this->pView);
-        // std::cout<<view[0][0]<<"   "<<view[1][0]<<"   "<<view[2][0]<<"   "<<view[3][0]<<std::endl;
-        // std::cout<<view[0][1]<<"   "<<view[1][1]<<"   "<<view[2][1]<<"   "<<view[3][1]<<std::endl;
-        // std::cout<<view[0][2]<<"   "<<view[1][2]<<"   "<<view[2][2]<<"   "<<view[3][2]<<std::endl;
-        // std::cout<<view[0][3]<<"   "<<view[1][3]<<"   "<<view[2][3]<<"   "<<view[3][3]<<std::endl;
-        // std::cout<<std::endl;
-        // std::cout<<std::endl;
-
 
         ZC_Mat4<float> view_skybox = *(this->pView);
         view_skybox[3][0] = 0.f;
@@ -104,13 +102,16 @@ void ZC_Camera::UboUpdate()
         pActiveUBO = this;
     }
 
-    if (orthoNeedUpdate && viewNeedUpdate) upUbo->GLNamedBufferSubData(0l, sizeof(uboSet), &uboSet);    //  ortho and view data divided with perspective data in UboSet, no sense to make 2 updates, update all
-    else if (perspNeedUpdate && viewNeedUpdate)
+    if (orthoNeedUpdate && view_need_update) upUbo->GLNamedBufferSubData(0l, sizeof(uboSet), &uboSet);    //  ortho and view data divided with perspective data in UboSet, no sense to make 2 updates, update all
+    else if (persp_need_update && view_need_update)
         upUbo->GLNamedBufferSubData(offsetof(UboSet, perspective), sizeof(UboSet) - sizeof(UboSet::ortho), &(uboSet.perspective));      //  update all among ortho. If need update perspective view hight probability that camPos need too
     else if (orthoNeedUpdate) upUbo->GLNamedBufferSubData(0l, sizeof(uboSet.ortho), &(uboSet.ortho));
-    else if (perspNeedUpdate) 
+    else if (persp_need_update) 
         upUbo->GLNamedBufferSubData(offsetof(UboSet, perspective), sizeof(uboSet.perspective) + sizeof(uboSet.perspView) + sizeof(uboSet.perspViewSkybox), &(uboSet.perspective));
     else upUbo->GLNamedBufferSubData(offsetof(UboSet, perspView), sizeof(UboSet) - offsetof(UboSet, perspView), &(uboSet.perspView));    //  remains view with cam pos
+
+    persp_need_update = false;
+    view_need_update = false;
 }
 
 void ZC_Camera::WindowResize(float width, float height)

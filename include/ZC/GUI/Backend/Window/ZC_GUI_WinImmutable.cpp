@@ -63,7 +63,7 @@ void ZC_GUI_WinImmutable::VSetDrawState_W(bool needDraw)
         sizeof(ZC_DrawArraysIndirectCommand::instanceCount), &(daic.instanceCount));
     ZC_GUI::UpdateWindowDrawState(this);
 
-    upDS_con->SwitchToDrawLvl(ZC_RL_Default, draw_winds_count > 0u ? ZC_DrawerLevels::Gui : ZC_RL_Default);
+    upDS_con->SwitchToDrawLvl(ZC_RL_Default, draw_winds_count > 0u ? ZC_DrawerLevels::Gui : ZC_DL_None);
 }
 
 bool ZC_GUI_WinImmutable::VIsDrawing_Obj() const noexcept

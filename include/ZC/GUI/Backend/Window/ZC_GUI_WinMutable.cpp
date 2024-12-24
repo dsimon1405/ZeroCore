@@ -42,7 +42,7 @@ void ZC_GUI_WinMutable::VSetDrawState_W(bool needDraw)
     isDrawing = needDraw;
     ZC_GUI::UpdateWindowDrawState(this);
 
-    upDS_con->SwitchToDrawLvl(ZC_RL_Default, needDraw ? ZC_DrawerLevels::Gui : ZC_RL_Default);
+    upDS_con->SwitchToDrawLvl(ZC_RL_Default, needDraw ? ZC_DrawerLevels::Gui : ZC_DL_None);
 }
 
 bool ZC_GUI_WinMutable::VIsDrawing_Obj() const noexcept

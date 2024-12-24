@@ -33,7 +33,7 @@ layout (std140, binding = G_BIND_UBO_Light) uniform UBOLight
     //  out
 layout (location = 0) out OutV
 {
-    vec3 pos;
+    vec3 pos_in_cube;
     vec3 light_color_star;
     float dist_to_frag;
 } outV;
@@ -43,7 +43,7 @@ vec3 Uint_2_10_10_10_To_vec3(uint val);
 
 void main()
 {
-    outV.pos = inPos;
+    outV.pos_in_cube = inPos;
     outV.light_color_star = ubo_light.light[Light_Star].color != 0 ? Uint_2_10_10_10_To_vec3(ubo_light.light[Light_Star].color) : vec3(0.f, 0.f, 0.f);
     outV.dist_to_frag = length(ubo_light.light[Light_Star].pos) + 75.f;     //  75 - constant distance between the star and the edge of the map at all levels
     gl_Position = camera.perspViewSkybox * vec4(inPos, 1.0);

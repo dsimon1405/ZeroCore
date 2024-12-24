@@ -17,14 +17,14 @@ struct Particle    //  std 430 to avoid problems with alignment, don't use mat a
     float move_dir_normalized[3];
     float move_speed_secs_start;  //  sets to move_speed_secs_cur at respawn
     float move_speed_secs_cur;    //  cur speed
-        //  coners world pos
+        //  corners world pos
     float world_bl[3];
     float world_br[3];
     float world_tl[3];
     float world_tr[3];
         //  rotate angle
     float rotate_angle;    //  rotate particle in 2d
-        //  animaion
+        //  animation
     float animation_start_secs;     //  when in life time to start animation
     uint animation_uvs_cur_id;      //  id of ssbo_uv.uvs[]
     float animation_uvs_cur_id_secs;      //  seconds to show animation_uvs_cur_id
